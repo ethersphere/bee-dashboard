@@ -3,9 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
+import { AppBar, Toolbar, Typography, Chip } from '@material-ui/core/';
 
 const drawerWidth = 240;
 
@@ -16,6 +14,9 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: drawerWidth,
       backgroundColor:'#dd7200'
     },
+    network: {
+
+    }
   }),
 );
 
@@ -30,6 +31,12 @@ export default function SideBar() {
           <Typography variant="h6" noWrap>
             Bee
           </Typography>
+          <Chip
+          style={{ marginLeft: '7px'}}
+          size="small"
+          label='Goerli'
+          className={classes.network}
+          />
         </Toolbar>
       </AppBar>
     </div>

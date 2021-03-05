@@ -1,4 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { Bee } from "@ethersphere/bee-js"
+
+// const bee = new Bee(process.env.REACT_APP_BEE_HOST)
 
 const beeApiClient = (): AxiosInstance => {
     return axios.create({
@@ -43,6 +46,9 @@ export const beeDebugApi = {
         },
     },
     connectivity: {
+        addresses() {
+            return beeDebugApiClient().get<Peer>(`/addresses`)
+        },
         listPeers() {
             return beeDebugApiClient().get<Peer>(`/peers`)
         },

@@ -29,6 +29,18 @@ const navBarItems = [
         'icon': 'storage_sharp'
     },
     {
+        'label': 'Peers',
+        'id': 'peers',
+        'path': '/peers/',
+        'icon': 'settings_input_antenna'
+    },
+    {
+        'label': 'Accounting',
+        'id': 'accounting',
+        'path': '/accounting/',
+        'icon': 'attach_money'
+    },
+    {
         'label': 'Settings',
         'id': 'settings',
         'path': '/settings/',
@@ -92,7 +104,7 @@ export default function SideBar() {
         <Divider />
         <List>
             <a href={process.env.REACT_APP_BEE_DOCS_HOST} target="_blank" >
-                <ListItem button key={'Status'}>
+                <ListItem button key={'docs'}>
                     <ListItemText primary={'Docs'} />
                     <OpenInNewSharp fontSize="small" />
                 </ListItem>
