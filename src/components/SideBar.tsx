@@ -2,17 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import { OpenInNewSharp, BugReportSharp } from '@material-ui/icons';
-import Icon from '@material-ui/core/Icon';
+import { ListItemText, ListItemIcon, ListItem, Divider, List, Drawer, Link as MUILink} from '@material-ui/core';
+import { OpenInNewSharp } from '@material-ui/icons';
 import { Activity, FileText, DollarSign, Share2, Settings } from 'react-feather';
 
 import SwarmLogo from '../assets/swarm-logo-1.svg';
+import SwarmLogoWhite from '../assets/swarm-logo-1-white.png';
 
 const drawerWidth = 240;
 
@@ -20,7 +15,7 @@ const navBarItems = [
     {
         'label': 'Status',
         'id': 'status',
-        'path': '/status/',
+        'path': '/',
         'icon': 'activity'
     },
     {
@@ -85,7 +80,7 @@ const getIcon = (iconPath: string) => {
   }
 }
 
-export default function SideBar() {
+export default function SideBar(props: any) {
   const classes = useStyles();
 
   return (
@@ -100,14 +95,14 @@ export default function SideBar() {
       >
         <div className={classes.toolbar} style={{ textAlign:'center' }}>
             <Link to='/'>
-                <img src={SwarmLogo} style={{maxHeight: '42px', alignItems:'center', marginTop:'10px'}} /> 
+                <img src={props.themeMode === 'light' ? SwarmLogo : SwarmLogoWhite} style={{maxHeight: '42px', alignItems:'center', marginTop:'10px'}} /> 
             </Link>
         </div>
         <Divider />
         <List>
             {navBarItems.map(item => (
                 <Link to={item.path}  key={item.id} style={{ color:'inherit', textDecoration:'none'}}>
-                    <ListItem button>
+                    <ListItem button selected={props.location.pathname === item.path}>
                         <ListItemIcon>
                             { getIcon(item.icon) }
                         </ListItemIcon>
@@ -118,12 +113,12 @@ export default function SideBar() {
         </List>
         <Divider />
         <List>
-            <a href={process.env.REACT_APP_BEE_DOCS_HOST} target="_blank" >
-                <ListItem button key={'docs'}>
+            <MUILink href={process.env.REACT_APP_BEE_DOCS_HOST} target="_blank" style={{textDecoration:'none'}}>
+                <ListItem button>
                     <ListItemText primary={'Docs'} />
                     <OpenInNewSharp fontSize="small" />
                 </ListItem>
-            </a>
+            </MUILink>
         </List>
       </Drawer>
     </div>

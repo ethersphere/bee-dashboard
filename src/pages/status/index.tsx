@@ -8,7 +8,7 @@ import { beeDebugApi } from '../../services/bee';
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard';
 import NodeSetupWorkflow from './NodeSetupWorkflow';
 import StatusCard from './StatusCard';
-import EthereumAddressCard from './EthereumAddressCard';
+import EthereumAddressCard from '../../components/EthereumAddressCard';
 
 export default function Status() {
     const [beeRelease, setBeeRelease] = useState({ name: ''});

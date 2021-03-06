@@ -43,7 +43,7 @@ interface IProps{
 }
 
 const ConvertBalanceToBZZ = (amount: number) =>  {
-    return amount / 10000000000000000
+    return amount / (10 ^ 16)
 }
 
 function AccountCard(props: IProps) {

@@ -90,7 +90,7 @@ function StatusCard(props: IProps) {
                             </div> 
                         }
                     </Typography>
-                    <div style={{marginBottom: '10px' }}>
+                    <div style={{marginBottom: '20px' }}>
                         <span style={{marginRight:'20px'}}>Discovered Nodes: { props.nodeTopology.population }</span>
                         <span style={{marginRight:'20px'}}>
                             <span>Connected Peers: </span>
@@ -99,10 +99,12 @@ function StatusCard(props: IProps) {
                             </Link>
                         </span>
                     </div>
-                    <div style={{color:'rgba(0, 0, 0, 0.54)'}}>
+                    <div >
                         <div>
-                            <span>NODE ID: </span>
-                            <span>{ props.nodeAddresses.overlay ? props.nodeAddresses.overlay : '-' }</span>
+                            <Typography variant="subtitle2" gutterBottom>
+                                <span>NODE ID: </span>
+                                <span>{ props.nodeAddresses.overlay ? props.nodeAddresses.overlay : '-' }</span>
+                            </Typography>
                         </div>
                         <div>
                             <Typography variant="subtitle2" gutterBottom>

@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { AppBar, Toolbar, Typography, Chip } from '@material-ui/core/';
+import { AppBar, Toolbar, Typography, Chip, IconButton } from '@material-ui/core/';
+
+import { Sun, Moon } from 'react-feather';
 
 const drawerWidth = 240;
 
@@ -20,17 +21,21 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default function SideBar() {
+
+export default function SideBar(props: any) {
+  const [darkMode, toggleDarkMode] = useState(false);
+
+  const switchTheme = () => {
+    localStorage.setItem('theme', darkMode ? 'dark' : 'light')
+    toggleDarkMode(!darkMode)
+  }
+
   const classes = useStyles();
 
   return (
     <div>
-      <CssBaseline />
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar style={{display: 'flex'}}>
-          <Typography variant="h6">
-            Bee
-          </Typography>
           <Chip
           style={{ marginLeft: '7px'}}
           size="small"
@@ -38,7 +43,19 @@ export default function SideBar() {
           className={classes.network}
           />
           <div style={{width:'100%'}}>
-            <Chip style={{float:'right'}} label="Connect Wallet" />
+            <div style={{float:'right'}} >
+              <IconButton style={{marginRight:'10px'}} aria-label="dark-mode" onClick={() => switchTheme()}>
+                {props.themeMode === 'dark' ?
+                <Moon />
+                :
+                <Sun />
+                }
+              </IconButton>
+              <Chip 
+              label="Connect Wallet"
+              color="primary"
+              />
+            </div>
           </div>
         </Toolbar>
       </AppBar>

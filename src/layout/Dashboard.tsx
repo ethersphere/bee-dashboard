@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useState, useEffect } from 'react'
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 
@@ -38,10 +38,22 @@ const useStyles = makeStyles((theme: Theme) =>
 const Dashboard: FC = (props) => {
     const classes = useStyles();
 
+    const [themeMode, toggleThemeMode] = useState('light');
+
+    useEffect(() => {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        toggleThemeMode('dark')
+      }
+  
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        toggleThemeMode(e.matches ? "dark" : "light")
+      });
+    }, [])
+
     return (
         <div>
-            <SideBar/>
-            <NavBar />
+            <SideBar {...props} themeMode={themeMode} />
+            <NavBar  themeMode={themeMode} />
             <main className={classes.content}>
                 { props.children }
             </main>

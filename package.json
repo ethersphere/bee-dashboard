@@ -21,7 +21,7 @@
     "url": "https://github.com/ethersphere/bee-status.git"
   },
   "dependencies": {
-    "@ethersphere/bee-js": "^0.5.0",
+    "@ethersphere/bee-js": "^0.5.1",
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
@@ -29,7 +29,9 @@
     "@types/react-router-dom": "^5.1.7",
     "axios": "^0.21.1",
     "feather-icons": "^4.28.0",
+    "qrcode.react": "^1.0.1",
     "react": "^17.0.1",
+    "react-copy-to-clipboard": "^5.0.3",
     "react-dom": "^17.0.1",
     "react-feather": "^2.0.9",
     "react-identicons": "^1.2.5",
@@ -43,7 +45,9 @@
     "@testing-library/user-event": "^12.8.1",
     "@types/jest": "^26.0.15",
     "@types/node": "^12.0.0",
+    "@types/qrcode.react": "^1.0.1",
     "@types/react": "^17.0.0",
+    "@types/react-copy-to-clipboard": "^5.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-syntax-highlighter": "^13.5.0",
     "react-scripts": "4.0.3",
