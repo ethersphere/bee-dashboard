@@ -4,6 +4,9 @@ import { Theme, createStyles, makeStyles, useTheme } from '@material-ui/core/sty
 import { Card, CardContent, Typography, Chip } from '@material-ui/core/';
 import { OpenInNewSharp } from '@material-ui/icons';
 
+// @ts-ignore
+import Identicon from 'react-identicons';
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -55,7 +58,9 @@ function EthereumAddressCard(props: IProps) {
                     <Typography component="p" variant="subtitle1">
                         <span>Ethereum Address</span>
                     </Typography>
+                    <Identicon size='20' string={props.nodeAddresses.ethereum} />
                     <a 
+                    style={{ marginLeft: '7px'}}
                     href={`https://${'goerli'}.${process.env.REACT_APP_ETHERSCAN_HOST}/address/${props.nodeAddresses.ethereum}`}
                     target='_blank'
                     >
@@ -69,7 +74,9 @@ function EthereumAddressCard(props: IProps) {
                     <Typography component="p" variant="subtitle1">
                         <span>Contract Address</span>
                     </Typography>
+                    <Identicon size='20' string={props.chequebookAddress.chequebookaddress} />
                     <a 
+                    style={{ marginLeft: '7px'}}
                     href={`https://${'goerli'}.${process.env.REACT_APP_ETHERSCAN_HOST}/address/${props.chequebookAddress.chequebookaddress}`}
                     target='_blank'
                     >

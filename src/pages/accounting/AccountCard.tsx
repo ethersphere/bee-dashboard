@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
-import { Card, CardContent, Typography, Grid } from '@material-ui/core/';
+import { Card, CardContent, Typography, Grid, Button } from '@material-ui/core/';
 import { Skeleton } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -51,7 +51,14 @@ function AccountCard(props: IProps) {
 
     return (
         <div>
-            <h2 style={{ marginTop: '0px' }}>Contract <span className={classes.address}>{ props.chequebookAddress.chequebookaddress }</span></h2>
+            <div style={{justifyContent: 'space-between', display: 'flex'}}>
+                <h2 style={{ marginTop: '0px' }}>Contract <span className={classes.address}>{ props.chequebookAddress.chequebookaddress }</span></h2>
+                <div>
+                    <Button variant="outlined" color="primary" style={{marginRight:'7px'}}>Deposit</Button>
+                    <Button variant="outlined" color="primary">Withdrawl</Button>
+                </div>
+            </div>
+            
             <Card className={classes.root}>
                 { !props.loadingChequebookBalance && props.chequebookBalance ? 
                 <div className={classes.details}>

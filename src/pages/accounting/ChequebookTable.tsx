@@ -1,9 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Button, Paper, Tooltip } from '@material-ui/core';
-import { Cancel, Autorenew } from '@material-ui/icons';
-
-import { beeDebugApi } from '../../services/bee';
 
 const useStyles = makeStyles({
     table: {
