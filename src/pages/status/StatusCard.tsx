@@ -74,7 +74,6 @@ function StatusCard(props: IProps) {
 
     const fetchLatestBeeRelease = async () => {
         let beeRelease = await axios.get(`${process.env.REACT_APP_BEE_GITHUB_REPO_URL}/releases/latest`)
-        console.log(beeRelease)
         setBeeRelease(beeRelease.data)
     }
 
@@ -110,7 +109,7 @@ function StatusCard(props: IProps) {
                             </Link>
                         </span>
                     </div>
-                    <Typography color="textSecondary" component='p'>
+                    <div style={{color:'rgba(0, 0, 0, 0.54)'}}>
                         <div>
                             <span>NODE ID: </span>
                             <span>{ props.nodeAddresses.overlay }</span>
@@ -133,7 +132,7 @@ function StatusCard(props: IProps) {
                                 <a href='#'>update</a>
                             }
                         </div>
-                    </Typography>
+                    </div>
                     </CardContent>
                 </div>
                 :

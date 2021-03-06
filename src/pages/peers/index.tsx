@@ -18,7 +18,6 @@ export default function Peers() {
         setLoadingNodePeers(true)
         beeDebugApi.connectivity.listPeers()
         .then(res => {
-            console.log(res.data)
             let peers: any = res.data;
             setLoadingNodePeers(false)
             setNodePeers(peers)
@@ -52,25 +51,25 @@ export default function Peers() {
         <div>
             <Grid style={{ marginBottom: '20px', flexGrow: 1 }}>
                 <Grid container spacing={3}>
-                    <Grid key={1} item xs={12} sm={6} md={4} lg={3} xl={3}>
+                    <Grid key={1} item xs={12} sm={12} md={4} lg={3} xl={3}>
                         <StatCard
                         label='Connected Peers'
                         statistic={nodeTopology.connected.toString()}
                         />
                     </Grid>
-                    <Grid key={2} item xs={12} sm={6} md={4} lg={3} xl={3}>
+                    <Grid key={2} item xs={12} sm={12} md={4} lg={3} xl={3}>
                         <StatCard
                         label='Population'
                         statistic={nodeTopology.population.toString()}
                         />
                     </Grid>
-                    <Grid key={3} item xs={12} sm={6} md={4} lg={3} xl={3}>
+                    <Grid key={3} item xs={12} sm={12} md={4} lg={3} xl={3}>
                         <StatCard
                         label='Depth'
                         statistic={nodeTopology.depth.toString()}
                         />
                     </Grid>
-                    <Grid key={4} item xs={12} sm={6} md={4} lg={3} xl={3}>
+                    <Grid key={4} item xs={12} sm={12} md={4} lg={3} xl={3}>
                         <StatCard
                         label='nnLowWatermark'
                         statistic={nodeTopology.nnLowWatermark.toString()}

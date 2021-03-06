@@ -106,8 +106,8 @@ export default function SideBar() {
         <Divider />
         <List>
             {navBarItems.map(item => (
-                <Link to={item.path} style={{ color:'inherit', textDecoration:'none'}}>
-                    <ListItem button key={item.id}>
+                <Link to={item.path}  key={item.id} style={{ color:'inherit', textDecoration:'none'}}>
+                    <ListItem button>
                         <ListItemIcon>
                             { getIcon(item.icon) }
                         </ListItemIcon>

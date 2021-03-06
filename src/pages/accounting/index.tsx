@@ -33,7 +33,7 @@ export default function Accounting() {
     const [chequebookAddress, setChequebookAddress] = useState({ chequebookaddress: '' });
     const [loadingChequebookAddress, setLoadingChequebookAddress] = useState(false);
 
-    const [chequebookBalance, setChequebookBalance] = useState({ totalBalance: '', availableBalance: ''});
+    const [chequebookBalance, setChequebookBalance] = useState({ totalBalance: 0, availableBalance: 0});
     const [loadingChequebookBalance, setLoadingChequebookBalance] = useState(false);
 
     const [peerBalances, setPeerBalances] = useState({ balances: [{peer: '', balance: 0 }] });

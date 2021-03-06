@@ -31,8 +31,8 @@ interface ChequebookAddress {
 }
 
 interface ChequebookBalance {
-    totalBalance: string,
-    availableBalance: string
+    totalBalance: number,
+    availableBalance: number
 }
 
 interface IProps{
@@ -42,7 +42,7 @@ interface IProps{
     loadingChequebookBalance: boolean,
 }
 
-const ConvertBalanceToBZZ = (amount: number) => {
+const ConvertBalanceToBZZ = (amount: number) =>  {
     return amount / 10000000000000000
 }
 
@@ -69,7 +69,7 @@ function AccountCard(props: IProps) {
                                 Total Balance
                                 </Typography>
                                 <Typography component="p" variant="h5">
-                                    {ConvertBalanceToBZZ(parseInt(props.chequebookBalance.totalBalance))}
+                                    {ConvertBalanceToBZZ(props.chequebookBalance.totalBalance)}
                                 </Typography>
                             </Grid>
                             <Grid item>
@@ -77,7 +77,7 @@ function AccountCard(props: IProps) {
                                 Available Balance
                                 </Typography>
                                 <Typography component="p" variant="h5">
-                                    {ConvertBalanceToBZZ(parseInt(props.chequebookBalance.availableBalance))}
+                                    {ConvertBalanceToBZZ(props.chequebookBalance.availableBalance)}
                                 </Typography>
                             </Grid>
                         </Grid>
