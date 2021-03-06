@@ -3,12 +3,6 @@ import { Bee } from "@ethersphere/bee-js"
 
 const bee = new Bee(`${process.env.REACT_APP_BEE_HOST}`)
 
-const beeApiClient = (): AxiosInstance => {
-    return axios.create({
-        baseURL: process.env.REACT_APP_BEE_HOST
-    })
-}
-
 const beeDebugApiClient = (): AxiosInstance => {
     return axios.create({
         baseURL: process.env.REACT_APP_BEE_DEBUG_HOST
@@ -22,14 +16,14 @@ interface File {
 
 export const beeApi = {
     files: {
-        upload(file: File) {
-            return beeApiClient().post(`/files`, file)
+        uploadFile(file: File) {
+            return bee.uploadFile(file.file)
         },
         uploadData(file: File) { 
             return bee.uploadData(file.file)
         },
-        download(hash: string) {
-            return beeApiClient().get<File>(`/files/${hash}`)
+        downloadFile(hash: string) {
+            return bee.downloadFile(hash)
         },
         downloadData(hash: string) {
             return bee.downloadData(hash)
