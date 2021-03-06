@@ -8,7 +8,7 @@ import StatCard from '../../components/StatCard';
 import PeerTable from './PeerTable';
 
 export default function Peers() {
-    const [nodePeers, setNodePeers] = useState({ peers: [{ address: ''}]});
+    const [nodePeers, setNodePeers] = useState({ peers: [{ address: '-'}]});
     const [loadingNodePeers, setLoadingNodePeers] = useState(false);
 
     const [nodeTopology, setNodeTopology] = useState({ baseAddr: '', bins: [{}], connected: 0, depth: 0, nnLowWatermark: 0, population: 0, timestamp: ''});

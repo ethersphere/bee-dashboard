@@ -36,16 +36,16 @@ export default function Accounting() {
     const [chequebookBalance, setChequebookBalance] = useState({ totalBalance: 0, availableBalance: 0});
     const [loadingChequebookBalance, setLoadingChequebookBalance] = useState(false);
 
-    const [peerBalances, setPeerBalances] = useState({ balances: [{peer: '', balance: 0 }] });
+    const [peerBalances, setPeerBalances] = useState({ balances: [{peer: '-', balance: 0 }] });
     const [loadingPeerBalances, setLoadingPeerBalances] = useState(false);
 
-    const [peerCheques, setPeerCheques] = useState({ lastcheques: [{peer: '', lastsent: {beneficiary: '', chequebook: '', payout: 0}, lastreceived: {beneficiary: '', chequebook: '', payout: 0} }] });
+    const [peerCheques, setPeerCheques] = useState({ lastcheques: [{peer: '-', lastsent: {beneficiary: '', chequebook: '', payout: 0}, lastreceived: {beneficiary: '', chequebook: '', payout: 0} }] });
     const [loadingPeerCheques, setLoadingPeerCheques] = useState(false);
 
     const [nodeAddresses, setNodeAddresses] = useState({ overlay: '', underlay: [""], ethereum: '', public_key: '', pss_public_key: ''});
     const [loadingNodeAddresses, setLoadingNodeAddresses] = useState(false);
 
-    const [nodeSettlements, setNodeSettlements] = useState({ totalreceived: 0, totalsent: 0, settlements: [{peer: '', received: 0, sent: 0}] });
+    const [nodeSettlements, setNodeSettlements] = useState({ totalreceived: 0, totalsent: 0, settlements: [{peer: '-', received: 0, sent: 0}] });
     const [loadingNodeSettlements, setLoadingNodeSettlements] = useState(false);
 
     const fetchChequebookAddress = () => {

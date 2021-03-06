@@ -112,12 +112,12 @@ function StatusCard(props: IProps) {
                     <div style={{color:'rgba(0, 0, 0, 0.54)'}}>
                         <div>
                             <span>NODE ID: </span>
-                            <span>{ props.nodeAddresses.overlay }</span>
+                            <span>{ props.nodeAddresses.overlay ? props.nodeAddresses.overlay : '-' }</span>
                         </div>
                         <div>
                             <span>AGENT: </span>
                             <a href='https://github.com/ethersphere/bee' target='_blank'>Bee</a>
-                            <span>{` v${props.nodeReadiness.version}`}</span>
+                            <span>{props.nodeReadiness.version ? ` v${props.nodeReadiness.version}` : '-'}</span>
                             {beeRelease && beeRelease.name === `v${props.nodeReadiness.version?.split('-')[0]}` ?
                                 <Chip
                                 style={{ marginLeft: '7px', color: '#2145a0' }}

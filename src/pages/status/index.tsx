@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 
 import { beeDebugApi } from '../../services/bee';
+import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard';
 import StatusCard from './StatusCard';
 import EthereumAddressCard from './EthereumAddressCard';
 
@@ -110,12 +111,19 @@ export default function Status() {
             loadingNodeTopology={loadingNodeTopology}
             nodeTopology={nodeTopology}
             />
-            <EthereumAddressCard 
-            nodeAddresses={nodeAddresses} 
-            loadingNodeAddresses={loadingNodeAddresses} 
-            chequebookAddress={chequebookAddress}
-            loadingChequebookAddress={loadingChequebookAddress}
-            />
+            {nodeHealth.status === 'ok' && !loadingNodeHealth ? 
+                <EthereumAddressCard 
+                nodeAddresses={nodeAddresses} 
+                loadingNodeAddresses={loadingNodeAddresses} 
+                chequebookAddress={chequebookAddress}
+                loadingChequebookAddress={loadingChequebookAddress}
+                />
+                :
+                loadingNodeHealth ? null
+                :
+                <TroubleshootConnectionCard
+                />
+            }
         </div>
     )
 }
