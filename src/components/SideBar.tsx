@@ -15,7 +15,7 @@ const navBarItems = [
     {
         'label': 'Status',
         'id': 'status',
-        'path': '/status/',
+        'path': '/',
         'icon': 'activity'
     },
     {
