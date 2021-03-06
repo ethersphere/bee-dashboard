@@ -4,6 +4,7 @@ import { Theme, createStyles, makeStyles, useTheme } from '@material-ui/core/sty
 import { Card, CardContent, Typography } from '@material-ui/core/';
 import { OpenInNewSharp } from '@material-ui/icons';
 
+import EthereumAddress from '../components/EthereumAddress';
 import QRCodeModal from './QRCodeModal';
 import ClipboardCopy from './ClipboardCopy';
 
@@ -58,51 +59,24 @@ function EthereumAddressCard(props: IProps) {
             <Card className={classes.root}>
                 <div className={classes.details}>
                     <CardContent className={classes.content}>
-                        <Typography component="p" variant="subtitle1">
-                            <div style={{display:'flex'}}>
-                                <span style={{marginRight:'7px'}}>Ethereum Address</span>
-                                <QRCodeModal
-                                value={ props.nodeAddresses.ethereum }
-                                label={'Ethereum Address'}
-                                />
-                                <ClipboardCopy
-                                value={ props.nodeAddresses.ethereum }
-                                />
-                            </div>
+                        <Typography variant="subtitle1" gutterBottom>
+                            <span>Ethereum Address</span>
                         </Typography>
-                        <Identicon size='20' string={props.nodeAddresses.ethereum} />
-                        <a 
-                        style={{ marginLeft: '7px'}}
-                        href={`https://${'goerli'}.${process.env.REACT_APP_ETHERSCAN_HOST}/address/${props.nodeAddresses.ethereum}`}
-                        target='_blank'
-                        >
-                            { props.nodeAddresses.ethereum }
-                        </a>                        
+                        <EthereumAddress
+                        address={props.nodeAddresses.ethereum}
+                        network={'goerli'}
+                        />   
                     </CardContent>
                 </div>
                 <div className={classes.details}>
                     <CardContent className={classes.content}>
-                    <Typography component="p" variant="subtitle1">
-                        <div style={{display:'flex'}}>
-                            <span style={{marginRight:'7px'}}>Contract Address</span>
-                            <QRCodeModal
-                            value={ props.chequebookAddress.chequebookaddress }
-                            label={'Contract Address'}
-                            />
-                            <ClipboardCopy
-                            value={ props.chequebookAddress.chequebookaddress }
-                            />
-                        </div>
-                    </Typography>
-                    <Identicon size='20' string={props.chequebookAddress.chequebookaddress} />
-                    <a 
-                    style={{ marginLeft: '7px'}}
-                    href={`https://${'goerli'}.${process.env.REACT_APP_ETHERSCAN_HOST}/address/${props.chequebookAddress.chequebookaddress}`}
-                    target='_blank'
-                    >
-                        { props.chequebookAddress.chequebookaddress }
-                    </a>
-                    <OpenInNewSharp fontSize="small" />
+                        <Typography variant="subtitle1" gutterBottom>
+                            <span>Contract Address</span>
+                        </Typography>
+                        <EthereumAddress
+                        address={props.chequebookAddress.chequebookaddress}
+                        network={'goerli'}
+                        />   
                     </CardContent>
                 </div>
             </Card>

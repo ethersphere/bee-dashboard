@@ -4,7 +4,8 @@ import { Container, CircularProgress } from '@material-ui/core';
 
 import type { NodeAddresses, ChequebookAddressResponse } from '@ethersphere/bee-js'
 
-import { beeDebugApi } from '../../services/bee';
+import { beeDebugApi, beeApi } from '../../services/bee';
+
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard';
 import NodeSetupWorkflow from './NodeSetupWorkflow';
 import StatusCard from './StatusCard';
@@ -13,6 +14,9 @@ import EthereumAddressCard from '../../components/EthereumAddressCard';
 export default function Status() {
     const [beeRelease, setBeeRelease] = useState({ name: ''});
     const [loadingBeeRelease, setLoadingBeeRelease] = useState(false);
+
+    const [nodeApiHealth, setNodeApiHealth] = useState('');
+    const [loadingNodeApiHealth, setLoadingNodeApiHealth] = useState(false);
 
     const [nodeHealth, setNodeHealth] = useState({ status: '', version: ''});
     const [loadingNodeHealth, setLoadingNodeHealth] = useState(false);
@@ -32,6 +36,20 @@ export default function Status() {
     const fetchLatestBeeRelease = async () => {
         let beeRelease = await axios.get(`${process.env.REACT_APP_BEE_GITHUB_REPO_URL}/releases/latest`)
         setBeeRelease(beeRelease.data)
+    }
+
+    const fetchApiHealth = () => {
+        setLoadingNodeApiHealth(true)
+        beeApi.status.health()
+        .then(res => {
+            let health = res.data;
+            setLoadingNodeApiHealth(false)
+            setNodeApiHealth(health)
+        })
+        .catch(error => {
+            console.log(error)
+            setLoadingNodeApiHealth(false)
+        })
     }
 
     const fetchNodeHealth = () => {
@@ -111,11 +129,18 @@ export default function Status() {
         fetchNodeAddresses()
         fetchChequebookAddress()
         fetchNetworkTopology()
+        fetchApiHealth()
     }, []);
 
     return (
         <div>
-            {nodeHealth.status === 'ok' && !loadingNodeHealth ? 
+            {nodeHealth.status === 'ok' && 
+            nodeApiHealth && 
+            beeRelease && 
+            beeRelease.name === `v${nodeHealth.version?.split('-')[0]}` &&
+            nodeAddresses.ethereum && 
+            chequebookAddress.chequebookaddress && 
+            nodeTopology.connected && nodeTopology.connected > 0 ? 
                 <div>
                     <StatusCard 
                     nodeHealth={nodeHealth} 
@@ -136,7 +161,7 @@ export default function Status() {
                     />
                 </div>
                 :
-                loadingNodeHealth ? 
+                loadingNodeHealth || loadingNodeApiHealth || loadingChequebookAddress || loadingNodeTopology || loadingBeeRelease || loadingNodeAddresses ? 
                 <Container style={{textAlign:'center', padding:'50px'}}>
                     <CircularProgress />
                 </Container>
@@ -151,6 +176,9 @@ export default function Status() {
                 nodeAddresses={nodeAddresses} 
                 loadingNodeTopology={loadingNodeTopology}
                 nodeTopology={nodeTopology}
+                nodeApiHealth={nodeApiHealth}
+                loadingNodeApiHealth={loadingNodeApiHealth}
+                chequebookAddress={chequebookAddress}
                 />
                 // <TroubleshootConnectionCard
                 // />

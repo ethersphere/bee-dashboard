@@ -3,6 +3,12 @@ import { Bee } from "@ethersphere/bee-js"
 
 const bee = new Bee(`${process.env.REACT_APP_BEE_HOST}`)
 
+const beeApiClient = (): AxiosInstance => {
+    return axios.create({
+        baseURL: process.env.REACT_APP_BEE_HOST
+    })
+}
+
 const beeDebugApiClient = (): AxiosInstance => {
     return axios.create({
         baseURL: process.env.REACT_APP_BEE_DEBUG_HOST
@@ -15,6 +21,11 @@ interface File {
 }
 
 export const beeApi = {
+    status: {
+        health() {
+            return beeApiClient().get('/')
+        }
+    },
     files: {
         uploadFile(file: File) {
             return bee.uploadFile(file.file)
