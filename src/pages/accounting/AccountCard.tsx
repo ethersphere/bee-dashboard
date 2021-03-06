@@ -51,7 +51,7 @@ function AccountCard(props: IProps) {
 
     return (
         <div>
-            <h2 style={{ marginTop: '0px' }}>Account <span className={classes.address}>{ props.chequebookAddress.chequebookaddress }</span></h2>
+            <h2 style={{ marginTop: '0px' }}>Contract <span className={classes.address}>{ props.chequebookAddress.chequebookaddress }</span></h2>
             <Card className={classes.root}>
                 { !props.loadingChequebookBalance && props.chequebookBalance ? 
                 <div className={classes.details}>

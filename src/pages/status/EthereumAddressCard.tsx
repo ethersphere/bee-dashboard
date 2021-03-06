@@ -24,6 +24,9 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );  
 
+interface ChequebookAddress {
+    chequebookaddress: string,
+}
 
 interface NodeAddresses {
     overlay: string,
@@ -36,6 +39,8 @@ interface NodeAddresses {
 interface IProps{
     nodeAddresses: NodeAddresses,
     loadingNodeAddresses: boolean,
+    chequebookAddress: ChequebookAddress,
+    loadingChequebookAddress: boolean,
 }
 
 function EthereumAddressCard(props: IProps) {
@@ -65,10 +70,10 @@ function EthereumAddressCard(props: IProps) {
                         <span>Contract Address</span>
                     </Typography>
                     <a 
-                    href={`https://${'goerli'}.${process.env.REACT_APP_ETHERSCAN_HOST}/address/${props.nodeAddresses.ethereum}`}
+                    href={`https://${'goerli'}.${process.env.REACT_APP_ETHERSCAN_HOST}/address/${props.chequebookAddress.chequebookaddress}`}
                     target='_blank'
                     >
-                        { props.nodeAddresses.ethereum }
+                        { props.chequebookAddress.chequebookaddress }
                     </a>
                     <OpenInNewSharp fontSize="small" />
                     </CardContent>

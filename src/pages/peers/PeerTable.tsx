@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Button, Paper } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Button, Paper, Tooltip } from '@material-ui/core';
 import { Cancel, Autorenew } from '@material-ui/icons';
 
 import { beeDebugApi } from '../../services/bee';
@@ -55,8 +55,7 @@ function PeerTable(props: any) {
                     <TableRow>
                         <TableCell>Index</TableCell>
                         <TableCell>Peer Id</TableCell>
-                        <TableCell></TableCell>
-                        <TableCell></TableCell>
+                        <TableCell align="right"></TableCell>
                     </TableRow>
                     </TableHead>
                     <TableBody>
@@ -66,15 +65,18 @@ function PeerTable(props: any) {
                             {idx + 1}
                         </TableCell>
                         <TableCell>{peer.address}</TableCell>
-                        <TableCell>
-                            <Button color="primary" onClick={() => pingPeer(peer.address)} >
-                            {peerRTP.find(item => item.peerId === peer.address) ? peerRTP.filter(item => item.peerId === peer.address)[0].rtt : <Autorenew />}
-                            </Button>
-                        </TableCell>
-                        <TableCell>
-                            <Button color="primary" onClick={() => removePeer(peer.address)} >
-                                <Cancel />
-                            </Button>
+                        <TableCell align="right">
+                            <Tooltip title="Ping node">
+                                <Button color="primary" onClick={() => pingPeer(peer.address)} >
+                                {peerRTP.find(item => item.peerId === peer.address) ? peerRTP.filter(item => item.peerId === peer.address)[0].rtt : <Autorenew />}
+                                </Button>
+                            </Tooltip>
+                            
+                            <Tooltip title="Remove peer">
+                                <Button color="primary" onClick={() => removePeer(peer.address)} >
+                                    <Cancel />
+                                </Button>
+                            </Tooltip>
                         </TableCell>
                         </TableRow>
                     ))}

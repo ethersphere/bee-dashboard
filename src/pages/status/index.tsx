@@ -18,6 +18,9 @@ export default function Status() {
     const [nodeTopology, setNodeTopology] = useState({ baseAddr: '', bins: [""], connected: 0, depth: 0, nnLowWatermark: 0, population: 0, timestamp: ''});
     const [loadingNodeTopology, setLoadingNodeTopology] = useState(false);
 
+    const [chequebookAddress, setChequebookAddress] = useState({ chequebookaddress: '' });
+    const [loadingChequebookAddress, setLoadingChequebookAddress] = useState(false);
+
     const fetchNodeHealth = () => {
         setLoadingNodeHealth(true)
         beeDebugApi.status.nodeHealth()
@@ -60,6 +63,20 @@ export default function Status() {
         })
     }
 
+    const fetchChequebookAddress = () => {
+        setLoadingChequebookAddress(true)
+        beeDebugApi.chequebook.address()
+        .then(res => {
+            let address: any = res.data;
+            setLoadingChequebookAddress(false)
+            setChequebookAddress(address)
+        })
+        .catch(error => {
+            console.log(error)
+            setLoadingChequebookAddress(false)
+        })
+    }
+
     const fetchNetworkTopology = () => {
         setLoadingNodeTopology(true)
         beeDebugApi.connectivity.topology()
@@ -78,6 +95,7 @@ export default function Status() {
         fetchNodeHealth()
         fetchNodeReadiness()
         fetchNodeAddresses()
+        fetchChequebookAddress()
         fetchNetworkTopology()
     }, []);
 
@@ -95,6 +113,8 @@ export default function Status() {
             <EthereumAddressCard 
             nodeAddresses={nodeAddresses} 
             loadingNodeAddresses={loadingNodeAddresses} 
+            chequebookAddress={chequebookAddress}
+            loadingChequebookAddress={loadingChequebookAddress}
             />
         </div>
     )
