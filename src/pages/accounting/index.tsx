@@ -7,7 +7,7 @@ import AccountCard from '../accounting/AccountCard';
 import BalancesTable from './BalancesTable';
 import ChequebookTable from './ChequebookTable';
 import SettlementsTable from './SettlementsTable';
-import EthereumAddressCard from '../status/EthereumAddressCard';
+import EthereumAddressCard from '../../components/EthereumAddressCard';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -195,7 +195,7 @@ export default function Accounting() {
               '"Segoe UI Symbol"',
             ].join(','),
             '&:hover': {
-              color: '#40a9ff',
+              color: '#3f51b5',
               opacity: 1,
             },
             '&$selected': {
@@ -203,7 +203,7 @@ export default function Accounting() {
               fontWeight: theme.typography.fontWeightMedium,
             },
             '&:focus': {
-              color: '#40a9ff',
+              color: '#3f51b5',
             },
           },
           selected: {},

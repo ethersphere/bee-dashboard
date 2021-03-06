@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { beeDebugApi } from '../../services/bee';
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard';
 import StatusCard from './StatusCard';
-import EthereumAddressCard from './EthereumAddressCard';
+import EthereumAddressCard from '../../components/EthereumAddressCard';
 
 
 export default function Status() {

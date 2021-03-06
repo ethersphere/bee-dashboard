@@ -14,7 +14,7 @@ import Accounting from '../pages/accounting/index';
 import Settings from '../pages/settings/index';
 
 
-const BaseRouter = () => (
+const BaseRouter = (props: any) => (
     <Switch>
         <AppRoute exact path='/' layout={ Dashboard } component={Status}/>
         <AppRoute exact path='/status/' layout={ Dashboard } component={Status}/>

@@ -4,6 +4,7 @@ import './App.css';
 
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 import Web3 from 'web3';
 
@@ -17,7 +18,36 @@ declare global {
   }
 }
 
-const theme = createMuiTheme({
+const lightTheme = createMuiTheme({
+  typography: {
+    fontFamily: [
+      'Montserrat',
+      'Nunito',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif'
+    ].join(','),
+  }
+});
+
+const darkTheme = createMuiTheme({
+  palette: {
+    type: "dark",
+    background: {
+      default: '#0d1117', //'#111827',
+      paper: '#161b22', //'#1f2937',
+    },
+    primary: {
+      // light: will be calculated from palette.primary.main,
+      main: '#3f51b5',
+      // dark: will be calculated from palette.primary.main,
+      // contrastText: will be calculated to contrast with palette.primary.main
+    },
+    secondary: {
+      main: '#1f2937',
+    },
+  },
   typography: {
     fontFamily: [
       'Montserrat',
@@ -32,6 +62,8 @@ const theme = createMuiTheme({
 
 
 function App() {
+  const [themeMode, toggleThemeMode] = useState('light');
+
   // const [accounts, setAccounts] = useState([]);
   // const [loadingAccounts, setLoadingAccounts] = useState(false);
 
@@ -91,14 +123,31 @@ function App() {
   //   loadBlockchainData: () => Promise<any>;
   // }
 
-  // useEffect(() => {
-  //   await loadWeb3()
-  //   await loadBlockchainData()
-  // }, []);
+  useEffect(() => {
+    // await loadWeb3()
+    // await loadBlockchainData()
+
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      toggleThemeMode('dark')
+    }
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      toggleThemeMode(e.matches ? "dark" : "light")
+    });
+    
+    window.addEventListener("storage", function () {
+      let theme = localStorage.getItem('theme')
+      console.log(theme)
+      if (theme) {
+        toggleThemeMode(theme)
+      }
+    }, false);
+  }, []);
 
   return (
     <div className="App">
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={themeMode === 'light' ? lightTheme : darkTheme}>
+        <CssBaseline />
         <Router>
           <BaseRouter />
         </Router>
