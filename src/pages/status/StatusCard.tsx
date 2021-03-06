@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import axios from 'axios';
+import React from 'react'
 import { Link } from 'react-router-dom';
 
 import { Theme, createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
@@ -55,11 +54,14 @@ interface NodeTopology {
     timestamp: string,
 }
 
+
 interface IProps{
     nodeHealth: NodeHealth,
     loadingNodeHealth: boolean,
     nodeReadiness: NodeReadiness,
     loadingNodeReadiness: boolean,
+    beeRelease: any,
+    loadingBeeRelease: boolean,
     nodeAddresses: NodeAddresses,
     nodeTopology: NodeTopology,
     loadingNodeTopology: boolean,
@@ -68,18 +70,6 @@ interface IProps{
 function StatusCard(props: IProps) {
     const classes = useStyles();
     const theme = useTheme();
-
-    const [beeRelease, setBeeRelease] = useState({ name: ''});
-    const [loadingBeeRelease, setLoadingBeeRelease] = useState(false);
-
-    const fetchLatestBeeRelease = async () => {
-        let beeRelease = await axios.get(`${process.env.REACT_APP_BEE_GITHUB_REPO_URL}/releases/latest`)
-        setBeeRelease(beeRelease.data)
-    }
-
-    useEffect(() => {
-        fetchLatestBeeRelease()
-    }, [])
 
     return (
         <div>
@@ -115,22 +105,24 @@ function StatusCard(props: IProps) {
                             <span>{ props.nodeAddresses.overlay ? props.nodeAddresses.overlay : '-' }</span>
                         </div>
                         <div>
-                            <span>AGENT: </span>
-                            <a href='https://github.com/ethersphere/bee' target='_blank'>Bee</a>
-                            <span>{props.nodeReadiness.version ? ` v${props.nodeReadiness.version}` : '-'}</span>
-                            {beeRelease && beeRelease.name === `v${props.nodeReadiness.version?.split('-')[0]}` ?
-                                <Chip
-                                style={{ marginLeft: '7px', color: '#2145a0' }}
-                                size="small"
-                                label='latest'
-                                className={classes.status}
-                                />
-                            :  
-                                loadingBeeRelease ?
-                                '' 
-                                :
-                                <a href='#'>update</a>
-                            }
+                            <Typography variant="subtitle2" gutterBottom>
+                                <span>AGENT: </span>
+                                <a href='https://github.com/ethersphere/bee' target='_blank'>Bee</a>
+                                <span>{props.nodeReadiness.version ? ` v${props.nodeReadiness.version}` : '-'}</span>
+                                {props.beeRelease && props.beeRelease.name === `v${props.nodeReadiness.version?.split('-')[0]}` ?
+                                    <Chip
+                                    style={{ marginLeft: '7px', color: '#2145a0' }}
+                                    size="small"
+                                    label='latest'
+                                    className={classes.status}
+                                    />
+                                :  
+                                    props.loadingBeeRelease ?
+                                    '' 
+                                    :
+                                    <a href='#'>update</a>
+                                }
+                            </Typography>
                         </div>
                     </div>
                     </CardContent>
