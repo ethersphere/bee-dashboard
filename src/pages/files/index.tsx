@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function Files() {
     const classes = useStyles();
 
+    const [inputMode, setInputMode] = useState('browse');
     const [searchInput, setSearchInput] = useState('');
     const [searchResult, setSearchResult] = useState('');
     const [loadingSearch, setLoadingSearch] = useState(false);
@@ -44,7 +45,12 @@ export default function Files() {
     return (
         <div>
             <Container maxWidth="sm">
-            <Paper component="form" className={classes.root}>
+            <div style={{marginBottom: '7px'}}>
+              <Button color="primary" style={{marginRight: '7px'}} onClick={() => setInputMode('browse')}>Browse</Button>
+              <Button color="primary" onClick={() => setInputMode('upload')}>Upload</Button>
+            </div>
+            {inputMode === 'browse' ? 
+            <Paper component="form" className={classes.root}> 
                 <InputBase
                 className={classes.input}
                 placeholder="Enter hash e.g. 0773a91efd6547c754fc1d95fb1c62c7d1b47f959c2caa685dfec8736da95c1c"
@@ -55,6 +61,19 @@ export default function Files() {
                     <Search />
                 </IconButton>
             </Paper>
+            :
+            <Paper component="form" className={classes.root}> 
+                <InputBase
+                className={classes.input}
+                placeholder="Enter file nmae"
+                inputProps={{ 'aria-label': 'upload swarm nodes' }}
+                onChange={(e) => setSearchInput(e.target.value)}
+                />
+                <IconButton onClick={() => getFile()} className={classes.iconButton} aria-label="search">
+                    <Search />
+                </IconButton>
+            </Paper>
+            }
             {!loadingSearch &&  searchResult ?
             searchResult
             : 

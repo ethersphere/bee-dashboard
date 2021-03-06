@@ -20,11 +20,6 @@ interface File {
     file: BinaryType;
 }
 
-interface Peer {
-    id: String;
-    name: String;
-}
-
 export const beeApi = {
     files: {
         upload(file: File) {
@@ -53,41 +48,41 @@ export const beeDebugApi = {
     },
     connectivity: {
         addresses() {
-            return beeDebugApiClient().get<Peer>(`/addresses`)
+            return beeDebugApiClient().get(`/addresses`)
         },
         listPeers() {
-            return beeDebugApiClient().get<Peer>(`/peers`)
+            return beeDebugApiClient().get(`/peers`)
         },
         blockListedPeers() {
-            return beeDebugApiClient().get<Peer>(`/blocklist`)
+            return beeDebugApiClient().get(`/blocklist`)
         },
         removePeer(peerId: string) {
-            return beeDebugApiClient().delete<Peer>(`/peers/${peerId}`)
+            return beeDebugApiClient().delete(`/peers/${peerId}`)
         },
         topology() {
-            return beeDebugApiClient().get<Peer>(`/topology`)
+            return beeDebugApiClient().get(`/topology`)
         },
         ping(peerId: string) {
-            return beeDebugApiClient().post<Peer>(`/pingpong/${peerId}`)
+            return beeDebugApiClient().post(`/pingpong/${peerId}`)
         }
     },
     balance: {
         balances() {
-            return beeDebugApiClient().get<Peer>(`/balances`)
+            return beeDebugApiClient().get(`/balances`)
         },
         peerBalance(peerId: string) {
-            return beeDebugApiClient().get<Peer>(`/balances/${peerId}`)
+            return beeDebugApiClient().get(`/balances/${peerId}`)
         },
         consumed() {
-            return beeDebugApiClient().get<Peer>(`/consumed`)
+            return beeDebugApiClient().get(`/consumed`)
         },
         peerConsumed(peerId: string) {
-            return beeDebugApiClient().get<Peer>(`/consumed/${peerId}`)
+            return beeDebugApiClient().get(`/consumed/${peerId}`)
         }
     },
     chequebook: {
         address() {
-            return beeDebugApiClient().get<Peer>(`/chequebook/address`)
+            return beeDebugApiClient().get(`/chequebook/address`)
         },
         balance() {
             return beeDebugApiClient().get(`/chequebook/balance`)
@@ -96,13 +91,21 @@ export const beeDebugApi = {
             return beeDebugApiClient().get(`/chequebook/cheque`)
         },
         peerCashout(peerId: string) {
-            return beeDebugApiClient().post<Peer>(`/chequebook/cashout/${peerId}`)
+            return beeDebugApiClient().post(`/chequebook/cashout/${peerId}`)
         },
         getPeerLastCashout(peerId: string) {
-            return beeDebugApiClient().get<Peer>(`/chequebook/cashout/${peerId}`)
+            return beeDebugApiClient().get(`/chequebook/cashout/${peerId}`)
         },
         getPeerLastCheques(peerId: string) {
-            return beeDebugApiClient().get<Peer>(`/chequebook/cashout/${peerId}`)
+            return beeDebugApiClient().get(`/chequebook/cashout/${peerId}`)
         },
     },
+    settlements: {
+        getSettlements() {
+            return beeDebugApiClient().get(`/settlements`)
+        },
+        peerSettlement(peerId: string) {
+            return beeDebugApiClient().get(`/settlements/${peerId}`)
+        }
+    }
 }

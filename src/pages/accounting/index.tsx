@@ -6,6 +6,7 @@ import { beeDebugApi } from '../../services/bee';
 import AccountCard from '../accounting/AccountCard';
 import BalancesTable from './BalancesTable';
 import ChequebookTable from './ChequebookTable';
+import SettlementsTable from './SettlementsTable';
 import EthereumAddressCard from '../status/EthereumAddressCard';
 
 interface TabPanelProps {
@@ -43,6 +44,9 @@ export default function Accounting() {
 
     const [nodeAddresses, setNodeAddresses] = useState({ overlay: '', underlay: [""], ethereum: '', public_key: '', pss_public_key: ''});
     const [loadingNodeAddresses, setLoadingNodeAddresses] = useState(false);
+
+    const [nodeSettlements, setNodeSettlements] = useState({ totalreceived: 0, totalsent: 0, settlements: [{peer: '', received: 0, sent: 0}] });
+    const [loadingNodeSettlements, setLoadingNodeSettlements] = useState(false);
 
     const fetchChequebookAddress = () => {
         setLoadingChequebookAddress(true)
@@ -114,12 +118,27 @@ export default function Accounting() {
       })
     }
 
+    const fetchSettlements = () => {
+      setLoadingNodeSettlements(true)
+      beeDebugApi.settlements.getSettlements()
+      .then(res => {
+          let nodeSettlements: any = res.data;
+          setLoadingNodeSettlements(false)
+          setNodeSettlements(nodeSettlements)
+      })
+      .catch(error => {
+          console.log(error)
+          setLoadingNodeSettlements(false)
+      })
+    }
+
     useEffect(() => {
         fetchChequebookAddress()
         fetchChequebookBalance()
         fetchPeerBalances()
         fetchNodeAddresses()
         fetchPeerCheques()
+        fetchSettlements()
     }, []);
 
     function TabPanel(props: TabPanelProps) {
@@ -224,7 +243,10 @@ export default function Accounting() {
               />
             </TabPanel>
             <TabPanel value={value} index={2}>
-            Item Three
+              <SettlementsTable
+              nodeSettlements={nodeSettlements}
+              loadingNodeSettlements={loadingNodeSettlements}
+              />
             </TabPanel>
         </div>
     )

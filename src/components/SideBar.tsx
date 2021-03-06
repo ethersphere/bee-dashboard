@@ -29,16 +29,16 @@ const navBarItems = [
         'icon': 'storage_sharp'
     },
     {
-        'label': 'Peers',
-        'id': 'peers',
-        'path': '/peers/',
-        'icon': 'settings_input_antenna'
-    },
-    {
         'label': 'Accounting',
         'id': 'accounting',
         'path': '/accounting/',
         'icon': 'attach_money'
+    },
+    {
+        'label': 'Peers',
+        'id': 'peers',
+        'path': '/peers/',
+        'icon': 'settings_input_antenna'
     },
     {
         'label': 'Settings',
