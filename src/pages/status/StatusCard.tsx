@@ -1,4 +1,6 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 import { Theme, createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
 import { Card, CardContent, Typography, Chip } from '@material-ui/core/';
@@ -18,11 +20,12 @@ const useStyles = makeStyles((theme: Theme) =>
       flex: '1 0 auto',
     },
     status: {
-        color: '#fff',
-        backgroundColor: '#76a9fa',
+        color: '#2145a0',
+        backgroundColor: '#e1effe',
     }
   }),
 );  
+
 
 interface NodeHealth {
     status?: string,
@@ -42,17 +45,42 @@ interface NodeAddresses {
     pss_public_key: string
 }
 
+interface NodeTopology {
+    baseAddr: string,
+    bins: string[],
+    connected: number,
+    depth: number, 
+    nnLowWatermark: number,
+    population: number,
+    timestamp: string,
+}
+
 interface IProps{
     nodeHealth: NodeHealth,
     loadingNodeHealth: boolean,
     nodeReadiness: NodeReadiness,
     loadingNodeReadiness: boolean,
     nodeAddresses: NodeAddresses,
+    nodeTopology: NodeTopology,
+    loadingNodeTopology: boolean,
 }
 
 function StatusCard(props: IProps) {
     const classes = useStyles();
     const theme = useTheme();
+
+    const [beeRelease, setBeeRelease] = useState({ name: ''});
+    const [loadingBeeRelease, setLoadingBeeRelease] = useState(false);
+
+    const fetchLatestBeeRelease = async () => {
+        let beeRelease = await axios.get(`${process.env.REACT_APP_BEE_GITHUB_REPO_URL}/releases/latest`)
+        console.log(beeRelease)
+        setBeeRelease(beeRelease.data)
+    }
+
+    useEffect(() => {
+        fetchLatestBeeRelease()
+    }, [])
 
     return (
         <div>
@@ -61,7 +89,7 @@ function StatusCard(props: IProps) {
                 <div className={classes.details}>
                     <CardContent className={classes.content}>
                     <Typography component="h5" variant="h5">
-                        { props.nodeReadiness.status === 'ok' ? 
+                        { props.nodeHealth.status === 'ok' ? 
                             <div>
                                 <CheckCircle style={{color:'#32c48d', marginRight: '7px'}} />
                                 <span>Connected to Bee Node</span>
@@ -73,6 +101,15 @@ function StatusCard(props: IProps) {
                             </div> 
                         }
                     </Typography>
+                    <div style={{marginBottom: '10px' }}>
+                        <span style={{marginRight:'20px'}}>Discovered Nodes: { props.nodeTopology.population }</span>
+                        <span style={{marginRight:'20px'}}>
+                            <span>Connected Peers: </span>
+                            <Link to='/peers'>
+                            { props.nodeTopology.connected }
+                            </Link>
+                        </span>
+                    </div>
                     <Typography color="textSecondary" component='p'>
                         <div>
                             <span>NODE ID: </span>
@@ -80,25 +117,30 @@ function StatusCard(props: IProps) {
                         </div>
                         <div>
                             <span>AGENT: </span>
-                            <a href='https://github.com/ethersphere/bee' target='_blank'>Bee </a>
-                            <span>v{ props.nodeReadiness.version }</span>
-                            {'latest' ?
-                            <Chip
-                            style={{ marginLeft: '7px'}}
-                            size="small"
-                            label='latest'
-                            className={classes.status}
-                            />
+                            <a href='https://github.com/ethersphere/bee' target='_blank'>Bee</a>
+                            <span>{` v${props.nodeReadiness.version}`}</span>
+                            {beeRelease && beeRelease.name === `v${props.nodeReadiness.version?.split('-')[0]}` ?
+                                <Chip
+                                style={{ marginLeft: '7px', color: '#2145a0' }}
+                                size="small"
+                                label='latest'
+                                className={classes.status}
+                                />
                             :  
-                            <a href='#'>update</a>
+                                loadingBeeRelease ?
+                                '' 
+                                :
+                                <a href='#'>update</a>
                             }
                         </div>
                     </Typography>
                     </CardContent>
                 </div>
                 :
-                <div>
-                    <Skeleton animation="wave" />
+                <div style={{padding: '16px'}}>
+                    <Skeleton width={650} height={32} animation="wave" />
+                    <Skeleton width={650} height={24} animation="wave" />
+                    <Skeleton width={650} height={24} animation="wave" />
                 </div>
                 }
             </Card>

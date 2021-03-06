@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 
-import { Typography } from '@material-ui/core/';
+import { Grid } from '@material-ui/core/';
 
 import { beeDebugApi } from '../../services/bee';
 
+import StatCard from '../../components/StatCard';
 import PeerTable from './PeerTable';
 
 export default function Peers() {
@@ -15,27 +16,11 @@ export default function Peers() {
         beeDebugApi.connectivity.listPeers()
         .then(res => {
             console.log(res.data)
-            // let peers = res.data;
-            let peers = {
-                "peers":
-                [
-                    {"address":"01e9f3941b041fa5b32f7c3f0f704696afc63662c7c3d7c1fbc4d23a7c69b988"},
-                    {"address":"022e900f3fa62afc8155c1f10345ea63d173efdf3ae7cec67dc07d9c10c75faa"}
-                ]
-            }
+            let peers: any = res.data;
             setLoadingNodePeers(false)
             setNodePeers(peers)
         })
         .catch(error => {
-            let peers = {
-                "peers":
-                [
-                    {"address":"01e9f3941b041fa5b32f7c3f0f704696afc63662c7c3d7c1fbc4d23a7c69b988"},
-                    {"address":"022e900f3fa62afc8155c1f10345ea63d173efdf3ae7cec67dc07d9c10c75faa"}
-                ]
-            }
-            setNodePeers(peers)
-
             console.log(error)
             setLoadingNodePeers(false)
         })
@@ -47,9 +32,28 @@ export default function Peers() {
 
     return (
         <div>
-            <Typography color="textSecondary" component='h3'>
-                Peers
-            </Typography>
+            <Grid style={{ marginBottom: '20px' }}>
+                <Grid container spacing={3}>
+                    <Grid key={1} item>
+                        <StatCard
+                        label='Peers'
+                        statistic={nodePeers.peers.length.toString()}
+                        />
+                    </Grid>
+                    <Grid key={2} item>
+                        <StatCard
+                        label='1'
+                        statistic='1'
+                        />
+                    </Grid>
+                    <Grid key={3} item>
+                        <StatCard
+                        label='1'
+                        statistic='1'
+                        />
+                    </Grid>
+                </Grid> 
+            </Grid>
             <PeerTable
             nodePeers={nodePeers}
             loadingNodePeers={loadingNodePeers}

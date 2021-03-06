@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Button, Paper } from '@material-ui/core';
+import { Cancel, Autorenew } from '@material-ui/icons';
 
-import Paper from '@material-ui/core/Paper';
-import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead } from '@material-ui/core';
+import { beeDebugApi } from '../../services/bee';
 
 const useStyles = makeStyles({
     table: {
@@ -14,6 +15,38 @@ const useStyles = makeStyles({
 function PeerTable(props: any) {
     const classes = useStyles();
 
+    const [peerRTP, setPeerRTP] = useState([{ peerId: '', rtt: '' }]);
+    const [pingingPeer, setPingingPeer] = useState(false);
+
+    const [removingPeer, setRemovingPeer] = useState(false);
+
+    const pingPeer = (peerId: string) => {
+        setPingingPeer(true)
+        beeDebugApi.connectivity.ping(peerId)
+        .then(res => {
+            console.log(res.data)
+            let roundTripTime: any = res.data;
+            setPingingPeer(false)
+            setPeerRTP([...peerRTP, {peerId: peerId, rtt: roundTripTime}])
+        })
+        .catch(error => {
+            console.log(error)
+            setPingingPeer(false)
+        })
+    }
+
+    const removePeer = (peerId: string) => {
+        setRemovingPeer(true)
+        beeDebugApi.connectivity.removePeer(peerId)
+        .then(res => {
+            setRemovingPeer(false)
+        })
+        .catch(error => {
+            console.log(error)
+            setRemovingPeer(false)
+        })
+    }
+
     return (
         <div>
              <TableContainer component={Paper}>
@@ -22,6 +55,8 @@ function PeerTable(props: any) {
                     <TableRow>
                         <TableCell>Index</TableCell>
                         <TableCell>Peer Id</TableCell>
+                        <TableCell></TableCell>
+                        <TableCell></TableCell>
                     </TableRow>
                     </TableHead>
                     <TableBody>
@@ -31,6 +66,16 @@ function PeerTable(props: any) {
                             {idx + 1}
                         </TableCell>
                         <TableCell>{peer.address}</TableCell>
+                        <TableCell>
+                            <Button color="primary" onClick={() => pingPeer(peer.address)} >
+                            {peerRTP.find(item => item.peerId === peer.address) ? peerRTP.filter(item => item.peerId === peer.address)[0].rtt : <Autorenew />}
+                            </Button>
+                        </TableCell>
+                        <TableCell>
+                            <Button color="primary" onClick={() => removePeer(peer.address)} >
+                                <Cancel />
+                            </Button>
+                        </TableCell>
                         </TableRow>
                     ))}
                     </TableBody>
