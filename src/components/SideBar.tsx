@@ -102,7 +102,7 @@ export default function SideBar(props: any) {
         <List>
             {navBarItems.map(item => (
                 <Link to={item.path}  key={item.id} style={{ color:'inherit', textDecoration:'none'}}>
-                    <ListItem button>
+                    <ListItem button selected={props.location.pathname === item.path}>
                         <ListItemIcon>
                             { getIcon(item.icon) }
                         </ListItemIcon>

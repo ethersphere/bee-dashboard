@@ -52,7 +52,7 @@ const Dashboard: FC = (props) => {
 
     return (
         <div>
-            <SideBar themeMode={themeMode} />
+            <SideBar {...props} themeMode={themeMode} />
             <NavBar  themeMode={themeMode} />
             <main className={classes.content}>
                 { props.children }
