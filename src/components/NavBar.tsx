@@ -27,8 +27,8 @@ export default function SideBar() {
     <div>
       <CssBaseline />
       <AppBar position="fixed" className={classes.appBar}>
-        <Toolbar>
-          <Typography variant="h6" noWrap>
+        <Toolbar style={{display: 'flex'}}>
+          <Typography variant="h6">
             Bee
           </Typography>
           <Chip
@@ -37,6 +37,9 @@ export default function SideBar() {
           label='Goerli'
           className={classes.network}
           />
+          <div style={{width:'100%'}}>
+            <Chip style={{float:'right'}} label="Connect Wallet" />
+          </div>
         </Toolbar>
       </AppBar>
     </div>

@@ -5,6 +5,7 @@ import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import SideBar from '../components/SideBar';
 import NavBar from '../components/NavBar';
 
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     toolbar: theme.mixins.toolbar,

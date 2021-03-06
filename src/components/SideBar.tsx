@@ -8,8 +8,9 @@ import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import { OpenInNewSharp } from '@material-ui/icons';
+import { OpenInNewSharp, BugReportSharp } from '@material-ui/icons';
 import Icon from '@material-ui/core/Icon';
+import { Activity, FileText, DollarSign, Share2, Settings } from 'react-feather';
 
 import SwarmLogo from '../assets/swarm-logo-1.svg';
 
@@ -20,31 +21,31 @@ const navBarItems = [
         'label': 'Status',
         'id': 'status',
         'path': '/status/',
-        'icon': 'poll_sharp'
+        'icon': 'activity'
     },
     {
         'label': 'Files',
         'id': 'files',
         'path': '/files/',
-        'icon': 'storage_sharp'
+        'icon': 'file-text'
     },
     {
         'label': 'Accounting',
         'id': 'accounting',
         'path': '/accounting/',
-        'icon': 'attach_money'
+        'icon': 'dollar-sign'
     },
     {
         'label': 'Peers',
         'id': 'peers',
         'path': '/peers/',
-        'icon': 'settings_input_antenna'
+        'icon': 'share-2'
     },
     {
         'label': 'Settings',
         'id': 'settings',
         'path': '/settings/',
-        'icon': 'settings_sharp'
+        'icon': 'settings'
     }  
 ]
 
@@ -69,6 +70,20 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+const getIcon = (iconPath: string) => {
+  switch (iconPath) {
+    case 'activity':
+      return <Activity style={{height: '20px'}} />
+    case 'file-text':
+      return <FileText style={{height: '20px'}}  />
+    case 'dollar-sign':
+      return <DollarSign style={{height: '20px'}} />
+    case 'share-2':
+      return <Share2 style={{height: '20px'}} />
+    case 'settings':
+      return <Settings style={{height: '20px'}} />
+  }
+}
 
 export default function SideBar() {
   const classes = useStyles();
@@ -94,7 +109,7 @@ export default function SideBar() {
                 <Link to={item.path} style={{ color:'inherit', textDecoration:'none'}}>
                     <ListItem button key={item.id}>
                         <ListItemIcon>
-                            <Icon>{ item.icon }</Icon>
+                            { getIcon(item.icon) }
                         </ListItemIcon>
                         <ListItemText primary={item.label} />
                     </ListItem>
