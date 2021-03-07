@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { Typography, Paper, Button, Step, StepLabel, StepContent, Stepper, Chip } from '@material-ui/core/';
-import { CheckCircle, Error, Warning } from '@material-ui/icons/';
+import { Typography, Paper, Button, Step, StepLabel, StepContent, Stepper, Accordion, AccordionSummary, AccordionDetails } from '@material-ui/core/';
+import { CheckCircle, Error, Warning, ExpandMoreSharp } from '@material-ui/icons/';
 import EthereumAddress from '../../components/EthereumAddress';
+import CodeBlock from '../../components/CodeBlock';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -14,13 +15,14 @@ const useStyles = makeStyles((theme: Theme) =>
       marginRight: theme.spacing(1),
     },
     actionsContainer: {
-      marginBottom: theme.spacing(2),
+      margin: theme.spacing(2),
     },
     resetContainer: {
-      padding: theme.spacing(3),
+      padding: theme.spacing(5),
     },
   }),
 );
+
 
 function getSteps() {
   return [
@@ -33,165 +35,272 @@ function getSteps() {
 }
 
 function getStepContent(step: number, props: any) {
+
+  const nodeConnectionCheck = (
+    <div>
+      <p>Connect to Bee Node APIs</p>
+          <div>
+            { props.nodeApiHealth ? 
+              <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
+              :
+              <Error style={{color:'#c9201f', marginRight: '7px', height: '18px'}} />
+            }
+            <span>Node API  (<a href='#'>{process.env.REACT_APP_BEE_HOST}</a>)</span>
+          </div>
+          <div>
+          { !props.nodeApiHealth ? 
+            <Typography variant="body2" gutterBottom style={{margin: '15px'}}>
+              We cannot connect to your nodes API at <a href='#'>{process.env.REACT_APP_BEE_HOST}</a>. Please check the following to troubleshoot your issue.
+              <Accordion style={{marginTop:'20px'}}>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreSharp />}
+                    aria-controls="panel1a-content"
+                    id="panel1a-header"
+                  >
+                    <Typography>Troubleshoot</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Typography>
+                      <ol>
+                        <li>Check the status of your node by running the below command to see if your node is running.</li>
+                        <CodeBlock
+                        showLineNumbers
+                        language='bash'
+                        code={
+                        `sudo systemctl status bee`}
+                        />
+                        <li>If your node is running, check your firewall settings to make sure that port 1633 is exposed to the internet. If your node is not running try executing the below command to start your bee node</li>
+                        <CodeBlock
+                        showLineNumbers
+                        language='bash'
+                        code={
+                        `sudo systemctl start bee`}
+                        />
+                        <li>Run the commands to validate your node is running and see the log output.</li>
+                        <CodeBlock
+                        showLineNumbers
+                        language='bash'
+                        code={
+                        `sudo systemctl status bee \njournalctl --lines=100 --follow --unit bee`}
+                        />
+                      </ol>
+                    </Typography>
+                </AccordionDetails>
+              </Accordion>
+            </Typography>
+          :
+          null}
+          </div>
+          <div>
+            { props.nodeHealth.status === 'ok' ? 
+              <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
+              :
+              <Error style={{color:'#c9201f', marginRight: '7px', height: '18px'}} />
+            }
+            <span>Debug API  (<a href='#'>{process.env.REACT_APP_BEE_DEBUG_HOST}</a>)</span>
+            <div>
+            { props.nodeHealth.status !== 'ok' ? 
+              <Typography variant="body2" gutterBottom style={{margin: '15px'}}>
+                We cannot connect to your nodes debug API at <a href='#'>{process.env.REACT_APP_BEE_DEBUG_HOST}</a>. Please check the following to troubleshoot your issue.
+                <Accordion style={{marginTop:'20px'}}>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreSharp />}
+                    aria-controls="panel1a-content"
+                    id="panel1a-header"
+                  >
+                    <Typography>Troubleshoot</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Typography>
+                    <ol>
+                      <li>Check the status of your node by running the below command to see if your node is running.</li>
+                      <CodeBlock
+                      showLineNumbers
+                      language='bash'
+                      code={
+                      `sudo systemctl status bee`}
+                      />
+                      <li>If your node is running, check your firewall settings to make sure that port 1635 is bound to localhost. If your node is not running try executing the below command to start your bee node</li>
+                      <CodeBlock
+                      showLineNumbers
+                      language='bash'
+                      code={
+                      `sudo systemctl start bee`}
+                      />
+                      <li>Run the commands to validate your node is running and see the log output.</li>
+                      <CodeBlock
+                      showLineNumbers
+                      language='bash'
+                      code={
+                      `sudo systemctl status bee \njournalctl --lines=100 --follow --unit bee`}
+                      />
+                      <li>Lastly, check your nodes configuration settings to validate the debug API is enabled. Config parameter <strong>debug-api-enable</strong> must be set to <strong>true</strong></li>
+                      <CodeBlock
+                      showLineNumbers
+                      language='bash'
+                      code={
+                      `sudo vi /etc/bee/bee.yaml\nsudo systemctl restart bee`}
+                      />
+                    </ol>
+                    </Typography>
+                  </AccordionDetails>
+                </Accordion>
+              </Typography>
+            :
+            null}
+            </div>
+          </div>
+    </div>
+  )
+
+  const nodeVersionCheck = (
+    <div>
+      <p>Check to make sure the latest version of <a href='https://github.com/ethersphere/bee' target='_blank'>Bee</a> is running</p>
+      {props.beeRelease && props.beeRelease.name === `v${props.nodeReadiness.version?.split('-')[0]}` ?
+          <div>
+            <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
+            <span>Your running the latest version of Bee</span>
+          </div>
+      :  
+          props.loadingBeeRelease ?
+          null 
+          :
+          <div>
+            <Warning style={{color:'#ff9800', marginRight: '7px', height: '18px'}} />
+            <span>Your Bee version is out of date. Please update to the <a href={props.beeRelease.html_url} target='_blank'>latest</a> before continuing. Rerun the installation script below to upgrade. Reference the docs for help with updating. <a href='https://docs.ethswarm.org/docs/installation/manual#upgrading-bee' target='_blank'>Docs</a></span>
+            <CodeBlock
+            showLineNumbers
+            language='bash'
+            code={
+            `wget https://github.com/ethersphere/bee/releases/download/${props.beeRelease.name}/bee_${props.nodeReadiness.version?.split('-')[0]}_amd64.deb\nsudo dpkg -i bee_${props.nodeReadiness.version?.split('-')[0]}_amd64.deb`}
+            />
+          </div>
+      }
+      <div style={{display:'flex'}}>
+        <div style={{marginRight:'30px'}}>
+          <p><span>Current Version</span></p>
+          <Typography component="h5" variant="h5">
+            <span>{props.nodeReadiness.version ? ` v${props.nodeReadiness.version?.split('-')[0]}` : '-'}</span>
+          </Typography>
+        </div>
+        <div>
+          <p><span>Latest Version</span></p>
+          <Typography component="h5" variant="h5">
+            <span>{props.beeRelease && props.beeRelease.name ? props.beeRelease.name : '-'}</span>
+          </Typography>
+        </div>
+      </div>
+    </div>
+  )
+
+  const ethereumNetworkCheck = (
+    <div> 
+      <p>Connect to the ethereum blockchain.</p>
+      <div style={{ marginBottom:'10px' }}>
+      {props.nodeAddresses.ethereum ?
+          <div>
+            <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
+            <span>Your connected to the Ethereum network</span>
+          </div>
+      :  
+          props.loadingNodeAddresses ?
+          null 
+          :
+          <div>
+            <Warning style={{color:'#ff9800', marginRight: '7px', height: '18px'}} />
+            <span>Your not connected to the Ethereum network</span>
+          </div>
+      }
+      </div>
+      <Typography variant="subtitle1" gutterBottom>
+      <span>Node Address</span>
+      </Typography>
+      <EthereumAddress
+      address={props.nodeAddresses.ethereum}
+      network={'goerli'}
+      />
+    </div>
+  )
+
+  const fundingAndDeploymentCheck = (
+    <div> 
+      <p>Deploy chequebook and fund with BZZ</p>
+      <div style={{ marginBottom:'10px' }}>
+      {props.chequebookAddress.chequebookaddress ?
+          <div>
+            <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
+            <span>Your chequebook is deployed and funded!</span>
+          </div>
+      :  
+          props.loadingChequebookAddress ?
+          null 
+          :
+          <div>
+            <Warning style={{color:'#ff9800', marginRight: '7px', height: '18px'}} />
+            <span>Your chequebook is not deployed and funded</span>
+          </div>
+      }
+      </div>
+      <Typography variant="subtitle1" gutterBottom>
+      <span>Chequebook Address</span>
+      </Typography>
+      <EthereumAddress
+      address={props.chequebookAddress.chequebookaddress}
+      network={'goerli'}
+      />
+    </div>
+  )
+
+  const connectToPeers = (
+    <div> 
+      <p>Connect to Peers</p>
+      <div style={{ marginBottom:'10px' }}>
+      {props.nodeTopology.connected && props.nodeTopology.connected > 0 ?
+          <div>
+            <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
+            <span>Your connected to {props.nodeTopology.connected} peers!</span>
+          </div>
+      :  
+          props.loadingNodeTopology ?
+          null 
+          :
+          <div>
+            <Warning style={{color:'#ff9800', marginRight: '7px', height: '18px'}} />
+            <span>Your node is not connected to any peers</span>
+          </div>
+      }
+      </div>
+      <div style={{display:'flex'}}>
+        <div style={{marginRight:'30px'}}>
+          <Typography variant="subtitle1" gutterBottom color="textSecondary">
+          <span>Connected Peers</span>
+          </Typography>
+          <Typography variant="h5" component="h2">
+          { props.nodeTopology.connected }
+          </Typography>
+        </div>
+        <div>
+          <Typography variant="subtitle1" gutterBottom color="textSecondary">
+          <span>Discovered Nodes</span>
+          </Typography>
+          <Typography variant="h5" component="h2">
+          { props.nodeTopology.population }
+          </Typography>
+        </div>
+      </div>
+    </div>
+  )
+
   switch (step) {
     case 0:
-      const nodeConnectionCheck = (
-        <div>
-          <p>Connect to Bee Node APIs</p>
-              <div>
-                { props.nodeApiHealth ? 
-                  <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
-                  :
-                  <Error style={{color:'#c9201f', marginRight: '7px', height: '18px'}} />
-                }
-                <span>Node API  (<a href='#'>{process.env.REACT_APP_BEE_HOST}</a>)</span>
-              </div>
-              <div>
-                { props.nodeHealth.status === 'ok' ? 
-                  <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
-                  :
-                  <Error style={{color:'#c9201f', marginRight: '7px', height: '18px'}} />
-                }
-                <span>Debug API  (<a href='#'>{process.env.REACT_APP_BEE_DEBUG_HOST}</a>)</span>
-              </div>
-        </div>
-      )
       return nodeConnectionCheck;
     case 1:
-      const nodeVersionCheck = (
-        <div>
-          <p>Check to make sure the latest version of <a href='https://github.com/ethersphere/bee' target='_blank'>Bee</a> is running</p>
-          {props.beeRelease && props.beeRelease.name === `v${props.nodeReadiness.version?.split('-')[0]}` ?
-              <div>
-                <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
-                <span>Your running the latest version of Bee</span>
-              </div>
-          :  
-              props.loadingBeeRelease ?
-              null 
-              :
-              <div>
-                <Warning style={{color:'#ff9800', marginRight: '7px', height: '18px'}} />
-                <span>Your Bee version is out of date. Please update to the <a href={props.beeRelease.html_url} target='_blank'>latest</a> before continuing. Reference the docs for help with updating. <a href='https://docs.ethswarm.org/docs/installation/manual#upgrading-bee' target='_blank'>Docs</a></span>
-              </div>
-          }
-          <div style={{display:'flex'}}>
-            <div style={{marginRight:'30px'}}>
-              <p><span>Current Version</span></p>
-              <Typography component="h5" variant="h5">
-                <span>{props.nodeReadiness.version ? ` v${props.nodeReadiness.version?.split('-')[0]}` : '-'}</span>
-              </Typography>
-            </div>
-            <div>
-              <p><span>Latest Version</span></p>
-              <Typography component="h5" variant="h5">
-                <span>{props.beeRelease && props.beeRelease.name ? props.beeRelease.name : '-'}</span>
-              </Typography>
-            </div>
-          </div>
-        </div>
-      )
       return nodeVersionCheck;
     case 2:
-      const ethereumNetworkCheck = (
-        <div> 
-          <p>Connect to the ethereum blockchain.</p>
-          <div style={{ marginBottom:'10px' }}>
-          {props.nodeAddresses.ethereum ?
-              <div>
-                <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
-                <span>Your connected to the Ethereum network</span>
-              </div>
-          :  
-              props.loadingNodeAddresses ?
-              null 
-              :
-              <div>
-                <Warning style={{color:'#ff9800', marginRight: '7px', height: '18px'}} />
-                <span>Your not connected to the Ethereum network</span>
-              </div>
-          }
-          </div>
-          <Typography variant="subtitle1" gutterBottom>
-          <span>Node Address</span>
-          </Typography>
-          <EthereumAddress
-          address={props.nodeAddresses.ethereum}
-          network={'goerli'}
-          />
-        </div>
-      )
       return ethereumNetworkCheck;
     case 3:
-      const fundingAndDeploymentCheck = (
-        <div> 
-          <p>Deploy chequebook and fund with BZZ</p>
-          <div style={{ marginBottom:'10px' }}>
-          {props.chequebookAddress.chequebookaddress ?
-              <div>
-                <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
-                <span>Your chequebook is deployed and funded!</span>
-              </div>
-          :  
-              props.loadingChequebookAddress ?
-              null 
-              :
-              <div>
-                <Warning style={{color:'#ff9800', marginRight: '7px', height: '18px'}} />
-                <span>Your chequebook is not deployed and funded</span>
-              </div>
-          }
-          </div>
-          <Typography variant="subtitle1" gutterBottom>
-          <span>Chequebook Address</span>
-          </Typography>
-          <EthereumAddress
-          address={props.chequebookAddress.chequebookaddress}
-          network={'goerli'}
-          />
-        </div>
-      )
       return fundingAndDeploymentCheck;
     default:
-      const connectToPeers = (
-        <div> 
-          <p>Connect to Peers</p>
-          <div style={{ marginBottom:'10px' }}>
-          {props.nodeTopology.connected && props.nodeTopology.connected > 0 ?
-              <div>
-                <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
-                <span>Your connected to {props.nodeTopology.connected} peers!</span>
-              </div>
-          :  
-              props.loadingNodeTopology ?
-              null 
-              :
-              <div>
-                <Warning style={{color:'#ff9800', marginRight: '7px', height: '18px'}} />
-                <span>Your node is not connected to any peers</span>
-              </div>
-          }
-          </div>
-          <div style={{display:'flex'}}>
-            <div style={{marginRight:'30px'}}>
-              <Typography variant="subtitle1" gutterBottom color="textSecondary">
-              <span>Connected Peers</span>
-              </Typography>
-              <Typography variant="h5" component="h2">
-              { props.nodeTopology.connected }
-              </Typography>
-            </div>
-            <div>
-              <Typography variant="subtitle1" gutterBottom color="textSecondary">
-              <span>Discovered Nodes</span>
-              </Typography>
-              <Typography variant="h5" component="h2">
-              { props.nodeTopology.population }
-              </Typography>
-            </div>
-          </div>
-        </div>
-      )
       return connectToPeers;
   }
 }
@@ -272,7 +381,7 @@ export default function NodeSetupWorkflow(props: any) {
       </Stepper>
       {activeStep === steps.length && (
         <Paper square elevation={0} className={classes.resetContainer}>
-          <Typography>Bee setup complete - you&apos;re finished. Welcome to decentralized storage</Typography>
+          <Typography>Bee setup complete - you&apos;re finished. Welcome to the swarm and the internet of decentralized storage</Typography>
           <Button onClick={handleReset} className={classes.button}>
             Reset
           </Button>

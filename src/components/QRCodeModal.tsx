@@ -29,7 +29,7 @@ export default function QRCodeModal(props: IProps) {
                 <DialogTitle id="simple-dialog-title">{ props.label }</DialogTitle>
                 <QRCode
                 value={props.value}
-                size={128}
+                size={150}
                 bgColor={"#ffffff"}
                 fgColor={"#000000"}
                 level={"L"}

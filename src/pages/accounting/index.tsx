@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles, withStyles, Theme, createStyles } from '@material-ui/core/styles';
 import { Tabs, Tab, AppBar, Box, Typography } from '@material-ui/core';
 
+import type { NodeAddresses, ChequebookAddressResponse, ChequebookBalanceResponse, PeerBalance,
+LastChequesForPeerResponse, Settlements, LastChequesResponse, BalanceResponse } from '@ethersphere/bee-js'
+
 import { beeDebugApi } from '../../services/bee';
 import AccountCard from '../accounting/AccountCard';
 import BalancesTable from './BalancesTable';
@@ -30,19 +33,19 @@ export default function Accounting() {
         setValue(newValue);
     };
 
-    const [chequebookAddress, setChequebookAddress] = useState({ chequebookaddress: '' });
+    const [chequebookAddress, setChequebookAddress] = useState<ChequebookAddressResponse>({ chequebookaddress: '' });
     const [loadingChequebookAddress, setLoadingChequebookAddress] = useState(false);
 
-    const [chequebookBalance, setChequebookBalance] = useState({ totalBalance: 0, availableBalance: 0});
+    const [chequebookBalance, setChequebookBalance] = useState<ChequebookBalanceResponse>({ totalBalance: 0, availableBalance: 0});
     const [loadingChequebookBalance, setLoadingChequebookBalance] = useState(false);
 
-    const [peerBalances, setPeerBalances] = useState({ balances: [{peer: '-', balance: 0 }] });
+    const [peerBalances, setPeerBalances] = useState<BalanceResponse>({ balances: [{peer: '-', balance: 0 }] });
     const [loadingPeerBalances, setLoadingPeerBalances] = useState(false);
 
-    const [peerCheques, setPeerCheques] = useState({ lastcheques: [{peer: '-', lastsent: {beneficiary: '', chequebook: '', payout: 0}, lastreceived: {beneficiary: '', chequebook: '', payout: 0} }] });
+    const [peerCheques, setPeerCheques] = useState<LastChequesResponse>({ lastcheques: [{peer: '-', lastsent: {beneficiary: '', chequebook: '', payout: 0}, lastreceived: {beneficiary: '', chequebook: '', payout: 0} }] });
     const [loadingPeerCheques, setLoadingPeerCheques] = useState(false);
 
-    const [nodeAddresses, setNodeAddresses] = useState({ overlay: '', underlay: [""], ethereum: '', public_key: '', pss_public_key: ''});
+    const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses>({ overlay: '', underlay: [""], ethereum: '', public_key: '', pss_public_key: ''});
     const [loadingNodeAddresses, setLoadingNodeAddresses] = useState(false);
 
     const [nodeSettlements, setNodeSettlements] = useState({ totalreceived: 0, totalsent: 0, settlements: [{peer: '-', received: 0, sent: 0}] });
@@ -163,7 +166,7 @@ export default function Accounting() {
 
       const AntTabs = withStyles({
         root: {
-          borderBottom: '2px solid #e8e8e8',
+          borderBottom: '1px solid #e8e8e8',
         },
         indicator: {
           backgroundColor: '#3f51b5',
