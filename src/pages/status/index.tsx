@@ -38,6 +38,30 @@ export default function Status() {
         setBeeRelease(beeRelease.data)
     }
 
+    const [apiHost, setApiHost] = useState('');
+    const fetchApiHost = () => {
+        let apiHost
+  
+        if (sessionStorage.getItem('api_host')) {
+            apiHost = String(sessionStorage.getItem('api_host') || '')
+        } else {
+            apiHost = String(process.env.REACT_APP_BEE_HOST)
+        }
+        setApiHost(apiHost)
+    }
+
+    const [debugApiHost, setDebugApiHost] = useState('');
+    const fetchDebugApiHost = () => {
+        let debugApiHost
+  
+        if (sessionStorage.getItem('debug_api_host')) {
+            debugApiHost = String(sessionStorage.getItem('debug_api_host') || '')
+        } else {
+            debugApiHost = String(process.env.REACT_APP_BEE_DEBUG_HOST)
+        }
+        setDebugApiHost(debugApiHost)
+    }
+
     const fetchApiHealth = () => {
         setLoadingNodeApiHealth(true)
         beeApi.status.health()
@@ -126,10 +150,12 @@ export default function Status() {
         fetchNodeHealth()
         fetchNodeReadiness()
         fetchLatestBeeRelease()
+        fetchNetworkTopology()
         fetchNodeAddresses()
         fetchChequebookAddress()
-        fetchNetworkTopology()
         fetchApiHealth()
+        fetchApiHost()
+        fetchDebugApiHost()
     }, []);
 
     return (
@@ -179,6 +205,8 @@ export default function Status() {
                 nodeApiHealth={nodeApiHealth}
                 loadingNodeApiHealth={loadingNodeApiHealth}
                 chequebookAddress={chequebookAddress}
+                apiHost={apiHost}
+                debugApiHost={debugApiHost}
                 />
                 // <TroubleshootConnectionCard
                 // />

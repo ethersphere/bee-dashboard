@@ -15,6 +15,7 @@ interface IProps {
 export default function EthereumAddress(props: IProps) {
     return (
         <Typography component="p" variant="subtitle1">
+            {props.address ? 
             <div style={{display:'flex'}}>
                 <div style={{paddingTop:'5px'}}>
                     <Identicon size='20' string={props.address} />
@@ -36,6 +37,7 @@ export default function EthereumAddress(props: IProps) {
                 value={ props.address }
                 />
             </div>
+            : '-' }
         </Typography>
     )
 }

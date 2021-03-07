@@ -5,6 +5,7 @@ import { Theme, createStyles, makeStyles, useTheme } from '@material-ui/core/sty
 import { Card, CardContent, Typography, Chip } from '@material-ui/core/';
 import { CheckCircle, Error } from '@material-ui/icons/';
 import { Skeleton } from '@material-ui/lab';
+import ConnectToHost from '../../components/ConnectToHost';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

@@ -1,17 +1,43 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { Bee } from "@ethersphere/bee-js"
+import { Bee } from "@ethersphere/bee-js";
 
-const bee = new Bee(`${process.env.REACT_APP_BEE_HOST}`)
+const beeJSClient = () => {
+    let apiHost
+  
+    if (sessionStorage.getItem('api_host')) {
+      apiHost = String(sessionStorage.getItem('api_host') || '')
+    } else {
+      apiHost = process.env.REACT_APP_BEE_HOST
+    }
+
+    return new Bee(`${apiHost}`)
+}
 
 const beeApiClient = (): AxiosInstance => {
+    let apiHost
+  
+    if (sessionStorage.getItem('api_host')) {
+      apiHost = String(sessionStorage.getItem('api_host') || '')
+    } else {
+      apiHost = process.env.REACT_APP_BEE_HOST
+    }
+
     return axios.create({
-        baseURL: process.env.REACT_APP_BEE_HOST
+        baseURL: apiHost
     })
 }
 
 const beeDebugApiClient = (): AxiosInstance => {
+    let debugApiHost
+  
+    if (sessionStorage.getItem('debug_api_host')) {
+      debugApiHost = String(sessionStorage.getItem('debug_api_host') || '')
+    } else {
+      debugApiHost = process.env.REACT_APP_BEE_DEBUG_HOST
+    }
+
     return axios.create({
-        baseURL: process.env.REACT_APP_BEE_DEBUG_HOST
+        baseURL: debugApiHost
     })
 }
 
@@ -28,16 +54,16 @@ export const beeApi = {
     },
     files: {
         uploadFile(file: File) {
-            return bee.uploadFile(file.file)
+            return beeJSClient().uploadFile(file.file)
         },
         uploadData(file: File) { 
-            return bee.uploadData(file.file)
+            return beeJSClient().uploadData(file.file)
         },
         downloadFile(hash: string) {
-            return bee.downloadFile(hash)
+            return beeJSClient().downloadFile(hash)
         },
         downloadData(hash: string) {
-            return bee.downloadData(hash)
+            return beeJSClient().downloadData(hash)
         },
     },
 }

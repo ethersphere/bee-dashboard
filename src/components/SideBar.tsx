@@ -6,8 +6,8 @@ import { ListItemText, ListItemIcon, ListItem, Divider, List, Drawer, Link as MU
 import { OpenInNewSharp } from '@material-ui/icons';
 import { Activity, FileText, DollarSign, Share2, Settings } from 'react-feather';
 
-import SwarmLogo from '../assets/swarm-logo-1.svg';
-import SwarmLogoWhite from '../assets/swarm-logo-1-white.png';
+import SwarmLogo from '../assets/swarm-logo-4.svg';
+import SwarmLogoWhite from '../assets/swarm-logo-4-white.png';
 
 const drawerWidth = 240;
 
@@ -95,7 +95,7 @@ export default function SideBar(props: any) {
       >
         <div className={classes.toolbar} style={{ textAlign:'center' }}>
             <Link to='/'>
-                <img src={props.themeMode === 'light' ? SwarmLogo : SwarmLogoWhite} style={{maxHeight: '42px', alignItems:'center', marginTop:'10px'}} /> 
+                <img src={props.themeMode === 'light' ? SwarmLogo : SwarmLogoWhite} style={{maxHeight: '60px', alignItems:'center'}} /> 
             </Link>
         </div>
         <Divider />

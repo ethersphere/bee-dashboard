@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme: Theme) =>
     appBar: {
       width: `calc(100% - ${drawerWidth}px)`,
       marginLeft: drawerWidth,
-      backgroundColor:'#dd7200'
+      background:'linear-gradient(35deg,#fb6340,#fbb140)!important'
     },
     network: {
 

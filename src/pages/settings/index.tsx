@@ -23,6 +23,21 @@ export default function Settings() {
                     variant="filled"
                     />
                 </Paper>
+                <Paper style={{marginTop:'20px'}}>
+                    <TextField
+                    id="filled-full-width"
+                    label="Debug API Endpoint"
+                    style={{ margin: 0 }}
+                    placeholder="ex: 127.0.0.0.1:1635"
+                    helperText="Enter node debug host override / port"
+                    fullWidth
+                    margin="normal"
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    variant="filled"
+                    />
+                </Paper>
             </Container>
         </div>
     )

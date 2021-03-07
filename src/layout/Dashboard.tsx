@@ -35,6 +35,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+
 const Dashboard: FC = (props) => {
     const classes = useStyles();
 
@@ -54,15 +55,9 @@ const Dashboard: FC = (props) => {
         <div>
             <SideBar {...props} themeMode={themeMode} />
             <NavBar  themeMode={themeMode} />
-            <main className={classes.content}>
-                { props.children }
+            <main className={classes.content} >
+                {props.children}
             </main>
-            {/* <footer className={classes.footer}>
-              <div style={{display:'inline-flex'}}>
-                <img src={SwarmLogo} className={classes.logo} />
-                <div>Ethereum Swarm</div>
-              </div>
-            </footer> */}
         </div>
     )
 }

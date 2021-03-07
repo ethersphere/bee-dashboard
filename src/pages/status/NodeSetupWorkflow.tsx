@@ -4,6 +4,7 @@ import { Typography, Paper, Button, Step, StepLabel, StepContent, Stepper, Accor
 import { CheckCircle, Error, Warning, ExpandMoreSharp } from '@material-ui/icons/';
 import EthereumAddress from '../../components/EthereumAddress';
 import CodeBlock from '../../components/CodeBlock';
+import ConnectToHost from '../../components/ConnectToHost';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -23,7 +24,6 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-
 function getSteps() {
   return [
     'Node Connection Check', 
@@ -39,18 +39,19 @@ function getStepContent(step: number, props: any) {
   const nodeConnectionCheck = (
     <div>
       <p>Connect to Bee Node APIs</p>
-          <div>
+          <div style={{display:'flex', marginBottom: '25px'}}>
             { props.nodeApiHealth ? 
               <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
               :
               <Error style={{color:'#c9201f', marginRight: '7px', height: '18px'}} />
             }
-            <span>Node API  (<a href='#'>{process.env.REACT_APP_BEE_HOST}</a>)</span>
+            <span style={{marginRight:'15px'}}>Node API  (<a href='#'>{props.apiHost}</a>)</span>
+            <ConnectToHost hostName='api_host' defaultHost={props.apiHost} />
           </div>
           <div>
           { !props.nodeApiHealth ? 
             <Typography variant="body2" gutterBottom style={{margin: '15px'}}>
-              We cannot connect to your nodes API at <a href='#'>{process.env.REACT_APP_BEE_HOST}</a>. Please check the following to troubleshoot your issue.
+              We cannot connect to your nodes API at <a href='#'>{props.apiHost}</a>. Please check the following to troubleshoot your issue.
               <Accordion style={{marginTop:'20px'}}>
                   <AccordionSummary
                     expandIcon={<ExpandMoreSharp />}
@@ -92,16 +93,19 @@ function getStepContent(step: number, props: any) {
           null}
           </div>
           <div>
-            { props.nodeHealth.status === 'ok' ? 
-              <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
-              :
-              <Error style={{color:'#c9201f', marginRight: '7px', height: '18px'}} />
-            }
-            <span>Debug API  (<a href='#'>{process.env.REACT_APP_BEE_DEBUG_HOST}</a>)</span>
+            <div style={{display:'flex', marginBottom: '25px'}}>
+              { props.nodeHealth.status === 'ok' ? 
+                <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
+                :
+                <Error style={{color:'#c9201f', marginRight: '7px', height: '18px'}} />
+              }
+              <span style={{marginRight:'15px'}}>Debug API  (<a href='#'>{props.debugApiHost}</a>)</span>
+              <ConnectToHost hostName={'debug_api_host'} defaultHost={props.debugApiHost} />
+            </div>
             <div>
             { props.nodeHealth.status !== 'ok' ? 
               <Typography variant="body2" gutterBottom style={{margin: '15px'}}>
-                We cannot connect to your nodes debug API at <a href='#'>{process.env.REACT_APP_BEE_DEBUG_HOST}</a>. Please check the following to troubleshoot your issue.
+                We cannot connect to your nodes debug API at <a href='#'>{props.debugApiHost}</a>. Please check the following to troubleshoot your issue.
                 <Accordion style={{marginTop:'20px'}}>
                   <AccordionSummary
                     expandIcon={<ExpandMoreSharp />}
@@ -347,8 +351,8 @@ export default function NodeSetupWorkflow(props: any) {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleReset = () => {
-    setActiveStep(0);
+  const handleSetupComplete = () => {
+    window.location.reload()
   };
 
   const handleComplete = (index: number) => {
@@ -364,10 +368,19 @@ export default function NodeSetupWorkflow(props: any) {
       </Typography>
       <Stepper nonLinear activeStep={activeStep} orientation="vertical">
         {steps.map((label, index) => (
-          <Step key={label}  completed={completed[index]}>
+          <Step key={label} >
             <StepLabel>
               <StepButton onClick={() => setActiveStep(index)}>
-                {label}
+                <div style={{display:'flex'}}>
+                  { completed[index] ? 
+                  <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '25px'}} />
+                  :
+                  <Error style={{color:'#c9201f', marginRight: '7px', height: '25px'}} />
+                  }
+                  <div style={{paddingTop:'2px'}}>
+                  <span>{label}</span>
+                  </div>
+                </div>
               </StepButton>
             </StepLabel>
             <StepContent>
@@ -387,7 +400,7 @@ export default function NodeSetupWorkflow(props: any) {
                     onClick={handleNext}
                     className={classes.button}
                   >
-                    {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                  Next
                   </Button>
                 </div>
               </div>
@@ -398,8 +411,14 @@ export default function NodeSetupWorkflow(props: any) {
       {activeStep === steps.length && (
         <Paper square elevation={0} className={classes.resetContainer}>
           <Typography>Bee setup complete - you&apos;re finished. Welcome to the swarm and the internet of decentralized storage</Typography>
-          <Button onClick={handleReset} className={classes.button}>
-            Reset
+          <Button
+          onClick={handleBack}
+          className={classes.button}
+          >
+            Back
+          </Button>
+          <Button onClick={handleSetupComplete} variant="contained" color="primary" className={classes.button}>
+            Complete
           </Button>
         </Paper>
       )}
