@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { Typography, Paper, Button, Step, StepLabel, StepContent, Stepper, Accordion, AccordionSummary, AccordionDetails } from '@material-ui/core/';
+import { Typography, Paper, Button, Step, StepLabel, StepContent, Stepper, Accordion, AccordionSummary, AccordionDetails, StepButton } from '@material-ui/core/';
 import { CheckCircle, Error, Warning, ExpandMoreSharp } from '@material-ui/icons/';
 import EthereumAddress from '../../components/EthereumAddress';
 import CodeBlock from '../../components/CodeBlock';
@@ -172,7 +172,7 @@ function getStepContent(step: number, props: any) {
             showLineNumbers
             language='bash'
             code={
-            `wget https://github.com/ethersphere/bee/releases/download/${props.beeRelease.name}/bee_${props.nodeReadiness.version?.split('-')[0]}_amd64.deb\nsudo dpkg -i bee_${props.nodeReadiness.version?.split('-')[0]}_amd64.deb`}
+            `bee version\nwget https://github.com/ethersphere/bee/releases/download/${props.beeRelease.name}/bee_${props.nodeReadiness.version?.split('-')[0]}_amd64.deb\nsudo dpkg -i bee_${props.nodeReadiness.version?.split('-')[0]}_amd64.deb`}
             />
           </div>
       }
@@ -307,28 +307,34 @@ function getStepContent(step: number, props: any) {
 
 export default function NodeSetupWorkflow(props: any) {
   const classes = useStyles();
-  const [activeStep, setActiveStep] = React.useState(0);
+  const [activeStep, setActiveStep] = useState(0);
+  const [completed, setCompleted] = useState<{ [k: number]: boolean }>({});
   const steps = getSteps();
 
   useEffect(() => {
     if (props.nodeHealth.status === 'ok' && props.nodeApiHealth) {
       setActiveStep(1)
+      handleComplete(0)
     }
 
     if (props.beeRelease && props.beeRelease.name === `v${props.nodeHealth.version?.split('-')[0]}`) {
       setActiveStep(2)
+      handleComplete(1)
     }
 
     if (props.nodeAddresses.ethereum) {
       setActiveStep(3)
+      handleComplete(2)
     }
 
     if (props.chequebookAddress.chequebookaddress) {
       setActiveStep(4)
+      handleComplete(3)
     }
 
     if (props.nodeTopology.connected && props.nodeTopology.connected > 0) {
       setActiveStep(5)
+      handleComplete(4)
     }
 
   }, [])
@@ -345,15 +351,25 @@ export default function NodeSetupWorkflow(props: any) {
     setActiveStep(0);
   };
 
+  const handleComplete = (index: number) => {
+    const newCompleted = completed;
+    newCompleted[index] = true;
+    setCompleted(newCompleted);
+  };
+
   return (
     <div className={classes.root}>
       <Typography variant="h4" gutterBottom>
         Node Setup
       </Typography>
-      <Stepper activeStep={activeStep} orientation="vertical">
+      <Stepper nonLinear activeStep={activeStep} orientation="vertical">
         {steps.map((label, index) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
+          <Step key={label}  completed={completed[index]}>
+            <StepLabel>
+              <StepButton onClick={() => setActiveStep(index)}>
+                {label}
+              </StepButton>
+            </StepLabel>
             <StepContent>
               <Typography>{getStepContent(index, props)}</Typography>
               <div className={classes.actionsContainer}>

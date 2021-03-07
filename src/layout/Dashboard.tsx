@@ -57,12 +57,12 @@ const Dashboard: FC = (props) => {
             <main className={classes.content}>
                 { props.children }
             </main>
-            <footer className={classes.footer}>
+            {/* <footer className={classes.footer}>
               <div style={{display:'inline-flex'}}>
                 <img src={SwarmLogo} className={classes.logo} />
                 <div>Ethereum Swarm</div>
               </div>
-            </footer>
+            </footer> */}
         </div>
     )
 }

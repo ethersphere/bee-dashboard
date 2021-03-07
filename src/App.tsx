@@ -134,14 +134,7 @@ function App() {
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
       toggleThemeMode(e.matches ? "dark" : "light")
     });
-    
-    window.addEventListener("storage", function () {
-      let theme = localStorage.getItem('theme')
-      console.log(theme)
-      if (theme) {
-        toggleThemeMode(theme)
-      }
-    }, false);
+  
   }, []);
 
   return (
