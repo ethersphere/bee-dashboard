@@ -7,6 +7,7 @@ import { OpenInNewSharp } from '@material-ui/icons';
 import EthereumAddress from '../components/EthereumAddress';
 import QRCodeModal from './QRCodeModal';
 import ClipboardCopy from './ClipboardCopy';
+import { Skeleton } from '@material-ui/lab';
 
 // @ts-ignore
 import Identicon from 'react-identicons';
@@ -45,9 +46,9 @@ interface NodeAddresses {
 
 interface IProps{
     nodeAddresses: NodeAddresses,
-    loadingNodeAddresses: boolean,
+    isLoadingNodeAddresses: boolean,
     chequebookAddress: ChequebookAddress,
-    loadingChequebookAddress: boolean,
+    isLoadingChequebookAddress: boolean,
 }
 
 function EthereumAddressCard(props: IProps) {
@@ -57,6 +58,12 @@ function EthereumAddressCard(props: IProps) {
     return (
         <div>
             <Card className={classes.root}>
+                {props.isLoadingNodeAddresses ? 
+                <div>
+                    <Skeleton width={300} height={30} animation="wave" />
+                    <Skeleton width={300} height={50} animation="wave" />
+                </div>
+                :
                 <div className={classes.details}>
                     <CardContent className={classes.content}>
                         <Typography variant="subtitle1" gutterBottom>
@@ -67,7 +74,13 @@ function EthereumAddressCard(props: IProps) {
                         network={'goerli'}
                         />   
                     </CardContent>
+                </div>}
+                {props.isLoadingChequebookAddress ? 
+                <div>
+                    <Skeleton width={300} height={30} animation="wave" />
+                    <Skeleton width={300} height={50} animation="wave" />
                 </div>
+                :
                 <div className={classes.details}>
                     <CardContent className={classes.content}>
                         <Typography variant="subtitle1" gutterBottom>
@@ -78,7 +91,7 @@ function EthereumAddressCard(props: IProps) {
                         network={'goerli'}
                         />   
                     </CardContent>
-                </div>
+                </div>}
             </Card>
         </div>
     )

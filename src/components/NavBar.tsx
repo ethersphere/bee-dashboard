@@ -51,10 +51,10 @@ export default function SideBar(props: any) {
                 <Sun />
                 }
               </IconButton>
-              <Chip 
+              {/* <Chip 
               label="Connect Wallet"
               color="primary"
-              />
+              /> */}
             </div>
           </div>
         </Toolbar>

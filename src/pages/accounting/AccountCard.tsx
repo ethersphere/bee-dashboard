@@ -37,9 +37,9 @@ interface ChequebookBalance {
 
 interface IProps{
     chequebookAddress: ChequebookAddress,
-    loadingChequebookAddress: boolean,
+    isLoadingChequebookAddress: boolean,
     chequebookBalance: ChequebookBalance,
-    loadingChequebookBalance: boolean,
+    isLoadingChequebookBalance: boolean,
 }
 
 const ConvertBalanceToBZZ = (amount: number) =>  {
@@ -60,7 +60,7 @@ function AccountCard(props: IProps) {
             </div>
             
             <Card className={classes.root}>
-                { !props.loadingChequebookBalance && props.chequebookBalance ? 
+                { !props.isLoadingChequebookBalance && props.chequebookBalance ? 
                 <div className={classes.details}>
                     <CardContent className={classes.content}>
                         <Grid container spacing={5}>

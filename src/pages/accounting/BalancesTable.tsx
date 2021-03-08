@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Button, Paper, Tooltip } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Button, Paper, Tooltip, Container, CircularProgress } from '@material-ui/core';
 
 const useStyles = makeStyles({
     table: {
@@ -19,7 +19,7 @@ interface PeerBalances {
 
 interface IProps {
     peerBalances: PeerBalances,
-    loadingPeerBalances: boolean,
+    loading?: boolean,
 }
   
 function BalancesTable(props: IProps) {
@@ -27,6 +27,11 @@ function BalancesTable(props: IProps) {
 
     return (
         <div>
+            {props.loading ? 
+            <Container style={{textAlign:'center', padding:'50px'}}>
+                <CircularProgress />
+            </Container>
+            :
              <TableContainer component={Paper}>
                 <Table className={classes.table} size="small" aria-label="simple table">
                     <TableHead>
@@ -47,7 +52,7 @@ function BalancesTable(props: IProps) {
                     ))}
                     </TableBody>
                 </Table>
-            </TableContainer>
+            </TableContainer>}
         </div>
     )
 }

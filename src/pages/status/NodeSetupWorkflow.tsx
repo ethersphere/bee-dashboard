@@ -45,7 +45,7 @@ function getStepContent(step: number, props: any) {
               :
               <Error style={{color:'#c9201f', marginRight: '7px', height: '18px'}} />
             }
-            <span style={{marginRight:'15px'}}>Node API  (<a href='#'>{props.apiHost}</a>)</span>
+            <span style={{marginRight:'15px'}}>Node API  ( <a href='#'>{props.apiHost}</a> )</span>
             <ConnectToHost hostName='api_host' defaultHost={props.apiHost} />
           </div>
           <div>
@@ -99,7 +99,7 @@ function getStepContent(step: number, props: any) {
                 :
                 <Error style={{color:'#c9201f', marginRight: '7px', height: '18px'}} />
               }
-              <span style={{marginRight:'15px'}}>Debug API  (<a href='#'>{props.debugApiHost}</a>)</span>
+              <span style={{marginRight:'15px'}}>Debug API  ( <a href='#'>{props.debugApiHost}</a> )</span>
               <ConnectToHost hostName={'debug_api_host'} defaultHost={props.debugApiHost} />
             </div>
             <div>
@@ -408,7 +408,7 @@ export default function NodeSetupWorkflow(props: any) {
           </Step>
         ))}
       </Stepper>
-      {activeStep === steps.length && (
+      {activeStep === steps.length && Object.values(completed).filter(value => value).length === 5 ? (
         <Paper square elevation={0} className={classes.resetContainer}>
           <Typography>Bee setup complete - you&apos;re finished. Welcome to the swarm and the internet of decentralized storage</Typography>
           <Button
@@ -421,7 +421,7 @@ export default function NodeSetupWorkflow(props: any) {
             Complete
           </Button>
         </Paper>
-      )}
+      ) : null}
     </div>
   );
 }

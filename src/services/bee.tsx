@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { Bee } from "@ethersphere/bee-js";
 
 const beeJSClient = () => {

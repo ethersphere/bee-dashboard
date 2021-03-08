@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { makeStyles, withStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { Tabs, Tab, AppBar, Box, Typography } from '@material-ui/core';
+import React from 'react';
+import { withStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { Tabs, Tab, Box, Typography } from '@material-ui/core';
 
-import type { NodeAddresses, ChequebookAddressResponse, ChequebookBalanceResponse, PeerBalance,
-LastChequesForPeerResponse, Settlements, LastChequesResponse, BalanceResponse } from '@ethersphere/bee-js'
-
-import { beeDebugApi } from '../../services/bee';
 import AccountCard from '../accounting/AccountCard';
 import BalancesTable from './BalancesTable';
 import ChequebookTable from './ChequebookTable';
 import SettlementsTable from './SettlementsTable';
 import EthereumAddressCard from '../../components/EthereumAddressCard';
+
+import { useApiNodeAddresses, useApiChequebookAddress, useApiChequebookBalance, useApiPeerBalances, useApiPeerCheques, useApiSettlements } from '../../hooks/apiHooks';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -33,116 +31,14 @@ export default function Accounting() {
         setValue(newValue);
     };
 
-    const [chequebookAddress, setChequebookAddress] = useState<ChequebookAddressResponse>({ chequebookaddress: '' });
-    const [loadingChequebookAddress, setLoadingChequebookAddress] = useState(false);
+    const { chequebookAddress, isLoadingChequebookAddress } = useApiChequebookAddress()
+    const { chequebookBalance, isLoadingChequebookBalance } = useApiChequebookBalance()
+    const { peerBalances, isLoadingPeerBalances } = useApiPeerBalances()
+    const { nodeAddresses, isLoadingNodeAddresses } = useApiNodeAddresses()
 
-    const [chequebookBalance, setChequebookBalance] = useState<ChequebookBalanceResponse>({ totalBalance: 0, availableBalance: 0});
-    const [loadingChequebookBalance, setLoadingChequebookBalance] = useState(false);
+    const { peerCheques, isLoadingPeerCheques } = useApiPeerCheques()
+    const { settlements, isLoadingSettlements } = useApiSettlements()
 
-    const [peerBalances, setPeerBalances] = useState<BalanceResponse>({ balances: [{peer: '-', balance: 0 }] });
-    const [loadingPeerBalances, setLoadingPeerBalances] = useState(false);
-
-    const [peerCheques, setPeerCheques] = useState<LastChequesResponse>({ lastcheques: [{peer: '-', lastsent: {beneficiary: '', chequebook: '', payout: 0}, lastreceived: {beneficiary: '', chequebook: '', payout: 0} }] });
-    const [loadingPeerCheques, setLoadingPeerCheques] = useState(false);
-
-    const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses>({ overlay: '', underlay: [""], ethereum: '', public_key: '', pss_public_key: ''});
-    const [loadingNodeAddresses, setLoadingNodeAddresses] = useState(false);
-
-    const [nodeSettlements, setNodeSettlements] = useState({ totalreceived: 0, totalsent: 0, settlements: [{peer: '-', received: 0, sent: 0}] });
-    const [loadingNodeSettlements, setLoadingNodeSettlements] = useState(false);
-
-    const fetchChequebookAddress = () => {
-        setLoadingChequebookAddress(true)
-        beeDebugApi.chequebook.address()
-        .then(res => {
-            let address: any = res.data;
-            setLoadingChequebookAddress(false)
-            setChequebookAddress(address)
-        })
-        .catch(error => {
-            console.log(error)
-            setLoadingChequebookAddress(false)
-        })
-    }
-
-    const fetchChequebookBalance = () => {
-        setLoadingChequebookBalance(true)
-        beeDebugApi.chequebook.balance()
-        .then(res => {
-            let balance: any = res.data;
-            setLoadingChequebookBalance(false)
-            setChequebookBalance(balance)
-        })
-        .catch(error => {
-            console.log(error)
-            setLoadingChequebookBalance(false)
-        })
-    }
-
-    const fetchPeerBalances = () => {
-      setLoadingPeerBalances(true)
-      beeDebugApi.balance.balances()
-      .then(res => {
-          let peerBalances: any = res.data;
-          setLoadingPeerBalances(false)
-          setPeerBalances(peerBalances)
-      })
-      .catch(error => {
-          console.log(error)
-          setLoadingPeerBalances(false)
-      })
-    }
-
-    const fetchNodeAddresses = () => {
-      setLoadingNodeAddresses(true)
-      beeDebugApi.connectivity.addresses()
-      .then(res => {
-          let addresses: any = res.data;
-          setLoadingNodeAddresses(false)
-          setNodeAddresses(addresses)
-      })
-      .catch(error => {
-          console.log(error)
-          setLoadingNodeAddresses(false)
-      })
-    }
-
-    const fetchPeerCheques = () => {
-      setLoadingPeerCheques(true)
-      beeDebugApi.chequebook.getLastCheques()
-      .then(res => {
-          let lastcheques: any = res.data;
-          setLoadingPeerCheques(false)
-          setPeerCheques(lastcheques)
-      })
-      .catch(error => {
-          console.log(error)
-          setLoadingPeerCheques(false)
-      })
-    }
-
-    const fetchSettlements = () => {
-      setLoadingNodeSettlements(true)
-      beeDebugApi.settlements.getSettlements()
-      .then(res => {
-          let nodeSettlements: any = res.data;
-          setLoadingNodeSettlements(false)
-          setNodeSettlements(nodeSettlements)
-      })
-      .catch(error => {
-          console.log(error)
-          setLoadingNodeSettlements(false)
-      })
-    }
-
-    useEffect(() => {
-        fetchChequebookAddress()
-        fetchChequebookBalance()
-        fetchPeerBalances()
-        fetchNodeAddresses()
-        fetchPeerCheques()
-        fetchSettlements()
-    }, []);
 
     function TabPanel(props: TabPanelProps) {
         const { children, value, index, ...other } = props;
@@ -218,15 +114,15 @@ export default function Accounting() {
         <div>
             <AccountCard
             chequebookAddress={chequebookAddress}
-            loadingChequebookAddress={loadingChequebookAddress}
+            isLoadingChequebookAddress={isLoadingChequebookAddress}
             chequebookBalance={chequebookBalance}
-            loadingChequebookBalance={loadingChequebookBalance}
+            isLoadingChequebookBalance={isLoadingChequebookBalance}
             />
             <EthereumAddressCard 
             nodeAddresses={nodeAddresses} 
-            loadingNodeAddresses={loadingNodeAddresses}
+            isLoadingNodeAddresses={isLoadingNodeAddresses}
             chequebookAddress={chequebookAddress}
-            loadingChequebookAddress={loadingChequebookAddress} 
+            isLoadingChequebookAddress={isLoadingChequebookAddress} 
             />
             <AntTabs style={{ marginTop: '12px' }} value={value} onChange={handleChange} aria-label="ant example">
                 <AntTab label="Balances" {...a11yProps(0)} />
@@ -236,19 +132,19 @@ export default function Accounting() {
             <TabPanel value={value} index={0}>
               <BalancesTable
               peerBalances={peerBalances}
-              loadingPeerBalances={loadingPeerBalances}
+              loading={isLoadingPeerBalances}
               />
             </TabPanel>
             <TabPanel value={value} index={1}>
               <ChequebookTable
               peerCheques={peerCheques}
-              loadingPeerCheques={loadingPeerCheques}
+              loading={isLoadingPeerCheques}
               />
             </TabPanel>
             <TabPanel value={value} index={2}>
               <SettlementsTable
-              nodeSettlements={nodeSettlements}
-              loadingNodeSettlements={loadingNodeSettlements}
+              nodeSettlements={settlements}
+              loading={isLoadingSettlements}
               />
             </TabPanel>
         </div>

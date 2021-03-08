@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Button, Paper, Tooltip } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Button, Paper, Tooltip, Container, CircularProgress } from '@material-ui/core';
 import { Cancel, Autorenew } from '@material-ui/icons';
 
 import { beeDebugApi } from '../../services/bee';
@@ -49,6 +49,11 @@ function PeerTable(props: any) {
 
     return (
         <div>
+            {props.loading ? 
+            <Container style={{textAlign:'center', padding:'50px'}}>
+                <CircularProgress />
+            </Container>
+            :
              <TableContainer component={Paper}>
                 <Table className={classes.table} aria-label="simple table">
                     <TableHead>
@@ -83,6 +88,7 @@ function PeerTable(props: any) {
                     </TableBody>
                 </Table>
             </TableContainer>
+            }
         </div>
     )
 }

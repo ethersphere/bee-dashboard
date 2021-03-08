@@ -2,6 +2,7 @@ import React from 'react'
 
 import { makeStyles, } from '@material-ui/core/styles';
 import { Card, CardContent, Typography } from '@material-ui/core/';
+import { Skeleton } from '@material-ui/lab';
 
 const useStyles = makeStyles({
     root: {
@@ -17,7 +18,8 @@ const useStyles = makeStyles({
 
 interface IProps {
     label: string,
-    statistic: string
+    statistic: string,
+    loading?: boolean,
 }
 
 export default function StatCard(props: IProps) {
@@ -26,12 +28,21 @@ export default function StatCard(props: IProps) {
     return (
         <Card className={classes.root}>
             <CardContent>
-                <Typography className={classes.title} color="textSecondary" gutterBottom>
-                {props.label}
-                </Typography>
-                <Typography variant="h5" component="h2">
-                {props.statistic}
-                </Typography>
+            {props.loading ? 
+                <div>
+                    <Skeleton width={180} height={25} animation="wave" />
+                    <Skeleton width={180} height={35} animation="wave" />
+                </div>
+                :
+                <div>
+                  <Typography className={classes.title} color="textSecondary" gutterBottom>
+                    {props.label}
+                  </Typography>
+                  <Typography variant="h5" component="h2">
+                    {props.statistic}
+                  </Typography>
+                </div>
+            }
             </CardContent>
         </Card>
     )
