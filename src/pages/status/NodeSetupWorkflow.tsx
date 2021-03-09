@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import { Typography, Paper, Button, Step, StepLabel, StepContent, Stepper, Accordion, AccordionSummary, AccordionDetails, StepButton } from '@material-ui/core/';
-import { CheckCircle, Error, Warning, ExpandMoreSharp } from '@material-ui/icons/';
+import { CheckCircle, Error, Warning, ExpandMoreSharp, Sync } from '@material-ui/icons/';
 import EthereumAddress from '../../components/EthereumAddress';
-import CodeBlock from '../../components/CodeBlock';
 import ConnectToHost from '../../components/ConnectToHost';
 import DepositModal from '../../components/DepositModal';
+import CodeBlockTabs from '../../components/CodeBlockTabs'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -65,25 +65,22 @@ function getStepContent(step: number, props: any) {
                     <Typography>
                       <ol>
                         <li>Check the status of your node by running the below command to see if your node is running.</li>
-                        <CodeBlock
+                        <CodeBlockTabs
                         showLineNumbers
-                        language='bash'
-                        code={
-                        `sudo systemctl status bee`}
+                        linux={`sudo systemctl start bee`}
+                        mac={`brew services status swarm-bee`}
                         />
                         <li>If your node is running, check your firewall settings to make sure that port 1633 is exposed to the internet. If your node is not running try executing the below command to start your bee node</li>
-                        <CodeBlock
+                        <CodeBlockTabs
                         showLineNumbers
-                        language='bash'
-                        code={
-                        `sudo systemctl start bee`}
+                        linux={`sudo systemctl start bee`}
+                        mac={`brew services start swarm-bee`}
                         />
                         <li>Run the commands to validate your node is running and see the log output.</li>
-                        <CodeBlock
+                        <CodeBlockTabs
                         showLineNumbers
-                        language='bash'
-                        code={
-                        `sudo systemctl status bee \njournalctl --lines=100 --follow --unit bee`}
+                        linux={`sudo systemctl status bee \njournalctl --lines=100 --follow --unit bee`}
+                        mac={`brew services status swarm-bee \ntail -f /usr/local/var/log/swarm-bee/bee.log`}
                         />
                       </ol>
                     </Typography>
@@ -119,32 +116,28 @@ function getStepContent(step: number, props: any) {
                     <Typography>
                     <ol>
                       <li>Check the status of your node by running the below command to see if your node is running.</li>
-                      <CodeBlock
+                      <CodeBlockTabs
                       showLineNumbers
-                      language='bash'
-                      code={
-                      `sudo systemctl status bee`}
+                      linux={`sudo systemctl status bee`}
+                      mac={`brew services status swarm-bee`}
                       />
                       <li>If your node is running, check your firewall settings to make sure that port 1635 is bound to localhost. If your node is not running try executing the below command to start your bee node</li>
-                      <CodeBlock
+                      <CodeBlockTabs
                       showLineNumbers
-                      language='bash'
-                      code={
-                      `sudo systemctl start bee`}
+                      linux={`sudo systemctl start bee`}
+                      mac={`brew services start swarm-bee`}
                       />
                       <li>Run the commands to validate your node is running and see the log output.</li>
-                      <CodeBlock
+                      <CodeBlockTabs
                       showLineNumbers
-                      language='bash'
-                      code={
-                      `sudo systemctl status bee \njournalctl --lines=100 --follow --unit bee`}
+                      linux={`sudo systemctl status bee \njournalctl --lines=100 --follow --unit bee`}
+                      mac={`brew services status swarm-bee \ntail -f /usr/local/var/log/swarm-bee/bee.log`}
                       />
                       <li>Lastly, check your nodes configuration settings to validate the debug API is enabled. Config parameter <strong>debug-api-enable</strong> must be set to <strong>true</strong></li>
-                      <CodeBlock
+                      <CodeBlockTabs
                       showLineNumbers
-                      language='bash'
-                      code={
-                      `sudo vi /etc/bee/bee.yaml\nsudo systemctl restart bee`}
+                      linux={`sudo vi /etc/bee/bee.yaml\nsudo systemctl restart bee`}
+                      mac={`sudo vi /etc/bee/bee.yaml \nbrew services restart swarm-bee`}
                       />
                     </ol>
                     </Typography>
@@ -173,11 +166,10 @@ function getStepContent(step: number, props: any) {
           <div>
             <Warning style={{color:'#ff9800', marginRight: '7px', height: '18px'}} />
             <span>Your Bee version is out of date. Please update to the <a href={props.beeRelease.html_url} target='_blank'>latest</a> before continuing. Rerun the installation script below to upgrade. Reference the docs for help with updating. <a href='https://docs.ethswarm.org/docs/installation/manual#upgrading-bee' target='_blank'>Docs</a></span>
-            <CodeBlock
+            <CodeBlockTabs
             showLineNumbers
-            language='bash'
-            code={
-            `bee version\nwget https://github.com/ethersphere/bee/releases/download/${props.beeRelease.name}/bee_${props.nodeReadiness.version?.split('-')[0]}_amd64.deb\nsudo dpkg -i bee_${props.nodeReadiness.version?.split('-')[0]}_amd64.deb`}
+            linux={`bee version\nwget https://github.com/ethersphere/bee/releases/download/${props.beeRelease.name}/bee_${props.nodeReadiness.version?.split('-')[0]}_amd64.deb\nsudo dpkg -i bee_${props.nodeReadiness.version?.split('-')[0]}_amd64.deb`}
+            mac={`bee version\nbrew tap ethersphere/tap\nbrew install swarm-bee\nbrew services start swarm-bee`}
             />
           </div>
       }
@@ -236,20 +228,25 @@ function getStepContent(step: number, props: any) {
         : null }
       </p>
       <div style={{ marginBottom:'10px' }}>
-      {props.chequebookAddress.chequebookaddress ?
+      {props.chequebookAddress.chequebookaddress && props.chequebookBalance.totalBalance > 0 ?
           <div>
             <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
             <span>Your chequebook is deployed and funded!</span>
           </div>
       :  
-          props.loadingChequebookAddress ?
+          props.loadingChequebookAddress || props.isLoadingChequebookBalance ?
           null 
           :
           <div>
             <Warning style={{color:'#ff9800', marginRight: '7px', height: '18px'}} />
-            <span>Your chequebook is not deployed and funded</span>
+            <span>Your chequebook is either not deployed or funded. Run the below commands to get your address and deposit ETH.Then visit the BZZaar here <a href='#'>https://bzz.ethswarm.org/?transaction=buy&amount=10&slippage=30&receiver=[ENTER_ADDRESS_HERE] to get BZZ</a></span>
+            <CodeBlockTabs
+            showLineNumbers
+            linux={`bee-get-addr`}
+            mac={`bee-get-addr`}
+            />
           </div>
-      }
+      } 
       </div>
       <Typography variant="subtitle1" gutterBottom>
       <span>Chequebook Address</span>
@@ -337,7 +334,7 @@ export default function NodeSetupWorkflow(props: any) {
       handleComplete(2)
     }
 
-    if (props.chequebookAddress.chequebookaddress) {
+    if (props.chequebookAddress.chequebookaddress && props.chequebookBalance.totalBalance > 0) {
       setActiveStep(4)
       handleComplete(3)
     }
@@ -371,6 +368,9 @@ export default function NodeSetupWorkflow(props: any) {
     <div className={classes.root}>
       <Typography variant="h4" gutterBottom>
         Node Setup
+        <span style={{marginLeft:'25px'}}>
+          <Button variant='outlined' size='small' onClick={() => window.location.reload()}><Sync/><span style={{marginLeft:'7px'}}>Refresh Checks</span></Button>
+        </span>
       </Typography>
       <Stepper nonLinear activeStep={activeStep} orientation="vertical">
         {steps.map((label, index) => (

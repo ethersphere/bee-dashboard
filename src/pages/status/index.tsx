@@ -5,7 +5,7 @@ import { Container, CircularProgress } from '@material-ui/core';
 import NodeSetupWorkflow from './NodeSetupWorkflow';
 import StatusCard from './StatusCard';
 import EthereumAddressCard from '../../components/EthereumAddressCard';
-import { useApiHealth, useDebugApiHealth, useApiReadiness, useApiNodeAddresses, useApiChequebookAddress, useApiNodeTopology } from '../../hooks/apiHooks';
+import { useApiHealth, useDebugApiHealth, useApiReadiness, useApiNodeAddresses, useApiChequebookAddress, useApiNodeTopology, useApiChequebookBalance } from '../../hooks/apiHooks';
 
 export default function Status() {
     const [beeRelease, setBeeRelease] = useState({ name: ''});
@@ -20,6 +20,7 @@ export default function Status() {
     const { nodeAddresses, isLoadingNodeAddresses } = useApiNodeAddresses()
     const { chequebookAddress, isLoadingChequebookAddress } = useApiChequebookAddress()
     const { nodeTopology, isLoadingNodeTopology } = useApiNodeTopology()
+    const { chequebookBalance, isLoadingChequebookBalance } = useApiChequebookBalance()
 
 
     const fetchLatestBeeRelease = async () => {
@@ -71,7 +72,7 @@ export default function Status() {
             beeRelease && 
             beeRelease.name === `v${nodeHealth.version?.split('-')[0]}` &&
             nodeAddresses.ethereum && 
-            chequebookAddress.chequebookaddress && 
+            chequebookAddress.chequebookaddress && chequebookBalance.totalBalance > 0 &&
             nodeTopology.connected && nodeTopology.connected > 0 ? 
                 <div>
                     <StatusCard 
@@ -94,7 +95,7 @@ export default function Status() {
                 </div>
                 :
                 ( isLoadingNodeHealth || isLoadingHealth || isLoadingNodeReadiness || isLoadingChequebookAddress ||
-                    isLoadingNodeTopology || isLoadingBeeRelease || isLoadingNodeAddresses || isLoadingBeeRelease
+                    isLoadingNodeTopology || isLoadingBeeRelease || isLoadingNodeAddresses || isLoadingBeeRelease || isLoadingChequebookBalance
                 ) 
                 ? 
                 <Container style={{textAlign:'center', padding:'50px'}}>
@@ -122,6 +123,9 @@ export default function Status() {
 
                 chequebookAddress={chequebookAddress}
                 isLoadingChequebookAddress={isLoadingChequebookAddress}
+                
+                chequebookBalance={chequebookBalance}
+                isLoadingChequebookBalance={isLoadingChequebookBalance}
 
                 apiHost={apiHost}
                 debugApiHost={debugApiHost}

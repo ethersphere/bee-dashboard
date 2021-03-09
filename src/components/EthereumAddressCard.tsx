@@ -59,7 +59,7 @@ function EthereumAddressCard(props: IProps) {
         <div>
             <Card className={classes.root}>
                 {props.isLoadingNodeAddresses ? 
-                <div>
+                <div style={{padding: '16px'}}>
                     <Skeleton width={300} height={30} animation="wave" />
                     <Skeleton width={300} height={50} animation="wave" />
                 </div>
@@ -76,7 +76,7 @@ function EthereumAddressCard(props: IProps) {
                     </CardContent>
                 </div>}
                 {props.isLoadingChequebookAddress ? 
-                <div>
+                <div style={{padding: '16px'}}>
                     <Skeleton width={300} height={30} animation="wave" />
                     <Skeleton width={300} height={50} animation="wave" />
                 </div>
