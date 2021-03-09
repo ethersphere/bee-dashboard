@@ -58,7 +58,7 @@ function PeerTable(props: any) {
                     <TableRow>
                         <TableCell>Index</TableCell>
                         <TableCell>Peer Id</TableCell>
-                        <TableCell align="right"></TableCell>
+                        <TableCell align="right">Actions</TableCell>
                     </TableRow>
                     </TableHead>
                     <TableBody>

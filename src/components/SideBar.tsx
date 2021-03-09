@@ -61,6 +61,12 @@ const useStyles = makeStyles((theme: Theme) =>
     drawerPaper: {
       width: drawerWidth,
     },
+    activeSideBar: {
+      color: '#fb6340',
+    },
+    activeSideBarItem: {
+      borderLeft: '4px solid #fb6340',
+    },
     toolbar: theme.mixins.toolbar,
   }),
 );
@@ -102,11 +108,11 @@ export default function SideBar(props: any) {
         <List>
             {navBarItems.map(item => (
                 <Link to={item.path}  key={item.id} style={{ color:'inherit', textDecoration:'none'}}>
-                    <ListItem button selected={props.location.pathname === item.path}>
-                        <ListItemIcon>
+                    <ListItem button selected={props.location.pathname === item.path} className={props.location.pathname === item.path ? classes.activeSideBarItem : ''}>
+                        <ListItemIcon className={props.location.pathname === item.path ? classes.activeSideBar : ''}>
                             { getIcon(item.icon) }
                         </ListItemIcon>
-                        <ListItemText primary={item.label} />
+                        <ListItemText primary={item.label} className={props.location.pathname === item.path ? classes.activeSideBar : ''} />
                     </ListItem>
                 </Link>
             ))}
