@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { beeApi } from '../../services/bee';
 
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { Paper, InputBase, IconButton, Button, Container } from '@material-ui/core';
+import { Paper, InputBase, IconButton, Button, Container, CircularProgress } from '@material-ui/core';
 import { Search } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -36,9 +36,13 @@ export default function Files() {
     const [loadingSearch, setLoadingSearch] = useState(false);
 
     const getFile = () => {
-        beeApi.files.downloadData(searchInput)
+      setLoadingSearch(true)
+        beeApi.files.downloadFile(searchInput)
         .then(res => {
-            setSearchResult(new TextDecoder("utf-8").decode(res))
+            // setSearchResult(new TextDecoder("utf-8").decode(res))
+        })
+        .finally(() => {
+          setLoadingSearch(false)
         })
     }
 
@@ -74,10 +78,10 @@ export default function Files() {
                 </IconButton>
             </Paper>
             }
-            {!loadingSearch &&  searchResult ?
-            searchResult
-            : 
-            searchResult
+            {loadingSearch ?
+            <Container style={{textAlign:'center', padding:'50px'}}>
+                <CircularProgress />
+            </Container> : null
             }
             </Container>
         </div>
