@@ -15,23 +15,18 @@ const useStyles = makeStyles({
 function PeerTable(props: any) {
     const classes = useStyles();
 
-    const [peerRTP, setPeerRTP] = useState([{ peerId: '', rtt: '' }]);
-    const [pingingPeer, setPingingPeer] = useState(false);
-
+    const [peerLatency, setPeerLatency] = useState([{ peerId: '', rtt: '', loading: false }]);
     const [removingPeer, setRemovingPeer] = useState(false);
 
-    const pingPeer = (peerId: string) => {
-        setPingingPeer(true)
+    const PingPeer = async (peerId: string) => {
+        
+        setPeerLatency([...peerLatency, { peerId: peerId, rtt: '', loading: true }])
         beeDebugApi.connectivity.ping(peerId)
         .then(res => {
-            console.log(res.data)
-            let roundTripTime: any = res.data;
-            setPingingPeer(false)
-            setPeerRTP([...peerRTP, {peerId: peerId, rtt: roundTripTime}])
+            setPeerLatency([...peerLatency, { peerId: peerId, rtt: res.data.rtt, loading: false }])
         })
         .catch(error => {
-            console.log(error)
-            setPingingPeer(false)
+            setPeerLatency([...peerLatency, { peerId: peerId, rtt: 'error', loading: false }])
         })
     }
 
@@ -39,10 +34,13 @@ function PeerTable(props: any) {
         setRemovingPeer(true)
         beeDebugApi.connectivity.removePeer(peerId)
         .then(res => {
+            window.location.reload()
             setRemovingPeer(false)
         })
         .catch(error => {
             console.log(error)
+        })
+        .finally(() => {
             setRemovingPeer(false)
         })
     }
@@ -72,8 +70,11 @@ function PeerTable(props: any) {
                         <TableCell>{peer.address}</TableCell>
                         <TableCell align="right">
                             <Tooltip title="Ping node">
-                                <Button color="primary" onClick={() => pingPeer(peer.address)} >
-                                {peerRTP.find(item => item.peerId === peer.address) ? peerRTP.filter(item => item.peerId === peer.address)[0].rtt : <Autorenew />}
+                                <Button color="primary" onClick={() => PingPeer(peer.address)} >
+                                {peerLatency.find(item => item.peerId === peer.address) ? 
+                                    peerLatency.filter(item => item.peerId === peer.address)[0].loading ? <CircularProgress size={20} /> :
+                                    peerLatency.filter(item => item.peerId === peer.address)[0].rtt :
+                                <Autorenew />}
                                 </Button>
                             </Tooltip>
                             

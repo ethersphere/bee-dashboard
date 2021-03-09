@@ -10,6 +10,7 @@ import Identicon from 'react-identicons';
 interface IProps {
     address: string,
     network?: string,
+    hideBlockie?: boolean,
 }
 
 export default function EthereumAddress(props: IProps) {
@@ -17,12 +18,15 @@ export default function EthereumAddress(props: IProps) {
         <Typography component="p" variant="subtitle1">
             {props.address ? 
             <div style={{display:'flex'}}>
-                <div style={{paddingTop:'5px'}}>
+                {props.hideBlockie ?
+                null
+                :
+                <div style={{paddingTop:'5px', marginRight: '10px', }}>
                     <Identicon size='20' string={props.address} />
-                </div>
+                </div>}
                 <div>
                     <a 
-                    style={{ marginLeft: '10px', marginRight:'7px',}}
+                    style={{ marginRight:'7px',}}
                     href={`https://${props.network}.${process.env.REACT_APP_ETHERSCAN_HOST}/address/${props.address}`}
                     target='_blank'
                     >

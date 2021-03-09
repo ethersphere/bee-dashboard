@@ -3,6 +3,10 @@ import React from 'react'
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import { Card, CardContent, Typography, Grid, Button } from '@material-ui/core/';
 import { Skeleton } from '@material-ui/lab';
+import WithdrawlModal from '../../components/WithdrawlModal';
+import DepositModal from '../../components/DepositModal';
+
+import { ConvertBalanceToBZZ } from '../../utils/common';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -40,11 +44,10 @@ interface IProps{
     isLoadingChequebookAddress: boolean,
     chequebookBalance: ChequebookBalance,
     isLoadingChequebookBalance: boolean,
+    settlements: any,
+    isLoadingSettlements: boolean,
 }
 
-const ConvertBalanceToBZZ = (amount: number) =>  {
-    return amount / (10 ^ 16)
-}
 
 function AccountCard(props: IProps) {
     const classes = useStyles();
@@ -53,14 +56,14 @@ function AccountCard(props: IProps) {
         <div>
             <div style={{justifyContent: 'space-between', display: 'flex'}}>
                 <h2 style={{ marginTop: '0px' }}>Contract <span className={classes.address}>{ props.chequebookAddress.chequebookaddress }</span></h2>
-                <div>
-                    <Button variant="outlined" color="primary" style={{marginRight:'7px'}}>Deposit</Button>
-                    <Button variant="outlined" color="primary">Withdrawl</Button>
+                <div  style={{display:'flex'}}>
+                    <WithdrawlModal />
+                    <DepositModal />
                 </div>
             </div>
             
             <Card className={classes.root}>
-                { !props.isLoadingChequebookBalance && props.chequebookBalance ? 
+                { !props.isLoadingChequebookBalance && !props.isLoadingSettlements && props.chequebookBalance ? 
                 <div className={classes.details}>
                     <CardContent className={classes.content}>
                         <Grid container spacing={5}>
@@ -80,11 +83,22 @@ function AccountCard(props: IProps) {
                                     {ConvertBalanceToBZZ(props.chequebookBalance.availableBalance)}
                                 </Typography>
                             </Grid>
+                            <Grid item>
+                                <Typography component="h2" variant="h6" color="primary" gutterBottom>
+                                Total Sent / Received
+                                </Typography>
+                                <Typography component="p" variant="h5" >
+                                 <span style={{marginRight:'7px'}}>{ConvertBalanceToBZZ(props.settlements.totalsent)} / {ConvertBalanceToBZZ(props.settlements.totalreceived)}</span>
+                                 <span style={{ color: props.settlements.totalsent > props.settlements.totalreceived ? '#c9201f' : '#32c48d' }}>({ConvertBalanceToBZZ(props.settlements.totalsent - props.settlements.totalreceived)})</span>
+                                </Typography>
+                            </Grid>
                         </Grid>
                     </CardContent>
                 </div>
                 :
                 <div className={classes.details}>
+                    <Skeleton width={180} height={110} animation="wave" style={{ marginLeft: '12px', marginRight: '12px'}} />
+                    <Skeleton width={180} height={110} animation="wave" style={{ marginLeft: '12px', marginRight: '12px'}} />
                     <Skeleton width={180} height={110} animation="wave" style={{ marginLeft: '12px', marginRight: '12px'}} />
                     <Skeleton width={180} height={110} animation="wave" />
                 </div>

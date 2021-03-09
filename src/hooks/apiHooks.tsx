@@ -246,3 +246,26 @@ export const useApiSettlements = () => {
 
     return { settlements, isLoadingSettlements, error };
 }
+
+
+export const useApiPingPeer = (peerId: string) => {
+    const [peerRTP, setPeerRTP] = useState('')
+    const [isPingingPeer, setPingingPeer] = useState<boolean>(false)
+    const [error, setError] = useState<Error | null>(null)
+
+    useEffect(() => { 
+        setPingingPeer(true)
+        beeDebugApi.connectivity.ping(peerId)
+        .then(res => {
+            setPeerRTP(res.data)
+        })
+        .catch(error => {
+            setError(error)
+        })
+        .finally(() => {
+            setPingingPeer(false)
+        })
+    }, [])
+
+    return { peerRTP, isPingingPeer, error };
+}

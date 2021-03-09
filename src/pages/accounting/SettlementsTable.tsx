@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Button, Paper, Tooltip, Container, CircularProgress  } from '@material-ui/core';
 
+import { ConvertBalanceToBZZ } from '../../utils/common';
+
 const useStyles = makeStyles({
     table: {
       minWidth: 650,
@@ -48,8 +50,8 @@ function SettlementsTable(props: IProps) {
                     {props.nodeSettlements.settlements.map((item: Settlement, idx: number) => (
                         <TableRow key={item.peer}>
                         <TableCell>{item.peer}</TableCell>
-                        <TableCell>{item.received}</TableCell>
-                        <TableCell>{item.sent}</TableCell>
+                        <TableCell>{ConvertBalanceToBZZ(item.received)}</TableCell>
+                        <TableCell>{ConvertBalanceToBZZ(item.sent)}</TableCell>
                         </TableRow>
                     ))}
                     </TableBody>

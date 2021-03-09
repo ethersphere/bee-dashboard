@@ -2,6 +2,9 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Button, Paper, Tooltip, Container, CircularProgress  } from '@material-ui/core';
 
+import { ConvertBalanceToBZZ } from '../../utils/common';
+import EthereumAddress from '../../components/EthereumAddress';
+
 const useStyles = makeStyles({
     table: {
       minWidth: 650,
@@ -56,12 +59,26 @@ function ChequebookTable(props: IProps) {
                             {peerCheque.peer}
                         </TableCell>
                         <TableCell>
-                            <p style={{marginBottom: '0px'}}><small>{peerCheque.lastreceived?.beneficiary}</small></p>
-                            <span>{peerCheque.lastreceived?.payout}</span>
+                            <p style={{marginBottom: '0px'}}>{peerCheque.lastreceived?.payout ? ConvertBalanceToBZZ(peerCheque.lastreceived?.payout) : '-'}</p>
+                            <p style={{marginBottom: '0px'}}>
+                                <small>{peerCheque.lastreceived ?
+                                <EthereumAddress
+                                hideBlockie
+                                address={peerCheque.lastreceived.beneficiary}
+                                /> : null}
+                                </small>
+                            </p>
                         </TableCell>
                         <TableCell>
-                            <p  style={{marginBottom: '0px'}}><small>{peerCheque.lastsent?.beneficiary}</small></p>
-                            <span>{peerCheque.lastsent?.payout}</span>
+                            <p  style={{marginBottom: '0px'}}>{peerCheque.lastsent?.payout ? ConvertBalanceToBZZ(peerCheque.lastsent?.payout) : '-'}</p>
+                            <p style={{marginBottom: '0px'}}>
+                                <small>{peerCheque.lastsent ?
+                                <EthereumAddress
+                                hideBlockie
+                                address={peerCheque.lastsent.beneficiary}
+                                /> : null}
+                                </small>
+                            </p>
                         </TableCell>
                         <TableCell align="right">
                         </TableCell>

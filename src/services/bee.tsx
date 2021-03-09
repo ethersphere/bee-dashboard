@@ -130,6 +130,12 @@ export const beeDebugApi = {
         getPeerLastCheques(peerId: string) {
             return beeDebugApiClient().get(`/chequebook/cashout/${peerId}`)
         },
+        withdraw(amount: number) {
+            return beeDebugApiClient().post(`/chequebook/withdraw?amount=${amount}`)
+        },
+        deposit(amount: number) {
+            return beeDebugApiClient().post(`/chequebook/deposit?amount=${amount}`)
+        },
     },
     settlements: {
         getSettlements() {

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Button, Paper, Tooltip, Container, CircularProgress } from '@material-ui/core';
 
+import { ConvertBalanceToBZZ } from '../../utils/common';
+
 const useStyles = makeStyles({
     table: {
       minWidth: 650,
@@ -45,7 +47,7 @@ function BalancesTable(props: IProps) {
                     {props.peerBalances.balances.map((peerBalance: PeerBalance, idx: number) => (
                         <TableRow key={peerBalance.peer}>
                         <TableCell>{peerBalance.peer}</TableCell>
-                        <TableCell>{peerBalance.balance}</TableCell>
+                        <TableCell style={{ color: ConvertBalanceToBZZ(peerBalance.balance) > 0 ? '#32c48d' : '#c9201f' }}>{ConvertBalanceToBZZ(peerBalance.balance)}</TableCell>
                         <TableCell align="right">
                         </TableCell>
                         </TableRow>

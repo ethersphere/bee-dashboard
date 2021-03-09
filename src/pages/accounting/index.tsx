@@ -117,6 +117,8 @@ export default function Accounting() {
             isLoadingChequebookAddress={isLoadingChequebookAddress}
             chequebookBalance={chequebookBalance}
             isLoadingChequebookBalance={isLoadingChequebookBalance}
+            settlements={settlements}
+            isLoadingSettlements={isLoadingSettlements}
             />
             <EthereumAddressCard 
             nodeAddresses={nodeAddresses} 

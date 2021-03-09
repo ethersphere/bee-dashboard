@@ -5,6 +5,7 @@ import { CheckCircle, Error, Warning, ExpandMoreSharp } from '@material-ui/icons
 import EthereumAddress from '../../components/EthereumAddress';
 import CodeBlock from '../../components/CodeBlock';
 import ConnectToHost from '../../components/ConnectToHost';
+import DepositModal from '../../components/DepositModal';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -228,7 +229,12 @@ function getStepContent(step: number, props: any) {
 
   const fundingAndDeploymentCheck = (
     <div> 
-      <p>Deploy chequebook and fund with BZZ</p>
+      <p style={{marginBottom:'20px', display:'flex'}}>
+        <span style={{ marginRight:'40px'}} >Deploy chequebook and fund with BZZ</span>
+        {props.chequebookAddress.chequebookaddress ?
+        <DepositModal />
+        : null }
+      </p>
       <div style={{ marginBottom:'10px' }}>
       {props.chequebookAddress.chequebookaddress ?
           <div>
