@@ -42,13 +42,21 @@ const Dashboard: FC = (props) => {
     const [themeMode, toggleThemeMode] = useState('light');
 
     useEffect(() => {
-      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      let theme = localStorage.getItem('theme')
+
+      if (theme) {
+        toggleThemeMode(String(localStorage.getItem('theme')))
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         toggleThemeMode('dark')
       }
   
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
         toggleThemeMode(e.matches ? "dark" : "light")
       });
+
+      return () => window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', e => {
+        toggleThemeMode(e.matches ? "dark" : "light")
+      })
     }, [])
 
     return (

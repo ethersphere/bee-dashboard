@@ -26,8 +26,15 @@ export default function SideBar(props: any) {
   const [darkMode, toggleDarkMode] = useState(false);
 
   const switchTheme = () => {
-    localStorage.setItem('theme', darkMode ? 'dark' : 'light')
+    let theme = localStorage.getItem('theme')
+    if (theme) {
+      localStorage.setItem('theme', theme === 'light' ? 'dark' : 'light')
+    } else {
+      localStorage.setItem('theme', darkMode ? 'dark' : 'light')
+    }
+    
     toggleDarkMode(!darkMode)
+    window.location.reload()
   }
 
   const classes = useStyles();
