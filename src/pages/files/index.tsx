@@ -4,6 +4,8 @@ import { beeApi } from '../../services/bee';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import { Paper, InputBase, IconButton, Button, Container, CircularProgress } from '@material-ui/core';
 import { Search } from '@material-ui/icons';
+import {DropzoneArea} from 'material-ui-dropzone'
+import ClipboardCopy from '../../components/ClipboardCopy';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -35,6 +37,10 @@ export default function Files() {
     const [searchResult, setSearchResult] = useState('');
     const [loadingSearch, setLoadingSearch] = useState(false);
 
+    const [files, setFiles] = useState<File[]>([]);
+    const [uploadReference, setUploadReference] = useState('');
+    const [uploadingFile, setUploadingFile] = useState(false);
+
     const getFile = () => {
       setLoadingSearch(true)
         beeApi.files.downloadFile(searchInput)
@@ -46,6 +52,27 @@ export default function Files() {
         .finally(() => {
           setLoadingSearch(false)
         })
+    }
+
+    const uploadFile = () => {
+      setUploadingFile(true)
+        beeApi.files.uploadFile(files[0])
+        .then(hash => {
+            setUploadReference(hash)
+            setFiles([])
+        })
+        .catch(error => {
+        })
+        .finally(() => {
+          setUploadingFile(false)
+        })
+    }
+
+    const handleChange = (files: any) => {
+      if (files) {
+        setFiles(files)
+  
+      }
     }
 
     return (
@@ -68,22 +95,42 @@ export default function Files() {
                 </IconButton>
             </Paper>
             :
-            <Paper component="form" className={classes.root}> 
-                <InputBase
-                className={classes.input}
-                placeholder="Enter file name"
-                inputProps={{ 'aria-label': 'upload swarm nodes' }}
-                onChange={(e) => setSearchInput(e.target.value)}
+            <div>
+              {uploadingFile ?
+              <Container style={{textAlign:'center', padding:'50px'}}>
+                  <CircularProgress />
+              </Container> 
+              :
+              <div>
+                {uploadReference ?
+                  <Paper component="form" className={classes.root}  style={{marginBottom:'15px', display: 'flex'}}> 
+                    <span>{uploadReference}</span>
+                    <ClipboardCopy
+                    value={uploadReference}
+                    />
+                  </Paper>
+                  :
+                  null
+                }
+                <DropzoneArea
+                onChange={handleChange}
                 />
-                <IconButton onClick={() => getFile()} className={classes.iconButton} aria-label="search">
-                    <Search />
-                </IconButton>
-            </Paper>
+                <div style={{marginTop:'15px'}}>
+                  <Button onClick={() => uploadFile()} className={classes.iconButton}>
+                      Upload
+                  </Button>
+                </div>
+              </div>}
+            </div>
             }
             {loadingSearch ?
             <Container style={{textAlign:'center', padding:'50px'}}>
                 <CircularProgress />
-            </Container> : searchResult
+            </Container> 
+            :
+            <div style={{padding:'20px'}} >
+            {searchResult}
+            </div>
             }
             </Container>
         </div>

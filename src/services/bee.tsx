@@ -41,11 +41,6 @@ const beeDebugApiClient = (): AxiosInstance => {
     })
 }
 
-interface File {
-    id: String;
-    file: BinaryType;
-}
-
 export const beeApi = {
     status: {
         health() {
@@ -53,11 +48,11 @@ export const beeApi = {
         }
     },
     files: {
-        uploadFile(file: File) {
-            return beeJSClient().uploadFile(file.file)
+        uploadFile(file: any) {
+            return beeJSClient().uploadFile(file)
         },
-        uploadData(file: File) { 
-            return beeJSClient().uploadData(file.file)
+        uploadData(file: any) { 
+            return beeJSClient().uploadData(file)
         },
         downloadFile(hash: string) {
             return beeJSClient().downloadFile(hash)
