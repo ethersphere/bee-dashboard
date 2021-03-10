@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button } from '@material-ui/core';
+import { TextField, Button, CircularProgress, Container } from '@material-ui/core';
 
 interface IProps {
     defaultHost?: string,
@@ -8,10 +8,12 @@ interface IProps {
 
 export default function ConnectToHost(props: IProps) {
     const [hostInputVisible, toggleHostInputVisibility] = useState(false)
+    const [connectingToHost, setConnectingToHost] = useState(false)
     const [host, setHost] = useState('')
 
     const handleNewHostConnection = () => {
         if (host) {
+            setConnectingToHost(true)
             sessionStorage.setItem(props.hostName, host)
             toggleHostInputVisibility(!hostInputVisible)
             window.location.reload();
@@ -33,6 +35,11 @@ export default function ConnectToHost(props: IProps) {
                 <Button onClick={() => handleNewHostConnection()} size='small' variant="outlined">Connect</Button>
             </div>
             : 
+            connectingToHost ?
+            <Container style={{textAlign:'center', padding:'0px'}}>
+                <CircularProgress size={20} />
+            </Container>
+            :
             <Button onClick={() => toggleHostInputVisibility(!hostInputVisible)} size='small' variant="outlined">Change host</Button>
             }
         </div>

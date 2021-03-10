@@ -95,7 +95,7 @@ function StatusCard(props: IProps) {
                         <span style={{marginRight:'20px'}}>Discovered Nodes: { props.nodeTopology.population }</span>
                         <span style={{marginRight:'20px'}}>
                             <span>Connected Peers: </span>
-                            <Link to='/peers'>
+                            <Link to='/peers/'>
                             { props.nodeTopology.connected }
                             </Link>
                         </span>

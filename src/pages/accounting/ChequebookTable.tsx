@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Button, Paper, Tooltip, Container, CircularProgress  } from '@material-ui/core';
 
 import { ConvertBalanceToBZZ } from '../../utils/common';
 import EthereumAddress from '../../components/EthereumAddress';
+import ClipboardCopy from '../../components/ClipboardCopy';
+import PeerDetailDrawer from './PeerDetailDrawer';
 
 const useStyles = makeStyles({
     table: {
@@ -42,6 +44,7 @@ function ChequebookTable(props: IProps) {
                 <CircularProgress />
             </Container>
             :
+            <div>
              <TableContainer component={Paper}>
                 <Table className={classes.table} size="small" aria-label="simple table">
                     <TableHead>
@@ -56,7 +59,14 @@ function ChequebookTable(props: IProps) {
                     {props.peerCheques.lastcheques.map((peerCheque: PeerCheque, idx: number) => (
                         <TableRow key={peerCheque.peer}>
                         <TableCell>
-                            {peerCheque.peer}
+                            <div style={{display:'flex'}}>
+                                <small>
+                                  <PeerDetailDrawer 
+                                  peerId={peerCheque.peer}
+                                  />
+                                </small>
+                                <ClipboardCopy value={peerCheque.peer} />
+                            </div>
                         </TableCell>
                         <TableCell>
                             <p style={{marginBottom: '0px'}}>{peerCheque.lastreceived?.payout ? ConvertBalanceToBZZ(peerCheque.lastreceived?.payout) : '-'}</p>
@@ -64,6 +74,7 @@ function ChequebookTable(props: IProps) {
                                 <small>{peerCheque.lastreceived ?
                                 <EthereumAddress
                                 hideBlockie
+                                network='goerli'
                                 address={peerCheque.lastreceived.beneficiary}
                                 /> : null}
                                 </small>
@@ -75,6 +86,7 @@ function ChequebookTable(props: IProps) {
                                 <small>{peerCheque.lastsent ?
                                 <EthereumAddress
                                 hideBlockie
+                                network='goerli'
                                 address={peerCheque.lastsent.beneficiary}
                                 /> : null}
                                 </small>
@@ -86,7 +98,8 @@ function ChequebookTable(props: IProps) {
                     ))}
                     </TableBody>
                 </Table>
-            </TableContainer>}
+            </TableContainer>
+            </div>}
         </div>
     )
 }

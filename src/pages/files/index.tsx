@@ -39,7 +39,9 @@ export default function Files() {
       setLoadingSearch(true)
         beeApi.files.downloadFile(searchInput)
         .then(res => {
-            // setSearchResult(new TextDecoder("utf-8").decode(res))
+            setSearchResult(new TextDecoder("utf-8").decode(res.data))
+        })
+        .catch(error => {
         })
         .finally(() => {
           setLoadingSearch(false)
@@ -69,7 +71,7 @@ export default function Files() {
             <Paper component="form" className={classes.root}> 
                 <InputBase
                 className={classes.input}
-                placeholder="Enter file nmae"
+                placeholder="Enter file name"
                 inputProps={{ 'aria-label': 'upload swarm nodes' }}
                 onChange={(e) => setSearchInput(e.target.value)}
                 />
@@ -81,7 +83,7 @@ export default function Files() {
             {loadingSearch ?
             <Container style={{textAlign:'center', padding:'50px'}}>
                 <CircularProgress />
-            </Container> : null
+            </Container> : searchResult
             }
             </Container>
         </div>

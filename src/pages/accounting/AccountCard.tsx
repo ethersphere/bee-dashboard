@@ -5,6 +5,7 @@ import { Card, CardContent, Typography, Grid, Button } from '@material-ui/core/'
 import { Skeleton } from '@material-ui/lab';
 import WithdrawlModal from '../../components/WithdrawlModal';
 import DepositModal from '../../components/DepositModal';
+import CashoutModal from '../../components/CashoutModal';
 
 import { ConvertBalanceToBZZ } from '../../utils/common';
 
@@ -59,6 +60,7 @@ function AccountCard(props: IProps) {
                 <div  style={{display:'flex'}}>
                     <WithdrawlModal />
                     <DepositModal />
+                    <CashoutModal />
                 </div>
             </div>
             

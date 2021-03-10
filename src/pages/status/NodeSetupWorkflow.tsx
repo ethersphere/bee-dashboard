@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import { Typography, Paper, Button, Step, StepLabel, StepContent, Stepper, Accordion, AccordionSummary, AccordionDetails, StepButton } from '@material-ui/core/';
+import MuiAlert from '@material-ui/lab/Alert';
 import { CheckCircle, Error, Warning, ExpandMoreSharp, Sync } from '@material-ui/icons/';
 import EthereumAddress from '../../components/EthereumAddress';
 import ConnectToHost from '../../components/ConnectToHost';
 import DepositModal from '../../components/DepositModal';
 import CodeBlockTabs from '../../components/CodeBlockTabs'
+import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -67,10 +69,10 @@ function getStepContent(step: number, props: any) {
                         <li>Check the status of your node by running the below command to see if your node is running.</li>
                         <CodeBlockTabs
                         showLineNumbers
-                        linux={`sudo systemctl start bee`}
+                        linux={`sudo systemctl status bee`}
                         mac={`brew services status swarm-bee`}
                         />
-                        <li>If your node is running, check your firewall settings to make sure that port 1633 is exposed to the internet. If your node is not running try executing the below command to start your bee node</li>
+                        <li>If your node is running, check your firewall settings to make sure that port 1633 (or your custom specified port) is exposed to the internet. If your node is not running try executing the below command to start your bee node</li>
                         <CodeBlockTabs
                         showLineNumbers
                         linux={`sudo systemctl start bee`}
@@ -121,7 +123,10 @@ function getStepContent(step: number, props: any) {
                       linux={`sudo systemctl status bee`}
                       mac={`brew services status swarm-bee`}
                       />
-                      <li>If your node is running, check your firewall settings to make sure that port 1635 is bound to localhost. If your node is not running try executing the below command to start your bee node</li>
+                      <li>If your node is running, check your firewall settings to make sure that port 1635 (or your custom specified port) is bound to localhost. If your node is not running try executing the below command to start your bee node</li>
+                      <MuiAlert style={{marginTop:'10px', marginBottom:'10px'}} elevation={6} variant="filled"  severity="error">
+                        Your debug node API should never be completely open to the internet. If you want to connect remotely, make sure your firewall settings are set to only allow specific trusted IP addresses and block all other ports. A simple google search for "what is my ip" will show you your computers public IP address to allow.
+                      </MuiAlert>
                       <CodeBlockTabs
                       showLineNumbers
                       linux={`sudo systemctl start bee`}
@@ -133,7 +138,7 @@ function getStepContent(step: number, props: any) {
                       linux={`sudo systemctl status bee \njournalctl --lines=100 --follow --unit bee`}
                       mac={`brew services status swarm-bee \ntail -f /usr/local/var/log/swarm-bee/bee.log`}
                       />
-                      <li>Lastly, check your nodes configuration settings to validate the debug API is enabled. Config parameter <strong>debug-api-enable</strong> must be set to <strong>true</strong></li>
+                      <li>Lastly, check your nodes configuration settings to validate the debug API is enabled and the Cross Origin Resource Sharing (CORS) setting is configured to allow your host. Config parameter <strong>debug-api-enable</strong> must be set to <strong>true</strong> and <strong>cors-allowed-origins</strong> must be set to your host domain or IP. If edits are made to the configuration run the restart command below for changes to take effect.</li>
                       <CodeBlockTabs
                       showLineNumbers
                       linux={`sudo vi /etc/bee/bee.yaml\nsudo systemctl restart bee`}
@@ -205,7 +210,11 @@ function getStepContent(step: number, props: any) {
           :
           <div>
             <Warning style={{color:'#ff9800', marginRight: '7px', height: '18px'}} />
-            <span>Your not connected to the Ethereum network</span>
+            <span>Your not connected to the Ethereum network. </span>
+            <p>Your Bee node must have access to the Ethereum blockchain, so that it can interact and deploy your chequebook contract. You can run <a href='https://github.com/goerli/testnet' target='_blank'>your own Goerli node</a>, or use a provider such as <a href='https://rpc.slock.it/goerli'  target='_blank'>rpc.slock.it/goerli</a> or <a href='https://infura.io/' target='_blank'>Infura</a>. 
+
+            By default, Bee expects a local Goerli node at http://localhost:8545. To use a provider instead, simply change your <strong>--swap-endpoint</strong> in your configuration file.
+            </p>
           </div>
       }
       </div>
@@ -239,7 +248,7 @@ function getStepContent(step: number, props: any) {
           :
           <div>
             <Warning style={{color:'#ff9800', marginRight: '7px', height: '18px'}} />
-            <span>Your chequebook is either not deployed or funded. Run the below commands to get your address and deposit ETH.Then visit the BZZaar here <a href='#'>https://bzz.ethswarm.org/?transaction=buy&amount=10&slippage=30&receiver=[ENTER_ADDRESS_HERE] to get BZZ</a></span>
+            <span>Your chequebook is either not deployed or funded. Run the below commands to get your address and deposit ETH. Then visit the BZZaar here <a href='#'>https://bzz.ethswarm.org/?transaction=buy&amount=10&slippage=30&receiver=[ENTER_ADDRESS_HERE]</a> to get BZZ</span>
             <CodeBlockTabs
             showLineNumbers
             linux={`bee-get-addr`}

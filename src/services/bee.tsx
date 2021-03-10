@@ -128,7 +128,7 @@ export const beeDebugApi = {
             return beeDebugApiClient().get(`/chequebook/cashout/${peerId}`)
         },
         getPeerLastCheques(peerId: string) {
-            return beeDebugApiClient().get(`/chequebook/cashout/${peerId}`)
+            return beeDebugApiClient().get(`/chequebook/cheque/${peerId}`)
         },
         withdraw(amount: number) {
             return beeDebugApiClient().post(`/chequebook/withdraw?amount=${amount}`)

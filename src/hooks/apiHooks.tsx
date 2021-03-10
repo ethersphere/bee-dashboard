@@ -225,6 +225,37 @@ export const useApiPeerCheques = () => {
     return { peerCheques, isLoadingPeerCheques, error };
 }
 
+export const useApiPeerLastCheque = (peerId: string) => {
+    const [peerCheque, setPeerCheque] = useState({ peer: '-', chequebook: "",
+        cumulativePayout: 0,
+        beneficiary: "",
+        transactionHash: "",
+        result: {
+            recipient: "",
+            lastPayout: 0,
+            bounced: false
+    }}
+    )
+    const [isLoadingPeerCheque, setLoading] = useState<boolean>(false)
+    const [error, setError] = useState<Error | null>(null)
+
+    useEffect(() => { 
+        setLoading(true)
+        beeDebugApi.chequebook.getPeerLastCheques(peerId)
+        .then(res => {
+            setPeerCheque(res.data)
+        })
+        .catch(error => {
+            setError(error)
+        })
+        .finally(() => {
+            setLoading(false)
+        })
+    }, [])
+
+    return { peerCheque, isLoadingPeerCheque, error };
+}
+
 export const useApiSettlements = () => {
     const [settlements, setSettlements] = useState({ totalreceived: 0, totalsent: 0, settlements: [{peer: '-', received: 0, sent: 0}] })
     const [isLoadingSettlements, setLoading] = useState<boolean>(false)
@@ -268,4 +299,35 @@ export const useApiPingPeer = (peerId: string) => {
     }, [])
 
     return { peerRTP, isPingingPeer, error };
+}
+
+export const useApiPeerLastCashout = (peerId: string) => {
+    const [peerCashout, setPeerCashout] = useState({ "peer": "",
+    "chequebook": "",
+    "cumulativePayout": 0,
+    "beneficiary": "",
+    "transactionHash": "",
+    "result": {
+    "recipient": "",
+    "lastPayout": 0,
+    "bounced": false
+    }})
+    const [isLoadingPeerCashout, setLoading] = useState<boolean>(false)
+    const [error, setError] = useState<Error | null>(null)
+
+    useEffect(() => { 
+        setLoading(true)
+        beeDebugApi.chequebook.getPeerLastCashout(peerId)
+        .then(res => {
+            setPeerCashout(res.data)
+        })
+        .catch(error => {
+            setError(error)
+        })
+        .finally(() => {
+            setLoading(false)
+        })
+    }, [])
+
+    return { peerCashout, isLoadingPeerCashout, error };
 }
