@@ -12,7 +12,7 @@ import { beeDebugApi } from '../services/bee';
 
 export default function WithdrawlModal() {
   const [open, setOpen] = React.useState(false);
-  const [amount, setAmount] = React.useState(0);
+  const [amount, setAmount] = React.useState(BigInt(0));
   const [showToast, setToastVisibility] = React.useState(false);
   const [toastContent, setToastContent] = React.useState('');
 
@@ -71,7 +71,7 @@ export default function WithdrawlModal() {
             type="number"
             placeholder='Amount'
             fullWidth
-            onChange={(e) => setAmount(parseInt(e.target.value))}
+            onChange={(e) => setAmount(BigInt(e.target.value))}
           />
         </DialogContent>
         <DialogActions>
