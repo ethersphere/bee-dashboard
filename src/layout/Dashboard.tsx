@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 
-const Dashboard: FC = (props) => {
+const Dashboard = (props: any) => {
     const classes = useStyles();
 
     const [themeMode, toggleThemeMode] = useState('light');
@@ -63,12 +63,14 @@ const Dashboard: FC = (props) => {
       })
     }, [])
 
+    let childrenInjectedWithProps = React.cloneElement(props.children, { health, nodeHealth })
+
     return (
         <div>
             <SideBar {...props} themeMode={themeMode} health={health} nodeHealth={nodeHealth} />
             <NavBar themeMode={themeMode} />
             <main className={classes.content} >
-                {props.children}
+                {childrenInjectedWithProps}
             </main>
         </div>
     )

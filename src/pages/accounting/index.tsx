@@ -7,6 +7,7 @@ import BalancesTable from './BalancesTable';
 import ChequebookTable from './ChequebookTable';
 import SettlementsTable from './SettlementsTable';
 import EthereumAddressCard from '../../components/EthereumAddressCard';
+import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard';
 
 import { useApiNodeAddresses, useApiChequebookAddress, useApiChequebookBalance, useApiPeerBalances, useApiPeerCheques, useApiSettlements } from '../../hooks/apiHooks';
 
@@ -24,7 +25,7 @@ function a11yProps(index: any) {
     };
 }
 
-export default function Accounting() {
+export default function Accounting(props: any) {
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
@@ -112,6 +113,8 @@ export default function Accounting() {
     
     return (
         <div>
+          {props.nodeHealth.status === 'ok' && props.health ?
+          <div>
             <AccountCard
             chequebookAddress={chequebookAddress}
             isLoadingChequebookAddress={isLoadingChequebookAddress}
@@ -149,6 +152,10 @@ export default function Accounting() {
               loading={isLoadingSettlements}
               />
             </TabPanel>
+            </div>
+            :
+            <TroubleshootConnectionCard />
+            }
         </div>
     )
 }
