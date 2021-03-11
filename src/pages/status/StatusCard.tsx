@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { Theme, createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
 import { Card, CardContent, Typography, Chip, Button } from '@material-ui/core/';
-import { CheckCircle, Error, ExpandMoreSharp, ArrowForwardIosSharp } from '@material-ui/icons/';
+import { CheckCircle, Error, ArrowRight, ArrowDropUp } from '@material-ui/icons/';
 import { Skeleton } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -134,11 +134,18 @@ function StatusCard(props: IProps) {
                         </Typography>
                         <Typography variant="subtitle2" gutterBottom>
                                 <Typography style={{marginTop:'20px'}}>
-                                    <span>Overlay Address (Peer Id): </span>
+                                    <span>OVERLAY ADDRESS (PEER ID): </span>
                                     <span>{ props.nodeAddresses.overlay ? props.nodeAddresses.overlay : '-' }</span>
                                 </Typography>
                                 <Typography onClick={() => setUnderlayAddresessVisible(!underlayAddressesVisible)}>
-                                    <span>Underlay Addresses: </span></Typography>
+                                    <Button color="primary" style={{padding: 0, marginTop:'6px'}}>
+                                        { underlayAddressesVisible ? 
+                                        <ArrowDropUp style={{fontSize:'12px'}} /> : 
+                                        <ArrowRight style={{fontSize:'12px'}} />
+                                        }
+                                        <span>Underlay Addresses</span>
+                                    </Button>
+                                </Typography>
                                 {underlayAddressesVisible ?
                                     <div>
                                     
