@@ -5,7 +5,8 @@ import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import SideBar from '../components/SideBar';
 import NavBar from '../components/NavBar';
 
-import SwarmLogo from '../assets/swarm-logo-3.png'
+import { useApiHealth, useDebugApiHealth } from '../hooks/apiHooks';
+
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,6 +42,9 @@ const Dashboard: FC = (props) => {
 
     const [themeMode, toggleThemeMode] = useState('light');
 
+    const { health } = useApiHealth()
+    const { nodeHealth } = useDebugApiHealth()
+
     useEffect(() => {
       let theme = localStorage.getItem('theme')
 
@@ -61,8 +65,8 @@ const Dashboard: FC = (props) => {
 
     return (
         <div>
-            <SideBar {...props} themeMode={themeMode} />
-            <NavBar  themeMode={themeMode} />
+            <SideBar {...props} themeMode={themeMode} health={health} nodeHealth={nodeHealth} />
+            <NavBar themeMode={themeMode} />
             <main className={classes.content} >
                 {props.children}
             </main>

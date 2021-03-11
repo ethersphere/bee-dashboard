@@ -101,7 +101,7 @@ export default function SideBar(props: any) {
       >
         <div className={classes.toolbar} style={{ textAlign:'center' }}>
             <Link to='/'>
-                <img src={props.themeMode === 'light' ? SwarmLogo : SwarmLogoWhite} style={{maxHeight: '60px', alignItems:'center'}} /> 
+                <img alt='swarm' src={props.themeMode === 'light' ? SwarmLogo : SwarmLogoWhite} style={{maxHeight: '60px', alignItems:'center'}} /> 
             </Link>
         </div>
         <Divider />
@@ -126,6 +126,18 @@ export default function SideBar(props: any) {
                 </ListItem>
             </MUILink>
         </List>
+        <div style={{position:'fixed', bottom: 0, width: 'inherit', padding: '10px'}}>
+          <ListItem>
+              <div style={{marginRight:'30px'}}>
+                  <div style={{backgroundColor: props.health ? '#32c48d' : '#c9201f', marginRight: '7px', height: '10px',width: '10px', borderRadius: '50%', display: 'inline-block'}} />
+                  <span>API</span>
+              </div>
+              <div>
+                  <div style={{backgroundColor: props.nodeHealth.status === 'ok' ? '#32c48d' : '#c9201f', marginRight: '7px', height: '10px',width: '10px', borderRadius: '50%', display: 'inline-block'}} />
+                  <span>Debug API</span>
+              </div>
+          </ListItem>
+        </div>
       </Drawer>
     </div>
   );

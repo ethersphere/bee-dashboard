@@ -5,7 +5,7 @@ import type { NodeAddresses, ChequebookAddressResponse, ChequebookBalanceRespons
 import { beeDebugApi, beeApi } from '../services/bee';
 
 export const useApiHealth = () => {
-    const [health, setHealth] = useState(null)
+    const [health, setHealth] = useState('')
     const [isLoadingHealth, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
