@@ -30,9 +30,10 @@ export default function ConnectToHost(props: IProps) {
                 variant="outlined" 
                 size='small' 
                 onChange={(e) => setHost(e.target.value)}
-                style={{marginRight:'15px'}} 
+                style={{marginRight:'15px', minWidth:'300px'}} 
                 />
                 <Button onClick={() => handleNewHostConnection()} size='small' variant="outlined">Connect</Button>
+                <Button  style={{marginLeft:'7px'}} onClick={() => toggleHostInputVisibility(!hostInputVisible)} size='small'>Cancel</Button>
             </div>
             : 
             connectingToHost ?

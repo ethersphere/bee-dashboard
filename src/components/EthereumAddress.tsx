@@ -12,6 +12,7 @@ interface IProps {
     network?: string,
     hideBlockie?: boolean,
     transaction?: boolean,
+    truncate?: boolean,
 }
 
 export default function EthereumAddress(props: IProps) {
@@ -27,7 +28,11 @@ export default function EthereumAddress(props: IProps) {
                 </div>}
                 <div>
                     <a 
-                    style={{ marginRight:'7px',}}
+                    style={props.truncate ? 
+                        { marginRight:'7px', maxWidth:'200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display:'block'} 
+                        : 
+                        { marginRight:'7px'} 
+                    }
                     href={`https://${props.network}.${process.env.REACT_APP_ETHERSCAN_HOST}/${props.transaction ? 'tx' : 'address' }/${props.address}`}
                     target='_blank'
                     >

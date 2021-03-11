@@ -84,7 +84,7 @@ function EthereumAddressCard(props: IProps) {
                 <div className={classes.details}>
                     <CardContent className={classes.content}>
                         <Typography variant="subtitle1" gutterBottom>
-                            <span>Contract Address</span>
+                            <span>Chequebook Contract Address</span>
                         </Typography>
                         <EthereumAddress
                         address={props.chequebookAddress.chequebookaddress}
