@@ -63,18 +63,6 @@ export default function DepositModal() {
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Cashout Cheque</DialogTitle>
         <DialogContent>
-          {/* <DialogContentText>
-            Specify the minimum amount for cashout.
-          </DialogContentText>
-          <Input
-            autoFocus
-            margin="dense"
-            id="amount"
-            type="number"
-            placeholder='Amount'
-            fullWidth
-            onChange={(e) => setAmount(parseInt(e.target.value))}
-          /> */}
           <DialogContentText style={{marginTop: '20px'}}>
             Specify the peer Id of the peer you would like to cashout.
           </DialogContentText>
