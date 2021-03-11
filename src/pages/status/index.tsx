@@ -9,10 +9,12 @@ import { useApiHealth, useDebugApiHealth, useApiReadiness, useApiNodeAddresses, 
 
 export default function Status() {
     const [beeRelease, setBeeRelease] = useState({ name: ''});
-    const [isLoadingBeeRelease, setIsLoadingBeeRelease] = useState(false);
+    const [isLoadingBeeRelease, setIsLoadingBeeRelease] = useState<boolean>(false);
 
     const [apiHost, setApiHost] = useState('');
     const [debugApiHost, setDebugApiHost] = useState('');
+
+    const [statusChecksVisible, setStatusChecksVisible] = useState<boolean>(false);
 
     const { health, isLoadingHealth } = useApiHealth()
     const { nodeHealth, isLoadingNodeHealth } = useDebugApiHealth()
@@ -62,7 +64,7 @@ export default function Status() {
     useEffect(() => {
         fetchApiHost()
         fetchDebugApiHost()
-        fetchLatestBeeRelease()
+        fetchLatestBeeRelease() 
     }, []);
 
     return (
@@ -73,7 +75,8 @@ export default function Status() {
             beeRelease.name === `v${nodeHealth.version?.split('-')[0]}` &&
             nodeAddresses.ethereum && 
             chequebookAddress.chequebookaddress && chequebookBalance.totalBalance > 0 &&
-            nodeTopology.connected && nodeTopology.connected > 0 ? 
+            nodeTopology.connected && nodeTopology.connected > 0 &&
+            !statusChecksVisible  ? 
                 <div>
                     <StatusCard 
                     nodeHealth={nodeHealth} 
@@ -85,6 +88,7 @@ export default function Status() {
                     nodeAddresses={nodeAddresses} 
                     loadingNodeTopology={isLoadingNodeTopology}
                     nodeTopology={nodeTopology}
+                    setStatusChecksVisible={setStatusChecksVisible}
                     />
                     <EthereumAddressCard 
                     nodeAddresses={nodeAddresses} 
@@ -129,6 +133,7 @@ export default function Status() {
 
                 apiHost={apiHost}
                 debugApiHost={debugApiHost}
+                setStatusChecksVisible={setStatusChecksVisible}
                 />
             }
         </div>

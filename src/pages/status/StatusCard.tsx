@@ -1,11 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
 
 import { Theme, createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
-import { Card, CardContent, Typography, Chip } from '@material-ui/core/';
-import { CheckCircle, Error } from '@material-ui/icons/';
+import { Card, CardContent, Typography, Chip, Button } from '@material-ui/core/';
+import { CheckCircle, Error, ExpandMoreSharp, ArrowForwardIosSharp } from '@material-ui/icons/';
 import { Skeleton } from '@material-ui/lab';
-import ConnectToHost from '../../components/ConnectToHost';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -14,6 +13,8 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     details: {
       display: 'flex',
+      flex: '1 0 auto',
+
       flexDirection: 'column',
     },
     content: {
@@ -66,11 +67,14 @@ interface IProps{
     nodeAddresses: NodeAddresses,
     nodeTopology: NodeTopology,
     loadingNodeTopology: boolean,
+    setStatusChecksVisible: any,
 }
 
 function StatusCard(props: IProps) {
     const classes = useStyles();
     const theme = useTheme();
+
+    const [underlayAddressesVisible, setUnderlayAddresessVisible] = useState<Boolean>(false)
 
     return (
         <div>
@@ -78,7 +82,7 @@ function StatusCard(props: IProps) {
                 { !props.loadingNodeHealth && props.nodeHealth ? 
                 <div className={classes.details}>
                     <CardContent className={classes.content}>
-                    <Typography component="h5" variant="h5">
+                    <Typography component="h5" variant="h5" style={{display:'flex', justifyContent:'space-between'}}>
                         { props.nodeHealth.status === 'ok' ? 
                             <div>
                                 <CheckCircle style={{color:'#32c48d', marginRight: '7px'}} />
@@ -90,6 +94,7 @@ function StatusCard(props: IProps) {
                                 <span>Could not connect to Bee Node</span>
                             </div> 
                         }
+                        <Button variant='outlined' color='primary' size='small' style={{marginLeft:'12px'}} onClick={() => props.setStatusChecksVisible(true)}>View Status Checks</Button>
                     </Typography>
                     <div style={{marginBottom: '20px' }}>
                         <span style={{marginRight:'20px'}}>Discovered Nodes: { props.nodeTopology.population }</span>
@@ -100,33 +105,49 @@ function StatusCard(props: IProps) {
                             </Link>
                         </span>
                     </div>
-                    <div >
-                        <div>
-                            <Typography variant="subtitle2" gutterBottom>
-                                <span>NODE ID: </span>
-                                <span>{ props.nodeAddresses.overlay ? props.nodeAddresses.overlay : '-' }</span>
-                            </Typography>
-                        </div>
-                        <div>
-                            <Typography variant="subtitle2" gutterBottom>
-                                <span>AGENT: </span>
-                                <a href='https://github.com/ethersphere/bee' target='_blank'>Bee</a>
-                                <span>{props.nodeReadiness.version ? ` v${props.nodeReadiness.version}` : '-'}</span>
-                                {props.beeRelease && props.beeRelease.name === `v${props.nodeReadiness.version?.split('-')[0]}` ?
-                                    <Chip
-                                    style={{ marginLeft: '7px', color: '#2145a0' }}
-                                    size="small"
-                                    label='latest'
-                                    className={classes.status}
-                                    />
-                                :  
-                                    props.loadingBeeRelease ?
-                                    '' 
-                                    :
-                                    <a href='#'>update</a>
-                                }
-                            </Typography>
-                        </div>
+                    <div>
+                        <Typography variant="subtitle2" gutterBottom>
+                            <span>AGENT: </span>
+                            <a href='https://github.com/ethersphere/bee' target='_blank'>Bee</a>
+                            <span>{props.nodeReadiness.version ? ` v${props.nodeReadiness.version}` : '-'}</span>
+                            {props.beeRelease && props.beeRelease.name === `v${props.nodeReadiness.version?.split('-')[0]}` ?
+                                <Chip
+                                style={{ marginLeft: '7px', color: '#2145a0' }}
+                                size="small"
+                                label='latest'
+                                className={classes.status}
+                                />
+                            :  
+                                props.loadingBeeRelease ?
+                                '' 
+                                :
+                                <a href='#'>update</a>
+                            }
+                        </Typography>
+                        <Typography variant="subtitle2" gutterBottom>
+                            <span>PUBLIC KEY: </span>
+                            <span>{ props.nodeAddresses.public_key ? props.nodeAddresses.public_key : '-' }</span>
+                        </Typography>
+                        <Typography variant="subtitle2" gutterBottom>
+                            <span>PSS PUBLIC KEY: </span>
+                            <span>{ props.nodeAddresses.pss_public_key ? props.nodeAddresses.pss_public_key : '-' }</span>
+                        </Typography>
+                        <Typography variant="subtitle2" gutterBottom>
+                                <Typography style={{marginTop:'20px'}}>
+                                    <span>Overlay Address (Peer Id): </span>
+                                    <span>{ props.nodeAddresses.overlay ? props.nodeAddresses.overlay : '-' }</span>
+                                </Typography>
+                                <Typography onClick={() => setUnderlayAddresessVisible(!underlayAddressesVisible)}>
+                                    <span>Underlay Addresses: </span></Typography>
+                                {underlayAddressesVisible ?
+                                    <div>
+                                    
+                                    { props.nodeAddresses.underlay ? 
+                                        props.nodeAddresses.underlay.map(item => (<li>{item}</li>)) 
+                                    : '-' }
+                                    </div>
+                               : null}
+                        </Typography>
                     </div>
                     </CardContent>
                 </div>

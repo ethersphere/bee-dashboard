@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { Typography, Paper, Button, Step, StepLabel, StepContent, Stepper, Accordion, AccordionSummary, AccordionDetails, StepButton } from '@material-ui/core/';
-import MuiAlert from '@material-ui/lab/Alert';
-import { CheckCircle, Error, Warning, ExpandMoreSharp, Sync } from '@material-ui/icons/';
-import EthereumAddress from '../../components/EthereumAddress';
-import ConnectToHost from '../../components/ConnectToHost';
-import DepositModal from '../../components/DepositModal';
-import CodeBlockTabs from '../../components/CodeBlockTabs'
-import Alert from '@material-ui/lab/Alert';
+import { Typography, Paper, Button, Step, StepLabel, StepContent, Stepper, StepButton } from '@material-ui/core/';
+import { CheckCircle, Error, Sync, ExpandLessSharp, ExpandMoreSharp } from '@material-ui/icons/';
+
+import NodeConnectionCheck from './SetupSteps/NodeConnectionCheck';
+import VersionCheck from './SetupSteps/VersionCheck';
+import EthereumConnectionCheck from './SetupSteps/EthereumConnectionCheck';
+import ChequebookDeployFund from './SetupSteps/ChequebookDeployFund';
+import PeerConnection from './SetupSteps/PeerConnection';
+
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,285 +40,17 @@ function getSteps() {
 
 function getStepContent(step: number, props: any) {
 
-  const nodeConnectionCheck = (
-    <div>
-      <p>Connect to Bee Node APIs</p>
-          <div style={{display:'flex', marginBottom: '25px'}}>
-            { props.nodeApiHealth ? 
-              <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
-              :
-              <Error style={{color:'#c9201f', marginRight: '7px', height: '18px'}} />
-            }
-            <span style={{marginRight:'15px'}}>Node API  ( <a href='#'>{props.apiHost}</a> )</span>
-            <ConnectToHost hostName='api_host' defaultHost={props.apiHost} />
-          </div>
-          <div>
-          { !props.nodeApiHealth ? 
-            <Typography variant="body2" gutterBottom style={{margin: '15px'}}>
-              We cannot connect to your nodes API at <a href='#'>{props.apiHost}</a>. Please check the following to troubleshoot your issue.
-              <Accordion style={{marginTop:'20px'}}>
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreSharp />}
-                    aria-controls="panel1a-content"
-                    id="panel1a-header"
-                  >
-                    <Typography>Troubleshoot</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Typography>
-                      <ol>
-                        <li>Check the status of your node by running the below command to see if your node is running.</li>
-                        <CodeBlockTabs
-                        showLineNumbers
-                        linux={`sudo systemctl status bee`}
-                        mac={`brew services status swarm-bee`}
-                        />
-                        <li>If your node is running, check your firewall settings to make sure that port 1633 (or your custom specified port) is exposed to the internet. If your node is not running try executing the below command to start your bee node</li>
-                        <CodeBlockTabs
-                        showLineNumbers
-                        linux={`sudo systemctl start bee`}
-                        mac={`brew services start swarm-bee`}
-                        />
-                        <li>Run the commands to validate your node is running and see the log output.</li>
-                        <CodeBlockTabs
-                        showLineNumbers
-                        linux={`sudo systemctl status bee \njournalctl --lines=100 --follow --unit bee`}
-                        mac={`brew services status swarm-bee \ntail -f /usr/local/var/log/swarm-bee/bee.log`}
-                        />
-                      </ol>
-                    </Typography>
-                </AccordionDetails>
-              </Accordion>
-            </Typography>
-          :
-          null}
-          </div>
-          <div>
-            <div style={{display:'flex', marginBottom: '25px'}}>
-              { props.nodeHealth.status === 'ok' ? 
-                <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
-                :
-                <Error style={{color:'#c9201f', marginRight: '7px', height: '18px'}} />
-              }
-              <span style={{marginRight:'15px'}}>Debug API  ( <a href='#'>{props.debugApiHost}</a> )</span>
-              <ConnectToHost hostName={'debug_api_host'} defaultHost={props.debugApiHost} />
-            </div>
-            <div>
-            { props.nodeHealth.status !== 'ok' ? 
-              <Typography variant="body2" gutterBottom style={{margin: '15px'}}>
-                We cannot connect to your nodes debug API at <a href='#'>{props.debugApiHost}</a>. Please check the following to troubleshoot your issue.
-                <Accordion style={{marginTop:'20px'}}>
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreSharp />}
-                    aria-controls="panel1a-content"
-                    id="panel1a-header"
-                  >
-                    <Typography>Troubleshoot</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Typography>
-                    <ol>
-                      <li>Check the status of your node by running the below command to see if your node is running.</li>
-                      <CodeBlockTabs
-                      showLineNumbers
-                      linux={`sudo systemctl status bee`}
-                      mac={`brew services status swarm-bee`}
-                      />
-                      <li>If your node is running, check your firewall settings to make sure that port 1635 (or your custom specified port) is bound to localhost. If your node is not running try executing the below command to start your bee node</li>
-                      <MuiAlert style={{marginTop:'10px', marginBottom:'10px'}} elevation={6} variant="filled"  severity="error">
-                        Your debug node API should never be completely open to the internet. If you want to connect remotely, make sure your firewall settings are set to only allow specific trusted IP addresses and block all other ports. A simple google search for "what is my ip" will show you your computers public IP address to allow.
-                      </MuiAlert>
-                      <CodeBlockTabs
-                      showLineNumbers
-                      linux={`sudo systemctl start bee`}
-                      mac={`brew services start swarm-bee`}
-                      />
-                      <li>Run the commands to validate your node is running and see the log output.</li>
-                      <CodeBlockTabs
-                      showLineNumbers
-                      linux={`sudo systemctl status bee \njournalctl --lines=100 --follow --unit bee`}
-                      mac={`brew services status swarm-bee \ntail -f /usr/local/var/log/swarm-bee/bee.log`}
-                      />
-                      <li>Lastly, check your nodes configuration settings to validate the debug API is enabled and the Cross Origin Resource Sharing (CORS) setting is configured to allow your host. Config parameter <strong>debug-api-enable</strong> must be set to <strong>true</strong> and <strong>cors-allowed-origins</strong> must be set to your host domain or IP. If edits are made to the configuration run the restart command below for changes to take effect.</li>
-                      <CodeBlockTabs
-                      showLineNumbers
-                      linux={`sudo vi /etc/bee/bee.yaml\nsudo systemctl restart bee`}
-                      mac={`sudo vi /etc/bee/bee.yaml \nbrew services restart swarm-bee`}
-                      />
-                    </ol>
-                    </Typography>
-                  </AccordionDetails>
-                </Accordion>
-              </Typography>
-            :
-            null}
-            </div>
-          </div>
-    </div>
-  )
-
-  const nodeVersionCheck = (
-    <div>
-      <p>Check to make sure the latest version of <a href='https://github.com/ethersphere/bee' target='_blank'>Bee</a> is running</p>
-      {props.beeRelease && props.beeRelease.name === `v${props.nodeReadiness.version?.split('-')[0]}` ?
-          <div>
-            <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
-            <span>Your running the latest version of Bee</span>
-          </div>
-      :  
-          props.loadingBeeRelease ?
-          null 
-          :
-          <div>
-            <Warning style={{color:'#ff9800', marginRight: '7px', height: '18px'}} />
-            <span>Your Bee version is out of date. Please update to the <a href={props.beeRelease.html_url} target='_blank'>latest</a> before continuing. Rerun the installation script below to upgrade. Reference the docs for help with updating. <a href='https://docs.ethswarm.org/docs/installation/manual#upgrading-bee' target='_blank'>Docs</a></span>
-            <CodeBlockTabs
-            showLineNumbers
-            linux={`bee version\nwget https://github.com/ethersphere/bee/releases/download/${props.beeRelease.name}/bee_${props.nodeReadiness.version?.split('-')[0]}_amd64.deb\nsudo dpkg -i bee_${props.nodeReadiness.version?.split('-')[0]}_amd64.deb`}
-            mac={`bee version\nbrew tap ethersphere/tap\nbrew install swarm-bee\nbrew services start swarm-bee`}
-            />
-          </div>
-      }
-      <div style={{display:'flex'}}>
-        <div style={{marginRight:'30px'}}>
-          <p><span>Current Version</span></p>
-          <Typography component="h5" variant="h5">
-            <span>{props.nodeReadiness.version ? ` v${props.nodeReadiness.version?.split('-')[0]}` : '-'}</span>
-          </Typography>
-        </div>
-        <div>
-          <p><span>Latest Version</span></p>
-          <Typography component="h5" variant="h5">
-            <span>{props.beeRelease && props.beeRelease.name ? props.beeRelease.name : '-'}</span>
-          </Typography>
-        </div>
-      </div>
-    </div>
-  )
-
-  const ethereumNetworkCheck = (
-    <div> 
-      <p>Connect to the ethereum blockchain.</p>
-      <div style={{ marginBottom:'10px' }}>
-      {props.nodeAddresses.ethereum ?
-          <div>
-            <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
-            <span>Your connected to the Ethereum network</span>
-          </div>
-      :  
-          props.loadingNodeAddresses ?
-          null 
-          :
-          <div>
-            <Warning style={{color:'#ff9800', marginRight: '7px', height: '18px'}} />
-            <span>Your not connected to the Ethereum network. </span>
-            <p>Your Bee node must have access to the Ethereum blockchain, so that it can interact and deploy your chequebook contract. You can run <a href='https://github.com/goerli/testnet' target='_blank'>your own Goerli node</a>, or use a provider such as <a href='https://rpc.slock.it/goerli'  target='_blank'>rpc.slock.it/goerli</a> or <a href='https://infura.io/' target='_blank'>Infura</a>. 
-
-            By default, Bee expects a local Goerli node at http://localhost:8545. To use a provider instead, simply change your <strong>--swap-endpoint</strong> in your configuration file.
-            </p>
-          </div>
-      }
-      </div>
-      <Typography variant="subtitle1" gutterBottom>
-      <span>Node Address</span>
-      </Typography>
-      <EthereumAddress
-      address={props.nodeAddresses.ethereum}
-      network={'goerli'}
-      />
-    </div>
-  )
-
-  const fundingAndDeploymentCheck = (
-    <div> 
-      <p style={{marginBottom:'20px', display:'flex'}}>
-        <span style={{ marginRight:'40px'}} >Deploy chequebook and fund with BZZ</span>
-        {props.chequebookAddress.chequebookaddress ?
-        <DepositModal />
-        : null }
-      </p>
-      <div style={{ marginBottom:'10px' }}>
-      {props.chequebookAddress.chequebookaddress && props.chequebookBalance.totalBalance > 0 ?
-          <div>
-            <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
-            <span>Your chequebook is deployed and funded!</span>
-          </div>
-      :  
-          props.loadingChequebookAddress || props.isLoadingChequebookBalance ?
-          null 
-          :
-          <div>
-            <Warning style={{color:'#ff9800', marginRight: '7px', height: '18px'}} />
-            <span>Your chequebook is either not deployed or funded. Run the below commands to get your address and deposit ETH. Then visit the BZZaar here <a href='#'>https://bzz.ethswarm.org/?transaction=buy&amount=10&slippage=30&receiver=[ENTER_ADDRESS_HERE]</a> to get BZZ</span>
-            <CodeBlockTabs
-            showLineNumbers
-            linux={`bee-get-addr`}
-            mac={`bee-get-addr`}
-            />
-          </div>
-      } 
-      </div>
-      <Typography variant="subtitle1" gutterBottom>
-      <span>Chequebook Address</span>
-      </Typography>
-      <EthereumAddress
-      address={props.chequebookAddress.chequebookaddress}
-      network={'goerli'}
-      />
-    </div>
-  )
-
-  const connectToPeers = (
-    <div> 
-      <p>Connect to Peers</p>
-      <div style={{ marginBottom:'10px' }}>
-      {props.nodeTopology.connected && props.nodeTopology.connected > 0 ?
-          <div>
-            <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
-            <span>Your connected to {props.nodeTopology.connected} peers!</span>
-          </div>
-      :  
-          props.loadingNodeTopology ?
-          null 
-          :
-          <div>
-            <Warning style={{color:'#ff9800', marginRight: '7px', height: '18px'}} />
-            <span>Your node is not connected to any peers</span>
-          </div>
-      }
-      </div>
-      <div style={{display:'flex'}}>
-        <div style={{marginRight:'30px'}}>
-          <Typography variant="subtitle1" gutterBottom color="textSecondary">
-          <span>Connected Peers</span>
-          </Typography>
-          <Typography variant="h5" component="h2">
-          { props.nodeTopology.connected }
-          </Typography>
-        </div>
-        <div>
-          <Typography variant="subtitle1" gutterBottom color="textSecondary">
-          <span>Discovered Nodes</span>
-          </Typography>
-          <Typography variant="h5" component="h2">
-          { props.nodeTopology.population }
-          </Typography>
-        </div>
-      </div>
-    </div>
-  )
-
   switch (step) {
     case 0:
-      return nodeConnectionCheck;
+      return <NodeConnectionCheck {...props} />;
     case 1:
-      return nodeVersionCheck;
+      return <VersionCheck {...props} />;
     case 2:
-      return ethereumNetworkCheck;
+      return <EthereumConnectionCheck {...props} />;
     case 3:
-      return fundingAndDeploymentCheck;
+      return <ChequebookDeployFund {...props} />;
     default:
-      return connectToPeers;
+      return <PeerConnection {...props} />;
   }
 }
 
@@ -327,33 +60,40 @@ export default function NodeSetupWorkflow(props: any) {
   const [completed, setCompleted] = useState<{ [k: number]: boolean }>({});
   const steps = getSteps();
 
-  useEffect(() => {
+  const evaluateNodeStatus = () => {
     if (props.nodeHealth.status === 'ok' && props.nodeApiHealth) {
-      setActiveStep(1)
       handleComplete(0)
+      setActiveStep(1)
     }
 
     if (props.beeRelease && props.beeRelease.name === `v${props.nodeHealth.version?.split('-')[0]}`) {
-      setActiveStep(2)
       handleComplete(1)
+      setActiveStep(2)
     }
 
     if (props.nodeAddresses.ethereum) {
-      setActiveStep(3)
       handleComplete(2)
+      setActiveStep(3)
     }
 
     if (props.chequebookAddress.chequebookaddress && props.chequebookBalance.totalBalance > 0) {
-      setActiveStep(4)
       handleComplete(3)
+      setActiveStep(4)
     }
 
     if (props.nodeTopology.connected && props.nodeTopology.connected > 0) {
-      setActiveStep(5)
       handleComplete(4)
+      setActiveStep(5)
     }
+  }
 
+  useEffect(() => {
+    evaluateNodeStatus()
   }, [])
+
+  useEffect(() => {
+    evaluateNodeStatus()
+  }, [props])
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -364,7 +104,7 @@ export default function NodeSetupWorkflow(props: any) {
   };
 
   const handleSetupComplete = () => {
-    window.location.reload()
+    props.setStatusChecksVisible(false)
   };
 
   const handleComplete = (index: number) => {
@@ -383,18 +123,21 @@ export default function NodeSetupWorkflow(props: any) {
       </Typography>
       <Stepper nonLinear activeStep={activeStep} orientation="vertical">
         {steps.map((label, index) => (
-          <Step key={label} >
-            <StepLabel>
-              <StepButton onClick={() => setActiveStep(index)}>
+          <Step key={label}>
+            <StepLabel 
+            onClick={() => setActiveStep(index === activeStep ? 5 : index)}
+            StepIconComponent={() => {
+              if(completed[index]) 
+                return <CheckCircle style={{color:'#32c48d', height: '25px', cursor:'pointer'}} />
+              else { 
+                return <Error style={{color:'#c9201f', height: '25px', cursor:'pointer'}} />
+              }
+            }}
+            >
+              <StepButton onClick={() => setActiveStep(index === activeStep ? 5 : index)} style={{justifyContent:'space-between'}}>
                 <div style={{display:'flex'}}>
-                  { completed[index] ? 
-                  <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '25px'}} />
-                  :
-                  <Error style={{color:'#c9201f', marginRight: '7px', height: '25px'}} />
-                  }
-                  <div style={{paddingTop:'2px'}}>
-                  <span>{label}</span>
-                  </div>
+                  <div  style={{marginTop:'5px'}}>{label}</div>
+                  <div style={{marginLeft:'12px'}}>{index === activeStep ? <ExpandLessSharp /> : <ExpandMoreSharp />}</div>
                 </div>
               </StepButton>
             </StepLabel>
@@ -423,9 +166,9 @@ export default function NodeSetupWorkflow(props: any) {
           </Step>
         ))}
       </Stepper>
-      {activeStep === steps.length && Object.values(completed).filter(value => value).length === 5 ? (
+      {Object.values(completed).filter(value => value).length === 5 ? (
         <Paper square elevation={0} className={classes.resetContainer}>
-          <Typography>Bee setup complete - you&apos;re finished. Welcome to the swarm and the internet of decentralized storage</Typography>
+          <Typography>Bee setup complete! Welcome to the swarm and the internet of decentralized storage</Typography>
           <Button
           onClick={handleBack}
           className={classes.button}
