@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
-import { Card, CardContent, Typography, Grid, Button } from '@material-ui/core/';
+import { Card, CardContent, Typography, Grid } from '@material-ui/core/';
 import { Skeleton } from '@material-ui/lab';
 import WithdrawlModal from '../../components/WithdrawlModal';
 import DepositModal from '../../components/DepositModal';

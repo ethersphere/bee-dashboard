@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
 
-import { Theme, createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
+import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import { Card, CardContent, Typography, Chip, Button } from '@material-ui/core/';
 import { CheckCircle, Error, ArrowRight, ArrowDropUp } from '@material-ui/icons/';
 import { Skeleton } from '@material-ui/lab';
@@ -72,7 +72,6 @@ interface IProps{
 
 function StatusCard(props: IProps) {
     const classes = useStyles();
-    const theme = useTheme();
 
     const [underlayAddressesVisible, setUnderlayAddresessVisible] = useState<Boolean>(false)
 
@@ -108,7 +107,7 @@ function StatusCard(props: IProps) {
                     <div>
                         <Typography variant="subtitle2" gutterBottom>
                             <span>AGENT: </span>
-                            <a href='https://github.com/ethersphere/bee' target='_blank'>Bee</a>
+                            <a href='https://github.com/ethersphere/bee' rel='noreferrer' target='_blank'>Bee</a>
                             <span>{props.nodeReadiness.version ? ` v${props.nodeReadiness.version}` : '-'}</span>
                             {props.beeRelease && props.beeRelease.name === `v${props.nodeReadiness.version?.split('-')[0]}` ?
                                 <Chip

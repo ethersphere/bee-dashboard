@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Button, Paper, Tooltip, Container, CircularProgress } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper, Container, CircularProgress } from '@material-ui/core';
 
 import { ConvertBalanceToBZZ } from '../../utils/common';
 

@@ -2,15 +2,10 @@ import React from 'react'
 
 import { Theme, createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
 import { Card, CardContent, Typography } from '@material-ui/core/';
-import { OpenInNewSharp } from '@material-ui/icons';
 
 import EthereumAddress from '../components/EthereumAddress';
-import QRCodeModal from './QRCodeModal';
-import ClipboardCopy from './ClipboardCopy';
 import { Skeleton } from '@material-ui/lab';
 
-// @ts-ignore
-import Identicon from 'react-identicons';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

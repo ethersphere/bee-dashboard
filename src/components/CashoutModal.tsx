@@ -12,7 +12,6 @@ import { beeDebugApi } from '../services/bee';
 
 export default function DepositModal() {
   const [open, setOpen] = React.useState(false);
-  const [amount, setAmount] = React.useState(0);
   const [peerId, setPeerId] = React.useState('');
 
   const [showToast, setToastVisibility] = React.useState(false);
