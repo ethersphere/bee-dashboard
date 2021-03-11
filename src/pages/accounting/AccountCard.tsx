@@ -56,7 +56,7 @@ function AccountCard(props: IProps) {
     return (
         <div>
             <div style={{justifyContent: 'space-between', display: 'flex'}}>
-                <h2 style={{ marginTop: '0px' }}>Contract <span className={classes.address}>{ props.chequebookAddress.chequebookaddress }</span></h2>
+                <h2 style={{ marginTop: '0px' }}>Accounting</h2>
                 <div  style={{display:'flex'}}>
                     <WithdrawlModal />
                     <DepositModal />

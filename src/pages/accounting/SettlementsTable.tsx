@@ -42,16 +42,16 @@ function SettlementsTable(props: IProps) {
                     <TableHead>
                     <TableRow>
                         <TableCell>Peer</TableCell>
-                        <TableCell>Received</TableCell>
-                        <TableCell>Sent</TableCell>
+                        <TableCell>Received (BZZ)</TableCell>
+                        <TableCell>Sent (BZZ)</TableCell>
                     </TableRow>
                     </TableHead>
                     <TableBody>
                     {props.nodeSettlements.settlements.map((item: Settlement, idx: number) => (
                         <TableRow key={item.peer}>
                         <TableCell>{item.peer}</TableCell>
-                        <TableCell>{ConvertBalanceToBZZ(item.received)}</TableCell>
-                        <TableCell>{ConvertBalanceToBZZ(item.sent)}</TableCell>
+                        <TableCell>{item.received > 0 ? ConvertBalanceToBZZ(item.received).toFixed(7).toLocaleString() : item.received}</TableCell>
+                        <TableCell>{item.sent > 0 ? ConvertBalanceToBZZ(item.sent).toFixed(7).toLocaleString() : item.sent}</TableCell>
                         </TableRow>
                     ))}
                     </TableBody>

@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function Files() {
     const classes = useStyles();
 
-    const [inputMode, setInputMode] = useState('browse');
+    const [inputMode, setInputMode] = useState<'browse' | 'upload'>('browse');
     const [searchInput, setSearchInput] = useState('');
     const [searchResult, setSearchResult] = useState('');
     const [loadingSearch, setLoadingSearch] = useState(false);

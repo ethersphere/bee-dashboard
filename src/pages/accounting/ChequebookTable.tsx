@@ -68,24 +68,30 @@ function ChequebookTable(props: IProps) {
                                 <ClipboardCopy value={peerCheque.peer} />
                             </div>
                         </TableCell>
-                        <TableCell>
-                            <p style={{marginBottom: '0px'}}>{peerCheque.lastreceived?.payout ? ConvertBalanceToBZZ(peerCheque.lastreceived?.payout) : '-'}</p>
+                        <TableCell style={{maxWidth:'200px'}}>
+                            <p style={{marginBottom: '0px'}}>
+                                {peerCheque.lastreceived?.payout ? ConvertBalanceToBZZ(peerCheque.lastreceived?.payout).toFixed(7).toLocaleString() : '-'}
+                            </p>
                             <p style={{marginBottom: '0px'}}>
                                 <small>{peerCheque.lastreceived ?
                                 <EthereumAddress
                                 hideBlockie
+                                truncate
                                 network='goerli'
                                 address={peerCheque.lastreceived.beneficiary}
                                 /> : null}
                                 </small>
                             </p>
                         </TableCell>
-                        <TableCell>
-                            <p  style={{marginBottom: '0px'}}>{peerCheque.lastsent?.payout ? ConvertBalanceToBZZ(peerCheque.lastsent?.payout) : '-'}</p>
+                        <TableCell style={{maxWidth:'200px'}}>
+                            <p  style={{marginBottom: '0px'}}>
+                                {peerCheque.lastsent?.payout ? ConvertBalanceToBZZ(peerCheque.lastsent?.payout).toFixed(7).toLocaleString() : '-'}
+                            </p>
                             <p style={{marginBottom: '0px'}}>
                                 <small>{peerCheque.lastsent ?
                                 <EthereumAddress
                                 hideBlockie
+                                truncate
                                 network='goerli'
                                 address={peerCheque.lastsent.beneficiary}
                                 /> : null}
