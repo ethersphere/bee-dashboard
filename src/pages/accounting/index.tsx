@@ -113,7 +113,7 @@ export default function Accounting(props: any) {
     
     return (
         <div>
-          {props.nodeHealth.status === 'ok' && props.health ?
+          {props.nodeHealth?.status === 'ok' && props.health ?
           <div>
             <AccountCard
             chequebookAddress={chequebookAddress}

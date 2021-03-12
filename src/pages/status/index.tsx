@@ -69,12 +69,12 @@ export default function Status() {
 
     return (
         <div>
-            {nodeHealth.status === 'ok' && 
+            {nodeHealth?.status === 'ok' && 
             health && 
             beeRelease && 
-            beeRelease.name === `v${nodeHealth.version?.split('-')[0]}` &&
-            nodeAddresses.ethereum && 
-            chequebookAddress.chequebookaddress && chequebookBalance.totalBalance > 0 &&
+            beeRelease.name === `v${nodeHealth?.version?.split('-')[0]}` &&
+            nodeAddresses?.ethereum && 
+            chequebookAddress?.chequebookaddress && chequebookBalance && chequebookBalance?.totalBalance > 0 &&
             nodeTopology.connected && nodeTopology.connected > 0 &&
             !statusChecksVisible  ? 
                 <div>

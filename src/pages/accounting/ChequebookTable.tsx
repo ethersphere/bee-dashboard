@@ -30,7 +30,7 @@ interface PeerCheques {
 }
 
 interface IProps {
-    peerCheques: PeerCheques,
+    peerCheques: PeerCheques | null,
     loading?: boolean,
 }
   
@@ -56,7 +56,7 @@ function ChequebookTable(props: IProps) {
                     </TableRow>
                     </TableHead>
                     <TableBody>
-                    {props.peerCheques.lastcheques.map((peerCheque: PeerCheque, idx: number) => (
+                    {props.peerCheques?.lastcheques.map((peerCheque: PeerCheque, idx: number) => (
                         <TableRow key={peerCheque.peer}>
                         <TableCell>
                             <div style={{display:'flex'}}>

@@ -20,7 +20,7 @@ interface PeerBalances {
 }
 
 interface IProps {
-    peerBalances: PeerBalances,
+    peerBalances: PeerBalances | null,
     loading?: boolean,
 }
   
@@ -44,7 +44,7 @@ function BalancesTable(props: IProps) {
                     </TableRow>
                     </TableHead>
                     <TableBody>
-                    {props.peerBalances.balances.map((peerBalance: PeerBalance, idx: number) => (
+                    {props.peerBalances?.balances.map((peerBalance: PeerBalance, idx: number) => (
                         <TableRow key={peerBalance.peer}>
                         <TableCell>{peerBalance.peer}</TableCell>
                         <TableCell style={{ color: ConvertBalanceToBZZ(peerBalance.balance) > 0 ? '#32c48d' : '#c9201f', textAlign:'right', fontFamily: 'monospace, monospace' }}>

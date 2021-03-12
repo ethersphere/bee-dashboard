@@ -8,7 +8,7 @@ export default function EthereumConnectionCheck(props: any) {
         <div> 
             <p>Connect to the ethereum blockchain.</p>
             <div style={{ marginBottom:'10px' }}>
-            {props.nodeAddresses.ethereum ?
+            {props.nodeAddresses?.ethereum ?
                 <div>
                     <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
                     <span>Your connected to the Ethereum network</span>
@@ -31,7 +31,7 @@ export default function EthereumConnectionCheck(props: any) {
             <span>Node Address</span>
             </Typography>
             <EthereumAddress
-            address={props.nodeAddresses.ethereum}
+            address={props.nodeAddresses?.ethereum}
             network={'goerli'}
             />
             </div>

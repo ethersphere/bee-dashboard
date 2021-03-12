@@ -61,22 +61,22 @@ export default function NodeSetupWorkflow(props: any) {
   const steps = getSteps();
 
   const evaluateNodeStatus = () => {
-    if (props.nodeHealth.status === 'ok' && props.nodeApiHealth) {
+    if (props.nodeHealth?.status === 'ok' && props.nodeApiHealth) {
       handleComplete(0)
       setActiveStep(1)
     }
 
-    if (props.beeRelease && props.beeRelease.name === `v${props.nodeHealth.version?.split('-')[0]}`) {
+    if (props.beeRelease && props.beeRelease.name === `v${props.nodeHealth?.version?.split('-')[0]}`) {
       handleComplete(1)
       setActiveStep(2)
     }
 
-    if (props.nodeAddresses.ethereum) {
+    if (props.nodeAddresses?.ethereum) {
       handleComplete(2)
       setActiveStep(3)
     }
 
-    if (props.chequebookAddress.chequebookaddress && props.chequebookBalance.totalBalance > 0) {
+    if (props.chequebookAddress?.chequebookaddress && props.chequebookBalance.totalBalance > 0) {
       handleComplete(3)
       setActiveStep(4)
     }

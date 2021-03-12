@@ -6,6 +6,7 @@ import { Card, CardContent, Typography } from '@material-ui/core/';
 import EthereumAddress from '../components/EthereumAddress';
 import { Skeleton } from '@material-ui/lab';
 
+import type { ChequebookAddressResponse } from '@ethersphere/bee-js';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -27,9 +28,6 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );  
 
-interface ChequebookAddress {
-    chequebookaddress: string,
-}
 
 interface NodeAddresses {
     overlay: string,
@@ -40,9 +38,9 @@ interface NodeAddresses {
 }
 
 interface IProps{
-    nodeAddresses: NodeAddresses,
+    nodeAddresses: NodeAddresses | null,
     isLoadingNodeAddresses: boolean,
-    chequebookAddress: ChequebookAddress,
+    chequebookAddress: ChequebookAddressResponse | null,
     isLoadingChequebookAddress: boolean,
 }
 
@@ -65,7 +63,7 @@ function EthereumAddressCard(props: IProps) {
                             <span>Ethereum Address</span>
                         </Typography>
                         <EthereumAddress
-                        address={props.nodeAddresses.ethereum}
+                        address={props.nodeAddresses?.ethereum}
                         network={'goerli'}
                         />   
                     </CardContent>
@@ -82,7 +80,7 @@ function EthereumAddressCard(props: IProps) {
                             <span>Chequebook Contract Address</span>
                         </Typography>
                         <EthereumAddress
-                        address={props.chequebookAddress.chequebookaddress}
+                        address={props.chequebookAddress?.chequebookaddress}
                         network={'goerli'}
                         />   
                     </CardContent>

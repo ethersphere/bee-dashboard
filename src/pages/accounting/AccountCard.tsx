@@ -9,6 +9,8 @@ import CashoutModal from '../../components/CashoutModal';
 
 import { ConvertBalanceToBZZ } from '../../utils/common';
 
+import type { ChequebookAddressResponse } from '@ethersphere/bee-js';
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -31,9 +33,6 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );  
 
-interface ChequebookAddress {
-    chequebookaddress: string,
-}
 
 interface ChequebookBalance {
     totalBalance: number,
@@ -41,9 +40,9 @@ interface ChequebookBalance {
 }
 
 interface IProps{
-    chequebookAddress: ChequebookAddress,
+    chequebookAddress: ChequebookAddressResponse | null,
     isLoadingChequebookAddress: boolean,
-    chequebookBalance: ChequebookBalance,
+    chequebookBalance: ChequebookBalance | null,
     isLoadingChequebookBalance: boolean,
     settlements: any,
     isLoadingSettlements: boolean,

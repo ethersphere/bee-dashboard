@@ -133,7 +133,7 @@ export default function SideBar(props: any) {
                   <span>API</span>
               </div>
               <div>
-                  <div style={{backgroundColor: props.nodeHealth.status === 'ok' ? '#32c48d' : '#c9201f', marginRight: '7px', height: '10px',width: '10px', borderRadius: '50%', display: 'inline-block'}} />
+                  <div style={{backgroundColor: props.nodeHealth?.status === 'ok' ? '#32c48d' : '#c9201f', marginRight: '7px', height: '10px',width: '10px', borderRadius: '50%', display: 'inline-block'}} />
                   <span>Debug API</span>
               </div>
           </ListItem>

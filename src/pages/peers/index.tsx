@@ -14,7 +14,7 @@ export default function Peers(props: any) {
 
     return (
         <div>
-            {props.nodeHealth.status === 'ok' && props.health ?
+            {props.nodeHealth?.status === 'ok' && props.health ?
             <div>
             <Grid style={{ marginBottom: '20px', flexGrow: 1 }}>
                 <Grid container spacing={3}>

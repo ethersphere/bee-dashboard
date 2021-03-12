@@ -4,26 +4,17 @@ import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper
 
 import { ConvertBalanceToBZZ } from '../../utils/common';
 
+import type { AllSettlements, Settlements } from '@ethersphere/bee-js'
+
 const useStyles = makeStyles({
     table: {
       minWidth: 650,
     },
   });
 
-interface Settlement {
-    received: number,
-    sent: number,
-    peer: string,
-}
-
-interface Settlements {
-    settlements: Array<Settlement>,
-    totalreceived: number,
-    totalsent: number,
-}
 
 interface IProps {
-    nodeSettlements: Settlements,
+    nodeSettlements: AllSettlements | null,
     loading?: boolean,
 }
   
@@ -47,7 +38,7 @@ function SettlementsTable(props: IProps) {
                     </TableRow>
                     </TableHead>
                     <TableBody>
-                    {props.nodeSettlements.settlements.map((item: Settlement, idx: number) => (
+                    {props.nodeSettlements?.settlements.map((item: Settlements, idx: number) => (
                         <TableRow key={item.peer}>
                         <TableCell>{item.peer}</TableCell>
                         <TableCell style={{ fontFamily: 'monospace, monospace'}}>

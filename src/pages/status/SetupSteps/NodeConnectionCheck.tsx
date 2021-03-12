@@ -62,7 +62,7 @@ export default function NodeConnectionCheck(props: any) {
           </div>
           <div>
             <div style={{display:'flex', marginBottom: '25px'}}>
-              { props.nodeHealth.status === 'ok' ? 
+              { props.nodeHealth?.status === 'ok' ? 
                 <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
                 :
                 <Error style={{color:'#c9201f', marginRight: '7px', height: '18px'}} />
@@ -71,7 +71,7 @@ export default function NodeConnectionCheck(props: any) {
               <ConnectToHost hostName={'debug_api_host'} defaultHost={props.debugApiHost} />
             </div>
             <div>
-            { props.nodeHealth.status !== 'ok' ? 
+            { props.nodeHealth?.status !== 'ok' ? 
               <Typography variant="body2" gutterBottom style={{margin: '15px'}}>
                 We cannot connect to your nodes debug API at <a href='#'>{props.debugApiHost}</a>. Please check the following to troubleshoot your issue.
                 <Accordion style={{marginTop:'20px'}}>

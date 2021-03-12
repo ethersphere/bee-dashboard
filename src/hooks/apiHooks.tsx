@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
-import type { NodeAddresses, ChequebookAddressResponse, ChequebookBalanceResponse, BalanceResponse, LastChequesResponse } from '@ethersphere/bee-js'
+import type { NodeAddresses, ChequebookAddressResponse, ChequebookBalanceResponse, BalanceResponse, 
+    LastChequesResponse, AllSettlements, LastCashoutActionResponse } from '@ethersphere/bee-js'
 
 import { beeDebugApi, beeApi } from '../services/bee';
 
@@ -26,9 +27,13 @@ export const useApiHealth = () => {
     return { health, isLoadingHealth, error } ;
 }
 
+interface NodeHealth {
+    status: string,
+    version: string
+}
 
 export const useDebugApiHealth = () => {
-    const [nodeHealth, setNodeHealth] = useState({ status: '', version: ''})
+    const [nodeHealth, setNodeHealth] = useState<NodeHealth | null>(null)
     const [isLoadingNodeHealth, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
@@ -49,8 +54,13 @@ export const useDebugApiHealth = () => {
     return { nodeHealth, isLoadingNodeHealth, error } ;
 }
 
+interface NodeReadiness {
+    status: string,
+    version: string
+}
+
 export const useApiReadiness = () => {
-    const [nodeReadiness, setNodeHealth] = useState({ status: '', version: ''})
+    const [nodeReadiness, setNodeReadiness] = useState<NodeReadiness | null>(null)
     const [isLoadingNodeReadiness, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
@@ -58,7 +68,7 @@ export const useApiReadiness = () => {
         setLoading(true)
         beeDebugApi.status.nodeReadiness()
         .then(res => {
-            setNodeHealth(res.data)
+            setNodeReadiness(res.data)
         })
         .catch(error => {
             setError(error)
@@ -72,7 +82,7 @@ export const useApiReadiness = () => {
 }
 
 export const useApiNodeAddresses = () => {
-    const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses>({ overlay: '', underlay: [""], ethereum: '', public_key: '', pss_public_key: ''})
+    const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses | null>(null)
     const [isLoadingNodeAddresses, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
@@ -116,7 +126,7 @@ export const useApiNodeTopology = () => {
 }
 
 export const useApiChequebookAddress = () => {
-    const [chequebookAddress, setChequebookAddress] = useState<ChequebookAddressResponse>({ chequebookaddress: '' })
+    const [chequebookAddress, setChequebookAddress] = useState<ChequebookAddressResponse | null>(null)
     const [isLoadingChequebookAddress, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
@@ -160,7 +170,7 @@ export const useApiNodePeers = () => {
 }
 
 export const useApiChequebookBalance = () => {
-    const [chequebookBalance, setChequebookBalance] = useState<ChequebookBalanceResponse>({ totalBalance: 0, availableBalance: 0})
+    const [chequebookBalance, setChequebookBalance] = useState<ChequebookBalanceResponse | null>(null)
     const [isLoadingChequebookBalance, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
@@ -182,7 +192,7 @@ export const useApiChequebookBalance = () => {
 }
 
 export const useApiPeerBalances = () => {
-    const [peerBalances, setPeerBalances] = useState<BalanceResponse>({ balances: [{peer: '-', balance: 0 }] })
+    const [peerBalances, setPeerBalances] = useState<BalanceResponse | null>(null)
     const [isLoadingPeerBalances, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
@@ -204,7 +214,7 @@ export const useApiPeerBalances = () => {
 }
 
 export const useApiPeerCheques = () => {
-    const [peerCheques, setPeerCheques] = useState<LastChequesResponse>({ lastcheques: [{peer: '-', lastsent: {beneficiary: '', chequebook: '', payout: 0}, lastreceived: {beneficiary: '', chequebook: '', payout: 0} }] })
+    const [peerCheques, setPeerCheques] = useState<LastChequesResponse | null>(null)
     const [isLoadingPeerCheques, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
@@ -257,7 +267,7 @@ export const useApiPeerLastCheque = (peerId: string) => {
 }
 
 export const useApiSettlements = () => {
-    const [settlements, setSettlements] = useState({ totalreceived: 0, totalsent: 0, settlements: [{peer: '-', received: 0, sent: 0}] })
+    const [settlements, setSettlements] = useState<AllSettlements | null>(null)
     const [isLoadingSettlements, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
@@ -280,7 +290,7 @@ export const useApiSettlements = () => {
 
 
 export const useApiPingPeer = (peerId: string) => {
-    const [peerRTP, setPeerRTP] = useState('')
+    const [peerRTP, setPeerRTP] = useState<string>('')
     const [isPingingPeer, setPingingPeer] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
@@ -302,16 +312,7 @@ export const useApiPingPeer = (peerId: string) => {
 }
 
 export const useApiPeerLastCashout = (peerId: string) => {
-    const [peerCashout, setPeerCashout] = useState({ "peer": "",
-    "chequebook": "",
-    "cumulativePayout": 0,
-    "beneficiary": "",
-    "transactionHash": "",
-    "result": {
-    "recipient": "",
-    "lastPayout": 0,
-    "bounced": false
-    }})
+    const [peerCashout, setPeerCashout] = useState<LastCashoutActionResponse | null>(null)
     const [isLoadingPeerCashout, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 

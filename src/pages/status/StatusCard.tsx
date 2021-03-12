@@ -60,7 +60,7 @@ interface NodeTopology {
 interface IProps{
     nodeHealth: NodeHealth,
     loadingNodeHealth: boolean,
-    nodeReadiness: NodeReadiness,
+    nodeReadiness: NodeReadiness | null,
     loadingNodeReadiness: boolean,
     beeRelease: any,
     loadingBeeRelease: boolean,
@@ -108,8 +108,8 @@ function StatusCard(props: IProps) {
                         <Typography variant="subtitle2" gutterBottom>
                             <span>AGENT: </span>
                             <a href='https://github.com/ethersphere/bee' rel='noreferrer' target='_blank'>Bee</a>
-                            <span>{props.nodeReadiness.version ? ` v${props.nodeReadiness.version}` : '-'}</span>
-                            {props.beeRelease && props.beeRelease.name === `v${props.nodeReadiness.version?.split('-')[0]}` ?
+                            <span>{props.nodeReadiness?.version ? ` v${props.nodeReadiness.version}` : '-'}</span>
+                            {props.beeRelease && props.beeRelease.name === `v${props.nodeReadiness?.version?.split('-')[0]}` ?
                                 <Chip
                                 style={{ marginLeft: '7px', color: '#2145a0' }}
                                 size="small"

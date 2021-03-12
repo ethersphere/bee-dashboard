@@ -8,7 +8,7 @@ import ClipboardCopy from './ClipboardCopy';
 import Identicon from 'react-identicons';
 
 interface IProps {
-    address: string,
+    address: string | undefined,
     network?: string,
     hideBlockie?: boolean,
     transaction?: boolean,

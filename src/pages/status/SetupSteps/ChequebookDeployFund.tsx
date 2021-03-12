@@ -10,12 +10,12 @@ export default function ChequebookDeployFund(props: any) {
         <div> 
             <p style={{marginBottom:'20px', display:'flex'}}>
                 <span style={{ marginRight:'40px'}} >Deploy chequebook and fund with BZZ</span>
-                {props.chequebookAddress.chequebookaddress ?
+                {props.chequebookAddress?.chequebookaddress ?
                 <DepositModal />
                 : null }
             </p>
             <div style={{ marginBottom:'10px' }}>
-            {props.chequebookAddress.chequebookaddress && props.chequebookBalance.totalBalance > 0 ?
+            {props.chequebookAddress?.chequebookaddress && props.chequebookBalance && props.chequebookBalance?.totalBalance > 0 ?
                 <div>
                     <CheckCircle style={{color:'#32c48d', marginRight: '7px', height: '18px'}} />
                     <span>Your chequebook is deployed and funded!</span>
@@ -39,7 +39,7 @@ export default function ChequebookDeployFund(props: any) {
             <span>Chequebook Address</span>
             </Typography>
             <EthereumAddress
-            address={props.chequebookAddress.chequebookaddress}
+            address={props.chequebookAddress?.chequebookaddress}
             network={'goerli'}
             />
             </div>

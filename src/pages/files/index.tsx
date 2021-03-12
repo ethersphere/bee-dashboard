@@ -85,7 +85,7 @@ export default function Files(props: any) {
 
     return (
         <div>
-            {props.nodeHealth.status === 'ok' && props.health ?
+            {props.nodeHealth?.status === 'ok' && props.health ?
             <Container maxWidth="sm">
               <div style={{marginBottom: '7px'}}>
                 <Button color="primary" style={{marginRight: '7px'}} onClick={() => setInputMode('browse')}>Browse</Button>
