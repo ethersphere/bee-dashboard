@@ -48,6 +48,13 @@ export default function Files(props: any) {
         beeApi.files.downloadFile(searchInput)
         .then(res => {
             setSearchResult(new TextDecoder("utf-8").decode(res.data))
+            const downloadUrl = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.setAttribute('download', 'file.zip'); //any other extension
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
         })
         .catch(error => {
         })
@@ -73,7 +80,6 @@ export default function Files(props: any) {
     const handleChange = (files: any) => {
       if (files) {
         setFiles(files)
-        
       }
     }
 

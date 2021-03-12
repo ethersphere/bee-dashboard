@@ -6,8 +6,8 @@ import { ListItemText, ListItemIcon, ListItem, Divider, List, Drawer, Link as MU
 import { OpenInNewSharp } from '@material-ui/icons';
 import { Activity, FileText, DollarSign, Share2, Settings } from 'react-feather';
 
-import SwarmLogo from '../assets/swarm-logo-4.svg';
-import SwarmLogoWhite from '../assets/swarm-logo-4-white.png';
+import SwarmLogo from '../assets/swarm-logo-2.svg';
+import SwarmLogoWhite from '../assets/swarm-logo-2-white.png';
 
 const drawerWidth = 240;
 
