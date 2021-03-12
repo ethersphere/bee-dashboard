@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles';
 import { Tabs, Tab, Box, Typography } from '@material-ui/core';
 import CodeBlock from './CodeBlock';
@@ -22,12 +22,47 @@ function a11yProps(index: any) {
     };
 }
 
+function getOS() {
+  var userAgent = window.navigator.userAgent,
+      platform = window.navigator.platform,
+      macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
+      windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
+      iosPlatforms = ['iPhone', 'iPad', 'iPod'],
+      os = null;
+
+  if (macosPlatforms.indexOf(platform) !== -1) {
+    os = 'macOS';
+  } else if (iosPlatforms.indexOf(platform) !== -1) {
+    os = 'iOS';
+  } else if (windowsPlatforms.indexOf(platform) !== -1) {
+    os = 'windows';
+  } else if (/Android/.test(userAgent)) {
+    os = 'android';
+  } else if (!os && /Linux/.test(platform)) {
+    os = 'linux';
+  }
+
+  return os;
+}
+
 export default function CodeBlockTabs(props: IProps) {
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
         setValue(newValue);
     };
+
+    useEffect(() => {
+      let os = getOS()
+      if(os === 'windows') {
+        setValue(0)
+      } else if (os === 'linux') {
+        setValue(0)
+      } else if (os === 'macOS') {
+        setValue(1)
+      } 
+
+    }, [])
 
     function TabPanel(props: TabPanelProps) {
         const { children, value, index, ...other } = props;

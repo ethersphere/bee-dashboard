@@ -77,10 +77,6 @@ export default function Files(props: any) {
       }
     }
 
-    useEffect(() => {
-      console.log(props)
-    }, [props.nodeHealth, props.health])
-
     return (
         <div>
             {props.nodeHealth.status === 'ok' && props.health ?
