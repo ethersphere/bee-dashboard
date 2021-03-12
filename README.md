@@ -11,6 +11,13 @@
 
 **Warning: This project is in alpha state. There might (and most probably will) be changes in the future to its API and working. Also, no guarantees can be made about its stability, efficiency, and security at this stage.**
 
+![Status page](/ui_samples/status.png)
+
+| Node Setup | Browse Files | Accounting | Peers | Settings |
+|-------|---------|-------|----------|------|
+| ![Setup](/ui_samples/node_setup.png) | ![Files](/ui_samples/file_browse.png) | ![Accounting](/ui_samples/accounting.png) | ![Peers](/ui_samples/peers.png) | ![Settings](/ui_samples/settings.png) |
+
+
 ## Table of Contents
 
 - [Install](#install)
