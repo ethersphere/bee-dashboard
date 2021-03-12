@@ -78,11 +78,11 @@ function PeerTable(props: any) {
                                 </Button>
                             </Tooltip>
                             
-                            <Tooltip title="Remove peer">
+                            {/* <Tooltip title="Remove peer">
                                 <Button color="primary" onClick={() => removePeer(peer.address)} >
                                     <Cancel />
                                 </Button>
-                            </Tooltip>
+                            </Tooltip> */}
                         </TableCell>
                         </TableRow>
                     ))}
