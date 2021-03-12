@@ -1,10 +1,12 @@
 import axios, { AxiosInstance } from 'axios';
 import { Bee } from "@ethersphere/bee-js";
 
-const beeJSClient = () => {
+const beeJSClient = (useGatewayHost?: boolean) => {
     let apiHost
   
-    if (sessionStorage.getItem('api_host')) {
+    if (useGatewayHost) {
+      apiHost = process.env.REACT_APP_SWARM_GATEWAY_HOST
+    } else if (sessionStorage.getItem('api_host')) {
       apiHost = String(sessionStorage.getItem('api_host') || '')
     } else {
       apiHost = process.env.REACT_APP_BEE_HOST
@@ -54,8 +56,8 @@ export const beeApi = {
         uploadData(file: any) { 
             return beeJSClient().uploadData(file)
         },
-        downloadFile(hash: string) {
-            return beeJSClient().downloadFile(hash)
+        downloadFile(hash: string, useGatewayHost?: boolean) {
+            return beeJSClient(useGatewayHost).downloadFile(hash)
         },
         downloadData(hash: string) {
             return beeJSClient().downloadData(hash)

@@ -55,7 +55,9 @@ function AccountCard(props: IProps) {
     return (
         <div>
             <div style={{justifyContent: 'space-between', display: 'flex'}}>
-                <h2 style={{ marginTop: '0px' }}>Accounting</h2>
+                <Typography variant="h4" gutterBottom>
+                Accounting
+                </Typography>
                 <div  style={{display:'flex'}}>
                     <WithdrawlModal />
                     <DepositModal />
