@@ -3,6 +3,7 @@ import { Paper, Container, Drawer, Button, Typography, CircularProgress, Grid } 
 import ClipboardCopy from '../../components/ClipboardCopy';
 import { beeDebugApi } from '../../services/bee';
 import EthereumAddress from '../../components/EthereumAddress';
+import { ConvertBalanceToBZZ } from '../../utils/common';
 
 function truncStringPortion(str: string, firstCharCount=10, endCharCount=10) {
 	var convertedStr="";
@@ -86,7 +87,12 @@ export default function Index(props: any) {
                             <Grid container spacing={1}>
                                 <Grid key={1} item xs={12} sm={12} xl={6}>
                                     <h5>Last Sent</h5>
-                                    <p>Payout: {peerCheque.lastsent?.payout}</p>
+                                    <p>
+                                    Payout: 
+                                        <span style={{marginBottom: '0px', fontFamily: 'monospace, monospace'}}> {
+                                        peerCheque.lastsent?.payout ? ConvertBalanceToBZZ(peerCheque.lastsent?.payout) : '-'
+                                        }</span>
+                                    </p>
                                     <p>Beneficiary: 
                                         <EthereumAddress
                                         network={'goerli'}
@@ -104,7 +110,11 @@ export default function Index(props: any) {
                                 </Grid>
                                 <Grid key={1} item xs={12} sm={12} xl={6}>
                                     <h5>Last Received</h5>
-                                    <p>Payout: {peerCheque.lastreceived?.payout}</p>
+                                    <p>
+                                    Payout: 
+                                        <span style={{marginBottom: '0px', fontFamily: 'monospace, monospace'}}> {
+                                        peerCheque.lastreceived?.payout ? ConvertBalanceToBZZ(peerCheque.lastreceived?.payout) : '-'}</span>
+                                    </p>
                                     <p>Beneficiary: 
                                         <EthereumAddress
                                         network={'goerli'}
@@ -124,9 +134,17 @@ export default function Index(props: any) {
                             <h3>Last Cashout</h3>
                             {peerCashout.cumulativePayout  > 0 ? 
                             <div>
-                                <p>Cumulative Payout: {peerCashout.cumulativePayout}</p>
                                 <p>
-                                    <span>Last Payout: {peerCashout.result.lastPayout}</span>
+                                Cumulative Payout: 
+                                <span style={{marginBottom: '0px', fontFamily: 'monospace, monospace'}}> 
+                                {peerCashout.cumulativePayout ? ConvertBalanceToBZZ(peerCashout.cumulativePayout) : '-'}
+                                </span>
+                                </p>
+                                <p>
+                                    Last Payout: 
+                                    <span style={{marginBottom: '0px', fontFamily: 'monospace, monospace'}}> {
+                                    peerCashout.result.lastPayout ? ConvertBalanceToBZZ(peerCashout.result.lastPayout) : '-'
+                                    }</span>
                                     <span> {peerCashout.result.bounced ? 'Bounced' : ''}</span>
                                 </p>
                                 <p>Beneficiary: 

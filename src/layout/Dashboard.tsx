@@ -42,8 +42,8 @@ const Dashboard = (props: any) => {
 
     const [themeMode, toggleThemeMode] = useState('light');
 
-    const { health } = useApiHealth()
-    const { nodeHealth } = useDebugApiHealth()
+    const { health, isLoadingHealth } = useApiHealth()
+    const { nodeHealth, isLoadingNodeHealth } = useDebugApiHealth()
 
     useEffect(() => {
       let theme = localStorage.getItem('theme')
@@ -63,7 +63,7 @@ const Dashboard = (props: any) => {
       })
     }, [])
 
-    let childrenInjectedWithProps = React.cloneElement(props.children, { health, nodeHealth })
+    let childrenInjectedWithProps = React.cloneElement(props.children, { health, nodeHealth, isLoadingHealth, isLoadingNodeHealth })
 
     return (
         <div>

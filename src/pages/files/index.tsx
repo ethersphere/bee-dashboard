@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { beeApi } from '../../services/bee';
 
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
@@ -141,6 +141,11 @@ export default function Files(props: any) {
               {searchResult}
               </div>
               }
+            </Container>
+            :
+            props.isLoadingHealth || props.isLoadingNodeHealth ?
+            <Container style={{textAlign:'center', padding:'50px'}}>
+                <CircularProgress />
             </Container>
             :
             <TroubleshootConnectionCard

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Grid } from '@material-ui/core/';
+import { Grid, Container, CircularProgress } from '@material-ui/core/';
 
 import StatCard from '../../components/StatCard';
 import PeerTable from './PeerTable';
@@ -46,6 +46,11 @@ export default function Peers(props: any) {
             loading={isLoadingNodePeers}
             />
             </div>
+            :
+            props.isLoadingHealth || props.isLoadingNodeHealth ?
+            <Container style={{textAlign:'center', padding:'50px'}}>
+                <CircularProgress />
+            </Container>
             :
             <TroubleshootConnectionCard />
             }

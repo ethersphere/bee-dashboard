@@ -1,6 +1,6 @@
 import React from 'react';
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { Tabs, Tab, Box, Typography } from '@material-ui/core';
+import { Tabs, Tab, Box, Typography, Container, CircularProgress } from '@material-ui/core';
 
 import AccountCard from '../accounting/AccountCard';
 import BalancesTable from './BalancesTable';
@@ -153,6 +153,11 @@ export default function Accounting(props: any) {
               />
             </TabPanel>
             </div>
+            :
+            props.isLoadingHealth || props.isLoadingNodeHealth ?
+            <Container style={{textAlign:'center', padding:'50px'}}>
+                <CircularProgress />
+            </Container>
             :
             <TroubleshootConnectionCard />
             }
