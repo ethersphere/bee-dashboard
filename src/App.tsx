@@ -71,13 +71,11 @@ function App() {
       toggleThemeMode('dark')
     }
 
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-      toggleThemeMode(e.matches ? "dark" : "light")
-    });
+    const changeHandle = (e: any) => toggleThemeMode(e.matches ? "dark" : "light")
 
-    return () => window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', e => {
-      toggleThemeMode(e.matches ? "dark" : "light")
-    })
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', changeHandle);
+
+    return () => window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', changeHandle)
   
   }, []);
 

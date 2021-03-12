@@ -23,26 +23,22 @@ function a11yProps(index: any) {
 }
 
 function getOS() {
-  var userAgent = window.navigator.userAgent,
-      platform = window.navigator.platform,
-      macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
-      windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
-      iosPlatforms = ['iPhone', 'iPad', 'iPod'],
-      os = null;
-
-  if (macosPlatforms.indexOf(platform) !== -1) {
-    os = 'macOS';
-  } else if (iosPlatforms.indexOf(platform) !== -1) {
-    os = 'iOS';
-  } else if (windowsPlatforms.indexOf(platform) !== -1) {
-    os = 'windows';
-  } else if (/Android/.test(userAgent)) {
-    os = 'android';
-  } else if (!os && /Linux/.test(platform)) {
-    os = 'linux';
-  }
-
-  return os;
+  const userAgent = window.navigator.userAgent
+  const platform = window.navigator.platform
+  const macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K']
+  const windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE']
+  const iosPlatforms = ['iPhone', 'iPad', 'iPod']
+  if (macosPlatforms.includes(platform)) return 'macOS'
+  
+  if (iosPlatforms.includes(platform)) return 'iOS'
+  
+  if (windowsPlatforms.includes(platform)) return 'windows'
+  
+  if (/Android/.test(userAgent)) return 'android'
+  
+  if (/Linux/.test(platform)) return 'linux'
+  
+  return null;
 }
 
 export default function CodeBlockTabs(props: IProps) {

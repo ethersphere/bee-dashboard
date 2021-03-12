@@ -8,7 +8,7 @@ import { ConvertBalanceToBZZ } from '../../utils/common';
 function truncStringPortion(str: string, firstCharCount=10, endCharCount=10) {
 	var convertedStr="";
 	convertedStr+=str.substring(0, firstCharCount);
-	convertedStr += ".".repeat(3);
+	convertedStr += "...";
 	convertedStr+=str.substring(str.length-endCharCount, str.length);
 	return convertedStr;
 }
