@@ -69,7 +69,7 @@ function ChequebookTable(props: IProps) {
                             </div>
                         </TableCell>
                         <TableCell style={{maxWidth:'200px'}}>
-                            <p style={{marginBottom: '0px'}}>
+                            <p style={{marginBottom: '0px', fontFamily: 'monospace, monospace'}}>
                                 {peerCheque.lastreceived?.payout ? ConvertBalanceToBZZ(peerCheque.lastreceived?.payout).toFixed(7).toLocaleString() : '-'}
                             </p>
                             <p style={{marginBottom: '0px'}}>
@@ -84,7 +84,7 @@ function ChequebookTable(props: IProps) {
                             </p>
                         </TableCell>
                         <TableCell style={{maxWidth:'200px'}}>
-                            <p  style={{marginBottom: '0px'}}>
+                            <p  style={{marginBottom: '0px', fontFamily: 'monospace, monospace'}}>
                                 {peerCheque.lastsent?.payout ? ConvertBalanceToBZZ(peerCheque.lastsent?.payout).toFixed(7).toLocaleString() : '-'}
                             </p>
                             <p style={{marginBottom: '0px'}}>

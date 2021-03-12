@@ -47,7 +47,7 @@ function BalancesTable(props: IProps) {
                     {props.peerBalances.balances.map((peerBalance: PeerBalance, idx: number) => (
                         <TableRow key={peerBalance.peer}>
                         <TableCell>{peerBalance.peer}</TableCell>
-                        <TableCell style={{ color: ConvertBalanceToBZZ(peerBalance.balance) > 0 ? '#32c48d' : '#c9201f', textAlign:'right' }}>
+                        <TableCell style={{ color: ConvertBalanceToBZZ(peerBalance.balance) > 0 ? '#32c48d' : '#c9201f', textAlign:'right', fontFamily: 'monospace, monospace' }}>
                             {ConvertBalanceToBZZ(peerBalance.balance).toFixed(7).toLocaleString() }
                         </TableCell>
                         <TableCell align="right">

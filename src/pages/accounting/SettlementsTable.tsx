@@ -50,8 +50,12 @@ function SettlementsTable(props: IProps) {
                     {props.nodeSettlements.settlements.map((item: Settlement, idx: number) => (
                         <TableRow key={item.peer}>
                         <TableCell>{item.peer}</TableCell>
-                        <TableCell>{item.received > 0 ? ConvertBalanceToBZZ(item.received).toFixed(7).toLocaleString() : item.received}</TableCell>
-                        <TableCell>{item.sent > 0 ? ConvertBalanceToBZZ(item.sent).toFixed(7).toLocaleString() : item.sent}</TableCell>
+                        <TableCell style={{ fontFamily: 'monospace, monospace'}}>
+                            {item.received > 0 ? ConvertBalanceToBZZ(item.received).toFixed(7).toLocaleString() : item.received}
+                            </TableCell>
+                        <TableCell style={{ fontFamily: 'monospace, monospace'}}>
+                            {item.sent > 0 ? ConvertBalanceToBZZ(item.sent).toFixed(7).toLocaleString() : item.sent}
+                        </TableCell>
                         </TableRow>
                     ))}
                     </TableBody>
