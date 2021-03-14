@@ -5,6 +5,7 @@ import { Clipboard } from 'react-feather';
 
 interface IProps {
     value: string,
+    icon?: any,
 }
 
 export default function ClipboardCopy(props: IProps) {
@@ -29,7 +30,11 @@ export default function ClipboardCopy(props: IProps) {
         <IconButton color="primary" size='small' onClick={handleCopy}>
             <CopyToClipboard text={props.value}
             >
+              {props.icon ?
+              props.icon
+              :
                 <Clipboard style={{height:'20px'}}/>
+              }
             </CopyToClipboard>
         </IconButton>
       </div>

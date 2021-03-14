@@ -50,8 +50,11 @@ export const beeApi = {
         }
     },
     files: {
-        uploadFile(file: any) {
-            return beeJSClient().uploadFile(file)
+        uploadFile(file: any, useGatewayHost?: boolean) {
+            return beeJSClient(useGatewayHost).uploadFile(file)
+        },
+        uploadFiles(files: any, useGatewayHost?: boolean) {
+            return beeJSClient(useGatewayHost).uploadFiles(files)
         },
         uploadData(file: any) { 
             return beeJSClient().uploadData(file)
@@ -61,6 +64,12 @@ export const beeApi = {
         },
         downloadData(hash: string) {
             return beeJSClient().downloadData(hash)
+        },
+        pinFile(hash: string) {
+            return beeJSClient().pinFile(hash)
+        },
+        pinnedChunks() {
+            return beeApiClient().get(`/pin/chunks`)
         },
     },
 }

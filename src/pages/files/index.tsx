@@ -3,7 +3,7 @@ import { beeApi } from '../../services/bee';
 
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import { Paper, InputBase, IconButton, Button, Container, CircularProgress, FormControlLabel, Switch } from '@material-ui/core';
-import { Search } from '@material-ui/icons';
+import { Search, LinkSharp } from '@material-ui/icons';
 import {DropzoneArea} from 'material-ui-dropzone'
 import ClipboardCopy from '../../components/ClipboardCopy';
 
@@ -15,7 +15,6 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: '2px 4px',
       display: 'flex',
       alignItems: 'center',
-      width: 400,
     },
     input: {
       marginLeft: theme.spacing(1),
@@ -39,12 +38,13 @@ export default function Files(props: any) {
     const [searchResult, setSearchResult] = useState('');
     const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
     const [useSwarmGateway, setUseSwarmGateway] = useState<boolean>(false);
+    const [pinningFile, setPinningFile] = useState<boolean>(false);
 
     const [files, setFiles] = useState<File[]>([]);
     const [uploadReference, setUploadReference] = useState('');
     const [uploadingFile, setUploadingFile] = useState<boolean>(false);
 
-    const getFile = () => {
+    const getCurrentApiHost = () => {
       let apiHost
   
       if (useSwarmGateway) {
@@ -55,12 +55,20 @@ export default function Files(props: any) {
         apiHost = process.env.REACT_APP_BEE_HOST
       }
 
+      return apiHost
+    }
+
+    const getFile = () => {
+      let apiHost = getCurrentApiHost()
+
       window.open(`${apiHost}/files/${searchInput}`, '_blank');
     }
 
     const uploadFile = () => {
       setUploadingFile(true)
-        beeApi.files.uploadFile(files[0])
+      console.log(files[0])
+      if(files.length > 1) {
+        beeApi.files.uploadFiles(files, useSwarmGateway)
         .then(hash => {
             setUploadReference(hash)
             setFiles([])
@@ -70,10 +78,35 @@ export default function Files(props: any) {
         .finally(() => {
           setUploadingFile(false)
         })
+      } else if (files.length === 1) {
+        beeApi.files.uploadFile(files[0], useSwarmGateway)
+        .then(hash => {
+            setUploadReference(hash)
+            setFiles([])
+        })
+        .catch(error => {
+        })
+        .finally(() => {
+          setUploadingFile(false)
+        })
+      }
+    }
+
+    const pinFile = (hash: string) => {
+      setPinningFile(true)
+        beeApi.files.pinFile(hash)
+        .then(res => {
+        })
+        .catch(error => {
+        })
+        .finally(() => {
+          setPinningFile(false)
+        })
     }
 
     const handleChange = (files: any) => {
-      if (files) {
+      console.log(files)
+      if (files.length > 0) {
         setFiles(files)
       }
     }
@@ -81,7 +114,7 @@ export default function Files(props: any) {
     return (
         <div>
             {props.nodeHealth?.status === 'ok' && props.health ?
-            <Container maxWidth="sm">
+            <Container maxWidth="md">
               <div style={{marginBottom: '7px'}}>
                 <Button color="primary" style={{marginRight: '7px'}} onClick={() => setInputMode('browse')}>Browse</Button>
                 <Button color="primary" onClick={() => setInputMode('upload')}>Upload</Button>
@@ -113,10 +146,15 @@ export default function Files(props: any) {
                 :
                 <div>
                   {uploadReference ?
-                    <Paper component="form" className={classes.root}  style={{marginBottom:'15px', display: 'flex'}}> 
+                    <Paper component="form" className={classes.root}  style={{marginBottom:'15px', padding:'10px', paddingRight:'20px', display: 'flex', textAlign:'center'}}> 
                       <span>{uploadReference}</span>
                       <ClipboardCopy
+                      value={`${getCurrentApiHost()}/files/${uploadReference}`}
+                      icon={<LinkSharp />}
+                      />
+                      <ClipboardCopy
                       value={uploadReference}
+                      icon={<div style={{padding:'5px'}}>#</div>}
                       />
                     </Paper>
                     :
@@ -126,7 +164,11 @@ export default function Files(props: any) {
                   onChange={handleChange}
                   />
                   <div style={{marginTop:'15px'}}>
-                    <Button onClick={() => uploadFile()} className={classes.iconButton}>
+                    <FormControlLabel
+                    control={<Switch checked={useSwarmGateway} color="primary" onChange={() => setUseSwarmGateway(!useSwarmGateway)} />}
+                    label="Use Swarm Gateway"
+                    />
+                    <Button  style={{float:'right'}} variant='outlined' onClick={() => uploadFile()} className={classes.iconButton}>
                         Upload
                     </Button>
                   </div>
