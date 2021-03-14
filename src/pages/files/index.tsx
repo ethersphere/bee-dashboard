@@ -60,8 +60,9 @@ export default function Files(props: any) {
 
     const getFile = () => {
       let apiHost = getCurrentApiHost()
-
-      window.open(`${apiHost}/files/${searchInput}`, '_blank');
+      if (searchInput) {
+        window.open(`${apiHost}/files/${searchInput}`, '_blank');
+      }
     }
 
     const uploadFile = () => {
@@ -121,7 +122,7 @@ export default function Files(props: any) {
               </div>
               {inputMode === 'browse' ? 
               <div>
-                <Paper component="form" className={classes.root}> 
+                <Paper component="form" onSubmit={(e) => {e.preventDefault(); getFile()}} className={classes.root}> 
                     <InputBase
                     className={classes.input}
                     placeholder="Enter hash e.g. 0773a91efd6547c754fc1d95fb1c62c7d1b47f959c2caa685dfec8736da95c1c"
