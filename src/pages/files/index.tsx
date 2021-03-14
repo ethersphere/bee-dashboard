@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { beeApi } from '../../services/bee';
 
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { Paper, InputBase, IconButton, Button, Container, CircularProgress, FormControlLabel, Switch } from '@material-ui/core';
-import { Search, LinkSharp } from '@material-ui/icons';
+import { Paper, InputBase, IconButton, Button, Container, CircularProgress, FormControlLabel, Switch, Tooltip } from '@material-ui/core';
+import { Search, LinkSharp, HelpOutlineSharp } from '@material-ui/icons';
 import {DropzoneArea} from 'material-ui-dropzone'
 import ClipboardCopy from '../../components/ClipboardCopy';
 
@@ -137,6 +137,9 @@ export default function Files(props: any) {
                 control={<Switch checked={useSwarmGateway} color="primary" onChange={() => setUseSwarmGateway(!useSwarmGateway)} />}
                 label="Use Swarm Gateway"
                 />
+                <Tooltip title={`Uses the public swarm gateway endpoint (${process.env.REACT_APP_SWARM_GATEWAY_HOST})`} placement="bottom">
+                  <HelpOutlineSharp fontSize={'small'} style={{paddingTop:'5px', verticalAlign:'sub'}} />
+                </Tooltip>
               </div>
               :
               <div>
@@ -169,6 +172,9 @@ export default function Files(props: any) {
                     control={<Switch checked={useSwarmGateway} color="primary" onChange={() => setUseSwarmGateway(!useSwarmGateway)} />}
                     label="Use Swarm Gateway"
                     />
+                    <Tooltip title={`Uses the public swarm gateway endpoint (${process.env.REACT_APP_SWARM_GATEWAY_HOST})`} placement="bottom">
+                      <HelpOutlineSharp fontSize={'small'} style={{paddingTop:'5px', verticalAlign:'sub'}} />
+                    </Tooltip>
                     <Button  style={{float:'right'}} variant='outlined' onClick={() => uploadFile()} className={classes.iconButton}>
                         Upload
                     </Button>

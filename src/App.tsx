@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, createContext } from 'react';
 import {BrowserRouter as Router} from 'react-router-dom';
 import './App.css';
 
@@ -62,6 +62,8 @@ const darkTheme = createMuiTheme({
 function App() {
   const [themeMode, toggleThemeMode] = useState('light');
 
+  const ThemeContext = createContext(themeMode);
+
   useEffect(() => {
     let theme = localStorage.getItem('theme')
 
@@ -82,10 +84,12 @@ function App() {
   return (
     <div className="App">
       <ThemeProvider theme={themeMode === 'light' ? lightTheme : darkTheme}>
-        <CssBaseline />
-        <Router>
-          <BaseRouter />
-        </Router>
+        <ThemeContext.Provider value={themeMode}>
+          <CssBaseline />
+          <Router>
+            <BaseRouter />
+          </Router>
+        </ThemeContext.Provider>
       </ThemeProvider>
     </div>
   );
