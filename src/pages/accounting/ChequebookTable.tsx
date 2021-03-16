@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper, Container, CircularProgress  } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper, Container, CircularProgress, TablePagination, TableFooter } from '@material-ui/core';
 
 import { ConvertBalanceToBZZ } from '../../utils/common';
 import EthereumAddress from '../../components/EthereumAddress';
@@ -37,6 +37,12 @@ interface IProps {
 function ChequebookTable(props: IProps) {
     const classes = useStyles();
 
+    const [page, setPage] = React.useState(0);
+
+    const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+        setPage(newPage);
+    };
+
     return (
         <div>
             {props.loading ? 
@@ -56,7 +62,7 @@ function ChequebookTable(props: IProps) {
                     </TableRow>
                     </TableHead>
                     <TableBody>
-                    {props.peerCheques?.lastcheques.map((peerCheque: PeerCheque, idx: number) => (
+                    {props.peerCheques?.lastcheques.slice(page * 20, page * 20 + 20).map((peerCheque: PeerCheque, idx: number) => (
                         <TableRow key={peerCheque.peer}>
                         <TableCell>
                             <div style={{display:'flex'}}>
@@ -68,34 +74,34 @@ function ChequebookTable(props: IProps) {
                                 <ClipboardCopy value={peerCheque.peer} />
                             </div>
                         </TableCell>
-                        <TableCell style={{maxWidth:'200px'}}>
-                            <p style={{marginBottom: '0px', fontFamily: 'monospace, monospace'}}>
-                                {peerCheque.lastreceived?.payout ? ConvertBalanceToBZZ(peerCheque.lastreceived?.payout).toFixed(7).toLocaleString() : '-'}
-                            </p>
-                            <p style={{marginBottom: '0px'}}>
-                                <small>{peerCheque.lastreceived ?
+                        <TableCell style={{maxWidth:'320px'}}>
+                            <p style={{marginBottom: '0px', fontFamily: 'monospace, monospace', display:'flex'}}>
+                                <span style={{whiteSpace: 'nowrap', marginRight:'12px', paddingTop:'3px'}}>
+                                    {peerCheque.lastreceived?.payout ? 
+                                    `${ConvertBalanceToBZZ(peerCheque.lastreceived?.payout).toFixed(7).toLocaleString()} from`
+                                    : '-'}
+                                </span>
+                                {peerCheque.lastreceived ?
                                 <EthereumAddress
                                 hideBlockie
                                 truncate
                                 network='goerli'
                                 address={peerCheque.lastreceived.beneficiary}
                                 /> : null}
-                                </small>
                             </p>
                         </TableCell>
-                        <TableCell style={{maxWidth:'200px'}}>
-                            <p  style={{marginBottom: '0px', fontFamily: 'monospace, monospace'}}>
-                                {peerCheque.lastsent?.payout ? ConvertBalanceToBZZ(peerCheque.lastsent?.payout).toFixed(7).toLocaleString() : '-'}
-                            </p>
-                            <p style={{marginBottom: '0px'}}>
-                                <small>{peerCheque.lastsent ?
+                        <TableCell style={{maxWidth:'320px'}}>
+                            <p style={{marginBottom: '0px', fontFamily: 'monospace, monospace', display:'flex'}}>
+                                <span style={{whiteSpace: 'nowrap', marginRight:'12px', paddingTop:'3px'}}>
+                                {peerCheque.lastsent?.payout ? `${ConvertBalanceToBZZ(peerCheque.lastsent?.payout).toFixed(7).toLocaleString()} to` : '-'}
+                                </span>
+                                {peerCheque.lastsent ?
                                 <EthereumAddress
                                 hideBlockie
                                 truncate
                                 network='goerli'
                                 address={peerCheque.lastsent.beneficiary}
                                 /> : null}
-                                </small>
                             </p>
                         </TableCell>
                         <TableCell align="right">
@@ -104,6 +110,18 @@ function ChequebookTable(props: IProps) {
                     ))}
                     </TableBody>
                 </Table>
+                <TableFooter>
+                    <TableRow>
+                        <TablePagination
+                        count={props.peerCheques?.lastcheques ? props.peerCheques?.lastcheques.length : 0}
+                        rowsPerPage={20}
+                        colSpan={3}
+                        rowsPerPageOptions={[20]}
+                        page={page}
+                        onChangePage={handleChangePage}
+                        />
+                    </TableRow>
+                </TableFooter>
             </TableContainer>
             </div>}
         </div>

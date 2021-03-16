@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Button, Paper, Tooltip, Container, CircularProgress } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Button, Paper, Tooltip, Container, CircularProgress, TablePagination, TableFooter } from '@material-ui/core';
 import { Cancel, Autorenew } from '@material-ui/icons';
 
 import { beeDebugApi } from '../../services/bee';
@@ -17,6 +17,12 @@ function PeerTable(props: any) {
 
     const [peerLatency, setPeerLatency] = useState([{ peerId: '', rtt: '', loading: false }]);
     const [removingPeer, setRemovingPeer] = useState(false);
+
+    const [page, setPage] = React.useState(0);
+
+    const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+        setPage(newPage);
+    };
 
     const PingPeer = async (peerId: string) => {
         
@@ -53,20 +59,17 @@ function PeerTable(props: any) {
             </Container>
             :
              <TableContainer component={Paper}>
-                <Table className={classes.table} aria-label="simple table">
+                <Table className={classes.table} size="small" aria-label="simple table">
                     <TableHead>
                     <TableRow>
-                        <TableCell>Index</TableCell>
-                        <TableCell>Peer Id</TableCell>
+                        <TableCell>Peer</TableCell>
                         <TableCell align="right">Actions</TableCell>
                     </TableRow>
                     </TableHead>
                     <TableBody>
-                    {props.nodePeers.peers.map((peer: any, idx: number) => (
+                    {props.nodePeers.peers.slice(page * 10, page * 10 + 10)
+                    .map((peer: any, idx: number) => (
                         <TableRow key={peer.address}>
-                        <TableCell component="th" scope="row">
-                            {idx + 1}
-                        </TableCell>
                         <TableCell>{peer.address}</TableCell>
                         <TableCell align="right">
                             <Tooltip title="Ping node">
@@ -88,6 +91,18 @@ function PeerTable(props: any) {
                     ))}
                     </TableBody>
                 </Table>
+                <TableFooter>
+                    <TableRow>
+                        <TablePagination
+                        count={props.nodePeers.peers.length}
+                        rowsPerPage={10}
+                        colSpan={3}
+                        rowsPerPageOptions={[10]}
+                        page={page}
+                        onChangePage={handleChangePage}
+                        />
+                    </TableRow>
+                </TableFooter>
             </TableContainer>
             }
         </div>

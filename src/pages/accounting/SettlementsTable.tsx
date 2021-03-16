@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper, Container, CircularProgress  } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper, Container, CircularProgress, TableFooter, TablePagination  } from '@material-ui/core';
 
 import { ConvertBalanceToBZZ } from '../../utils/common';
 
@@ -21,6 +21,12 @@ interface IProps {
 function SettlementsTable(props: IProps) {
     const classes = useStyles();
 
+    const [page, setPage] = React.useState(0);
+
+    const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+        setPage(newPage);
+    };
+
     return (
         <div>
             {props.loading ? 
@@ -38,7 +44,7 @@ function SettlementsTable(props: IProps) {
                     </TableRow>
                     </TableHead>
                     <TableBody>
-                    {props.nodeSettlements?.settlements.map((item: Settlements, idx: number) => (
+                    {props.nodeSettlements?.settlements.slice(page * 20, page * 20 + 20).map((item: Settlements, idx: number) => (
                         <TableRow key={item.peer}>
                         <TableCell>{item.peer}</TableCell>
                         <TableCell style={{ fontFamily: 'monospace, monospace'}}>
@@ -51,6 +57,18 @@ function SettlementsTable(props: IProps) {
                     ))}
                     </TableBody>
                 </Table>
+                <TableFooter>
+                    <TableRow>
+                        <TablePagination
+                        count={props.nodeSettlements?.settlements ? props.nodeSettlements?.settlements.length : 0}
+                        rowsPerPage={20}
+                        colSpan={3}
+                        rowsPerPageOptions={[20]}
+                        page={page}
+                        onChangePage={handleChangePage}
+                        />
+                    </TableRow>
+                </TableFooter>
             </TableContainer>}
         </div>
     )
