@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {BrowserRouter as Router} from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import './App.css';
 
 import { createMuiTheme } from '@material-ui/core/styles';
@@ -11,14 +11,27 @@ import BaseRouter from './routes/routes';
 
 declare global {
   interface Window {
-      ethereum: {};
-      web3: {};
+    ethereum: {};
+    web3: {};
   }
 }
 
 const lightTheme = createMuiTheme({
+  palette: {
+    type: "light",
+    background: {
+      default: '#fafafa',
+    },
+    primary: {
+      main: '#6a6a6a',
+    },
+    secondary: {
+      main: '#333333',
+    },
+  },
   typography: {
     fontFamily: [
+      'Work Sans',
       'Montserrat',
       'Nunito',
       'Roboto',
@@ -38,7 +51,7 @@ const darkTheme = createMuiTheme({
     },
     primary: {
       // light: will be calculated from palette.primary.main,
-      main: '#5e72e4' //'#3f51b5',
+      main: '#dd7700' //'#3f51b5',
       // dark: will be calculated from palette.primary.main,
       // contrastText: will be calculated to contrast with palette.primary.main
     },
@@ -48,6 +61,7 @@ const darkTheme = createMuiTheme({
   },
   typography: {
     fontFamily: [
+      'Work Sans',
       'Montserrat',
       'Nunito',
       'Roboto',
@@ -78,7 +92,7 @@ function App() {
     return () => window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', e => {
       toggleThemeMode(e.matches ? "dark" : "light")
     })
-  
+
   }, []);
 
   return (
