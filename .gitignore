@@ -8,8 +8,10 @@
 # testing
 /coverage
 
-# production
+# build artifacts
 /build
+/dist
+/public/electron.js
 
 # misc
 .DS_Store

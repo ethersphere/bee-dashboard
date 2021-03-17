@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 
 import AppRoute from './AppRoute';
 
@@ -21,6 +21,8 @@ const BaseRouter = (props: any) => (
         <AppRoute exact path='/peers/' layout={ Dashboard } component={Peers}/>
         <AppRoute exact path='/accounting/' layout={ Dashboard } component={Accounting}/>
         <AppRoute exact path='/settings/' layout={ Dashboard } component={Settings}/>
+        {/* A catch-all because electron build initial load is: /absolute/path/index.html */}
+        <Route path='*'><Redirect to='/'/></Route>
     </Switch>
 );
 

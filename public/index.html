@@ -30,6 +30,19 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Bee node status</title>
+
+    <!--
+      The bundling and building of the electron app places the web-content files
+      (html/js) and static assets (svgs/pngs) into a "directory" inside an ASAR
+      file, which is a tar-like structure used to optimize app loading/peformance.
+      The base-path needs to be set to allow for relative look-up of static assets
+      from within the code. For example, in SideBar.tsx :
+      ```
+      import SwarmLogoOrange from '../assets/swarm-logo-orange.svg'
+      ```
+      Without <base> tag, inside the electron build, this SVG image is a broken link.
+    -->
+    <base href="./" />
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

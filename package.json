@@ -1,7 +1,8 @@
 {
   "name": "bee-status",
   "version": "0.1.0",
-  "description": "Simple dApp to show the status of the bee node",
+  "author": "Swarm Team <info@ethswarm.org>",
+  "description": "An app for showing the status of the bee node.",
   "keywords": [
     "bee",
     "swarm",
@@ -11,7 +12,8 @@
     "typescript",
     "p2p"
   ],
-  "homepage": ".",
+  "homepage": "./",
+  "main": "public/electron.js",
   "bugs": {
     "url": "https://github.com/ethersphere/bee-status/issues/"
   },
@@ -28,6 +30,8 @@
     "@types/react-router": "^5.1.12",
     "@types/react-router-dom": "^5.1.7",
     "axios": "^0.21.1",
+    "electron-is-dev": "^1.2.0",
+    "electron-squirrel-startup": "^1.0.0",
     "feather-icons": "^4.28.0",
     "material-ui-dropzone": "^3.5.0",
     "qrcode.react": "^1.0.1",
@@ -44,22 +48,52 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.8.1",
+    "@types/electron-devtools-installer": "^2.2.0",
     "@types/jest": "^26.0.15",
-    "@types/node": "^12.0.0",
+    "@types/node": "^14.14.7",
     "@types/qrcode.react": "^1.0.1",
     "@types/react": "^17.0.0",
     "@types/react-copy-to-clipboard": "^5.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-syntax-highlighter": "^13.5.0",
+    "concurrently": "^5.2.0",
+    "electron": "^12.0.1",
+    "electron-builder": "^22.10.5",
+    "electron-devtools-installer": "^3.1.1",
     "react-scripts": "4.0.3",
     "typescript": "^4.2.3",
+    "wait-on": "^5.1.0",
     "web-vitals": "^1.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "npm run electron-build-bootstrap && react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "electron-dev": "npm run electron-build-bootstrap && concurrently \"BROWSER=none npm run start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron-build": "npm run build && electron-builder build",
+    "electron-build:linux": "npm run build && electron-builder build -l --publish never",
+    "electron-build:linux:deb": "npm run build && electron-builder build --linux deb --publish never",
+    "electron-build:linux:rpm": "npm run build && electron-builder build --linux rpm --publish never",
+    "electron-build:win": "npm run build && electron-builder build -w --publish never",
+    "electron-build:mac": "npm run build && electron-builder build -m dmg --publish never",
+    "electron-build-bootstrap": "tsc --esModuleInterop --outDir public src/electron.ts"
+  },
+  "build": {
+    "appId": "org.ethswarm.bee-status",
+    "productName": "Bee Status",
+    "extraMetadata": {
+      "main": "build/electron.js"
+    },
+    "win": {
+      "icon": "build/icons/icon.png"
+    },
+    "linux": {
+      "icon": "build/icons/icon.icns"
+    },
+    "mac": {
+      "icon": "build/icons/icon.icns"
+    }
   },
   "eslintConfig": {
     "extends": [
