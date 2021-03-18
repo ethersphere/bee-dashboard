@@ -1,3 +1,8 @@
 .App {
   font-family: "Helvetica Neue", HelveticaNeue, Helvetica, Arial, sans-serif;
 }
+
+a {
+  font-family: monospace;
+  color: #dd7700;
+}
