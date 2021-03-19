@@ -30,7 +30,7 @@ export default function DepositModal() {
         beeDebugApi.chequebook.peerCashout(peerId)
         .then(res => {
             setOpen(false);
-            handleToast(`Successfully cashed out cheque. Transaction ${res.data.transactionHash}`)
+            handleToast(`Successfully cashed out cheque. Transaction ${res.transactionHash}`)
         })
         .catch(error => {
             handleToast('Error with cashout')

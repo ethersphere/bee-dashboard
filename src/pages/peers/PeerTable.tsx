@@ -23,7 +23,7 @@ function PeerTable(props: any) {
         setPeerLatency([...peerLatency, { peerId: peerId, rtt: '', loading: true }])
         beeDebugApi.connectivity.ping(peerId)
         .then(res => {
-            setPeerLatency([...peerLatency, { peerId: peerId, rtt: res.data.rtt, loading: false }])
+            setPeerLatency([...peerLatency, { peerId: peerId, rtt: res.rtt, loading: false }])
         })
         .catch(error => {
             setPeerLatency([...peerLatency, { peerId: peerId, rtt: 'error', loading: false }])

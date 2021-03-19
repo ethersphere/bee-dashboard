@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 
-import type { NodeAddresses, ChequebookAddressResponse, ChequebookBalanceResponse, BalanceResponse, 
-    LastChequesResponse, AllSettlements, LastCashoutActionResponse } from '@ethersphere/bee-js'
+import { NodeAddresses, ChequebookAddressResponse, ChequebookBalanceResponse, BalanceResponse, 
+    LastChequesResponse, AllSettlements, LastCashoutActionResponse, Health, Topology, Peer, LastChequesForPeerResponse, PingResponse, Readiness } from '@ethersphere/bee-js'
 
 import { beeDebugApi, beeApi } from '../services/bee';
 
 export const useApiHealth = () => {
-    const [health, setHealth] = useState('')
+    const [health, setHealth] = useState(false)
     const [isLoadingHealth, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
@@ -14,7 +14,7 @@ export const useApiHealth = () => {
         setLoading(true)
         beeApi.status.health()
         .then(res => {
-            setHealth(res.data)
+            setHealth(true)
         })
         .catch(error => {
             setError(error)
@@ -27,13 +27,8 @@ export const useApiHealth = () => {
     return { health, isLoadingHealth, error } ;
 }
 
-interface NodeHealth {
-    status: string,
-    version: string
-}
-
 export const useDebugApiHealth = () => {
-    const [nodeHealth, setNodeHealth] = useState<NodeHealth | null>(null)
+    const [nodeHealth, setNodeHealth] = useState<Health | null>(null)
     const [isLoadingNodeHealth, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
@@ -41,7 +36,7 @@ export const useDebugApiHealth = () => {
         setLoading(true)
         beeDebugApi.status.nodeHealth()
         .then(res => {
-            setNodeHealth(res.data)
+            setNodeHealth(res)
         })
         .catch(error => {
             setError(error)
@@ -54,25 +49,16 @@ export const useDebugApiHealth = () => {
     return { nodeHealth, isLoadingNodeHealth, error } ;
 }
 
-interface NodeReadiness {
-    status: string,
-    version: string
-}
-
 export const useApiReadiness = () => {
-    const [nodeReadiness, setNodeReadiness] = useState<NodeReadiness | null>(null)
+    const [nodeReadiness, setNodeReadiness] = useState<Readiness | null>(null)
     const [isLoadingNodeReadiness, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
     useEffect(() => { 
         setLoading(true)
         beeDebugApi.status.nodeReadiness()
-        .then(res => {
-            setNodeReadiness(res.data)
-        })
-        .catch(error => {
-            setError(error)
-        })
+        .then(setNodeReadiness)
+        .catch(setError)
         .finally(() => {
             setLoading(false)
         })
@@ -82,15 +68,21 @@ export const useApiReadiness = () => {
 }
 
 export const useApiNodeAddresses = () => {
-    const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses | null>(null)
+    const [nodeAddresses, setNodeAddresses] = useState<any | null>(null)
     const [isLoadingNodeAddresses, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
     useEffect(() => { 
         setLoading(true)
-        beeDebugApi.connectivity.addresses()
-        .then(res => {
-            setNodeAddresses(res.data)
+
+        const getAddresses = async () => {
+            const ethereum = await beeDebugApi.connectivity.ethereumAddress()
+            const overlay = await beeDebugApi.connectivity.overlayAddress()
+            const pssPublicKey = await beeDebugApi.connectivity.pssPublicKey()
+            return {ethereum, overlay, pssPublicKey}
+        }
+        getAddresses().then((data) => {
+            setNodeAddresses(data)
         })
         .catch(error => {
             setError(error)
@@ -104,7 +96,7 @@ export const useApiNodeAddresses = () => {
 }
 
 export const useApiNodeTopology = () => {
-    const [nodeTopology, setNodeTopology] = useState({ baseAddr: '', bins: [""], connected: 0, depth: 0, nnLowWatermark: 0, population: 0, timestamp: ''})
+    const [nodeTopology, setNodeTopology] = useState<Topology | null>(null)
     const [isLoadingNodeTopology, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
@@ -112,7 +104,7 @@ export const useApiNodeTopology = () => {
         setLoading(true)
         beeDebugApi.connectivity.topology()
         .then(res => {
-            setNodeTopology(res.data)
+            setNodeTopology(res)
         })
         .catch(error => {
             setError(error)
@@ -134,7 +126,7 @@ export const useApiChequebookAddress = () => {
         setLoading(true)
         beeDebugApi.chequebook.address()
         .then(res => {
-            setChequebookAddress(res.data)
+            setChequebookAddress(res)
         })
         .catch(error => {
             setError(error)
@@ -148,7 +140,7 @@ export const useApiChequebookAddress = () => {
 }
 
 export const useApiNodePeers = () => {
-    const [nodePeers, setNodePeers] = useState({ peers: [{ address: '-'}]})
+    const [nodePeers, setNodePeers] = useState<Peer[] | null>(null)
     const [isLoadingNodePeers, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
@@ -156,7 +148,7 @@ export const useApiNodePeers = () => {
         setLoading(true)
         beeDebugApi.connectivity.listPeers()
         .then(res => {
-            setNodePeers(res.data)
+            setNodePeers(res)
         })
         .catch(error => {
             setError(error)
@@ -178,7 +170,7 @@ export const useApiChequebookBalance = () => {
         setLoading(true)
         beeDebugApi.chequebook.balance()
         .then(res => {
-            setChequebookBalance(res.data)
+            setChequebookBalance(res)
         })
         .catch(error => {
             setError(error)
@@ -200,7 +192,7 @@ export const useApiPeerBalances = () => {
         setLoading(true)
         beeDebugApi.balance.balances()
         .then(res => {
-            setPeerBalances(res.data)
+            setPeerBalances(res)
         })
         .catch(error => {
             setError(error)
@@ -222,7 +214,7 @@ export const useApiPeerCheques = () => {
         setLoading(true)
         beeDebugApi.chequebook.getLastCheques()
         .then(res => {
-            setPeerCheques(res.data)
+            setPeerCheques(res)
         })
         .catch(error => {
             setError(error)
@@ -236,16 +228,7 @@ export const useApiPeerCheques = () => {
 }
 
 export const useApiPeerLastCheque = (peerId: string) => {
-    const [peerCheque, setPeerCheque] = useState({ peer: '-', chequebook: "",
-        cumulativePayout: 0,
-        beneficiary: "",
-        transactionHash: "",
-        result: {
-            recipient: "",
-            lastPayout: 0,
-            bounced: false
-    }}
-    )
+    const [peerCheque, setPeerCheque] = useState<LastChequesForPeerResponse>()
     const [isLoadingPeerCheque, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
@@ -253,7 +236,7 @@ export const useApiPeerLastCheque = (peerId: string) => {
         setLoading(true)
         beeDebugApi.chequebook.getPeerLastCheques(peerId)
         .then(res => {
-            setPeerCheque(res.data)
+            setPeerCheque(res)
         })
         .catch(error => {
             setError(error)
@@ -275,7 +258,7 @@ export const useApiSettlements = () => {
         setLoading(true)
         beeDebugApi.settlements.getSettlements()
         .then(res => {
-            setSettlements(res.data)
+            setSettlements(res)
         })
         .catch(error => {
             setError(error)
@@ -290,7 +273,7 @@ export const useApiSettlements = () => {
 
 
 export const useApiPingPeer = (peerId: string) => {
-    const [peerRTP, setPeerRTP] = useState<string>('')
+    const [peerRTP, setPeerRTP] = useState<PingResponse|null>(null)
     const [isPingingPeer, setPingingPeer] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
@@ -298,7 +281,7 @@ export const useApiPingPeer = (peerId: string) => {
         setPingingPeer(true)
         beeDebugApi.connectivity.ping(peerId)
         .then(res => {
-            setPeerRTP(res.data)
+            setPeerRTP(res)
         })
         .catch(error => {
             setError(error)
@@ -320,7 +303,7 @@ export const useApiPeerLastCashout = (peerId: string) => {
         setLoading(true)
         beeDebugApi.chequebook.getPeerLastCashout(peerId)
         .then(res => {
-            setPeerCashout(res.data)
+            setPeerCashout(res)
         })
         .catch(error => {
             setError(error)

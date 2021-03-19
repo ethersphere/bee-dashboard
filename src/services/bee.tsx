@@ -1,50 +1,29 @@
-import axios, { AxiosInstance } from 'axios';
-import { Bee } from "@ethersphere/bee-js";
+import { Bee, BeeDebug } from "@ethersphere/bee-js";
 
-const beeJSClient = () => {
-    let apiHost
+const beeJSClient = (): Bee => {
+    let apiHost = process.env.REACT_APP_BEE_HOST
   
     if (sessionStorage.getItem('api_host')) {
-      apiHost = String(sessionStorage.getItem('api_host') || '')
-    } else {
-      apiHost = process.env.REACT_APP_BEE_HOST
+      apiHost = String(sessionStorage.getItem('api_host'))
     }
 
     return new Bee(`${apiHost}`)
 }
 
-const beeApiClient = (): AxiosInstance => {
-    let apiHost
-  
-    if (sessionStorage.getItem('api_host')) {
-      apiHost = String(sessionStorage.getItem('api_host') || '')
-    } else {
-      apiHost = process.env.REACT_APP_BEE_HOST
-    }
-
-    return axios.create({
-        baseURL: apiHost
-    })
-}
-
-const beeDebugApiClient = (): AxiosInstance => {
-    let debugApiHost
+const beeDebugJSClient = (): BeeDebug => {
+    let debugApiHost = process.env.REACT_APP_BEE_DEBUG_HOST
   
     if (sessionStorage.getItem('debug_api_host')) {
-      debugApiHost = String(sessionStorage.getItem('debug_api_host') || '')
-    } else {
-      debugApiHost = process.env.REACT_APP_BEE_DEBUG_HOST
+      debugApiHost = String(sessionStorage.getItem('debug_api_host'))
     }
 
-    return axios.create({
-        baseURL: debugApiHost
-    })
+    return new BeeDebug(`${debugApiHost}`)
 }
 
 export const beeApi = {
     status: {
         health() {
-            return beeApiClient().get('/')
+            return beeJSClient().isConnected()
         }
     },
     files: {
@@ -66,78 +45,84 @@ export const beeApi = {
 export const beeDebugApi = {
     status: {
         nodeHealth() {
-            return beeDebugApiClient().get(`/health`)
+            return beeDebugJSClient().getHealth()
         },
         nodeReadiness() {
-            return beeDebugApiClient().get(`/readiness`)
+            return beeDebugJSClient().getReadiness()
         },
     },
     connectivity: {
-        addresses() {
-            return beeDebugApiClient().get(`/addresses`)
+        overlayAddress() {
+            return beeDebugJSClient().getOverlayAddress()
+        },
+        ethereumAddress() {
+            return beeDebugJSClient().getEthAddress()
+        },
+        pssPublicKey() {
+            return beeDebugJSClient().getPssPublicKey()
         },
         listPeers() {
-            return beeDebugApiClient().get(`/peers`)
+            return beeDebugJSClient().getPeers()
         },
         blockListedPeers() {
-            return beeDebugApiClient().get(`/blocklist`)
+            return beeDebugJSClient().getBlocklist()
         },
         removePeer(peerId: string) {
-            return beeDebugApiClient().delete(`/peers/${peerId}`)
+            return beeDebugJSClient().removePeer(peerId)
         },
         topology() {
-            return beeDebugApiClient().get(`/topology`)
+            return beeDebugJSClient().getTopology()
         },
         ping(peerId: string) {
-            return beeDebugApiClient().post(`/pingpong/${peerId}`)
+            return beeDebugJSClient().pingPeer(peerId)
         }
     },
     balance: {
         balances() {
-            return beeDebugApiClient().get(`/balances`)
+            return beeDebugJSClient().getAllBalances()
         },
         peerBalance(peerId: string) {
-            return beeDebugApiClient().get(`/balances/${peerId}`)
+            return beeDebugJSClient().getPeerBalance(peerId)
         },
         consumed() {
-            return beeDebugApiClient().get(`/consumed`)
+            return beeDebugJSClient().getPastDueConsumptionBalances()
         },
         peerConsumed(peerId: string) {
-            return beeDebugApiClient().get(`/consumed/${peerId}`)
+            return beeDebugJSClient().getPastDueConsumptionPeerBalance(peerId)
         }
     },
     chequebook: {
         address() {
-            return beeDebugApiClient().get(`/chequebook/address`)
+            return beeDebugJSClient().getChequebookAddress()
         },
         balance() {
-            return beeDebugApiClient().get(`/chequebook/balance`)
+            return beeDebugJSClient().getChequebookBalance()
         },
         getLastCheques() {
-            return beeDebugApiClient().get(`/chequebook/cheque`)
+            return beeDebugJSClient().getLastCheques()
         },
         peerCashout(peerId: string) {
-            return beeDebugApiClient().post(`/chequebook/cashout/${peerId}`)
+            return beeDebugJSClient().cashoutLastCheque(peerId)
         },
         getPeerLastCashout(peerId: string) {
-            return beeDebugApiClient().get(`/chequebook/cashout/${peerId}`)
+            return beeDebugJSClient().getLastCashoutAction(peerId)
         },
         getPeerLastCheques(peerId: string) {
-            return beeDebugApiClient().get(`/chequebook/cheque/${peerId}`)
+            return beeDebugJSClient().getLastChequesForPeer(peerId)
         },
         withdraw(amount: bigint) {
-            return beeDebugApiClient().post(`/chequebook/withdraw?amount=${amount}`)
+            return beeDebugJSClient().withdrawTokens(amount)
         },
         deposit(amount: bigint) {
-            return beeDebugApiClient().post(`/chequebook/deposit?amount=${amount}`)
+            return beeDebugJSClient().depositTokens(amount)
         },
     },
     settlements: {
         getSettlements() {
-            return beeDebugApiClient().get(`/settlements`)
+            return beeDebugJSClient().getAllSettlements()
         },
         peerSettlement(peerId: string) {
-            return beeDebugApiClient().get(`/settlements/${peerId}`)
+            return beeDebugJSClient().getSettlements(peerId)
         }
     }
 }

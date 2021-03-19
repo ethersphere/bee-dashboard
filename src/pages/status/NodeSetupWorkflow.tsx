@@ -81,7 +81,7 @@ export default function NodeSetupWorkflow(props: any) {
       setActiveStep(4)
     }
 
-    if (props.nodeTopology.connected && props.nodeTopology.connected > 0) {
+    if (props.nodeTopology?.connected && props.nodeTopology?.connected > 0) {
       handleComplete(4)
       setActiveStep(5)
     }

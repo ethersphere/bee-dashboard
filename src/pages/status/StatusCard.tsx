@@ -5,6 +5,7 @@ import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import { Card, CardContent, Typography, Chip, Button } from '@material-ui/core/';
 import { CheckCircle, Error, ArrowRight, ArrowDropUp } from '@material-ui/icons/';
 import { Skeleton } from '@material-ui/lab';
+import { Topology } from '@ethersphere/bee-js';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -46,16 +47,6 @@ interface NodeAddresses {
     pss_public_key: string
 }
 
-interface NodeTopology {
-    baseAddr: string,
-    bins: string[],
-    connected: number,
-    depth: number, 
-    nnLowWatermark: number,
-    population: number,
-    timestamp: string,
-}
-
 
 interface IProps{
     nodeHealth: NodeHealth,
@@ -65,7 +56,7 @@ interface IProps{
     beeRelease: any,
     loadingBeeRelease: boolean,
     nodeAddresses: NodeAddresses,
-    nodeTopology: NodeTopology,
+    nodeTopology: Topology,
     loadingNodeTopology: boolean,
     setStatusChecksVisible: any,
 }

@@ -21,21 +21,21 @@ export default function Peers(props: any) {
                     <Grid key={1} item xs={12} sm={12} md={6} lg={4} xl={4}>
                         <StatCard
                         label='Connected Peers'
-                        statistic={nodeTopology.connected.toString()}
+                        statistic={nodeTopology?.connected.toString()}
                         loading={isLoadingNodeTopology}
                         />
                     </Grid>
                     <Grid key={2} item xs={12} sm={12} md={6} lg={4} xl={4}>
                         <StatCard
                         label='Population'
-                        statistic={nodeTopology.population.toString()}
+                        statistic={nodeTopology?.population.toString()}
                         loading={isLoadingNodeTopology}
                         />
                     </Grid>
                     <Grid key={3} item xs={12} sm={12} md={6} lg={4} xl={4}>
                         <StatCard
                         label='Depth'
-                        statistic={nodeTopology.depth.toString()}
+                        statistic={nodeTopology?.depth.toString()}
                         loading={isLoadingNodeTopology}
                         />
                     </Grid>

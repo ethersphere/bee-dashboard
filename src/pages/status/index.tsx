@@ -75,7 +75,7 @@ export default function Status() {
             beeRelease.name === `v${nodeHealth?.version?.split('-')[0]}` &&
             nodeAddresses?.ethereum && 
             chequebookAddress?.chequebookaddress && chequebookBalance && chequebookBalance?.totalBalance > 0 &&
-            nodeTopology.connected && nodeTopology.connected > 0 &&
+            nodeTopology?.connected && nodeTopology?.connected > 0 &&
             !statusChecksVisible  ? 
                 <div>
                     <StatusCard 

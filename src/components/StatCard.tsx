@@ -18,7 +18,7 @@ const useStyles = makeStyles({
 
 interface IProps {
     label: string,
-    statistic: string,
+    statistic?: string,
     loading?: boolean,
 }
 
