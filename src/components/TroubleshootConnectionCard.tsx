@@ -26,11 +26,11 @@ export default function TroubleshootConnectionCard() {
                     Looks like your node is not connected
                 </Typography>
                 <div style={{marginBottom:'20px', textAlign:'center'}}>
-                <strong><Link to='/' >Click to run status checks</Link> on your nodes connection or check out the <a href={process.env.REACT_APP_BEE_DOCS_HOST} target='_blank' >Swarm Bee Docs</a></strong>
+                <strong><Link to='/' >Click to run status checks</Link> on your nodes connection or check out the <a href={process.env.REACT_APP_BEE_DOCS_HOST} target='_blank' rel="noreferrer">Swarm Bee Docs</a></strong>
                 </div>
             
                 <div style={{marginBottom:'20px', textAlign:'center'}}>
-                  <p style={{marginTop:'50px'}}>Still not working? Drop us a message on the Ethereum Swarm <a href={process.env.REACT_APP_BEE_DISCORD_HOST} target='_blank' >Discord</a></p>
+                  <p style={{marginTop:'50px'}}>Still not working? Drop us a message on the Ethereum Swarm <a href={process.env.REACT_APP_BEE_DISCORD_HOST} target='_blank' rel="noreferrer">Discord</a></p>
                 </div>
                 
             </CardContent>

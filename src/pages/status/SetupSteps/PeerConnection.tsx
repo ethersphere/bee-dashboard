@@ -24,18 +24,18 @@ export default function PeerConnection(props: any) {
             </div>
             <div style={{display:'flex'}}>
                 <div style={{marginRight:'30px'}}>
-                <Typography variant="subtitle1" gutterBottom color="textSecondary">
+                <Typography component="div" variant="subtitle1" gutterBottom color="textSecondary">
                 <span>Connected Peers</span>
                 </Typography>
-                <Typography variant="h5" component="h2">
+                <Typography component="h2" variant="h5">
                 { props.nodeTopology.connected }
                 </Typography>
                 </div>
                 <div>
-                <Typography variant="subtitle1" gutterBottom color="textSecondary">
+                <Typography component="div" variant="subtitle1" gutterBottom color="textSecondary">
                 <span>Discovered Nodes</span>
                 </Typography>
-                <Typography variant="h5" component="h2">
+                <Typography component="h2" variant="h5">
                 { props.nodeTopology.population }
                 </Typography>
                 </div>

@@ -35,12 +35,12 @@ export default function ChequebookDeployFund(props: any) {
                 </div>
             } 
             </div>
-            <Typography variant="subtitle1" gutterBottom>
-            <span>Chequebook Address</span>
+            <Typography component="div" variant="subtitle1" gutterBottom>
+              <span>Chequebook Address</span>
             </Typography>
             <EthereumAddress
-            address={props.chequebookAddress?.chequebookaddress}
-            network={'goerli'}
+              address={props.chequebookAddress?.chequebookaddress}
+              network={'goerli'}
             />
             </div>
     )
