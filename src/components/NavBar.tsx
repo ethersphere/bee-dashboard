@@ -12,7 +12,6 @@ const useStyles = makeStyles((theme: Theme) =>
     appBar: {
       width: `calc(100% - ${drawerWidth}px)`,
       marginLeft: drawerWidth,
-      background:'linear-gradient(35deg,#fb6340,#fbb140)!important'
     },
     network: {
 
@@ -31,7 +30,7 @@ export default function SideBar(props: any) {
     } else {
       localStorage.setItem('theme', darkMode ? 'dark' : 'light')
     }
-    
+
     toggleDarkMode(!darkMode)
     window.location.reload()
   }
@@ -40,21 +39,21 @@ export default function SideBar(props: any) {
 
   return (
     <div>
-      <AppBar position="fixed" className={classes.appBar}>
-        <Toolbar style={{display: 'flex'}}>
+      <div style={{ display: 'fixed' }} className={classes.appBar}>
+        <Toolbar style={{ display: 'flex' }}>
           <Chip
-          style={{ marginLeft: '7px'}}
-          size="small"
-          label='Goerli'
-          className={classes.network}
+            style={{ marginLeft: '7px' }}
+            size="small"
+            label='Goerli'
+            className={classes.network}
           />
-          <div style={{width:'100%'}}>
-            <div style={{float:'right'}} >
-              <IconButton style={{marginRight:'10px'}} aria-label="dark-mode" onClick={() => switchTheme()}>
+          <div style={{ width: '100%' }}>
+            <div style={{ float: 'right' }} >
+              <IconButton style={{ marginRight: '10px' }} aria-label="dark-mode" onClick={() => switchTheme()}>
                 {props.themeMode === 'dark' ?
-                <Moon />
-                :
-                <Sun />
+                  <Moon />
+                  :
+                  <Sun />
                 }
               </IconButton>
               {/* <Chip 
@@ -64,7 +63,7 @@ export default function SideBar(props: any) {
             </div>
           </div>
         </Toolbar>
-      </AppBar>
+      </div>
     </div>
   );
 }
