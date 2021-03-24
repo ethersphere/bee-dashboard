@@ -5,7 +5,7 @@ import { Container, CircularProgress } from '@material-ui/core';
 import NodeSetupWorkflow from './NodeSetupWorkflow';
 import StatusCard from './StatusCard';
 import EthereumAddressCard from '../../components/EthereumAddressCard';
-import { useApiHealth, useDebugApiHealth, useApiReadiness, useApiNodeAddresses, useApiChequebookAddress, useApiNodeTopology, useApiChequebookBalance } from '../../hooks/apiHooks';
+import { useApiHealth, useDebugApiHealth, useApiNodeAddresses, useApiChequebookAddress, useApiNodeTopology, useApiChequebookBalance } from '../../hooks/apiHooks';
 
 export default function Status() {
     const [beeRelease, setBeeRelease] = useState({ name: ''});
@@ -18,7 +18,6 @@ export default function Status() {
 
     const { health, isLoadingHealth } = useApiHealth()
     const { nodeHealth, isLoadingNodeHealth } = useDebugApiHealth()
-    const { nodeReadiness, isLoadingNodeReadiness } = useApiReadiness()
     const { nodeAddresses, isLoadingNodeAddresses } = useApiNodeAddresses()
     const { chequebookAddress, isLoadingChequebookAddress } = useApiChequebookAddress()
     const { nodeTopology, isLoadingNodeTopology } = useApiNodeTopology()
@@ -81,8 +80,6 @@ export default function Status() {
                     <StatusCard 
                     nodeHealth={nodeHealth} 
                     loadingNodeHealth={isLoadingNodeHealth} 
-                    nodeReadiness={nodeReadiness} 
-                    loadingNodeReadiness={isLoadingNodeReadiness} 
                     beeRelease={beeRelease}
                     loadingBeeRelease={isLoadingBeeRelease}
                     nodeAddresses={nodeAddresses} 
@@ -98,7 +95,7 @@ export default function Status() {
                     />
                 </div>
                 :
-                ( isLoadingNodeHealth || isLoadingHealth || isLoadingNodeReadiness || isLoadingChequebookAddress ||
+                ( isLoadingNodeHealth || isLoadingHealth || isLoadingChequebookAddress ||
                     isLoadingNodeTopology || isLoadingBeeRelease || isLoadingNodeAddresses || isLoadingBeeRelease || isLoadingChequebookBalance
                 ) 
                 ? 
@@ -111,10 +108,7 @@ export default function Status() {
                 isLoadingBeeRelease={isLoadingBeeRelease}
 
                 nodeHealth={nodeHealth} 
-                isLoadingNodeHealth={isLoadingNodeHealth} 
-
-                nodeReadiness={nodeReadiness} 
-                isLoadingNodeReadiness={isLoadingNodeReadiness} 
+                isLoadingNodeHealth={isLoadingNodeHealth}
 
                 nodeAddresses={nodeAddresses} 
                 isLoadingNodeAddresses={isLoadingNodeAddresses} 

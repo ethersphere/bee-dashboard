@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
-import { NodeAddresses, ChequebookAddressResponse, ChequebookBalanceResponse, BalanceResponse, 
-    LastChequesResponse, AllSettlements, LastCashoutActionResponse, Health, Topology, Peer, LastChequesForPeerResponse, PingResponse, Readiness } from '@ethersphere/bee-js'
+import { ChequebookAddressResponse, ChequebookBalanceResponse, BalanceResponse, 
+    LastChequesResponse, AllSettlements, LastCashoutActionResponse, Health, Topology, Peer, LastChequesForPeerResponse, PingResponse } from '@ethersphere/bee-js'
 
 import { beeDebugApi, beeApi } from '../services/bee';
 
@@ -47,24 +47,6 @@ export const useDebugApiHealth = () => {
     }, [])
 
     return { nodeHealth, isLoadingNodeHealth, error } ;
-}
-
-export const useApiReadiness = () => {
-    const [nodeReadiness, setNodeReadiness] = useState<Readiness | null>(null)
-    const [isLoadingNodeReadiness, setLoading] = useState<boolean>(false)
-    const [error, setError] = useState<Error | null>(null)
-
-    useEffect(() => { 
-        setLoading(true)
-        beeDebugApi.status.nodeReadiness()
-        .then(setNodeReadiness)
-        .catch(setError)
-        .finally(() => {
-            setLoading(false)
-        })
-     }, [])
-
-    return { nodeReadiness, isLoadingNodeReadiness, error } ;
 }
 
 export const useApiNodeAddresses = () => {

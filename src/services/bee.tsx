@@ -1,4 +1,4 @@
-import { Bee, BeeDebug } from "@ethersphere/bee-js";
+import { Bee, BeeDebug, Reference } from "@ethersphere/bee-js";
 
 const beeJSClient = (): Bee => {
     let apiHost = process.env.REACT_APP_BEE_HOST
@@ -34,10 +34,10 @@ export const beeApi = {
             return beeJSClient().uploadData(file)
         },
         downloadFile(hash: string) {
-            return beeJSClient().downloadFile(hash)
+            return beeJSClient().downloadFile(hash as Reference)
         },
         downloadData(hash: string) {
-            return beeJSClient().downloadData(hash)
+            return beeJSClient().downloadData(hash as Reference)
         },
     },
 }
@@ -46,9 +46,6 @@ export const beeDebugApi = {
     status: {
         nodeHealth() {
             return beeDebugJSClient().getHealth()
-        },
-        nodeReadiness() {
-            return beeDebugJSClient().getReadiness()
         },
     },
     connectivity: {
