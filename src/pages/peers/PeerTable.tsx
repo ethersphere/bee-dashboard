@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Button, Paper, Tooltip, Container, CircularProgress } from '@material-ui/core';
-import { Cancel, Autorenew } from '@material-ui/icons';
+import { Autorenew } from '@material-ui/icons';
 
 import { beeDebugApi } from '../../services/bee';
 
@@ -16,7 +16,6 @@ function PeerTable(props: any) {
     const classes = useStyles();
 
     const [peerLatency, setPeerLatency] = useState([{ peerId: '', rtt: '', loading: false }]);
-    const [removingPeer, setRemovingPeer] = useState(false);
 
     const PingPeer = async (peerId: string) => {
         
@@ -27,21 +26,6 @@ function PeerTable(props: any) {
         })
         .catch(error => {
             setPeerLatency([...peerLatency, { peerId: peerId, rtt: 'error', loading: false }])
-        })
-    }
-
-    const removePeer = (peerId: string) => {
-        setRemovingPeer(true)
-        beeDebugApi.connectivity.removePeer(peerId)
-        .then(res => {
-            window.location.reload()
-            setRemovingPeer(false)
-        })
-        .catch(error => {
-            console.log(error)
-        })
-        .finally(() => {
-            setRemovingPeer(false)
         })
     }
 

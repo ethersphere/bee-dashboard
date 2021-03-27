@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 import { ChequebookAddressResponse, ChequebookBalanceResponse, BalanceResponse, 
-    LastChequesResponse, AllSettlements, LastCashoutActionResponse, Health, Topology, Peer, LastChequesForPeerResponse, PingResponse } from '@ethersphere/bee-js'
+    LastChequesResponse, AllSettlements, LastCashoutActionResponse, Health, Topology, Peer, LastChequesForPeerResponse, PingResponse, NodeAddresses } from '@ethersphere/bee-js'
 
 import { beeDebugApi, beeApi } from '../services/bee';
 
@@ -50,20 +50,14 @@ export const useDebugApiHealth = () => {
 }
 
 export const useApiNodeAddresses = () => {
-    const [nodeAddresses, setNodeAddresses] = useState<any | null>(null)
+    const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses | null>(null)
     const [isLoadingNodeAddresses, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
     useEffect(() => { 
         setLoading(true)
 
-        const getAddresses = async () => {
-            const ethereum = await beeDebugApi.connectivity.ethereumAddress()
-            const overlay = await beeDebugApi.connectivity.overlayAddress()
-            const pssPublicKey = await beeDebugApi.connectivity.pssPublicKey()
-            return {ethereum, overlay, pssPublicKey}
-        }
-        getAddresses().then((data) => {
+        beeDebugApi.connectivity.nodeAddress().then((data) => {
             setNodeAddresses(data)
         })
         .catch(error => {
@@ -84,7 +78,7 @@ export const useApiNodeTopology = () => {
 
     useEffect(() => { 
         setLoading(true)
-        beeDebugApi.connectivity.topology()
+            beeDebugApi.connectivity.topology()
         .then(res => {
             setNodeTopology(res)
         })
@@ -226,7 +220,7 @@ export const useApiPeerLastCheque = (peerId: string) => {
         .finally(() => {
             setLoading(false)
         })
-    }, [])
+    }, [peerId])
 
     return { peerCheque, isLoadingPeerCheque, error };
 }
@@ -271,7 +265,7 @@ export const useApiPingPeer = (peerId: string) => {
         .finally(() => {
             setPingingPeer(false)
         })
-    }, [])
+    }, [peerId])
 
     return { peerRTP, isPingingPeer, error };
 }
@@ -293,7 +287,7 @@ export const useApiPeerLastCashout = (peerId: string) => {
         .finally(() => {
             setLoading(false)
         })
-    }, [])
+    }, [peerId])
 
     return { peerCashout, isLoadingPeerCashout, error };
 }

@@ -5,7 +5,7 @@ import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import { Card, CardContent, Typography, Chip, Button } from '@material-ui/core/';
 import { CheckCircle, Error, ArrowRight, ArrowDropUp } from '@material-ui/icons/';
 import { Skeleton } from '@material-ui/lab';
-import { Topology } from '@ethersphere/bee-js';
+import type { NodeAddresses, Topology, Health } from '@ethersphere/bee-js';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -28,28 +28,8 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );  
 
-
-interface NodeHealth {
-    status?: string,
-    version?: string
-}
-
-interface NodeReadiness {
-    status?: string,
-    version?: string
-}
-
-interface NodeAddresses {
-    overlay: string,
-    underlay: string[],
-    ethereum: string,
-    public_key: string, 
-    pss_public_key: string
-}
-
-
 interface IProps{
-    nodeHealth: NodeHealth,
+    nodeHealth: Health,
     loadingNodeHealth: boolean,
     beeRelease: any,
     loadingBeeRelease: boolean,

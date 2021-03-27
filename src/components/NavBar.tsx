@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
-import { AppBar, Toolbar, Chip, IconButton } from '@material-ui/core/';
+import { Toolbar, Chip, IconButton } from '@material-ui/core/';
 
 import { Sun, Moon } from 'react-feather';
 

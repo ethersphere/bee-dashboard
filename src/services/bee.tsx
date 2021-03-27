@@ -49,14 +49,8 @@ export const beeDebugApi = {
         },
     },
     connectivity: {
-        overlayAddress() {
-            return beeDebugJSClient().getOverlayAddress()
-        },
-        ethereumAddress() {
-            return beeDebugJSClient().getEthAddress()
-        },
-        pssPublicKey() {
-            return beeDebugJSClient().getPssPublicKey()
+        nodeAddress() {
+            return beeDebugJSClient().getNodeAddresses()
         },
         listPeers() {
             return beeDebugJSClient().getPeers()
