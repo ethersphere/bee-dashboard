@@ -17,7 +17,7 @@ interface IProps {
 
 export default function EthereumAddress(props: IProps) {
     return (
-        <Typography component="p" variant="subtitle1">
+        <Typography component="div" variant="subtitle1">
             {props.address ? 
             <div style={{display:'flex'}}>
                 {props.hideBlockie ?

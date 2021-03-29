@@ -2,13 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
-import { ListItemText, ListItemIcon, ListItem, Divider, List, Drawer, Link as MUILink, ListItemSecondaryAction } from '@material-ui/core';
+import { ListItemText, ListItemIcon, ListItem, Divider, List, Drawer, Link as MUILink } from '@material-ui/core';
 import { OpenInNewSharp } from '@material-ui/icons';
-import { Activity, FileText, DollarSign, Share2, Settings, AlignJustify } from 'react-feather';
+import { Activity, FileText, DollarSign, Share2, Settings } from 'react-feather';
 
-import SwarmLogo from '../assets/swarm-logo-2.svg';
 import SwarmLogoOrange from '../assets/swarm-logo-orange.svg'
-import SwarmLogoWhite from '../assets/swarm-logo-2-white.png';
 
 const drawerWidth = 240;
 

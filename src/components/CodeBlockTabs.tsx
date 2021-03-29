@@ -77,7 +77,7 @@ export default function CodeBlockTabs(props: IProps) {
           >
             {value === index && (
               <Box style={{ marginTop: '-12px' }}>
-                <Typography>{children}</Typography>
+                <Typography component="div">{children}</Typography>
               </Box>
             )}
           </div>

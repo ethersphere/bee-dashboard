@@ -27,12 +27,10 @@ export default function EthereumConnectionCheck(props: any) {
                 </div>
             }
             </div>
-            <Typography variant="subtitle1" gutterBottom>
-            <span>Node Address</span>
-            </Typography>
+            <Typography variant="subtitle1" gutterBottom>Node Address</Typography>
             <EthereumAddress
-            address={props.nodeAddresses?.ethereum}
-            network={'goerli'}
+              address={props.nodeAddresses?.ethereum}
+              network={'goerli'}
             />
             </div>
     )

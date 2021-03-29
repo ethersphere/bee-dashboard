@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Theme, createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
+import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import { Card, CardContent, Typography } from '@material-ui/core/';
 
 import EthereumAddress from '../components/EthereumAddress';
@@ -46,7 +46,6 @@ interface IProps{
 
 function EthereumAddressCard(props: IProps) {
     const classes = useStyles();
-    const theme = useTheme();
 
     return (
         <div>
@@ -59,9 +58,7 @@ function EthereumAddressCard(props: IProps) {
                 :
                 <div className={classes.details}>
                     <CardContent className={classes.content}>
-                        <Typography variant="subtitle1" gutterBottom>
-                            <span>Ethereum Address</span>
-                        </Typography>
+                        <Typography variant="subtitle1" gutterBottom>Ethereum Address</Typography>
                         <EthereumAddress
                         address={props.nodeAddresses?.ethereum}
                         network={'goerli'}
@@ -76,9 +73,7 @@ function EthereumAddressCard(props: IProps) {
                 :
                 <div className={classes.details}>
                     <CardContent className={classes.content}>
-                        <Typography variant="subtitle1" gutterBottom>
-                            <span>Chequebook Contract Address</span>
-                        </Typography>
+                        <Typography variant="subtitle1" gutterBottom>Chequebook Contract Address</Typography>
                         <EthereumAddress
                         address={props.chequebookAddress?.chequebookaddress}
                         network={'goerli'}

@@ -54,7 +54,7 @@ export default function Accounting(props: any) {
           >
             {value === index && (
               <Box style={{ marginTop: '20px' }}>
-                <Typography>{children}</Typography>
+                <Typography component="div">{children}</Typography>
               </Box>
             )}
           </div>

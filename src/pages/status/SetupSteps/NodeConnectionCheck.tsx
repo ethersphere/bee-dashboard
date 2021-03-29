@@ -21,7 +21,7 @@ export default function NodeConnectionCheck(props: any) {
           </div>
           <div>
           { !props.nodeApiHealth ? 
-            <Typography variant="body2" gutterBottom style={{margin: '15px'}}>
+            <Typography component="div" variant="body2" gutterBottom style={{margin: '15px'}}>
               We cannot connect to your nodes API at <a href='#'>{props.apiHost}</a>. Please check the following to troubleshoot your issue.
               <Accordion style={{marginTop:'20px'}}>
                   <AccordionSummary
@@ -32,7 +32,7 @@ export default function NodeConnectionCheck(props: any) {
                     <Typography>Troubleshoot</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
-                    <Typography>
+                    <Typography component="div">
                       <ol>
                         <li>Check the status of your node by running the below command to see if your node is running.</li>
                         <CodeBlockTabs
@@ -72,7 +72,7 @@ export default function NodeConnectionCheck(props: any) {
             </div>
             <div>
             { props.nodeHealth?.status !== 'ok' ? 
-              <Typography variant="body2" gutterBottom style={{margin: '15px'}}>
+              <Typography component="div" variant="body2" gutterBottom style={{margin: '15px'}}>
                 We cannot connect to your nodes debug API at <a href='#'>{props.debugApiHost}</a>. Please check the following to troubleshoot your issue.
                 <Accordion style={{marginTop:'20px'}}>
                   <AccordionSummary
@@ -83,7 +83,7 @@ export default function NodeConnectionCheck(props: any) {
                     <Typography>Troubleshoot</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
-                    <Typography>
+                    <Typography component="div">
                     <ol>
                       <li>Check the status of your node by running the below command to see if your node is running.</li>
                       <CodeBlockTabs
