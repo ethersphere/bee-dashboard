@@ -105,7 +105,7 @@ function StatusCard(props: IProps) {
                         </span>
                     </div>
                     <div>
-                        <Typography variant="subtitle2" gutterBottom>
+                        <Typography component="div" variant="subtitle2" gutterBottom>
                             <span>AGENT: </span>
                             <a href='https://github.com/ethersphere/bee' rel='noreferrer' target='_blank'>Bee</a>
                             <span>{props.nodeReadiness?.version ? ` v${props.nodeReadiness.version}` : '-'}</span>
@@ -123,20 +123,20 @@ function StatusCard(props: IProps) {
                                 <a href='#'>update</a>
                             }
                         </Typography>
-                        <Typography variant="subtitle2" gutterBottom>
+                        <Typography component="div" variant="subtitle2" gutterBottom>
                             <span>PUBLIC KEY: </span>
                             <span>{ props.nodeAddresses.public_key ? props.nodeAddresses.public_key : '-' }</span>
                         </Typography>
-                        <Typography variant="subtitle2" gutterBottom>
+                        <Typography component="div" variant="subtitle2" gutterBottom>
                             <span>PSS PUBLIC KEY: </span>
                             <span>{ props.nodeAddresses.pss_public_key ? props.nodeAddresses.pss_public_key : '-' }</span>
                         </Typography>
-                        <Typography variant="subtitle2" gutterBottom>
-                                <Typography style={{marginTop:'20px'}}>
+                        <Typography component="div" variant="subtitle2" gutterBottom>
+                                <Typography component="div" style={{marginTop:'20px'}}>
                                     <span>OVERLAY ADDRESS (PEER ID): </span>
                                     <span>{ props.nodeAddresses.overlay ? props.nodeAddresses.overlay : '-' }</span>
                                 </Typography>
-                                <Typography onClick={() => setUnderlayAddresessVisible(!underlayAddressesVisible)}>
+                                <Typography component="div" onClick={() => setUnderlayAddresessVisible(!underlayAddressesVisible)}>
                                     <Button color="primary" style={{padding: 0, marginTop:'6px'}}>
                                         { underlayAddressesVisible ? 
                                         <ArrowDropUp style={{fontSize:'12px'}} /> : 

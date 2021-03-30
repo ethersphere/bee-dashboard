@@ -142,7 +142,7 @@ export default function NodeSetupWorkflow(props: any) {
               </StepButton>
             </StepLabel>
             <StepContent>
-              <Typography>{getStepContent(index, props)}</Typography>
+              <Typography component="div">{getStepContent(index, props)}</Typography>
               <div className={classes.actionsContainer}>
                 <div>
                   <Button

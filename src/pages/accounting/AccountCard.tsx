@@ -90,7 +90,7 @@ function AccountCard(props: IProps) {
                                 <Typography component="h2" variant="h6" color="primary" gutterBottom>
                                 Total Sent / Received
                                 </Typography>
-                                <Typography component="p" variant="h5" >
+                                <Typography component="div" variant="h5" >
                                  <span style={{marginRight:'7px'}}>{ConvertBalanceToBZZ(props.settlements.totalsent)} / {ConvertBalanceToBZZ(props.settlements.totalreceived)}</span>
                                  <span style={{ color: props.settlements.totalsent > props.settlements.totalreceived ? '#c9201f' : '#32c48d' }}>({ConvertBalanceToBZZ(props.settlements.totalsent - props.settlements.totalreceived)})</span>
                                 </Typography>
