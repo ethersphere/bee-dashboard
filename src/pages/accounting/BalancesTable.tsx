@@ -50,7 +50,7 @@ function BalancesTable(props: IProps) {
                     </TableRow>
                     </TableHead>
                     <TableBody>
-                    {props.peerBalances?.balances.slice(page * 20, page * 20 + 20).map((peerBalance: PeerBalance, idx: number) => (
+                    {props.peerBalances?.balances.sort((a,b) => b.balance - a.balance).slice(page * 20, page * 20 + 20).map((peerBalance: PeerBalance, idx: number) => (
                         <TableRow key={peerBalance.peer}>
                         <TableCell>{peerBalance.peer}</TableCell>
                         <TableCell style={{ color: ConvertBalanceToBZZ(peerBalance.balance) > 0 ? '#32c48d' : '#c9201f', textAlign:'right', fontFamily: 'monospace, monospace' }}>
