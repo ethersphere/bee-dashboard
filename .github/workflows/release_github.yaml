@@ -1,0 +1,20 @@
+# On each new commit to master, create/update a PR with release
+# automatically bumps version and creates changelog as per conventional commits
+name: Release Github
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: GoogleCloudPlatform/release-please-action@v2
+        id: release
+        with:
+          token: ${{ secrets.REPO_GHA_PAT }}
+          release-type: node
+          package-name: bee-js
+          bump-minor-pre-major: true

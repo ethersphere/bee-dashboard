@@ -1,0 +1,37 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - 'master'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+      ## Try getting the node modules from cache, if failed npm ci
+      - uses: actions/cache@v2
+        id: cache-npm
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-node-${{ matrix.node }}-${{ env.cache-name }}-
+            ${{ runner.OS }}-node-${{ matrix.node }}-
+
+      - name: Install npm deps
+        if: steps.cache-npm.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Run browser tests
+        run: npm run test
+
+
