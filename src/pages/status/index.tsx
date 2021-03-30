@@ -7,8 +7,14 @@ import StatusCard from './StatusCard';
 import EthereumAddressCard from '../../components/EthereumAddressCard';
 import { useApiHealth, useDebugApiHealth, useApiNodeAddresses, useApiChequebookAddress, useApiNodeTopology, useApiChequebookBalance } from '../../hooks/apiHooks';
 
+interface Release {
+    html_url: string
+    name: string
+    published_at: string
+}
+
 export default function Status() {
-    const [beeRelease, setBeeRelease] = useState({ name: ''});
+    const [beeRelease, setBeeRelease] = useState<Release | null>(null);
     const [isLoadingBeeRelease, setIsLoadingBeeRelease] = useState<boolean>(false);
 
     const [apiHost, setApiHost] = useState('');
@@ -28,7 +34,8 @@ export default function Status() {
         setIsLoadingBeeRelease(true)
         axios.get(`${process.env.REACT_APP_BEE_GITHUB_REPO_URL}/releases/latest`)
         .then(res => {
-            setBeeRelease(res.data)
+            const {html_url, name, published_at}  = res.data
+            setBeeRelease({html_url, name, published_at})
         })
         .catch(error => {
             console.log(error)

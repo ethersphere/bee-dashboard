@@ -5,7 +5,7 @@ import CodeBlock from './CodeBlock';
 
 interface TabPanelProps {
     children?: React.ReactNode;
-    index: any;
+    index: number;
     value: any;
 }
 
@@ -15,7 +15,7 @@ interface IProps {
     showLineNumbers?: boolean
 }
 
-function a11yProps(index: any) {
+function a11yProps(index: number) {
     return {
         id: `simple-tab-${index}`,
         'aria-controls': `simple-tabpanel-${index}`,

@@ -5,8 +5,17 @@ import { CheckCircle, Error, ExpandMoreSharp } from '@material-ui/icons/';
 
 import ConnectToHost from '../../../components/ConnectToHost';
 import CodeBlockTabs from '../../../components/CodeBlockTabs'
+import { Health } from '@ethersphere/bee-js';
 
-export default function NodeConnectionCheck(props: any) {
+interface Props {
+  apiHost: string
+  nodeApiHealth: boolean
+  nodeHealth: Health
+  debugApiHost: string
+}
+
+export default function NodeConnectionCheck(props: Props) {
+    console.log(props.nodeApiHealth)
     return (
         <div>
       <p>Connect to Bee Node APIs</p>
@@ -22,7 +31,7 @@ export default function NodeConnectionCheck(props: any) {
           <div>
           { !props.nodeApiHealth ? 
             <Typography variant="body2" gutterBottom style={{margin: '15px'}}>
-              We cannot connect to your nodes API at <a href='#'>{props.apiHost}</a>. Please check the following to troubleshoot your issue.
+              We cannot connect to your nodes API at <a href={props.apiHost}>{props.apiHost}</a>. Please check the following to troubleshoot your issue.
               <Accordion style={{marginTop:'20px'}}>
                   <AccordionSummary
                     expandIcon={<ExpandMoreSharp />}
@@ -67,13 +76,13 @@ export default function NodeConnectionCheck(props: any) {
                 :
                 <Error style={{color:'#c9201f', marginRight: '7px', height: '18px'}} />
               }
-              <span style={{marginRight:'15px'}}>Debug API  (<a href='#'>{props.debugApiHost}</a>)</span>
+              <span style={{marginRight:'15px'}}>Debug API  (<a href={props.debugApiHost}>{props.debugApiHost}</a>)</span>
               <ConnectToHost hostName={'debug_api_host'} defaultHost={props.debugApiHost} />
             </div>
             <div>
             { props.nodeHealth?.status !== 'ok' ? 
               <Typography variant="body2" gutterBottom style={{margin: '15px'}}>
-                We cannot connect to your nodes debug API at <a href='#'>{props.debugApiHost}</a>. Please check the following to troubleshoot your issue.
+                We cannot connect to your nodes debug API at <a href={props.debugApiHost}>{props.debugApiHost}</a>. Please check the following to troubleshoot your issue.
                 <Accordion style={{marginTop:'20px'}}>
                   <AccordionSummary
                     expandIcon={<ExpandMoreSharp />}

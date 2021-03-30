@@ -27,10 +27,10 @@ export const beeApi = {
         }
     },
     files: {
-        uploadFile(file: any) {
+        uploadFile(file: string | Uint8Array | File) {
             return beeJSClient().uploadFile(file)
         },
-        uploadData(file: any) { 
+        uploadData(file: string | Uint8Array) { 
             return beeJSClient().uploadData(file)
         },
         downloadFile(hash: string) {
