@@ -55,45 +55,47 @@ function getStepContent(step: number, props: any) {
 }
 
 export default function NodeSetupWorkflow(props: any) {
+  const {nodeHealth, nodeApiHealth, nodeAddresses, chequebookAddress, chequebookBalance, beeRelease, nodeTopology, setStatusChecksVisible} = props
   const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState<{ [k: number]: boolean }>({});
   const steps = getSteps();
 
-  const evaluateNodeStatus = () => {
-    if (props.nodeHealth?.status === 'ok' && props.nodeApiHealth) {
-      handleComplete(0)
-      setActiveStep(1)
-    }
-
-    if (props.beeRelease && props.beeRelease.name === `v${props.nodeHealth?.version?.split('-')[0]}`) {
-      handleComplete(1)
-      setActiveStep(2)
-    }
-
-    if (props.nodeAddresses?.ethereum) {
-      handleComplete(2)
-      setActiveStep(3)
-    }
-
-    if (props.chequebookAddress?.chequebookaddress && props.chequebookBalance.totalBalance > 0) {
-      handleComplete(3)
-      setActiveStep(4)
-    }
-
-    if (props.nodeTopology.connected && props.nodeTopology.connected > 0) {
-      handleComplete(4)
-      setActiveStep(5)
-    }
-  }
-
   useEffect(() => {
-    evaluateNodeStatus()
-  }, [])
+    const handleComplete = (index: number) => {
+      const newCompleted = completed;
+      newCompleted[index] = true;
+      setCompleted(newCompleted);
+    };
 
-  useEffect(() => {
+    const evaluateNodeStatus = () => {
+      if (nodeHealth?.status === 'ok' && nodeApiHealth) {
+        handleComplete(0)
+        setActiveStep(1)
+      }
+
+      if (beeRelease && beeRelease.name === `v${nodeHealth?.version?.split('-')[0]}`) {
+        handleComplete(1)
+        setActiveStep(2)
+      }
+
+      if (nodeAddresses?.ethereum) {
+        handleComplete(2)
+        setActiveStep(3)
+      }
+
+      if (chequebookAddress?.chequebookaddress && chequebookBalance.totalBalance > 0) {
+        handleComplete(3)
+        setActiveStep(4)
+      }
+
+      if (nodeTopology.connected && nodeTopology.connected > 0) {
+        handleComplete(4)
+        setActiveStep(5)
+      }
+    }
     evaluateNodeStatus()
-  }, [props])
+  }, [nodeHealth, nodeApiHealth, nodeAddresses, chequebookAddress, beeRelease, chequebookBalance, nodeTopology, completed])
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -104,13 +106,7 @@ export default function NodeSetupWorkflow(props: any) {
   };
 
   const handleSetupComplete = () => {
-    props.setStatusChecksVisible(false)
-  };
-
-  const handleComplete = (index: number) => {
-    const newCompleted = completed;
-    newCompleted[index] = true;
-    setCompleted(newCompleted);
+    setStatusChecksVisible(false)
   };
 
   return (

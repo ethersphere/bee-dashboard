@@ -16,13 +16,13 @@ export default function NodeConnectionCheck(props: any) {
               :
               <Error style={{color:'#c9201f', marginRight: '7px', height: '18px'}} />
             }
-            <span style={{marginRight:'15px'}}>Node API  (<a href='#'>{props.apiHost}</a>)</span>
+            <span style={{marginRight:'15px'}}>Node API  (<Typography variant="button">{props.apiHost}</Typography>)</span>
             <ConnectToHost hostName='api_host' defaultHost={props.apiHost} />
           </div>
           <div>
           { !props.nodeApiHealth ? 
             <Typography component="div" variant="body2" gutterBottom style={{margin: '15px'}}>
-              We cannot connect to your nodes API at <a href='#'>{props.apiHost}</a>. Please check the following to troubleshoot your issue.
+              We cannot connect to your nodes API at <Typography variant="button">{props.apiHost}</Typography>. Please check the following to troubleshoot your issue.
               <Accordion style={{marginTop:'20px'}}>
                   <AccordionSummary
                     expandIcon={<ExpandMoreSharp />}
@@ -67,13 +67,13 @@ export default function NodeConnectionCheck(props: any) {
                 :
                 <Error style={{color:'#c9201f', marginRight: '7px', height: '18px'}} />
               }
-              <span style={{marginRight:'15px'}}>Debug API  (<a href='#'>{props.debugApiHost}</a>)</span>
+              <span style={{marginRight:'15px'}}>Debug API  (<Typography variant="button">{props.debugApiHost}</Typography>)</span>
               <ConnectToHost hostName={'debug_api_host'} defaultHost={props.debugApiHost} />
             </div>
             <div>
             { props.nodeHealth?.status !== 'ok' ? 
               <Typography component="div" variant="body2" gutterBottom style={{margin: '15px'}}>
-                We cannot connect to your nodes debug API at <a href='#'>{props.debugApiHost}</a>. Please check the following to troubleshoot your issue.
+                We cannot connect to your nodes debug API at <Typography variant="button">{props.debugApiHost}</Typography>. Please check the following to troubleshoot your issue.
                 <Accordion style={{marginTop:'20px'}}>
                   <AccordionSummary
                     expandIcon={<ExpandMoreSharp />}

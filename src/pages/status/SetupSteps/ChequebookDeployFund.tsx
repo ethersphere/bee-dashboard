@@ -1,4 +1,3 @@
-import React from 'react';
 import { Typography } from '@material-ui/core/';
 import { CheckCircle, Warning } from '@material-ui/icons/';
 import EthereumAddress from '../../../components/EthereumAddress';
@@ -26,7 +25,7 @@ export default function ChequebookDeployFund(props: any) {
                 :
                 <div>
                     <Warning style={{color:'#ff9800', marginRight: '7px', height: '18px'}} />
-                    <span>Your chequebook is either not deployed or funded. Run the below commands to get your address and deposit ETH. Then visit the BZZaar here <a href='#'>https://bzz.ethswarm.org/?transaction=buy&amount=10&slippage=30&receiver=[ENTER_ADDRESS_HERE]</a> to get BZZ</span>
+                    <span>Your chequebook is either not deployed or funded. Run the below commands to get your address and deposit ETH. Then visit the BZZaar here <Typography variant='button'>https://bzz.ethswarm.org/?transaction=buy&amount=10&slippage=30&receiver=[ENTER_ADDRESS_HERE]</Typography> to get BZZ</span>
                     <CodeBlockTabs
                     showLineNumbers
                     linux={`bee-get-addr`}

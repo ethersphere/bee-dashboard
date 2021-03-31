@@ -1,0 +1,45 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - 'master'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      ## Try getting the node modules from cache, if failed npm ci
+      - uses: actions/cache@v2
+        id: cache-npm
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-node-${{ matrix.node-version }}-${{ env.cache-name }}-
+            ${{ runner.OS }}-node-${{ matrix.node-version }}-
+
+      - name: Install npm deps
+        if: steps.cache-npm.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Run tests
+        run: npm run test
+
+
