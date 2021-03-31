@@ -261,7 +261,7 @@ export const useApiPeerLastCheque = (peerId: string) => {
         .finally(() => {
             setLoading(false)
         })
-    }, [])
+    }, [peerId])
 
     return { peerCheque, isLoadingPeerCheque, error };
 }
@@ -306,7 +306,7 @@ export const useApiPingPeer = (peerId: string) => {
         .finally(() => {
             setPingingPeer(false)
         })
-    }, [])
+    }, [peerId])
 
     return { peerRTP, isPingingPeer, error };
 }
@@ -328,7 +328,7 @@ export const useApiPeerLastCashout = (peerId: string) => {
         .finally(() => {
             setLoading(false)
         })
-    }, [])
+    }, [peerId])
 
     return { peerCashout, isLoadingPeerCashout, error };
 }

@@ -120,7 +120,7 @@ function StatusCard(props: IProps) {
                                 props.loadingBeeRelease ?
                                 '' 
                                 :
-                                <a href='#'>update</a>
+                                <Typography variant="button">update</Typography>
                             }
                         </Typography>
                         <Typography component="div" variant="subtitle2" gutterBottom>
