@@ -16,5 +16,5 @@ jobs:
         with:
           token: ${{ secrets.REPO_GHA_PAT }}
           release-type: node
-          package-name: bee-js
+          package-name: bee-status
           bump-minor-pre-major: true
