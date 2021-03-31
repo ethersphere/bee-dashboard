@@ -30,11 +30,11 @@ jobs:
         id: cache-npm
         with:
           path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.OS }}-node-${{ env.cache-name }}-
-            ${{ runner.OS }}-node-
-            ${{ runner.OS }}-
+            ${{ runner.OS }}-node-${{ matrix.node-version }}-${{ env.cache-name }}-
+            ${{ runner.OS }}-node-${{ matrix.node-version }}-
+
       - name: Install npm deps
         if: steps.cache-npm.outputs.cache-hit != 'true'
         run: npm ci
