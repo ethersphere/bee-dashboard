@@ -1,5 +1,5 @@
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import { hybrid } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+// import { hybrid } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 interface IProps {
     code: string,
@@ -12,7 +12,7 @@ const CodeBlock = (props: IProps) => {
     <div style={{textAlign:'left'}}>
         <SyntaxHighlighter 
         language={props.language} 
-        style={hybrid}
+        // style={hybrid}
         showLineNumbers={props.showLineNumbers}
         >
         {props.code}

@@ -81,16 +81,16 @@ function App() {
 
     if (theme) {
       toggleThemeMode(String(localStorage.getItem('theme')))
-    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    } else if (window?.matchMedia('(prefers-color-scheme: dark)')?.matches) {
       toggleThemeMode('dark')
     }
 
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-      toggleThemeMode(e.matches ? "dark" : "light")
+    window?.matchMedia('(prefers-color-scheme: dark)')?.addEventListener('change', e => {
+      toggleThemeMode(e?.matches ? "dark" : "light")
     });
 
-    return () => window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', e => {
-      toggleThemeMode(e.matches ? "dark" : "light")
+    return () => window?.matchMedia('(prefers-color-scheme: dark)')?.removeEventListener('change', e => {
+      toggleThemeMode(e?.matches ? "dark" : "light")
     })
 
   }, []);
