@@ -3,6 +3,7 @@ import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import { Typography, Paper, Button, Step, StepLabel, StepContent, Stepper, StepButton } from '@material-ui/core/';
 import { CheckCircle, Error, Sync, ExpandLessSharp, ExpandMoreSharp } from '@material-ui/icons/';
 
+import DebugConnectionCheck from './SetupSteps/DebugConnectionCheck';
 import NodeConnectionCheck from './SetupSteps/NodeConnectionCheck';
 import VersionCheck from './SetupSteps/VersionCheck';
 import EthereumConnectionCheck from './SetupSteps/EthereumConnectionCheck';
@@ -30,10 +31,11 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function getSteps() {
   return [
-    'Node Connection Check', 
+    'Debug Connection Check',
     'Version Check', 
     'Connect to Ethereum Blockchain',
     'Deploy and Fund Chequebook',
+    'Node Connection Check', 
     'Connect to Peers',
   ];
 }
@@ -42,13 +44,15 @@ function getStepContent(step: number, props: any) {
 
   switch (step) {
     case 0:
-      return <NodeConnectionCheck {...props} />;
+      return <DebugConnectionCheck {...props} />;
     case 1:
       return <VersionCheck {...props} />;
     case 2:
       return <EthereumConnectionCheck {...props} />;
     case 3:
       return <ChequebookDeployFund {...props} />;
+    case 4:
+      return <NodeConnectionCheck {...props} />;
     default:
       return <PeerConnection {...props} />;
   }
@@ -69,7 +73,7 @@ export default function NodeSetupWorkflow(props: any) {
     };
 
     const evaluateNodeStatus = () => {
-      if (nodeHealth?.status === 'ok' && nodeApiHealth) {
+      if (nodeHealth?.status === 'ok') {
         handleComplete(0)
         setActiveStep(1)
       }
@@ -89,9 +93,14 @@ export default function NodeSetupWorkflow(props: any) {
         setActiveStep(4)
       }
 
-      if (nodeTopology.connected && nodeTopology.connected > 0) {
+      if (nodeApiHealth) {
         handleComplete(4)
         setActiveStep(5)
+      }
+
+      if (nodeTopology.connected && nodeTopology.connected > 0) {
+        handleComplete(5)
+        setActiveStep(6)
       }
     }
     evaluateNodeStatus()
@@ -121,7 +130,7 @@ export default function NodeSetupWorkflow(props: any) {
         {steps.map((label, index) => (
           <Step key={label}>
             <StepLabel 
-            onClick={() => setActiveStep(index === activeStep ? 5 : index)}
+            onClick={() => setActiveStep(index === activeStep ? 6 : index)}
             StepIconComponent={() => {
               if(completed[index]) 
                 return <CheckCircle style={{color:'#32c48d', height: '25px', cursor:'pointer'}} />
@@ -130,7 +139,7 @@ export default function NodeSetupWorkflow(props: any) {
               }
             }}
             >
-              <StepButton onClick={() => setActiveStep(index === activeStep ? 5 : index)} style={{justifyContent:'space-between'}}>
+              <StepButton onClick={() => setActiveStep(index === activeStep ? 6 : index)} style={{justifyContent:'space-between'}}>
                 <div style={{display:'flex'}}>
                   <div  style={{marginTop:'5px'}}>{label}</div>
                   <div style={{marginLeft:'12px'}}>{index === activeStep ? <ExpandLessSharp /> : <ExpandMoreSharp />}</div>
@@ -162,7 +171,7 @@ export default function NodeSetupWorkflow(props: any) {
           </Step>
         ))}
       </Stepper>
-      {Object.values(completed).filter(value => value).length === 5 ? (
+      {Object.values(completed).filter(value => value).length === 6 ? (
         <Paper square elevation={0} className={classes.resetContainer}>
           <Typography>Bee setup complete! Welcome to the swarm and the internet of decentralized storage</Typography>
           <Button
