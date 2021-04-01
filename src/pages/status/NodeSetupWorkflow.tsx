@@ -130,7 +130,7 @@ export default function NodeSetupWorkflow(props: any) {
         {steps.map((label, index) => (
           <Step key={label}>
             <StepLabel 
-            onClick={() => setActiveStep(index === activeStep ? 5 : index)}
+            onClick={() => setActiveStep(index === activeStep ? 6 : index)}
             StepIconComponent={() => {
               if(completed[index]) 
                 return <CheckCircle style={{color:'#32c48d', height: '25px', cursor:'pointer'}} />
@@ -139,7 +139,7 @@ export default function NodeSetupWorkflow(props: any) {
               }
             }}
             >
-              <StepButton onClick={() => setActiveStep(index === activeStep ? 5 : index)} style={{justifyContent:'space-between'}}>
+              <StepButton onClick={() => setActiveStep(index === activeStep ? 6 : index)} style={{justifyContent:'space-between'}}>
                 <div style={{display:'flex'}}>
                   <div  style={{marginTop:'5px'}}>{label}</div>
                   <div style={{marginLeft:'12px'}}>{index === activeStep ? <ExpandLessSharp /> : <ExpandMoreSharp />}</div>
@@ -171,7 +171,7 @@ export default function NodeSetupWorkflow(props: any) {
           </Step>
         ))}
       </Stepper>
-      {Object.values(completed).filter(value => value).length === 5 ? (
+      {Object.values(completed).filter(value => value).length === 6 ? (
         <Paper square elevation={0} className={classes.resetContainer}>
           <Typography>Bee setup complete! Welcome to the swarm and the internet of decentralized storage</Typography>
           <Button
