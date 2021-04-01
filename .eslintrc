@@ -1,5 +1,5 @@
 {
-  "extends": ["plugin:@typescript-eslint/recommended", "prettier", "plugin:prettier/recommended"],
+  "extends": ["plugin:@typescript-eslint/recommended", "prettier", "plugin:prettier/recommended", "plugin:react/recommended"],
   "env": {
     "browser": true,
     "commonjs": true,
