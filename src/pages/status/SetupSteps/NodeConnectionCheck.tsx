@@ -1,6 +1,5 @@
 import React from 'react'
 import { Typography, Accordion, AccordionSummary, AccordionDetails } from '@material-ui/core/';
-import MuiAlert from '@material-ui/lab/Alert';
 import { CheckCircle, Error, ExpandMoreSharp } from '@material-ui/icons/';
 
 import ConnectToHost from '../../../components/ConnectToHost';
