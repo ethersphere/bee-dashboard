@@ -36,6 +36,7 @@ export default function DepositModal() {
             handleToast(<span>Successfully cashed out cheque. Transaction 
               <EthereumAddress
               hideBlockie
+              transaction
               address={res.data.transactionHash}
               network={'goerli'}
               />
