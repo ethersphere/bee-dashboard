@@ -68,6 +68,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     activeSideBarItem: {
       borderLeft: '4px solid #dd7700',
+      backgroundColor: 'inherit !important'
     },
     toolbar: theme.mixins.toolbar,
   }),

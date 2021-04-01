@@ -68,34 +68,34 @@ function ChequebookTable(props: IProps) {
                                 <ClipboardCopy value={peerCheque.peer} />
                             </div>
                         </TableCell>
-                        <TableCell style={{maxWidth:'200px'}}>
-                            <p style={{marginBottom: '0px', fontFamily: 'monospace, monospace'}}>
-                                {peerCheque.lastreceived?.payout ? ConvertBalanceToBZZ(peerCheque.lastreceived?.payout).toFixed(7).toLocaleString() : '-'}
-                            </p>
-                            <p style={{marginBottom: '0px'}}>
-                                <small>{peerCheque.lastreceived ?
+                        <TableCell style={{maxWidth:'320px'}}>
+                            <p style={{marginBottom: '0px', fontFamily: 'monospace, monospace', display:'flex'}}>
+                                <span style={{whiteSpace: 'nowrap', marginRight:'12px', paddingTop:'3px'}}>
+                                    {peerCheque.lastreceived?.payout ? 
+                                    `${ConvertBalanceToBZZ(peerCheque.lastreceived?.payout).toFixed(7).toLocaleString()} from`
+                                    : '-'}
+                                </span>
+                                {peerCheque.lastreceived ?
                                 <EthereumAddress
                                 hideBlockie
                                 truncate
                                 network='goerli'
                                 address={peerCheque.lastreceived.beneficiary}
                                 /> : null}
-                                </small>
                             </p>
                         </TableCell>
-                        <TableCell style={{maxWidth:'200px'}}>
-                            <p  style={{marginBottom: '0px', fontFamily: 'monospace, monospace'}}>
-                                {peerCheque.lastsent?.payout ? ConvertBalanceToBZZ(peerCheque.lastsent?.payout).toFixed(7).toLocaleString() : '-'}
-                            </p>
-                            <p style={{marginBottom: '0px'}}>
-                                <small>{peerCheque.lastsent ?
+                        <TableCell style={{maxWidth:'320px'}}>
+                            <p style={{marginBottom: '0px', fontFamily: 'monospace, monospace', display:'flex'}}>
+                                <span style={{whiteSpace: 'nowrap', marginRight:'12px', paddingTop:'3px'}}>
+                                {peerCheque.lastsent?.payout ? `${ConvertBalanceToBZZ(peerCheque.lastsent?.payout).toFixed(7).toLocaleString()} to` : '-'}
+                                </span>
+                                {peerCheque.lastsent ?
                                 <EthereumAddress
                                 hideBlockie
                                 truncate
                                 network='goerli'
                                 address={peerCheque.lastsent.beneficiary}
                                 /> : null}
-                                </small>
                             </p>
                         </TableCell>
                         <TableCell align="right">
