@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper, Container, CircularProgress  } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper, Container, CircularProgress, TablePagination, TableFooter  } from '@material-ui/core';
 
 import { ConvertBalanceToBZZ } from '../../utils/common';
 import EthereumAddress from '../../components/EthereumAddress';
@@ -37,6 +37,12 @@ interface IProps {
 function ChequebookTable(props: IProps) {
     const classes = useStyles();
 
+    const [page, setPage] = React.useState(0);
+
+    const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+        setPage(newPage);
+    };
+
     return (
         <div>
             {props.loading ? 
@@ -56,7 +62,7 @@ function ChequebookTable(props: IProps) {
                     </TableRow>
                     </TableHead>
                     <TableBody>
-                    {props.peerCheques?.lastcheques.map((peerCheque: PeerCheque, idx: number) => (
+                    {props.peerCheques?.lastcheques.slice(page * 20, page * 20 + 20).map((peerCheque: PeerCheque, idx: number) => (
                         <TableRow key={peerCheque.peer}>
                         <TableCell>
                             <div style={{display:'flex'}}>
@@ -104,6 +110,18 @@ function ChequebookTable(props: IProps) {
                     ))}
                     </TableBody>
                 </Table>
+                <TableFooter>
+                    <TableRow>
+                        <TablePagination
+                        count={props.peerCheques?.lastcheques ? props.peerCheques?.lastcheques.length : 0}
+                        rowsPerPage={20}
+                        colSpan={3}
+                        rowsPerPageOptions={[20]}
+                        page={page}
+                        onChangePage={handleChangePage}
+                        />
+                    </TableRow>
+                </TableFooter>
             </TableContainer>
             </div>}
         </div>

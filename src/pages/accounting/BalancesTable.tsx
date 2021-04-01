@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper, Container, CircularProgress } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper, Container, CircularProgress, TableFooter, TablePagination } from '@material-ui/core';
 
 import { ConvertBalanceToBZZ } from '../../utils/common';
 
@@ -27,6 +27,12 @@ interface IProps {
 function BalancesTable(props: IProps) {
     const classes = useStyles();
 
+    const [page, setPage] = React.useState(0);
+
+    const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+        setPage(newPage);
+    };
+
     return (
         <div>
             {props.loading ? 
@@ -44,7 +50,7 @@ function BalancesTable(props: IProps) {
                     </TableRow>
                     </TableHead>
                     <TableBody>
-                    {props.peerBalances?.balances.map((peerBalance: PeerBalance, idx: number) => (
+                    {props.peerBalances?.balances.slice(page * 20, page * 20 + 20).map((peerBalance: PeerBalance, idx: number) => (
                         <TableRow key={peerBalance.peer}>
                         <TableCell>{peerBalance.peer}</TableCell>
                         <TableCell style={{ color: ConvertBalanceToBZZ(peerBalance.balance) > 0 ? '#32c48d' : '#c9201f', textAlign:'right', fontFamily: 'monospace, monospace' }}>
@@ -56,6 +62,18 @@ function BalancesTable(props: IProps) {
                     ))}
                     </TableBody>
                 </Table>
+                <TableFooter>
+                    <TableRow>
+                        <TablePagination
+                        count={props.peerBalances?.balances ? props.peerBalances?.balances.length : 0}
+                        rowsPerPage={20}
+                        colSpan={3}
+                        rowsPerPageOptions={[20]}
+                        page={page}
+                        onChangePage={handleChangePage}
+                        />
+                    </TableRow>
+                </TableFooter>
             </TableContainer>}
         </div>
     )
