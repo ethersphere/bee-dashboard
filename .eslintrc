@@ -13,7 +13,7 @@
   },
   "plugins": ["jest"],
   "rules": {
-    "array-bracket-newline": ["error", { "multiline": true }],
+    "array-bracket-newline": ["error", "consistent"],
     "strict": ["error", "safe"],
     "block-scoped-var": "error",
     "complexity": "warn",
