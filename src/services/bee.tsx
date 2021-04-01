@@ -1,39 +1,21 @@
 import axios, { AxiosInstance } from 'axios';
-import { Bee } from "@ethersphere/bee-js";
+import { Bee, Reference } from "@ethersphere/bee-js";
 
 const beeJSClient = () => {
-    let apiHost
+    let apiHost = process.env.REACT_APP_BEE_HOST || 'http://localhost:1633'
   
     if (sessionStorage.getItem('api_host')) {
-      apiHost = String(sessionStorage.getItem('api_host') || '')
-    } else {
-      apiHost = process.env.REACT_APP_BEE_HOST
+      apiHost = String(sessionStorage.getItem('api_host'))
     }
 
-    return new Bee(`${apiHost}`)
-}
-
-const beeApiClient = (): AxiosInstance => {
-    let apiHost
-  
-    if (sessionStorage.getItem('api_host')) {
-      apiHost = String(sessionStorage.getItem('api_host') || '')
-    } else {
-      apiHost = process.env.REACT_APP_BEE_HOST
-    }
-
-    return axios.create({
-        baseURL: apiHost
-    })
+    return new Bee(apiHost)
 }
 
 const beeDebugApiClient = (): AxiosInstance => {
-    let debugApiHost
+    let debugApiHost = process.env.REACT_APP_BEE_DEBUG_HOST || 'http://localhost:1635'
   
     if (sessionStorage.getItem('debug_api_host')) {
-      debugApiHost = String(sessionStorage.getItem('debug_api_host') || '')
-    } else {
-      debugApiHost = process.env.REACT_APP_BEE_DEBUG_HOST
+      debugApiHost = String(sessionStorage.getItem('debug_api_host'))
     }
 
     return axios.create({
@@ -44,21 +26,15 @@ const beeDebugApiClient = (): AxiosInstance => {
 export const beeApi = {
     status: {
         health() {
-            return beeApiClient().get('/')
+            return beeJSClient().isConnected()
         }
     },
     files: {
-        uploadFile(file: any) {
+        uploadFile(file: File) {
             return beeJSClient().uploadFile(file)
         },
-        uploadData(file: any) { 
-            return beeJSClient().uploadData(file)
-        },
-        downloadFile(hash: string) {
+        downloadFile(hash: string | Reference) {
             return beeJSClient().downloadFile(hash)
-        },
-        downloadData(hash: string) {
-            return beeJSClient().downloadData(hash)
         },
     },
 }

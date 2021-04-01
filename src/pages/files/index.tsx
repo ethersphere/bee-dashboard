@@ -8,6 +8,7 @@ import {DropzoneArea} from 'material-ui-dropzone'
 import ClipboardCopy from '../../components/ClipboardCopy';
 
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard';
+import { Data, FileData } from '@ethersphere/bee-js';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,7 +37,7 @@ export default function Files(props: any) {
 
     const [inputMode, setInputMode] = useState<'browse' | 'upload'>('browse');
     const [searchInput, setSearchInput] = useState('');
-    const [searchResult, setSearchResult] = useState('');
+    const [searchResult, setSearchResult] = useState<FileData<Data> | null>(null);
     const [loadingSearch, setLoadingSearch] = useState(false);
 
     const [files, setFiles] = useState<File[]>([]);
@@ -47,7 +48,8 @@ export default function Files(props: any) {
       setLoadingSearch(true)
         beeApi.files.downloadFile(searchInput)
         .then(res => {
-            setSearchResult(new TextDecoder("utf-8").decode(res.data))
+            setSearchResult(res)
+            
             const downloadUrl = window.URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement('a');
             link.href = downloadUrl;
