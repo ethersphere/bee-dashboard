@@ -66,7 +66,7 @@ export const beeDebugApi = {
             return beeJSDebugClient().getTopology()
         },
         ping(peerId: string) {
-            return beeDebugApiClient().post(`/pingpong/${peerId}`)
+            return beeJSDebugClient().pingPeer(peerId)
         }
     },
     balance: {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 import type { NodeAddresses, ChequebookAddressResponse, ChequebookBalanceResponse, BalanceResponse, 
-    LastChequesResponse, AllSettlements, LastCashoutActionResponse, Health, Peer, Topology } from '@ethersphere/bee-js'
+    LastChequesResponse, AllSettlements, LastCashoutActionResponse, Health, Peer, Topology, PingResponse } from '@ethersphere/bee-js'
 
 import { beeDebugApi, beeApi } from '../services/bee';
 
@@ -258,7 +258,7 @@ export const useApiSettlements = () => {
 
 
 export const useApiPingPeer = (peerId: string) => {
-    const [peerRTP, setPeerRTP] = useState<string>('')
+    const [peerRTP, setPeerRTP] = useState<PingResponse | null>()
     const [isPingingPeer, setPingingPeer] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
@@ -266,7 +266,7 @@ export const useApiPingPeer = (peerId: string) => {
         setPingingPeer(true)
         beeDebugApi.connectivity.ping(peerId)
         .then(res => {
-            setPeerRTP(res.data)
+            setPeerRTP(res)
         })
         .catch(error => {
             setError(error)
