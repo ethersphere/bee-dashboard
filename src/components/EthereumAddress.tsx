@@ -3,8 +3,9 @@ import QRCodeModal from './QRCodeModal'
 import ClipboardCopy from './ClipboardCopy'
 
 import Identicon from 'react-identicons'
+import { ReactElement } from 'react'
 
-interface IProps {
+interface Props {
   address: string | undefined
   network?: string
   hideBlockie?: boolean
@@ -12,7 +13,7 @@ interface IProps {
   truncate?: boolean
 }
 
-export default function EthereumAddress(props: IProps) {
+export default function EthereumAddress(props: Props): ReactElement {
   return (
     <Typography component="div" variant="subtitle1">
       {props.address ? (

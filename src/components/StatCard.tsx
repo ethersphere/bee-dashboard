@@ -1,4 +1,4 @@
-import React from 'react'
+import type { ReactElement } from 'react'
 
 import { makeStyles } from '@material-ui/core/styles'
 import { Card, CardContent, Typography } from '@material-ui/core/'
@@ -16,13 +16,13 @@ const useStyles = makeStyles({
   },
 })
 
-interface IProps {
+interface Props {
   label: string
   statistic?: string
   loading?: boolean
 }
 
-export default function StatCard({ loading, label, statistic }: IProps) {
+export default function StatCard({ loading, label, statistic }: Props): ReactElement {
   const classes = useStyles()
 
   return (

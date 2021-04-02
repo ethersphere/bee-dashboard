@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { ReactElement, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import {
   Table,
@@ -30,7 +30,7 @@ interface Props {
   error: Error | null
 }
 
-function PeerTable(props: Props) {
+function PeerTable(props: Props): ReactElement {
   const classes = useStyles()
 
   const [peerLatency, setPeerLatency] = useState([{ peerId: '', rtt: '', loading: false }])
@@ -42,7 +42,7 @@ function PeerTable(props: Props) {
       .then(res => {
         setPeerLatency([...peerLatency, { peerId: peerId, rtt: res.rtt, loading: false }])
       })
-      .catch(error => {
+      .catch(() => {
         setPeerLatency([...peerLatency, { peerId: peerId, rtt: 'error', loading: false }])
       })
   }
@@ -75,7 +75,7 @@ function PeerTable(props: Props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {props.peers.map((peer: any, idx: number) => (
+            {props.peers.map((peer: Peer, idx: number) => (
               <TableRow key={peer.address}>
                 <TableCell component="th" scope="row">
                   {idx + 1}
@@ -84,15 +84,20 @@ function PeerTable(props: Props) {
                 <TableCell align="right">
                   <Tooltip title="Ping node">
                     <Button color="primary" onClick={() => PingPeer(peer.address)}>
-                      {peerLatency.find(item => item.peerId === peer.address) ? (
-                        peerLatency.filter(item => item.peerId === peer.address)[0].loading ? (
-                          <CircularProgress size={20} />
+                      {
+                        // FIXME: this should be broken up
+                        /* eslint-disable no-nested-ternary */
+                        peerLatency.find(item => item.peerId === peer.address) ? (
+                          peerLatency.filter(item => item.peerId === peer.address)[0].loading ? (
+                            <CircularProgress size={20} />
+                          ) : (
+                            peerLatency.filter(item => item.peerId === peer.address)[0].rtt
+                          )
                         ) : (
-                          peerLatency.filter(item => item.peerId === peer.address)[0].rtt
+                          <Autorenew />
                         )
-                      ) : (
-                        <Autorenew />
-                      )}
+                        /* eslint-enable no-nested-ternary */
+                      }
                     </Button>
                   </Tooltip>
                 </TableCell>

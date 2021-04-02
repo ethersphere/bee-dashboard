@@ -4,8 +4,9 @@ import TroubleshootConnectionCard from '../../components/TroubleshootConnectionC
 
 import { useApiNodeTopology, useApiNodePeers, useDebugApiHealth } from '../../hooks/apiHooks'
 import TopologyStats from '../../components/TopologyStats'
+import { ReactElement } from 'react'
 
-export default function Peers() {
+export default function Peers(): ReactElement {
   const topology = useApiNodeTopology()
   const debugHealth = useDebugApiHealth()
   const peers = useApiNodePeers()

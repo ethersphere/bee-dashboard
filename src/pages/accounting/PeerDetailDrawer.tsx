@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { ReactElement, useState } from 'react'
 import { Paper, Container, Drawer, Button, Typography, CircularProgress, Grid } from '@material-ui/core'
 import ClipboardCopy from '../../components/ClipboardCopy'
 import { beeDebugApi } from '../../services/bee'
 import EthereumAddress from '../../components/EthereumAddress'
 import { ConvertBalanceToBZZ } from '../../utils/common'
+import { LastCashoutActionResponse, LastChequesForPeerResponse } from '@ethersphere/bee-js'
 
 function truncStringPortion(str: string, firstCharCount = 10, endCharCount = 10) {
   let convertedStr = ''
@@ -14,26 +15,14 @@ function truncStringPortion(str: string, firstCharCount = 10, endCharCount = 10)
   return convertedStr
 }
 
-export default function Index(props: any) {
-  const [open, setOpen] = useState(false)
-  const [peerCashout, setPeerCashout] = useState({
-    peer: '',
-    chequebook: '',
-    cumulativePayout: 0,
-    beneficiary: '',
-    transactionHash: '',
-    result: {
-      recipient: '',
-      lastPayout: 0,
-      bounced: false,
-    },
-  })
+interface Props {
+  peerId: string
+}
 
-  const [peerCheque, setPeerCheque] = useState({
-    lastreceived: { beneficiary: '', payout: 0, chequebook: '' },
-    lastsent: { beneficiary: '', payout: 0, chequebook: '' },
-    peer: '',
-  })
+export default function Index(props: Props): ReactElement {
+  const [open, setOpen] = useState(false)
+  const [peerCashout, setPeerCashout] = useState<LastCashoutActionResponse | null>(null)
+  const [peerCheque, setPeerCheque] = useState<LastChequesForPeerResponse | null>(null)
 
   const [isLoadingPeerCheque, setIsLoadingPeerCheque] = useState<boolean>(false)
   const [isLoadingPeerCashout, setIsLoadingPeerCashout] = useState<boolean>(false)
@@ -45,7 +34,7 @@ export default function Index(props: any) {
       .then(res => {
         setPeerCashout(res)
       })
-      .catch(error => {
+      .catch(() => {
         // FIXME: handle the error
       })
       .finally(() => {
@@ -58,7 +47,7 @@ export default function Index(props: any) {
       .then(res => {
         setPeerCheque(res)
       })
-      .catch(error => {
+      .catch(() => {
         // FIXME: handle the error
       })
       .finally(() => {
@@ -98,16 +87,16 @@ export default function Index(props: any) {
                       Payout:
                       <span style={{ marginBottom: '0px', fontFamily: 'monospace, monospace' }}>
                         {' '}
-                        {peerCheque.lastsent?.payout ? ConvertBalanceToBZZ(peerCheque.lastsent?.payout) : '-'}
+                        {peerCheque?.lastsent?.payout ? ConvertBalanceToBZZ(peerCheque?.lastsent?.payout) : '-'}
                       </span>
                     </p>
                     <p>
                       Beneficiary:
-                      <EthereumAddress network={'goerli'} hideBlockie address={peerCheque.lastsent?.beneficiary} />
+                      <EthereumAddress network={'goerli'} hideBlockie address={peerCheque?.lastsent?.beneficiary} />
                     </p>
                     <p>
                       Chequebook:
-                      <EthereumAddress network={'goerli'} hideBlockie address={peerCheque.lastsent?.chequebook} />
+                      <EthereumAddress network={'goerli'} hideBlockie address={peerCheque?.lastsent?.chequebook} />
                     </p>
                   </Grid>
                   <Grid key={1} item xs={12} sm={12} xl={6}>
@@ -116,47 +105,47 @@ export default function Index(props: any) {
                       Payout:
                       <span style={{ marginBottom: '0px', fontFamily: 'monospace, monospace' }}>
                         {' '}
-                        {peerCheque.lastreceived?.payout ? ConvertBalanceToBZZ(peerCheque.lastreceived?.payout) : '-'}
+                        {peerCheque?.lastreceived?.payout ? ConvertBalanceToBZZ(peerCheque?.lastreceived?.payout) : '-'}
                       </span>
                     </p>
                     <p>
                       Beneficiary:
-                      <EthereumAddress network={'goerli'} hideBlockie address={peerCheque.lastreceived?.beneficiary} />
+                      <EthereumAddress network={'goerli'} hideBlockie address={peerCheque?.lastreceived?.beneficiary} />
                     </p>
                     <p>
                       Chequebook:
-                      <EthereumAddress network={'goerli'} hideBlockie address={peerCheque.lastreceived?.chequebook} />
+                      <EthereumAddress network={'goerli'} hideBlockie address={peerCheque?.lastreceived?.chequebook} />
                     </p>
                   </Grid>
                 </Grid>
                 <h3>Last Cashout</h3>
-                {peerCashout.cumulativePayout > 0 ? (
+                {peerCashout && peerCashout?.cumulativePayout > 0 ? (
                   <div>
                     <p>
                       Cumulative Payout:
                       <span style={{ marginBottom: '0px', fontFamily: 'monospace, monospace' }}>
-                        {peerCashout.cumulativePayout ? ConvertBalanceToBZZ(peerCashout.cumulativePayout) : '-'}
+                        {peerCashout?.cumulativePayout ? ConvertBalanceToBZZ(peerCashout?.cumulativePayout) : '-'}
                       </span>
                     </p>
                     <p>
                       Last Payout:
                       <span style={{ marginBottom: '0px', fontFamily: 'monospace, monospace' }}>
                         {' '}
-                        {peerCashout.result.lastPayout ? ConvertBalanceToBZZ(peerCashout.result.lastPayout) : '-'}
+                        {peerCashout?.result.lastPayout ? ConvertBalanceToBZZ(peerCashout?.result.lastPayout) : '-'}
                       </span>
-                      <span> {peerCashout.result.bounced ? 'Bounced' : ''}</span>
+                      <span> {peerCashout?.result.bounced ? 'Bounced' : ''}</span>
                     </p>
                     <p>
                       Beneficiary:
-                      <EthereumAddress network={'goerli'} hideBlockie address={peerCashout.beneficiary} />
+                      <EthereumAddress network={'goerli'} hideBlockie address={peerCashout?.beneficiary} />
                     </p>
                     <p>
                       Chequebook:
-                      <EthereumAddress network={'goerli'} hideBlockie address={peerCashout.chequebook} />
+                      <EthereumAddress network={'goerli'} hideBlockie address={peerCashout?.chequebook} />
                     </p>
                     <p>
                       Recipient:
-                      <EthereumAddress network={'goerli'} hideBlockie address={peerCashout.result.recipient} />
+                      <EthereumAddress network={'goerli'} hideBlockie address={peerCashout?.result.recipient} />
                     </p>
                     <p>
                       Transaction:
@@ -164,7 +153,7 @@ export default function Index(props: any) {
                         transaction
                         network={'goerli'}
                         hideBlockie
-                        address={peerCashout.transactionHash}
+                        address={peerCashout?.transactionHash}
                       />
                     </p>
                   </div>

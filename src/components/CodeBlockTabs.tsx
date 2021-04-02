@@ -1,21 +1,21 @@
-import React, { useEffect } from 'react'
+import React, { ReactElement, useEffect } from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Tabs, Tab, Box, Typography } from '@material-ui/core'
 import CodeBlock from './CodeBlock'
 
 interface TabPanelProps {
   children?: React.ReactNode
-  index: any
-  value: any
+  index: number
+  value: number
 }
 
-interface IProps {
+interface Props {
   linux: string
   mac: string
   showLineNumbers?: boolean
 }
 
-function a11yProps(index: any) {
+function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`,
@@ -42,7 +42,7 @@ function getOS() {
   return null
 }
 
-export default function CodeBlockTabs(props: IProps) {
+export default function CodeBlockTabs(props: Props): ReactElement {
   const [value, setValue] = React.useState(0)
 
   const handleChange = (event: React.ChangeEvent<unknown>, newValue: number) => {

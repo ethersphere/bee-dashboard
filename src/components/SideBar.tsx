@@ -1,5 +1,5 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import { ReactElement } from 'react'
+import { Link, RouteComponentProps } from 'react-router-dom'
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItemText, ListItemIcon, ListItem, Divider, List, Drawer, Link as MUILink } from '@material-ui/core'
@@ -7,6 +7,7 @@ import { OpenInNewSharp } from '@material-ui/icons'
 import { Activity, FileText, DollarSign, Share2, Settings } from 'react-feather'
 
 import SwarmLogoOrange from '../assets/swarm-logo-orange.svg'
+import { Health } from '@ethersphere/bee-js'
 
 const drawerWidth = 240
 
@@ -74,7 +75,13 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-export default function SideBar(props: any) {
+interface Props extends RouteComponentProps {
+  themeMode: string
+  health: boolean
+  nodeHealth: Health | null
+}
+
+export default function SideBar(props: Props): ReactElement {
   const classes = useStyles()
 
   return (

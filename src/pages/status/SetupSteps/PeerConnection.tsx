@@ -1,23 +1,34 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import { Typography } from '@material-ui/core/'
 import { CheckCircle, Warning } from '@material-ui/icons/'
+import { Topology } from '@ethersphere/bee-js'
 
-export default function PeerConnection(props: any) {
+interface Props {
+  nodeTopology: Topology | null
+  isLoadingNodeTopology: boolean
+}
+
+export default function PeerConnection(props: Props): ReactElement {
   return (
     <div>
       <p>Connect to Peers</p>
       <div style={{ marginBottom: '10px' }}>
-        {props.nodeTopology?.connected && props.nodeTopology?.connected > 0 ? (
-          <div>
-            <CheckCircle style={{ color: '#32c48d', marginRight: '7px', height: '18px' }} />
-            <span>Your connected to {props.nodeTopology.connected} peers!</span>
-          </div>
-        ) : props.loadingNodeTopology ? null : (
-          <div>
-            <Warning style={{ color: '#ff9800', marginRight: '7px', height: '18px' }} />
-            <span>Your node is not connected to any peers</span>
-          </div>
-        )}
+        html_url
+        {
+          // FIXME: this should be broken up
+          /* eslint-disable no-nested-ternary */
+          props.nodeTopology?.connected && props.nodeTopology?.connected > 0 ? (
+            <div>
+              <CheckCircle style={{ color: '#32c48d', marginRight: '7px', height: '18px' }} />
+              <span>Your connected to {props.nodeTopology.connected} peers!</span>
+            </div>
+          ) : props.isLoadingNodeTopology ? null : (
+            <div>
+              <Warning style={{ color: '#ff9800', marginRight: '7px', height: '18px' }} />
+              <span>Your node is not connected to any peers</span>
+            </div>
+          ) /* eslint-enable no-nested-ternary */
+        }
       </div>
       <div style={{ display: 'flex' }}>
         <div style={{ marginRight: '30px' }}>

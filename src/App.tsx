@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { BrowserRouter as Router } from 'react-router-dom'
 import './App.css'
 
@@ -8,7 +8,7 @@ import CssBaseline from '@material-ui/core/CssBaseline'
 import BaseRouter from './routes/routes'
 import { lightTheme, darkTheme } from './theme'
 
-function App() {
+const App = (): ReactElement => {
   const [themeMode, toggleThemeMode] = useState('light')
 
   useEffect(() => {

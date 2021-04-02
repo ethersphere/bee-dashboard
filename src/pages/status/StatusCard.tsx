@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Theme, createStyles, makeStyles } from '@material-ui/core/styles'
+import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { Card, CardContent, Typography, Chip, Button } from '@material-ui/core/'
 import { CheckCircle, Error, ArrowRight, ArrowDropUp } from '@material-ui/icons/'
 import { Skeleton } from '@material-ui/lab'
 import type { Health, NodeAddresses, Topology } from '@ethersphere/bee-js'
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       display: 'flex',
@@ -28,18 +28,18 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-interface IProps {
-  nodeHealth: Health
+interface Props {
+  nodeHealth: Health | null
   loadingNodeHealth: boolean
-  beeRelease: any
+  beeRelease: LatestBeeRelease | null
   loadingBeeRelease: boolean
   nodeAddresses: NodeAddresses
   nodeTopology: Topology
   loadingNodeTopology: boolean
-  setStatusChecksVisible: any
+  setStatusChecksVisible: (value: boolean) => void
 }
 
-function StatusCard(props: IProps) {
+function StatusCard(props: Props): ReactElement {
   const classes = useStyles()
 
   const [underlayAddressesVisible, setUnderlayAddresessVisible] = useState<boolean>(false)
@@ -86,18 +86,23 @@ function StatusCard(props: IProps) {
                     Bee
                   </a>
                   <span>{props.nodeHealth?.version ? ` v${props.nodeHealth.version}` : '-'}</span>
-                  {props.beeRelease && props.beeRelease.name === `v${props.nodeHealth?.version?.split('-')[0]}` ? (
-                    <Chip
-                      style={{ marginLeft: '7px', color: '#2145a0' }}
-                      size="small"
-                      label="latest"
-                      className={classes.status}
-                    />
-                  ) : props.loadingBeeRelease ? (
-                    ''
-                  ) : (
-                    <Typography variant="button">update</Typography>
-                  )}
+                  {
+                    // FIXME: this should be broken up
+                    /* eslint-disable no-nested-ternary */
+                    props.beeRelease && props.beeRelease.name === `v${props.nodeHealth?.version?.split('-')[0]}` ? (
+                      <Chip
+                        style={{ marginLeft: '7px', color: '#2145a0' }}
+                        size="small"
+                        label="latest"
+                        className={classes.status}
+                      />
+                    ) : props.loadingBeeRelease ? (
+                      ''
+                    ) : (
+                      <Typography variant="button">update</Typography>
+                    )
+                    /* eslint-enable no-nested-ternary */
+                  }
                 </Typography>
                 <Typography component="div" variant="subtitle2" gutterBottom>
                   <span>PUBLIC KEY: </span>

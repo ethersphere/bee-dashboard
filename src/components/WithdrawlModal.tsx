@@ -1,4 +1,4 @@
-import React from 'react'
+import { ReactElement, useState } from 'react'
 import Button from '@material-ui/core/Button'
 import Input from '@material-ui/core/Input'
 import Dialog from '@material-ui/core/Dialog'
@@ -10,11 +10,11 @@ import { Snackbar } from '@material-ui/core'
 
 import { beeDebugApi } from '../services/bee'
 
-export default function WithdrawlModal() {
-  const [open, setOpen] = React.useState(false)
-  const [amount, setAmount] = React.useState(BigInt(0))
-  const [showToast, setToastVisibility] = React.useState(false)
-  const [toastContent, setToastContent] = React.useState('')
+export default function WithdrawlModal(): ReactElement {
+  const [open, setOpen] = useState(false)
+  const [amount, setAmount] = useState(BigInt(0))
+  const [showToast, setToastVisibility] = useState(false)
+  const [toastContent, setToastContent] = useState('')
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -32,8 +32,9 @@ export default function WithdrawlModal() {
           setOpen(false)
           handleToast(`Successful withdrawl. Transaction ${res.transactionHash}`)
         })
-        .catch(error => {
-          handleToast('Error with withdrawl')
+        .catch(() => {
+          // FIXME: should probably detail the error
+          handleToast('Error with withdrawing')
         })
     } else {
       handleToast('Must be amount of greater than 0')

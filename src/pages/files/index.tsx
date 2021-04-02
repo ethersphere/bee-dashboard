@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { beeApi } from '../../services/bee'
 
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
@@ -9,6 +9,7 @@ import ClipboardCopy from '../../components/ClipboardCopy'
 
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { Data, FileData } from '@ethersphere/bee-js'
+import { useApiHealth, useDebugApiHealth } from '../../hooks/apiHooks'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,13 +33,15 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-export default function Files(props: any) {
+export default function Files(): ReactElement {
   const classes = useStyles()
 
   const [inputMode, setInputMode] = useState<'browse' | 'upload'>('browse')
   const [searchInput, setSearchInput] = useState('')
   const [searchResult, setSearchResult] = useState<FileData<Data> | null>(null)
   const [loadingSearch, setLoadingSearch] = useState(false)
+  const { health, isLoadingHealth } = useApiHealth()
+  const { nodeHealth, isLoadingNodeHealth } = useDebugApiHealth()
 
   const [files, setFiles] = useState<File[]>([])
   const [uploadReference, setUploadReference] = useState('')
@@ -59,7 +62,7 @@ export default function Files(props: any) {
         link.click()
         link.remove()
       })
-      .catch(error => {
+      .catch(() => {
         // FIXME: handle the error
       })
       .finally(() => {
@@ -75,7 +78,7 @@ export default function Files(props: any) {
         setUploadReference(hash)
         setFiles([])
       })
-      .catch(error => {
+      .catch(() => {
         // FIXME: handle the error
       })
       .finally(() => {
@@ -83,7 +86,7 @@ export default function Files(props: any) {
       })
   }
 
-  const handleChange = (files: any) => {
+  const handleChange = (files?: File[]) => {
     if (files) {
       setFiles(files)
     }
@@ -91,67 +94,75 @@ export default function Files(props: any) {
 
   return (
     <div>
-      {props.nodeHealth?.status === 'ok' && props.health ? (
-        <Container maxWidth="sm">
-          <div style={{ marginBottom: '7px' }}>
-            <Button color="primary" style={{ marginRight: '7px' }} onClick={() => setInputMode('browse')}>
-              Browse
-            </Button>
-            <Button color="primary" onClick={() => setInputMode('upload')}>
-              Upload
-            </Button>
-          </div>
-          {inputMode === 'browse' ? (
-            <Paper component="form" className={classes.root}>
-              <InputBase
-                className={classes.input}
-                placeholder="Enter hash e.g. 0773a91efd6547c754fc1d95fb1c62c7d1b47f959c2caa685dfec8736da95c1c"
-                inputProps={{ 'aria-label': 'search swarm nodes' }}
-                onChange={e => setSearchInput(e.target.value)}
-              />
-              <IconButton onClick={() => getFile()} className={classes.iconButton} aria-label="search">
-                <Search />
-              </IconButton>
-            </Paper>
-          ) : (
-            <div>
-              {uploadingFile ? (
-                <Container style={{ textAlign: 'center', padding: '50px' }}>
-                  <CircularProgress />
-                </Container>
-              ) : (
-                <div>
-                  {uploadReference ? (
-                    <Paper component="form" className={classes.root} style={{ marginBottom: '15px', display: 'flex' }}>
-                      <span>{uploadReference}</span>
-                      <ClipboardCopy value={uploadReference} />
-                    </Paper>
-                  ) : null}
-                  <DropzoneArea onChange={handleChange} />
-                  <div style={{ marginTop: '15px' }}>
-                    <Button onClick={() => uploadFile()} className={classes.iconButton}>
-                      Upload
-                    </Button>
-                  </div>
-                </div>
-              )}
+      {
+        // FIXME: this should be broken up
+        /* eslint-disable no-nested-ternary */
+        nodeHealth?.status === 'ok' && health ? (
+          <Container maxWidth="sm">
+            <div style={{ marginBottom: '7px' }}>
+              <Button color="primary" style={{ marginRight: '7px' }} onClick={() => setInputMode('browse')}>
+                Browse
+              </Button>
+              <Button color="primary" onClick={() => setInputMode('upload')}>
+                Upload
+              </Button>
             </div>
-          )}
-          {loadingSearch ? (
-            <Container style={{ textAlign: 'center', padding: '50px' }}>
-              <CircularProgress />
-            </Container>
-          ) : (
-            <div style={{ padding: '20px' }}>{searchResult}</div>
-          )}
-        </Container>
-      ) : props.isLoadingHealth || props.isLoadingNodeHealth ? (
-        <Container style={{ textAlign: 'center', padding: '50px' }}>
-          <CircularProgress />
-        </Container>
-      ) : (
-        <TroubleshootConnectionCard />
-      )}
+            {inputMode === 'browse' ? (
+              <Paper component="form" className={classes.root}>
+                <InputBase
+                  className={classes.input}
+                  placeholder="Enter hash e.g. 0773a91efd6547c754fc1d95fb1c62c7d1b47f959c2caa685dfec8736da95c1c"
+                  inputProps={{ 'aria-label': 'search swarm nodes' }}
+                  onChange={e => setSearchInput(e.target.value)}
+                />
+                <IconButton onClick={() => getFile()} className={classes.iconButton} aria-label="search">
+                  <Search />
+                </IconButton>
+              </Paper>
+            ) : (
+              <div>
+                {uploadingFile ? (
+                  <Container style={{ textAlign: 'center', padding: '50px' }}>
+                    <CircularProgress />
+                  </Container>
+                ) : (
+                  <div>
+                    {uploadReference ? (
+                      <Paper
+                        component="form"
+                        className={classes.root}
+                        style={{ marginBottom: '15px', display: 'flex' }}
+                      >
+                        <span>{uploadReference}</span>
+                        <ClipboardCopy value={uploadReference} />
+                      </Paper>
+                    ) : null}
+                    <DropzoneArea onChange={handleChange} />
+                    <div style={{ marginTop: '15px' }}>
+                      <Button onClick={() => uploadFile()} className={classes.iconButton}>
+                        Upload
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            {loadingSearch ? (
+              <Container style={{ textAlign: 'center', padding: '50px' }}>
+                <CircularProgress />
+              </Container>
+            ) : (
+              <div style={{ padding: '20px' }}>{searchResult}</div>
+            )}
+          </Container>
+        ) : isLoadingHealth || isLoadingNodeHealth ? (
+          <Container style={{ textAlign: 'center', padding: '50px' }}>
+            <CircularProgress />
+          </Container>
+        ) : (
+          <TroubleshootConnectionCard />
+        ) /* eslint-enable no-nested-ternary */
+      }
     </div>
   )
 }

@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
+import { ReactElement, useState } from 'react'
 import QRCode from 'qrcode.react'
 import { IconButton, Dialog, DialogTitle } from '@material-ui/core'
 import { FilterCenterFocusSharp } from '@material-ui/icons'
 
-interface IProps {
+interface Props {
   value: string
   label: string
 }
 
-export default function QRCodeModal(props: IProps) {
+export default function QRCodeModal(props: Props): ReactElement {
   const [open, setOpen] = useState(false)
 
   const handleOpen = () => {

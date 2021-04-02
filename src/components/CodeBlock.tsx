@@ -1,12 +1,13 @@
+import type { ReactElement } from 'react'
 import SyntaxHighlighter from 'react-syntax-highlighter'
 
-interface IProps {
+interface Props {
   code: string
   language: string
   showLineNumbers?: boolean
 }
 
-const CodeBlock = (props: IProps) => {
+const CodeBlock = (props: Props): ReactElement => {
   return (
     <div style={{ textAlign: 'left' }}>
       <SyntaxHighlighter language={props.language} showLineNumbers={props.showLineNumbers}>

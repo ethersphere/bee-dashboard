@@ -1,4 +1,4 @@
-import React from 'react'
+import type { ReactElement } from 'react'
 import { Link } from 'react-router-dom'
 
 import { makeStyles } from '@material-ui/core/styles'
@@ -15,7 +15,7 @@ const useStyles = makeStyles({
   },
 })
 
-export default function TroubleshootConnectionCard() {
+export default function TroubleshootConnectionCard(): ReactElement {
   const classes = useStyles()
 
   return (

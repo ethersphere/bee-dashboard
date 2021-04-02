@@ -1,11 +1,16 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import { Typography, Accordion, AccordionSummary, AccordionDetails } from '@material-ui/core/'
 import { CheckCircle, Error, ExpandMoreSharp } from '@material-ui/icons/'
 
 import ConnectToHost from '../../../components/ConnectToHost'
 import CodeBlockTabs from '../../../components/CodeBlockTabs'
 
-export default function NodeConnectionCheck(props: any) {
+interface Props {
+  nodeApiHealth: boolean
+  apiHost: string
+}
+
+export default function NodeConnectionCheck(props: Props): ReactElement {
   return (
     <div>
       <p>Connect to Bee Node API</p>

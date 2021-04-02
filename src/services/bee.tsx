@@ -1,4 +1,25 @@
-import { Bee, BeeDebug, Reference } from '@ethersphere/bee-js'
+import {
+  AllSettlements,
+  BalanceResponse,
+  Bee,
+  BeeDebug,
+  CashoutResponse,
+  ChequebookAddressResponse,
+  ChequebookBalanceResponse,
+  Data,
+  DepositTokensResponse,
+  FileData,
+  Health,
+  LastCashoutActionResponse,
+  LastChequesForPeerResponse,
+  LastChequesResponse,
+  NodeAddresses,
+  Peer,
+  PingResponse,
+  Reference,
+  Topology,
+  WithdrawTokensResponse,
+} from '@ethersphere/bee-js'
 
 const beeJSClient = () => {
   let apiHost = process.env.REACT_APP_BEE_HOST || 'http://localhost:1633'
@@ -22,15 +43,15 @@ const beeJSDebugClient = () => {
 
 export const beeApi = {
   status: {
-    health() {
+    health(): Promise<boolean> {
       return beeJSClient().isConnected()
     },
   },
   files: {
-    uploadFile(file: File) {
+    uploadFile(file: File): Promise<Reference> {
       return beeJSClient().uploadFile(file)
     },
-    downloadFile(hash: string | Reference) {
+    downloadFile(hash: string | Reference): Promise<FileData<Data>> {
       return beeJSClient().downloadFile(hash)
     },
   },
@@ -38,57 +59,57 @@ export const beeApi = {
 
 export const beeDebugApi = {
   status: {
-    nodeHealth() {
+    nodeHealth(): Promise<Health> {
       return beeJSDebugClient().getHealth()
     },
   },
   connectivity: {
-    addresses() {
+    addresses(): Promise<NodeAddresses> {
       return beeJSDebugClient().getNodeAddresses()
     },
-    listPeers() {
+    listPeers(): Promise<Peer[]> {
       return beeJSDebugClient().getPeers()
     },
-    topology() {
+    topology(): Promise<Topology> {
       return beeJSDebugClient().getTopology()
     },
-    ping(peerId: string) {
+    ping(peerId: string): Promise<PingResponse> {
       return beeJSDebugClient().pingPeer(peerId)
     },
   },
   balance: {
-    balances() {
+    balances(): Promise<BalanceResponse> {
       return beeJSDebugClient().getAllBalances()
     },
   },
   chequebook: {
-    address() {
+    address(): Promise<ChequebookAddressResponse> {
       return beeJSDebugClient().getChequebookAddress()
     },
-    balance() {
+    balance(): Promise<ChequebookBalanceResponse> {
       return beeJSDebugClient().getChequebookBalance()
     },
-    getLastCheques() {
+    getLastCheques(): Promise<LastChequesResponse> {
       return beeJSDebugClient().getLastCheques()
     },
-    peerCashout(peerId: string) {
+    peerCashout(peerId: string): Promise<CashoutResponse> {
       return beeJSDebugClient().cashoutLastCheque(peerId)
     },
-    getPeerLastCashout(peerId: string) {
+    getPeerLastCashout(peerId: string): Promise<LastCashoutActionResponse> {
       return beeJSDebugClient().getLastCashoutAction(peerId)
     },
-    getPeerLastCheques(peerId: string) {
+    getPeerLastCheques(peerId: string): Promise<LastChequesForPeerResponse> {
       return beeJSDebugClient().getLastChequesForPeer(peerId)
     },
-    withdraw(amount: bigint) {
+    withdraw(amount: bigint): Promise<WithdrawTokensResponse> {
       return beeJSDebugClient().withdrawTokens(amount)
     },
-    deposit(amount: bigint) {
+    deposit(amount: bigint): Promise<DepositTokensResponse> {
       return beeJSDebugClient().depositTokens(amount)
     },
   },
   settlements: {
-    getSettlements() {
+    getSettlements(): Promise<AllSettlements> {
       return beeJSDebugClient().getAllSettlements()
     },
   },

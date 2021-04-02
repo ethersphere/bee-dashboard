@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Typography, Paper, Button, Step, StepLabel, StepContent, Stepper, StepButton } from '@material-ui/core/'
 import { CheckCircle, Error, Sync, ExpandLessSharp, ExpandMoreSharp } from '@material-ui/icons/'
@@ -9,6 +9,13 @@ import VersionCheck from './SetupSteps/VersionCheck'
 import EthereumConnectionCheck from './SetupSteps/EthereumConnectionCheck'
 import ChequebookDeployFund from './SetupSteps/ChequebookDeployFund'
 import PeerConnection from './SetupSteps/PeerConnection'
+import type {
+  ChequebookAddressResponse,
+  ChequebookBalanceResponse,
+  Health,
+  NodeAddresses,
+  Topology,
+} from '@ethersphere/bee-js'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,25 +45,67 @@ function getSteps() {
     'Connect to Peers',
   ]
 }
+interface Props {
+  nodeHealth: Health | null
+  nodeApiHealth: boolean
+  nodeAddresses: NodeAddresses | null
+  chequebookAddress: ChequebookAddressResponse | null
+  chequebookBalance: ChequebookBalanceResponse | null
+  beeRelease: LatestBeeRelease | null
+  nodeTopology: Topology | null
+  isLoadingBeeRelease: boolean
+  isLoadingNodeHealth: boolean
+  isLoadingNodeAddresses: boolean
+  isLoadingNodeTopology: boolean
+  isLoadingHealth: boolean
+  isLoadingChequebookAddress: boolean
+  isLoadingChequebookBalance: boolean
+  setStatusChecksVisible: (value: boolean) => void
+  apiHost: string
+  debugApiHost: string
+}
 
-function getStepContent(step: number, props: any) {
+function getStepContent(step: number, props: Props) {
+  const {
+    nodeHealth,
+    debugApiHost,
+    beeRelease,
+    isLoadingBeeRelease,
+    nodeAddresses,
+    isLoadingNodeAddresses,
+    isLoadingChequebookBalance,
+    chequebookAddress,
+    chequebookBalance,
+    isLoadingChequebookAddress,
+    nodeApiHealth,
+    apiHost,
+    isLoadingNodeTopology,
+    nodeTopology,
+  } = props
   switch (step) {
     case 0:
-      return <DebugConnectionCheck {...props} />
+      return <DebugConnectionCheck nodeHealth={nodeHealth} debugApiHost={debugApiHost} />
     case 1:
-      return <VersionCheck {...props} />
+      return <VersionCheck nodeHealth={nodeHealth} beeRelease={beeRelease} isLoadingBeeRelease={isLoadingBeeRelease} />
     case 2:
-      return <EthereumConnectionCheck {...props} />
+      return <EthereumConnectionCheck nodeAddresses={nodeAddresses} isLoadingNodeAddresses={isLoadingNodeAddresses} />
     case 3:
-      return <ChequebookDeployFund {...props} />
+      return (
+        <ChequebookDeployFund
+          chequebookAddress={chequebookAddress}
+          chequebookBalance={chequebookBalance}
+          isLoadingChequebookAddress={isLoadingChequebookAddress}
+          isLoadingChequebookBalance={isLoadingChequebookBalance}
+        />
+      )
     case 4:
-      return <NodeConnectionCheck {...props} />
+      return <NodeConnectionCheck nodeApiHealth={nodeApiHealth} apiHost={apiHost} />
     default:
-      return <PeerConnection {...props} />
+      return <PeerConnection nodeTopology={nodeTopology} isLoadingNodeTopology={isLoadingNodeTopology} />
   }
 }
 
-export default function NodeSetupWorkflow(props: any) {
+export default function NodeSetupWorkflow(props: Props): ReactElement {
   const {
     nodeHealth,
     nodeApiHealth,
@@ -95,7 +144,7 @@ export default function NodeSetupWorkflow(props: any) {
         setActiveStep(3)
       }
 
-      if (chequebookAddress?.chequebookaddress && chequebookBalance.totalBalance > 0) {
+      if (chequebookAddress?.chequebookaddress && chequebookBalance && chequebookBalance.totalBalance > 0) {
         handleComplete(3)
         setActiveStep(4)
       }

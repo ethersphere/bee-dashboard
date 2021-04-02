@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 
-import { Theme, createStyles, makeStyles } from '@material-ui/core/styles'
+import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { Card, CardContent, Typography } from '@material-ui/core/'
 
 import EthereumAddress from '../components/EthereumAddress'
@@ -8,7 +8,7 @@ import { Skeleton } from '@material-ui/lab'
 
 import type { ChequebookAddressResponse, NodeAddresses } from '@ethersphere/bee-js'
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       display: 'flex',
@@ -28,14 +28,14 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-interface IProps {
+interface Props {
   nodeAddresses: NodeAddresses | null
   isLoadingNodeAddresses: boolean
   chequebookAddress: ChequebookAddressResponse | null
   isLoadingChequebookAddress: boolean
 }
 
-function EthereumAddressCard(props: IProps) {
+function EthereumAddressCard(props: Props): ReactElement {
   const classes = useStyles()
 
   return (

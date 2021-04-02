@@ -1,4 +1,4 @@
-import React from 'react'
+import { ReactElement, useState } from 'react'
 import Button from '@material-ui/core/Button'
 import Input from '@material-ui/core/Input'
 import Dialog from '@material-ui/core/Dialog'
@@ -12,12 +12,12 @@ import { beeDebugApi } from '../services/bee'
 
 import EthereumAddress from './EthereumAddress'
 
-export default function DepositModal() {
-  const [open, setOpen] = React.useState<boolean>(false)
-  const [peerId, setPeerId] = React.useState('')
-  const [loadingCashout, setLoadingCashout] = React.useState<boolean>(false)
-  const [showToast, setToastVisibility] = React.useState<boolean>(false)
-  const [toastContent, setToastContent] = React.useState<JSX.Element | null>(null)
+export default function DepositModal(): ReactElement {
+  const [open, setOpen] = useState<boolean>(false)
+  const [peerId, setPeerId] = useState('')
+  const [loadingCashout, setLoadingCashout] = useState<boolean>(false)
+  const [showToast, setToastVisibility] = useState<boolean>(false)
+  const [toastContent, setToastContent] = useState<JSX.Element | null>(null)
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -41,7 +41,8 @@ export default function DepositModal() {
             </span>,
           )
         })
-        .catch(error => {
+        .catch(() => {
+          // FIXME: handle errors more gracefully
           handleToast(<span>Error with cashout</span>)
         })
         .finally(() => {

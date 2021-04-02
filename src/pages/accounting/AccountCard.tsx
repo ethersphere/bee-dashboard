@@ -1,6 +1,6 @@
-import React from 'react'
+import { ReactElement } from 'react'
 
-import { Theme, createStyles, makeStyles } from '@material-ui/core/styles'
+import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { Card, CardContent, Typography, Grid } from '@material-ui/core/'
 import { Skeleton } from '@material-ui/lab'
 import WithdrawlModal from '../../components/WithdrawlModal'
@@ -9,9 +9,9 @@ import CashoutModal from '../../components/CashoutModal'
 
 import { ConvertBalanceToBZZ } from '../../utils/common'
 
-import type { ChequebookAddressResponse } from '@ethersphere/bee-js'
+import type { AllSettlements, ChequebookAddressResponse } from '@ethersphere/bee-js'
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       display: 'flex',
@@ -38,16 +38,16 @@ interface ChequebookBalance {
   availableBalance: number
 }
 
-interface IProps {
+interface Props {
   chequebookAddress: ChequebookAddressResponse | null
   isLoadingChequebookAddress: boolean
   chequebookBalance: ChequebookBalance | null
   isLoadingChequebookBalance: boolean
-  settlements: any
+  settlements: AllSettlements | null
   isLoadingSettlements: boolean
 }
 
-function AccountCard(props: IProps) {
+function AccountCard(props: Props): ReactElement {
   const classes = useStyles()
 
   return (
@@ -88,15 +88,22 @@ function AccountCard(props: IProps) {
                   </Typography>
                   <Typography component="div" variant="h5">
                     <span style={{ marginRight: '7px' }}>
-                      {ConvertBalanceToBZZ(props.settlements.totalsent)} /{' '}
-                      {ConvertBalanceToBZZ(props.settlements.totalreceived)}
+                      {ConvertBalanceToBZZ(props.settlements?.totalsent || 0)} /{' '}
+                      {ConvertBalanceToBZZ(props.settlements?.totalreceived || 0)}
                     </span>
                     <span
                       style={{
-                        color: props.settlements.totalsent > props.settlements.totalreceived ? '#c9201f' : '#32c48d',
+                        color:
+                          props.settlements && props.settlements?.totalsent > props.settlements?.totalreceived
+                            ? '#c9201f'
+                            : '#32c48d',
                       }}
                     >
-                      ({ConvertBalanceToBZZ(props.settlements.totalsent - props.settlements.totalreceived)})
+                      (
+                      {ConvertBalanceToBZZ(
+                        (props.settlements && props.settlements?.totalsent - props.settlements?.totalreceived) || 0,
+                      )}
+                      )
                     </span>
                   </Typography>
                 </Grid>

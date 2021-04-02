@@ -1,3 +1,3 @@
-export const ConvertBalanceToBZZ = (amount: number) => {
+export const ConvertBalanceToBZZ = (amount: number): number => {
   return amount / 10 ** 16
 }

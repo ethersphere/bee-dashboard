@@ -1,4 +1,4 @@
-import React from 'react'
+import { ReactElement, useState, ChangeEvent, ReactChild } from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Tabs, Tab, Box, Typography, Container, CircularProgress } from '@material-ui/core'
 
@@ -16,25 +16,27 @@ import {
   useApiPeerBalances,
   useApiPeerCheques,
   useApiSettlements,
+  useApiHealth,
+  useDebugApiHealth,
 } from '../../hooks/apiHooks'
 
 interface TabPanelProps {
-  children?: React.ReactNode
-  index: any
-  value: any
+  children?: ReactChild
+  index: number
+  value: number
 }
 
-function a11yProps(index: any) {
+function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`,
   }
 }
 
-export default function Accounting(props: any) {
-  const [value, setValue] = React.useState(0)
+export default function Accounting(): ReactElement {
+  const [value, setValue] = useState(0)
 
-  const handleChange = (event: React.ChangeEvent<unknown>, newValue: number) => {
+  const handleChange = (event: ChangeEvent<unknown>, newValue: number) => {
     setValue(newValue)
   }
 
@@ -42,6 +44,8 @@ export default function Accounting(props: any) {
   const { chequebookBalance, isLoadingChequebookBalance } = useApiChequebookBalance()
   const { peerBalances, isLoadingPeerBalances } = useApiPeerBalances()
   const { nodeAddresses, isLoadingNodeAddresses } = useApiNodeAddresses()
+  const { health, isLoadingHealth } = useApiHealth()
+  const { nodeHealth, isLoadingNodeHealth } = useDebugApiHealth()
 
   const { peerCheques, isLoadingPeerCheques } = useApiPeerCheques()
   const { settlements, isLoadingSettlements } = useApiSettlements()
@@ -117,44 +121,48 @@ export default function Accounting(props: any) {
 
   return (
     <div>
-      {props.nodeHealth?.status === 'ok' && props.health ? (
-        <div>
-          <AccountCard
-            chequebookAddress={chequebookAddress}
-            isLoadingChequebookAddress={isLoadingChequebookAddress}
-            chequebookBalance={chequebookBalance}
-            isLoadingChequebookBalance={isLoadingChequebookBalance}
-            settlements={settlements}
-            isLoadingSettlements={isLoadingSettlements}
-          />
-          <EthereumAddressCard
-            nodeAddresses={nodeAddresses}
-            isLoadingNodeAddresses={isLoadingNodeAddresses}
-            chequebookAddress={chequebookAddress}
-            isLoadingChequebookAddress={isLoadingChequebookAddress}
-          />
-          <AntTabs style={{ marginTop: '12px' }} value={value} onChange={handleChange} aria-label="ant example">
-            <AntTab label="Balances" {...a11yProps(0)} />
-            <AntTab label="Chequebook" {...a11yProps(1)} />
-            <AntTab label="Settlements" {...a11yProps(2)} />
-          </AntTabs>
-          <TabPanel value={value} index={0}>
-            <BalancesTable peerBalances={peerBalances} loading={isLoadingPeerBalances} />
-          </TabPanel>
-          <TabPanel value={value} index={1}>
-            <ChequebookTable peerCheques={peerCheques} loading={isLoadingPeerCheques} />
-          </TabPanel>
-          <TabPanel value={value} index={2}>
-            <SettlementsTable nodeSettlements={settlements} loading={isLoadingSettlements} />
-          </TabPanel>
-        </div>
-      ) : props.isLoadingHealth || props.isLoadingNodeHealth ? (
-        <Container style={{ textAlign: 'center', padding: '50px' }}>
-          <CircularProgress />
-        </Container>
-      ) : (
-        <TroubleshootConnectionCard />
-      )}
+      {
+        // FIXME: this should be broken up
+        /* eslint-disable no-nested-ternary */
+        nodeHealth?.status === 'ok' && health ? (
+          <div>
+            <AccountCard
+              chequebookAddress={chequebookAddress}
+              isLoadingChequebookAddress={isLoadingChequebookAddress}
+              chequebookBalance={chequebookBalance}
+              isLoadingChequebookBalance={isLoadingChequebookBalance}
+              settlements={settlements}
+              isLoadingSettlements={isLoadingSettlements}
+            />
+            <EthereumAddressCard
+              nodeAddresses={nodeAddresses}
+              isLoadingNodeAddresses={isLoadingNodeAddresses}
+              chequebookAddress={chequebookAddress}
+              isLoadingChequebookAddress={isLoadingChequebookAddress}
+            />
+            <AntTabs style={{ marginTop: '12px' }} value={value} onChange={handleChange} aria-label="ant example">
+              <AntTab label="Balances" {...a11yProps(0)} />
+              <AntTab label="Chequebook" {...a11yProps(1)} />
+              <AntTab label="Settlements" {...a11yProps(2)} />
+            </AntTabs>
+            <TabPanel value={value} index={0}>
+              <BalancesTable peerBalances={peerBalances} loading={isLoadingPeerBalances} />
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+              <ChequebookTable peerCheques={peerCheques} loading={isLoadingPeerCheques} />
+            </TabPanel>
+            <TabPanel value={value} index={2}>
+              <SettlementsTable nodeSettlements={settlements} loading={isLoadingSettlements} />
+            </TabPanel>
+          </div>
+        ) : isLoadingHealth || isLoadingNodeHealth ? (
+          <Container style={{ textAlign: 'center', padding: '50px' }}>
+            <CircularProgress />
+          </Container>
+        ) : (
+          <TroubleshootConnectionCard />
+        ) /* eslint-enable no-nested-ternary */
+      }
     </div>
   )
 }

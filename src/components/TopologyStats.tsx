@@ -1,5 +1,6 @@
 import type { Topology } from '@ethersphere/bee-js'
 import { Grid } from '@material-ui/core/'
+import type { ReactElement } from 'react'
 import StatCard from './StatCard'
 
 interface Props {
@@ -8,7 +9,7 @@ interface Props {
   error: Error | null // FIXME: should display error
 }
 
-const TopologyStats = ({ isLoading, topology, error }: Props) => (
+const TopologyStats = ({ isLoading, topology }: Props): ReactElement => (
   <Grid style={{ marginBottom: '20px', flexGrow: 1 }}>
     <Grid container spacing={3}>
       <Grid key={1} item xs={12} sm={12} md={6} lg={4} xl={4}>

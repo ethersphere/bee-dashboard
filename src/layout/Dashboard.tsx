@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, ReactElement } from 'react'
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 
@@ -6,6 +6,7 @@ import SideBar from '../components/SideBar'
 import NavBar from '../components/NavBar'
 
 import { useApiHealth, useDebugApiHealth } from '../hooks/apiHooks'
+import { RouteComponentProps } from 'react-router'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -34,13 +35,18 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-const Dashboard = (props: any) => {
+interface Props extends RouteComponentProps {
+  children?: ReactElement
+}
+
+const Dashboard = (props: Props): ReactElement => {
   const classes = useStyles()
 
   const [themeMode, toggleThemeMode] = useState('light')
 
-  const { health, isLoadingHealth } = useApiHealth()
-  const { nodeHealth, isLoadingNodeHealth } = useDebugApiHealth()
+  // FIXME: handle errrors and loading
+  const { health } = useApiHealth()
+  const { nodeHealth } = useDebugApiHealth()
 
   useEffect(() => {
     const theme = localStorage.getItem('theme')
@@ -61,18 +67,11 @@ const Dashboard = (props: any) => {
       })
   }, [])
 
-  const childrenInjectedWithProps = React.cloneElement(props.children, {
-    health,
-    nodeHealth,
-    isLoadingHealth,
-    isLoadingNodeHealth,
-  })
-
   return (
     <div>
       <SideBar {...props} themeMode={themeMode} health={health} nodeHealth={nodeHealth} />
       <NavBar themeMode={themeMode} />
-      <main className={classes.content}>{childrenInjectedWithProps}</main>
+      <main className={classes.content}>{props.children}</main>
     </div>
   )
 }

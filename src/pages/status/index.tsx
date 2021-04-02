@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect, ReactElement } from 'react'
 import axios from 'axios'
 import { Container, CircularProgress } from '@material-ui/core'
 
@@ -14,8 +14,8 @@ import {
   useApiChequebookBalance,
 } from '../../hooks/apiHooks'
 
-export default function Status() {
-  const [beeRelease, setBeeRelease] = useState({ name: '' })
+export default function Status(): ReactElement {
+  const [beeRelease, setBeeRelease] = useState<LatestBeeRelease | null>(null)
   const [isLoadingBeeRelease, setIsLoadingBeeRelease] = useState<boolean>(false)
 
   const [apiHost, setApiHost] = useState('')
@@ -37,7 +37,7 @@ export default function Status() {
       .then(res => {
         setBeeRelease(res.data)
       })
-      .catch(error => {
+      .catch(() => {
         // FIXME: should do something about the error
       })
       .finally(() => {
@@ -73,6 +73,8 @@ export default function Status() {
     fetchLatestBeeRelease()
   }, [])
 
+  // FIXME: this should be broken up
+  /* eslint-disable no-nested-ternary */
   return (
     <div>
       {nodeHealth?.status === 'ok' &&

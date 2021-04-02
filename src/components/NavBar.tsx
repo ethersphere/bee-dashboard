@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
+import { useState, ReactElement } from 'react'
 
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
+import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { Toolbar, Chip, IconButton } from '@material-ui/core/'
 
 import { Sun, Moon } from 'react-feather'
 
 const drawerWidth = 240
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     appBar: {
       width: `calc(100% - ${drawerWidth}px)`,
@@ -16,8 +16,11 @@ const useStyles = makeStyles((theme: Theme) =>
     network: {},
   }),
 )
+interface Props {
+  themeMode: string
+}
 
-export default function SideBar(props: any) {
+export default function SideBar(props: Props): ReactElement {
   const [darkMode, toggleDarkMode] = useState(false)
 
   const switchTheme = () => {

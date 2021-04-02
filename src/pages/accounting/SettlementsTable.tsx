@@ -1,4 +1,4 @@
-import React from 'react'
+import { ReactElement } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import {
   Table,
@@ -22,12 +22,12 @@ const useStyles = makeStyles({
   },
 })
 
-interface IProps {
+interface Props {
   nodeSettlements: AllSettlements | null
   loading?: boolean
 }
 
-function SettlementsTable(props: IProps) {
+function SettlementsTable(props: Props): ReactElement {
   const classes = useStyles()
 
   return (
@@ -47,7 +47,7 @@ function SettlementsTable(props: IProps) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {props.nodeSettlements?.settlements.map((item: Settlements, idx: number) => (
+              {props.nodeSettlements?.settlements.map((item: Settlements) => (
                 <TableRow key={item.peer}>
                   <TableCell>{item.peer}</TableCell>
                   <TableCell style={{ fontFamily: 'monospace, monospace' }}>

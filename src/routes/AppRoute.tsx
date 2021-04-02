@@ -1,14 +1,14 @@
-import React, { JSXElementConstructor } from 'react'
-import { Route } from 'react-router-dom'
+import type { JSXElementConstructor, ReactElement } from 'react'
+import { Route, RouteComponentProps } from 'react-router-dom'
 
 interface Props {
-  component: JSXElementConstructor<any>
-  layout: JSXElementConstructor<any>
+  component: JSXElementConstructor<RouteComponentProps>
+  layout: JSXElementConstructor<RouteComponentProps>
   exact?: boolean
   path: string
 }
 
-const AppRoute = ({ component: Component, layout: Layout, exact, path, ...rest }: Props) => (
+const AppRoute = ({ component: Component, layout: Layout, exact, path }: Props): ReactElement => (
   <Route
     exact={exact}
     path={path}

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import Button from '@material-ui/core/Button'
 import Input from '@material-ui/core/Input'
 import Dialog from '@material-ui/core/Dialog'
@@ -10,7 +10,7 @@ import { Snackbar } from '@material-ui/core'
 
 import { beeDebugApi } from '../services/bee'
 
-export default function DepositModal() {
+export default function DepositModal(): ReactElement {
   const [open, setOpen] = React.useState(false)
   const [amount, setAmount] = React.useState(BigInt(0))
   const [showToast, setToastVisibility] = React.useState(false)
@@ -32,7 +32,7 @@ export default function DepositModal() {
           setOpen(false)
           handleToast(`Successful Deposit. Transaction ${res.transactionHash}`)
         })
-        .catch(error => {
+        .catch(() => {
           handleToast('Error with Deposit')
         })
     } else {

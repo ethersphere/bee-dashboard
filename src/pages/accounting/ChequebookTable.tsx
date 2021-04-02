@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import {
   Table,
@@ -39,12 +39,12 @@ interface PeerCheques {
   lastcheques: Array<PeerCheque>
 }
 
-interface IProps {
+interface Props {
   peerCheques: PeerCheques | null
   loading?: boolean
 }
 
-function ChequebookTable(props: IProps) {
+function ChequebookTable(props: Props): ReactElement {
   const classes = useStyles()
 
   return (
@@ -66,7 +66,7 @@ function ChequebookTable(props: IProps) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {props.peerCheques?.lastcheques.map((peerCheque: PeerCheque, idx: number) => (
+                {props.peerCheques?.lastcheques.map((peerCheque: PeerCheque) => (
                   <TableRow key={peerCheque.peer}>
                     <TableCell>
                       <div style={{ display: 'flex' }}>

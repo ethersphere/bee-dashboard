@@ -1,14 +1,14 @@
-import React from 'react'
+import { ReactElement, useState } from 'react'
 import { IconButton, Snackbar } from '@material-ui/core'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { Clipboard } from 'react-feather'
 
-interface IProps {
+interface Props {
   value: string
 }
 
-export default function ClipboardCopy(props: IProps) {
-  const [copied, setCopied] = React.useState(false)
+export default function ClipboardCopy(props: Props): ReactElement {
+  const [copied, setCopied] = useState(false)
 
   const handleCopy = () => {
     setCopied(true)

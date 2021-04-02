@@ -17,7 +17,12 @@ import {
 
 import { beeDebugApi, beeApi } from '../services/bee'
 
-export const useApiHealth = () => {
+export interface HealthHook {
+  health: boolean
+  isLoadingHealth: boolean
+  error: Error | null
+}
+export const useApiHealth = (): HealthHook => {
   const [health, setHealth] = useState<boolean>(false)
   const [isLoadingHealth, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
@@ -40,7 +45,13 @@ export const useApiHealth = () => {
   return { health, isLoadingHealth, error }
 }
 
-export const useDebugApiHealth = () => {
+export interface DebugHealthHook {
+  nodeHealth: Health | null
+  isLoadingNodeHealth: boolean
+  error: Error | null
+}
+
+export const useDebugApiHealth = (): DebugHealthHook => {
   const [nodeHealth, setNodeHealth] = useState<Health | null>(null)
   const [isLoadingNodeHealth, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
@@ -63,7 +74,13 @@ export const useDebugApiHealth = () => {
   return { nodeHealth, isLoadingNodeHealth, error }
 }
 
-export const useApiNodeAddresses = () => {
+export interface NodeAddressesHook {
+  nodeAddresses: NodeAddresses | null
+  isLoadingNodeAddresses: boolean
+  error: Error | null
+}
+
+export const useApiNodeAddresses = (): NodeAddressesHook => {
   const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses | null>(null)
   const [isLoadingNodeAddresses, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
@@ -86,7 +103,13 @@ export const useApiNodeAddresses = () => {
   return { nodeAddresses, isLoadingNodeAddresses, error }
 }
 
-export const useApiNodeTopology = () => {
+export interface NodeTopologyHook {
+  topology: Topology | null
+  isLoading: boolean
+  error: Error | null
+}
+
+export const useApiNodeTopology = (): NodeTopologyHook => {
   const [topology, setNodeTopology] = useState<Topology | null>(null)
   const [isLoading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
@@ -108,8 +131,13 @@ export const useApiNodeTopology = () => {
 
   return { topology, isLoading, error }
 }
+export interface ChequebookAddressHook {
+  chequebookAddress: ChequebookAddressResponse | null
+  isLoadingChequebookAddress: boolean
+  error: Error | null
+}
 
-export const useApiChequebookAddress = () => {
+export const useApiChequebookAddress = (): ChequebookAddressHook => {
   const [chequebookAddress, setChequebookAddress] = useState<ChequebookAddressResponse | null>(null)
   const [isLoadingChequebookAddress, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
@@ -132,7 +160,13 @@ export const useApiChequebookAddress = () => {
   return { chequebookAddress, isLoadingChequebookAddress, error }
 }
 
-export const useApiNodePeers = () => {
+export interface NodePeersHook {
+  peers: Peer[] | null
+  isLoading: boolean
+  error: Error | null
+}
+
+export const useApiNodePeers = (): NodePeersHook => {
   const [peers, setPeers] = useState<Peer[] | null>(null)
   const [isLoading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
@@ -155,7 +189,13 @@ export const useApiNodePeers = () => {
   return { peers, isLoading, error }
 }
 
-export const useApiChequebookBalance = () => {
+export interface ChequebookBalanceHook {
+  chequebookBalance: ChequebookBalanceResponse | null
+  isLoadingChequebookBalance: boolean
+  error: Error | null
+}
+
+export const useApiChequebookBalance = (): ChequebookBalanceHook => {
   const [chequebookBalance, setChequebookBalance] = useState<ChequebookBalanceResponse | null>(null)
   const [isLoadingChequebookBalance, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
@@ -178,7 +218,13 @@ export const useApiChequebookBalance = () => {
   return { chequebookBalance, isLoadingChequebookBalance, error }
 }
 
-export const useApiPeerBalances = () => {
+export interface PeerBalanceHook {
+  peerBalances: BalanceResponse | null
+  isLoadingPeerBalances: boolean
+  error: Error | null
+}
+
+export const useApiPeerBalances = (): PeerBalanceHook => {
   const [peerBalances, setPeerBalances] = useState<BalanceResponse | null>(null)
   const [isLoadingPeerBalances, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
@@ -201,7 +247,13 @@ export const useApiPeerBalances = () => {
   return { peerBalances, isLoadingPeerBalances, error }
 }
 
-export const useApiPeerCheques = () => {
+export interface PeerChequesHook {
+  peerCheques: LastChequesResponse | null
+  isLoadingPeerCheques: boolean
+  error: Error | null
+}
+
+export const useApiPeerCheques = (): PeerChequesHook => {
   const [peerCheques, setPeerCheques] = useState<LastChequesResponse | null>(null)
   const [isLoadingPeerCheques, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
@@ -224,7 +276,13 @@ export const useApiPeerCheques = () => {
   return { peerCheques, isLoadingPeerCheques, error }
 }
 
-export const useApiPeerLastCheque = (peerId: string) => {
+export interface PeerLastChequesHook {
+  peerCheque: LastChequesForPeerResponse | null
+  isLoadingPeerCheque: boolean
+  error: Error | null
+}
+
+export const useApiPeerLastCheque = (peerId: string): PeerLastChequesHook => {
   const [peerCheque, setPeerCheque] = useState<LastChequesForPeerResponse | null>(null)
   const [isLoadingPeerCheque, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
@@ -247,7 +305,13 @@ export const useApiPeerLastCheque = (peerId: string) => {
   return { peerCheque, isLoadingPeerCheque, error }
 }
 
-export const useApiSettlements = () => {
+export interface SettlementsHook {
+  settlements: AllSettlements | null
+  isLoadingSettlements: boolean
+  error: Error | null
+}
+
+export const useApiSettlements = (): SettlementsHook => {
   const [settlements, setSettlements] = useState<AllSettlements | null>(null)
   const [isLoadingSettlements, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
@@ -270,8 +334,14 @@ export const useApiSettlements = () => {
   return { settlements, isLoadingSettlements, error }
 }
 
-export const useApiPingPeer = (peerId: string) => {
-  const [peerRTP, setPeerRTP] = useState<PingResponse | null>()
+export interface PingPeerHook {
+  peerRTP: PingResponse | null
+  isPingingPeer: boolean
+  error: Error | null
+}
+
+export const useApiPingPeer = (peerId: string): PingPeerHook => {
+  const [peerRTP, setPeerRTP] = useState<PingResponse | null>(null)
   const [isPingingPeer, setPingingPeer] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
 
@@ -293,7 +363,13 @@ export const useApiPingPeer = (peerId: string) => {
   return { peerRTP, isPingingPeer, error }
 }
 
-export const useApiPeerLastCashout = (peerId: string) => {
+export interface PeerLastCashoutHook {
+  peerCashout: LastCashoutActionResponse | null
+  isLoadingPeerCashout: boolean
+  error: Error | null
+}
+
+export const useApiPeerLastCashout = (peerId: string): PeerLastCashoutHook => {
   const [peerCashout, setPeerCashout] = useState<LastCashoutActionResponse | null>(null)
   const [isLoadingPeerCashout, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)

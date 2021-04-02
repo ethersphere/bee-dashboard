@@ -1,5 +1,10 @@
 {
-  "extends": ["plugin:@typescript-eslint/recommended", "prettier", "plugin:prettier/recommended", "plugin:react/recommended"],
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "plugin:prettier/recommended",
+    "plugin:react/recommended"
+  ],
   "env": {
     "browser": true,
     "commonjs": true,
@@ -36,7 +41,6 @@
     "no-loop-func": "error",
     "no-nested-ternary": "warn",
     "no-script-url": "error",
-    "no-warning-comments": "warn",
     "quote-props": ["error", "as-needed"],
     "require-yield": "error",
     "max-nested-callbacks": ["error", 4],
@@ -78,7 +82,6 @@
       }
     ],
     "react/react-in-jsx-scope": "off" // React v17+ does not need React in scope for JSX elements
-
   },
   "overrides": [
     {

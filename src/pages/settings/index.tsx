@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { ReactElement, useState } from 'react'
 import { Paper, Container, TextField, Typography, Button } from '@material-ui/core'
 
-export default function Settings() {
+export default function Settings(): ReactElement {
   const [refreshVisibility, toggleRefreshVisibility] = useState(false)
   const [host, setHost] = useState('')
   const [debugHost, setDebugHost] = useState('')

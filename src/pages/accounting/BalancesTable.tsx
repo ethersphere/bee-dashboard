@@ -1,4 +1,4 @@
-import React from 'react'
+import type { ReactElement } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import {
   Table,
@@ -29,12 +29,12 @@ interface PeerBalances {
   balances: Array<PeerBalance>
 }
 
-interface IProps {
+interface Props {
   peerBalances: PeerBalances | null
   loading?: boolean
 }
 
-function BalancesTable(props: IProps) {
+function BalancesTable(props: Props): ReactElement {
   const classes = useStyles()
 
   return (
@@ -54,7 +54,7 @@ function BalancesTable(props: IProps) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {props.peerBalances?.balances.map((peerBalance: PeerBalance, idx: number) => (
+              {props.peerBalances?.balances.map((peerBalance: PeerBalance) => (
                 <TableRow key={peerBalance.peer}>
                   <TableCell>{peerBalance.peer}</TableCell>
                   <TableCell
