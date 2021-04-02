@@ -29,7 +29,7 @@ export default function DepositModal() {
         beeDebugApi.chequebook.deposit(amount)
         .then(res => {
             setOpen(false);
-            handleToast(`Successful Deposit. Transaction ${res.data.transactionHash}`)
+            handleToast(`Successful Deposit. Transaction ${res.transactionHash}`)
         })
         .catch(error => {
             handleToast('Error with Deposit')
