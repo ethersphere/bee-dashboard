@@ -37,7 +37,7 @@ export default function DepositModal() {
               <EthereumAddress
               hideBlockie
               transaction
-              address={res.data.transactionHash}
+              address={res.transactionHash}
               network={'goerli'}
               />
             </span>)

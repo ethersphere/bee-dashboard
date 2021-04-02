@@ -40,7 +40,7 @@ export default function Index(props: any) {
         setIsLoadingPeerCashout(true)
         beeDebugApi.chequebook.getPeerLastCashout(peerId)
         .then(res => {
-            setPeerCashout(res.data)
+            setPeerCashout(res)
         })
         .catch(error => {
         })
@@ -51,7 +51,7 @@ export default function Index(props: any) {
         setIsLoadingPeerCheque(true)
         beeDebugApi.chequebook.getPeerLastCheques(peerId)
         .then(res => {
-            setPeerCheque(res.data)
+            setPeerCheque(res)
         })
         .catch(error => {
         })
