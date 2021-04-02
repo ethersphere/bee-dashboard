@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 import type { NodeAddresses, ChequebookAddressResponse, ChequebookBalanceResponse, BalanceResponse, 
-    LastChequesResponse, AllSettlements, LastCashoutActionResponse } from '@ethersphere/bee-js'
+    LastChequesResponse, AllSettlements, LastCashoutActionResponse, Health } from '@ethersphere/bee-js'
 
 import { beeDebugApi, beeApi } from '../services/bee';
 
@@ -27,13 +27,8 @@ export const useApiHealth = () => {
     return { health, isLoadingHealth, error } ;
 }
 
-interface NodeHealth {
-    status: string,
-    version: string
-}
-
 export const useDebugApiHealth = () => {
-    const [nodeHealth, setNodeHealth] = useState<NodeHealth | null>(null)
+    const [nodeHealth, setNodeHealth] = useState<Health | null>(null)
     const [isLoadingNodeHealth, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
@@ -41,7 +36,7 @@ export const useDebugApiHealth = () => {
         setLoading(true)
         beeDebugApi.status.nodeHealth()
         .then(res => {
-            setNodeHealth(res.data)
+            setNodeHealth(res)
         })
         .catch(error => {
             setError(error)
@@ -52,33 +47,6 @@ export const useDebugApiHealth = () => {
     }, [])
 
     return { nodeHealth, isLoadingNodeHealth, error } ;
-}
-
-interface NodeReadiness {
-    status: string,
-    version: string
-}
-
-export const useApiReadiness = () => {
-    const [nodeReadiness, setNodeReadiness] = useState<NodeReadiness | null>(null)
-    const [isLoadingNodeReadiness, setLoading] = useState<boolean>(false)
-    const [error, setError] = useState<Error | null>(null)
-
-    useEffect(() => { 
-        setLoading(true)
-        beeDebugApi.status.nodeReadiness()
-        .then(res => {
-            setNodeReadiness(res.data)
-        })
-        .catch(error => {
-            setError(error)
-        })
-        .finally(() => {
-            setLoading(false)
-        })
-     }, [])
-
-    return { nodeReadiness, isLoadingNodeReadiness, error } ;
 }
 
 export const useApiNodeAddresses = () => {

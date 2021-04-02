@@ -5,6 +5,7 @@ import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import { Card, CardContent, Typography, Chip, Button } from '@material-ui/core/';
 import { CheckCircle, Error, ArrowRight, ArrowDropUp } from '@material-ui/icons/';
 import { Skeleton } from '@material-ui/lab';
+import { Health } from '@ethersphere/bee-js';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -25,18 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
         backgroundColor: '#e1effe',
     }
   }),
-);  
-
-
-interface NodeHealth {
-    status?: string,
-    version?: string
-}
-
-interface NodeReadiness {
-    status?: string,
-    version?: string
-}
+);
 
 interface NodeAddresses {
     overlay: string,
@@ -58,10 +48,8 @@ interface NodeTopology {
 
 
 interface IProps{
-    nodeHealth: NodeHealth,
+    nodeHealth: Health,
     loadingNodeHealth: boolean,
-    nodeReadiness: NodeReadiness | null,
-    loadingNodeReadiness: boolean,
     beeRelease: any,
     loadingBeeRelease: boolean,
     nodeAddresses: NodeAddresses,
@@ -108,8 +96,8 @@ function StatusCard(props: IProps) {
                         <Typography component="div" variant="subtitle2" gutterBottom>
                             <span>AGENT: </span>
                             <a href='https://github.com/ethersphere/bee' rel='noreferrer' target='_blank'>Bee</a>
-                            <span>{props.nodeReadiness?.version ? ` v${props.nodeReadiness.version}` : '-'}</span>
-                            {props.beeRelease && props.beeRelease.name === `v${props.nodeReadiness?.version?.split('-')[0]}` ?
+                            <span>{props.nodeHealth?.version ? ` v${props.nodeHealth.version}` : '-'}</span>
+                            {props.beeRelease && props.beeRelease.name === `v${props.nodeHealth?.version?.split('-')[0]}` ?
                                 <Chip
                                 style={{ marginLeft: '7px', color: '#2145a0' }}
                                 size="small"
