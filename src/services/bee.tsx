@@ -94,10 +94,10 @@ export const beeDebugApi = {
             return beeJSDebugClient().getLastChequesForPeer(peerId)
         },
         withdraw(amount: bigint) {
-            return beeDebugApiClient().post(`/chequebook/withdraw?amount=${amount}`)
+            return beeJSDebugClient().withdrawTokens(amount)
         },
         deposit(amount: bigint) {
-            return beeDebugApiClient().post(`/chequebook/deposit?amount=${amount}`)
+            return beeJSDebugClient().depositTokens(amount)
         },
     },
     settlements: {
