@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
-import type { NodeAddresses, ChequebookAddressResponse, ChequebookBalanceResponse, BalanceResponse, 
-    LastChequesResponse, AllSettlements, LastCashoutActionResponse, Health, Peer, Topology, PingResponse } from '@ethersphere/bee-js'
+import { NodeAddresses, ChequebookAddressResponse, ChequebookBalanceResponse, BalanceResponse, 
+    LastChequesResponse, AllSettlements, LastCashoutActionResponse, Health, Peer, Topology, PingResponse, LastChequesForPeerResponse } from '@ethersphere/bee-js'
 
 import { beeDebugApi, beeApi } from '../services/bee';
 
@@ -102,7 +102,7 @@ export const useApiChequebookAddress = () => {
         setLoading(true)
         beeDebugApi.chequebook.address()
         .then(res => {
-            setChequebookAddress(res.data)
+            setChequebookAddress(res)
         })
         .catch(error => {
             setError(error)
@@ -146,7 +146,7 @@ export const useApiChequebookBalance = () => {
         setLoading(true)
         beeDebugApi.chequebook.balance()
         .then(res => {
-            setChequebookBalance(res.data)
+            setChequebookBalance(res)
         })
         .catch(error => {
             setError(error)
@@ -190,7 +190,7 @@ export const useApiPeerCheques = () => {
         setLoading(true)
         beeDebugApi.chequebook.getLastCheques()
         .then(res => {
-            setPeerCheques(res.data)
+            setPeerCheques(res)
         })
         .catch(error => {
             setError(error)
@@ -204,16 +204,7 @@ export const useApiPeerCheques = () => {
 }
 
 export const useApiPeerLastCheque = (peerId: string) => {
-    const [peerCheque, setPeerCheque] = useState({ peer: '-', chequebook: "",
-        cumulativePayout: 0,
-        beneficiary: "",
-        transactionHash: "",
-        result: {
-            recipient: "",
-            lastPayout: 0,
-            bounced: false
-    }}
-    )
+    const [peerCheque, setPeerCheque] = useState<LastChequesForPeerResponse | null>(null)
     const [isLoadingPeerCheque, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
@@ -221,7 +212,7 @@ export const useApiPeerLastCheque = (peerId: string) => {
         setLoading(true)
         beeDebugApi.chequebook.getPeerLastCheques(peerId)
         .then(res => {
-            setPeerCheque(res.data)
+            setPeerCheque(res)
         })
         .catch(error => {
             setError(error)
@@ -288,7 +279,7 @@ export const useApiPeerLastCashout = (peerId: string) => {
         setLoading(true)
         beeDebugApi.chequebook.getPeerLastCashout(peerId)
         .then(res => {
-            setPeerCashout(res.data)
+            setPeerCashout(res)
         })
         .catch(error => {
             setError(error)

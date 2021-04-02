@@ -76,22 +76,22 @@ export const beeDebugApi = {
     },
     chequebook: {
         address() {
-            return beeDebugApiClient().get(`/chequebook/address`)
+            return beeJSDebugClient().getChequebookAddress()
         },
         balance() {
-            return beeDebugApiClient().get(`/chequebook/balance`)
+            return beeJSDebugClient().getChequebookBalance()
         },
         getLastCheques() {
-            return beeDebugApiClient().get(`/chequebook/cheque`)
+            return beeJSDebugClient().getLastCheques()
         },
         peerCashout(peerId: string) {
-            return beeDebugApiClient().post(`/chequebook/cashout/${peerId}`)
+            return beeJSDebugClient().cashoutLastCheque(peerId)
         },
         getPeerLastCashout(peerId: string) {
-            return beeDebugApiClient().get(`/chequebook/cashout/${peerId}`)
+            return beeJSDebugClient().getLastCashoutAction(peerId)
         },
         getPeerLastCheques(peerId: string) {
-            return beeDebugApiClient().get(`/chequebook/cheque/${peerId}`)
+            return beeJSDebugClient().getLastChequesForPeer(peerId)
         },
         withdraw(amount: bigint) {
             return beeDebugApiClient().post(`/chequebook/withdraw?amount=${amount}`)
