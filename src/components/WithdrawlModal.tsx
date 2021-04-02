@@ -29,7 +29,7 @@ export default function WithdrawlModal() {
         beeDebugApi.chequebook.withdraw(amount)
         .then(res => {
             setOpen(false);
-            handleToast(`Successful withdrawl. Transaction ${res.data.transactionHash}`)
+            handleToast(`Successful withdrawl. Transaction ${res.transactionHash}`)
         })
         .catch(error => {
             handleToast('Error with withdrawl')
