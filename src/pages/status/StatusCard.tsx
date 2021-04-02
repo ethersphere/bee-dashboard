@@ -124,7 +124,9 @@ function StatusCard(props: IProps) {
                   </Typography>
                   {underlayAddressesVisible ? (
                     <div>
-                      {props.nodeAddresses.underlay ? props.nodeAddresses.underlay.map(item => <li>{item}</li>) : '-'}
+                      {props.nodeAddresses.underlay
+                        ? props.nodeAddresses.underlay.map(item => <li key={item}>{item}</li>)
+                        : '-'}
                     </div>
                   ) : null}
                 </Typography>

@@ -45,7 +45,9 @@ export default function Index(props: any) {
       .then(res => {
         setPeerCashout(res)
       })
-      .catch(error => {})
+      .catch(error => {
+        // FIXME: handle the error
+      })
       .finally(() => {
         setIsLoadingPeerCashout(false)
       })
@@ -56,7 +58,9 @@ export default function Index(props: any) {
       .then(res => {
         setPeerCheque(res)
       })
-      .catch(error => {})
+      .catch(error => {
+        // FIXME: handle the error
+      })
       .finally(() => {
         setIsLoadingPeerCheque(false)
       })

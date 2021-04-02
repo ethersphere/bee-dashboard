@@ -1,10 +1,7 @@
-import React from 'react'
-
 import { Typography } from '@material-ui/core/'
 import QRCodeModal from './QRCodeModal'
 import ClipboardCopy from './ClipboardCopy'
 
-// @ts-ignore
 import Identicon from 'react-identicons'
 
 interface IProps {
@@ -22,7 +19,7 @@ export default function EthereumAddress(props: IProps) {
         <div style={{ display: 'flex' }}>
           {props.hideBlockie ? null : (
             <div style={{ paddingTop: '5px', marginRight: '10px' }}>
-              <Identicon size="20" string={props.address} />
+              <Identicon size={20} string={props.address} />
             </div>
           )}
           <div>

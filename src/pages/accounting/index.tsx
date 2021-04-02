@@ -34,7 +34,7 @@ function a11yProps(index: any) {
 export default function Accounting(props: any) {
   const [value, setValue] = React.useState(0)
 
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+  const handleChange = (event: React.ChangeEvent<unknown>, newValue: number) => {
     setValue(newValue)
   }
 

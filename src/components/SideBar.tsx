@@ -15,31 +15,31 @@ const navBarItems = [
     label: 'Status',
     id: 'status',
     path: '/',
-    icon: 'activity',
+    icon: Activity,
   },
   {
     label: 'Files',
     id: 'files',
     path: '/files/',
-    icon: 'file-text',
+    icon: FileText,
   },
   {
     label: 'Accounting',
     id: 'accounting',
     path: '/accounting/',
-    icon: 'dollar-sign',
+    icon: DollarSign,
   },
   {
     label: 'Peers',
     id: 'peers',
     path: '/peers/',
-    icon: 'share-2',
+    icon: Share2,
   },
   {
     label: 'Settings',
     id: 'settings',
     path: '/settings/',
-    icon: 'settings',
+    icon: Settings,
   },
 ]
 
@@ -74,21 +74,6 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-const getIcon = (iconPath: string) => {
-  switch (iconPath) {
-    case 'activity':
-      return <Activity style={{ height: '20px' }} />
-    case 'file-text':
-      return <FileText style={{ height: '20px' }} />
-    case 'dollar-sign':
-      return <DollarSign style={{ height: '20px' }} />
-    case 'share-2':
-      return <Share2 style={{ height: '20px' }} />
-    case 'settings':
-      return <Settings style={{ height: '20px' }} />
-  }
-}
-
 export default function SideBar(props: any) {
   const classes = useStyles()
 
@@ -121,7 +106,7 @@ export default function SideBar(props: any) {
                 className={props.location.pathname === item.path ? classes.activeSideBarItem : ''}
               >
                 <ListItemIcon className={props.location.pathname === item.path ? classes.activeSideBar : ''}>
-                  {getIcon(item.icon)}
+                  <item.icon style={{ height: '20px' }} />
                 </ListItemIcon>
                 <ListItemText
                   primary={item.label}

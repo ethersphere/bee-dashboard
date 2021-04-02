@@ -59,7 +59,9 @@ export default function Files(props: any) {
         link.click()
         link.remove()
       })
-      .catch(error => {})
+      .catch(error => {
+        // FIXME: handle the error
+      })
       .finally(() => {
         setLoadingSearch(false)
       })
@@ -73,7 +75,9 @@ export default function Files(props: any) {
         setUploadReference(hash)
         setFiles([])
       })
-      .catch(error => {})
+      .catch(error => {
+        // FIXME: handle the error
+      })
       .finally(() => {
         setUploadingFile(false)
       })

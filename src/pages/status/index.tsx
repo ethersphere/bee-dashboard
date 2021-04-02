@@ -30,7 +30,7 @@ export default function Status() {
   const { topology: nodeTopology, isLoading: isLoadingNodeTopology } = useApiNodeTopology()
   const { chequebookBalance, isLoadingChequebookBalance } = useApiChequebookBalance()
 
-  const fetchLatestBeeRelease = async () => {
+  const fetchLatestBeeRelease = () => {
     setIsLoadingBeeRelease(true)
     axios
       .get(`${process.env.REACT_APP_BEE_GITHUB_REPO_URL}/releases/latest`)
@@ -38,7 +38,7 @@ export default function Status() {
         setBeeRelease(res.data)
       })
       .catch(error => {
-        console.log(error)
+        // FIXME: should do something about the error
       })
       .finally(() => {
         setIsLoadingBeeRelease(false)

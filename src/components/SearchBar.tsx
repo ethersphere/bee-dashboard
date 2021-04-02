@@ -26,9 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-interface IProps {}
-
-export default function SearchBar(props: IProps) {
+export default function SearchBar() {
   const classes = useStyles()
 
   return (

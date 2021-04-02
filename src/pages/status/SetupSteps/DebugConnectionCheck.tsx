@@ -56,8 +56,8 @@ export default function NodeConnectionCheck(props: any) {
                       >
                         Your debug node API should never be completely open to the internet. If you want to connect
                         remotely, make sure your firewall settings are set to only allow specific trusted IP addresses
-                        and block all other ports. A simple google search for "what is my ip" will show you your
-                        computers public IP address to allow.
+                        and block all other ports. A simple google search for &quot;what is my ip&quot; will show you
+                        your computers public IP address to allow.
                       </MuiAlert>
                       <CodeBlockTabs
                         showLineNumbers

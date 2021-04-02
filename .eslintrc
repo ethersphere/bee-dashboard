@@ -76,7 +76,9 @@
           "requireLast": false
         }
       }
-    ]
+    ],
+    "react/react-in-jsx-scope": "off" // React v17+ does not need React in scope for JSX elements
+
   },
   "overrides": [
     {

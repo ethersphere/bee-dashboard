@@ -18,6 +18,6 @@ Object.defineProperty(window, 'matchMedia', {
 })
 
 // TODO: this is not a good test and should be removed. Keeping it in to make sure the whole app renders (to be used in CI)
-test('should render the app', async () => {
+test('should render the app', () => {
   render(<App />)
 })

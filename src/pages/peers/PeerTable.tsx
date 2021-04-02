@@ -35,7 +35,7 @@ function PeerTable(props: Props) {
 
   const [peerLatency, setPeerLatency] = useState([{ peerId: '', rtt: '', loading: false }])
 
-  const PingPeer = async (peerId: string) => {
+  const PingPeer = (peerId: string) => {
     setPeerLatency([...peerLatency, { peerId: peerId, rtt: '', loading: true }])
     beeDebugApi.connectivity
       .ping(peerId)

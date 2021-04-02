@@ -7,7 +7,7 @@ export default function PeerConnection(props: any) {
     <div>
       <p>Connect to Peers</p>
       <div style={{ marginBottom: '10px' }}>
-        {props.nodeTopology.connected && props.nodeTopology.connected > 0 ? (
+        {props.nodeTopology?.connected && props.nodeTopology?.connected > 0 ? (
           <div>
             <CheckCircle style={{ color: '#32c48d', marginRight: '7px', height: '18px' }} />
             <span>Your connected to {props.nodeTopology.connected} peers!</span>
@@ -25,7 +25,7 @@ export default function PeerConnection(props: any) {
             <span>Connected Peers</span>
           </Typography>
           <Typography component="h2" variant="h5">
-            {props.nodeTopology.connected}
+            {props.nodeTopology?.connected}
           </Typography>
         </div>
         <div>
@@ -33,7 +33,7 @@ export default function PeerConnection(props: any) {
             <span>Discovered Nodes</span>
           </Typography>
           <Typography component="h2" variant="h5">
-            {props.nodeTopology.population}
+            {props.nodeTopology?.population}
           </Typography>
         </div>
       </div>
