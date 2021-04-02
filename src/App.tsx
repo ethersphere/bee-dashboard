@@ -8,14 +8,6 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import BaseRouter from './routes/routes';
 import { lightTheme, darkTheme } from './theme';
 
-declare global {
-  interface Window {
-    ethereum: {};
-    web3: {};
-  }
-}
-
-
 function App() {
   const [themeMode, toggleThemeMode] = useState('light');
 

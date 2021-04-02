@@ -6,7 +6,7 @@ import { Card, CardContent, Typography } from '@material-ui/core/';
 import EthereumAddress from '../components/EthereumAddress';
 import { Skeleton } from '@material-ui/lab';
 
-import type { ChequebookAddressResponse } from '@ethersphere/bee-js';
+import type { ChequebookAddressResponse, NodeAddresses } from '@ethersphere/bee-js';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -27,15 +27,6 @@ const useStyles = makeStyles((theme: Theme) =>
     }
   }),
 );  
-
-
-interface NodeAddresses {
-    overlay: string,
-    underlay: string[],
-    ethereum: string,
-    public_key: string, 
-    pss_public_key: string
-}
 
 interface IProps{
     nodeAddresses: NodeAddresses | null,
