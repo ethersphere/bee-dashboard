@@ -62,14 +62,8 @@ export const beeDebugApi = {
         listPeers() {
             return beeJSDebugClient().getPeers()
         },
-        blockListedPeers() {
-            return beeDebugApiClient().get(`/blocklist`)
-        },
-        removePeer(peerId: string) {
-            return beeDebugApiClient().delete(`/peers/${peerId}`)
-        },
         topology() {
-            return beeDebugApiClient().get(`/topology`)
+            return beeJSDebugClient().getTopology()
         },
         ping(peerId: string) {
             return beeDebugApiClient().post(`/pingpong/${peerId}`)
