@@ -1,8 +1,8 @@
-import React from 'react';
+import React from 'react'
 
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { Paper, InputBase, IconButton } from '@material-ui/core';
-import { Search } from '@material-ui/icons';
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
+import { Paper, InputBase, IconButton } from '@material-ui/core'
+import { Search } from '@material-ui/icons'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -24,27 +24,25 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: 4,
     },
   }),
-);
+)
 
-interface IProps {
-
-}
+interface IProps {}
 
 export default function SearchBar(props: IProps) {
-    const classes = useStyles();
+  const classes = useStyles()
 
-    return (
-        <div>
-            <Paper component="form" className={classes.root}>
-                <InputBase
-                    className={classes.input}
-                    placeholder="Enter hash e.g. 0773a91efd6547c754fc1d95fb1c62c7d1b47f959c2caa685dfec8736da95c1c"
-                    inputProps={{ 'aria-label': 'search google maps' }}
-                />
-                <IconButton type="submit" className={classes.iconButton} aria-label="search">
-                    <Search />
-                </IconButton>
-            </Paper>
-        </div>
-    )
+  return (
+    <div>
+      <Paper component="form" className={classes.root}>
+        <InputBase
+          className={classes.input}
+          placeholder="Enter hash e.g. 0773a91efd6547c754fc1d95fb1c62c7d1b47f959c2caa685dfec8736da95c1c"
+          inputProps={{ 'aria-label': 'search google maps' }}
+        />
+        <IconButton type="submit" className={classes.iconButton} aria-label="search">
+          <Search />
+        </IconButton>
+      </Paper>
+    </div>
+  )
 }
