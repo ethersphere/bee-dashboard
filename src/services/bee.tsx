@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import { Bee, Reference } from "@ethersphere/bee-js";
+import { Bee, BeeDebug, Reference } from "@ethersphere/bee-js";
 
 const beeJSClient = () => {
     let apiHost = process.env.REACT_APP_BEE_HOST || 'http://localhost:1633'
@@ -9,6 +9,16 @@ const beeJSClient = () => {
     }
 
     return new Bee(apiHost)
+}
+
+const beeJSDebugClient = () => {
+    let debugApiHost = process.env.REACT_APP_BEE_DEBUG_HOST || 'http://localhost:1635'
+  
+    if (sessionStorage.getItem('debug_api_host')) {
+      debugApiHost = String(sessionStorage.getItem('debug_api_host'))
+    }
+
+    return new BeeDebug(debugApiHost)
 }
 
 const beeDebugApiClient = (): AxiosInstance => {
@@ -42,10 +52,7 @@ export const beeApi = {
 export const beeDebugApi = {
     status: {
         nodeHealth() {
-            return beeDebugApiClient().get(`/health`)
-        },
-        nodeReadiness() {
-            return beeDebugApiClient().get(`/readiness`)
+            return beeJSDebugClient().getHealth()
         },
     },
     connectivity: {
