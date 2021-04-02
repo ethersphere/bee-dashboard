@@ -57,10 +57,10 @@ export const beeDebugApi = {
     },
     connectivity: {
         addresses() {
-            return beeDebugApiClient().get(`/addresses`)
+            return beeJSDebugClient().getNodeAddresses()
         },
         listPeers() {
-            return beeDebugApiClient().get(`/peers`)
+            return beeJSDebugClient().getPeers()
         },
         blockListedPeers() {
             return beeDebugApiClient().get(`/blocklist`)

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 import type { NodeAddresses, ChequebookAddressResponse, ChequebookBalanceResponse, BalanceResponse, 
-    LastChequesResponse, AllSettlements, LastCashoutActionResponse, Health } from '@ethersphere/bee-js'
+    LastChequesResponse, AllSettlements, LastCashoutActionResponse, Health, Peer } from '@ethersphere/bee-js'
 
 import { beeDebugApi, beeApi } from '../services/bee';
 
@@ -58,7 +58,7 @@ export const useApiNodeAddresses = () => {
         setLoading(true)
         beeDebugApi.connectivity.addresses()
         .then(res => {
-            setNodeAddresses(res.data)
+            setNodeAddresses(res)
         })
         .catch(error => {
             setError(error)
@@ -116,15 +116,15 @@ export const useApiChequebookAddress = () => {
 }
 
 export const useApiNodePeers = () => {
-    const [nodePeers, setNodePeers] = useState({ peers: [{ address: '-'}]})
-    const [isLoadingNodePeers, setLoading] = useState<boolean>(false)
+    const [peers, setPeers] = useState<Peer[] | null>(null)
+    const [isLoading, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
     useEffect(() => { 
         setLoading(true)
         beeDebugApi.connectivity.listPeers()
         .then(res => {
-            setNodePeers(res.data)
+            setPeers(res)
         })
         .catch(error => {
             setError(error)
@@ -134,7 +134,7 @@ export const useApiNodePeers = () => {
         })
     }, [])
 
-    return { nodePeers, isLoadingNodePeers, error };
+    return { peers, isLoading, error };
 }
 
 export const useApiChequebookBalance = () => {
