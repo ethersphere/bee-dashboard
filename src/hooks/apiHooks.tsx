@@ -168,7 +168,7 @@ export const useApiPeerBalances = () => {
         setLoading(true)
         beeDebugApi.balance.balances()
         .then(res => {
-            setPeerBalances(res.data)
+            setPeerBalances(res)
         })
         .catch(error => {
             setError(error)

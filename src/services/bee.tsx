@@ -71,16 +71,7 @@ export const beeDebugApi = {
     },
     balance: {
         balances() {
-            return beeDebugApiClient().get(`/balances`)
-        },
-        peerBalance(peerId: string) {
-            return beeDebugApiClient().get(`/balances/${peerId}`)
-        },
-        consumed() {
-            return beeDebugApiClient().get(`/consumed`)
-        },
-        peerConsumed(peerId: string) {
-            return beeDebugApiClient().get(`/consumed/${peerId}`)
+            return beeJSDebugClient().getAllBalances()
         }
     },
     chequebook: {
