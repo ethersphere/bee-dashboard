@@ -6,16 +6,27 @@ import StatCard from '../../components/StatCard';
 import PeerTable from './PeerTable';
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard';
 
-import { useApiNodeTopology, useApiNodePeers } from '../../hooks/apiHooks';
+import { useApiNodeTopology, useApiNodePeers, useDebugApiHealth } from '../../hooks/apiHooks';
 
-export default function Peers(props: any) {
+export default function Peers() {
     const { nodeTopology, isLoadingNodeTopology } = useApiNodeTopology()
-    const { nodePeers, isLoadingNodePeers } = useApiNodePeers()
+    const debugHealth = useDebugApiHealth()
+    const peers = useApiNodePeers()
+
+    if (debugHealth.isLoadingNodeHealth) {
+        return (
+            <Container style={{textAlign:'center', padding:'50px'}}>
+                <CircularProgress />
+            </Container>
+        )
+    }
+
+    if (debugHealth.error) {
+        return <TroubleshootConnectionCard />
+    }
 
     return (
-        <div>
-            {props.nodeHealth?.status === 'ok' && props.health ?
-            <div>
+        <>
             <Grid style={{ marginBottom: '20px', flexGrow: 1 }}>
                 <Grid container spacing={3}>
                     <Grid key={1} item xs={12} sm={12} md={6} lg={4} xl={4}>
@@ -41,19 +52,7 @@ export default function Peers(props: any) {
                     </Grid>
                 </Grid> 
             </Grid>
-            <PeerTable
-            nodePeers={nodePeers}
-            loading={isLoadingNodePeers}
-            />
-            </div>
-            :
-            props.isLoadingHealth || props.isLoadingNodeHealth ?
-            <Container style={{textAlign:'center', padding:'50px'}}>
-                <CircularProgress />
-            </Container>
-            :
-            <TroubleshootConnectionCard />
-            }
-        </div>
+            <PeerTable {...peers} />
+        </>
     )
 }

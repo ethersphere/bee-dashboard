@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Butto
 import { Autorenew } from '@material-ui/icons';
 
 import { beeDebugApi } from '../../services/bee';
+import type { Peer } from '@ethersphere/bee-js';
 
 const useStyles = makeStyles({
     table: {
@@ -11,8 +12,14 @@ const useStyles = makeStyles({
     },
   });
 
+interface Props {
+    peers: Peer[] | null
+    isLoading: boolean
+    error: Error | null
+}
+
   
-function PeerTable(props: any) {
+function PeerTable(props: Props) {
     const classes = useStyles();
 
     const [peerLatency, setPeerLatency] = useState([{ peerId: '', rtt: '', loading: false }]);
@@ -29,13 +36,24 @@ function PeerTable(props: any) {
         })
     }
 
-    return (
-        <div>
-            {props.loading ? 
+    if (props.isLoading) {
+        return (
             <Container style={{textAlign:'center', padding:'50px'}}>
                 <CircularProgress />
             </Container>
-            :
+        )
+    }
+
+    if (props.error || props.peers === null) {
+        return (
+            <Container style={{textAlign:'center', padding:'50px'}}>
+                <p>Failed to load peers</p>
+            </Container>
+        )
+    }
+
+    return (
+        <div>
              <TableContainer component={Paper}>
                 <Table className={classes.table} aria-label="simple table">
                     <TableHead>
@@ -46,7 +64,7 @@ function PeerTable(props: any) {
                     </TableRow>
                     </TableHead>
                     <TableBody>
-                    {props.nodePeers.peers.map((peer: any, idx: number) => (
+                    {props.peers.map((peer: any, idx: number) => (
                         <TableRow key={peer.address}>
                         <TableCell component="th" scope="row">
                             {idx + 1}
@@ -67,7 +85,6 @@ function PeerTable(props: any) {
                     </TableBody>
                 </Table>
             </TableContainer>
-            }
         </div>
     )
 }
