@@ -1,4 +1,3 @@
-import axios, { AxiosInstance } from 'axios';
 import { Bee, BeeDebug, Reference } from "@ethersphere/bee-js";
 
 const beeJSClient = () => {
@@ -19,18 +18,6 @@ const beeJSDebugClient = () => {
     }
 
     return new BeeDebug(debugApiHost)
-}
-
-const beeDebugApiClient = (): AxiosInstance => {
-    let debugApiHost = process.env.REACT_APP_BEE_DEBUG_HOST || 'http://localhost:1635'
-  
-    if (sessionStorage.getItem('debug_api_host')) {
-      debugApiHost = String(sessionStorage.getItem('debug_api_host'))
-    }
-
-    return axios.create({
-        baseURL: debugApiHost
-    })
 }
 
 export const beeApi = {
@@ -102,10 +89,7 @@ export const beeDebugApi = {
     },
     settlements: {
         getSettlements() {
-            return beeDebugApiClient().get(`/settlements`)
-        },
-        peerSettlement(peerId: string) {
-            return beeDebugApiClient().get(`/settlements/${peerId}`)
+            return beeJSDebugClient().getAllSettlements()
         }
     }
 }
