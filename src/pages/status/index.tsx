@@ -20,7 +20,7 @@ export default function Status() {
     const { nodeHealth, isLoadingNodeHealth } = useDebugApiHealth()
     const { nodeAddresses, isLoadingNodeAddresses } = useApiNodeAddresses()
     const { chequebookAddress, isLoadingChequebookAddress } = useApiChequebookAddress()
-    const { nodeTopology, isLoadingNodeTopology } = useApiNodeTopology()
+    const { topology: nodeTopology, isLoading: isLoadingNodeTopology } = useApiNodeTopology()
     const { chequebookBalance, isLoadingChequebookBalance } = useApiChequebookBalance()
 
 
@@ -74,7 +74,7 @@ export default function Status() {
             beeRelease.name === `v${nodeHealth?.version?.split('-')[0]}` &&
             nodeAddresses?.ethereum && 
             chequebookAddress?.chequebookaddress && chequebookBalance && chequebookBalance?.totalBalance > 0 &&
-            nodeTopology.connected && nodeTopology.connected > 0 &&
+            nodeTopology?.connected && nodeTopology?.connected > 0 &&
             !statusChecksVisible  ? 
                 <div>
                     <StatusCard 

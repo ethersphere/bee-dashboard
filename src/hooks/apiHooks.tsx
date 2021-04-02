@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 import type { NodeAddresses, ChequebookAddressResponse, ChequebookBalanceResponse, BalanceResponse, 
-    LastChequesResponse, AllSettlements, LastCashoutActionResponse, Health, Peer } from '@ethersphere/bee-js'
+    LastChequesResponse, AllSettlements, LastCashoutActionResponse, Health, Peer, Topology } from '@ethersphere/bee-js'
 
 import { beeDebugApi, beeApi } from '../services/bee';
 
@@ -72,15 +72,15 @@ export const useApiNodeAddresses = () => {
 }
 
 export const useApiNodeTopology = () => {
-    const [nodeTopology, setNodeTopology] = useState({ baseAddr: '', bins: [""], connected: 0, depth: 0, nnLowWatermark: 0, population: 0, timestamp: ''})
-    const [isLoadingNodeTopology, setLoading] = useState<boolean>(false)
+    const [topology, setNodeTopology] = useState<Topology | null>(null)
+    const [isLoading, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
     useEffect(() => { 
         setLoading(true)
         beeDebugApi.connectivity.topology()
         .then(res => {
-            setNodeTopology(res.data)
+            setNodeTopology(res)
         })
         .catch(error => {
             setError(error)
@@ -90,7 +90,7 @@ export const useApiNodeTopology = () => {
         })
     }, [])
 
-    return { nodeTopology, isLoadingNodeTopology, error } ;
+    return { topology, isLoading, error } ;
 }
 
 export const useApiChequebookAddress = () => {

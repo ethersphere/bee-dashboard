@@ -17,31 +17,35 @@ const useStyles = makeStyles({
   });
 
 interface IProps {
-    label: string,
-    statistic: string,
-    loading?: boolean,
+    label: string
+    statistic?: string
+    loading?: boolean
 }
 
-export default function StatCard(props: IProps) {
+export default function StatCard({loading, label, statistic}: IProps) {
     const classes = useStyles();
+
 
     return (
         <Card className={classes.root}>
             <CardContent>
-            {props.loading ? 
-                <div>
+            {loading && (
+                <>
                     <Skeleton width={180} height={25} animation="wave" />
                     <Skeleton width={180} height={35} animation="wave" />
-                </div>
-                :
-                <div>
+                </>
+              )
+            }
+            {!loading && (
+                <>
                   <Typography className={classes.title} color="textSecondary" gutterBottom>
-                    {props.label}
+                    {label}
                   </Typography>
                   <Typography variant="h5" component="h2">
-                    {props.statistic}
+                    {statistic}
                   </Typography>
-                </div>
+                </>
+              )
             }
             </CardContent>
         </Card>
