@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useContext } from 'react'
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 
@@ -6,6 +6,7 @@ import SideBar from '../components/SideBar';
 import NavBar from '../components/NavBar';
 
 import { useApiHealth, useDebugApiHealth } from '../hooks/apiHooks';
+import AppThemeProvider from '../providers/Theme'
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -39,39 +40,20 @@ const useStyles = makeStyles((theme: Theme) =>
 const Dashboard = (props: any) => {
     const classes = useStyles();
 
-    const [themeMode, toggleThemeMode] = useState('light');
-
     const { health, isLoadingHealth } = useApiHealth()
     const { nodeHealth, isLoadingNodeHealth } = useDebugApiHealth()
-
-    useEffect(() => {
-      let theme = localStorage.getItem('theme')
-
-      if (theme) {
-        toggleThemeMode(String(localStorage.getItem('theme')))
-      } else if (window?.matchMedia('(prefers-color-scheme: dark)')?.matches) {
-        toggleThemeMode('dark')
-      }
-  
-      window?.matchMedia('(prefers-color-scheme: dark)')?.addEventListener('change', e => {
-        toggleThemeMode(e?.matches ? "dark" : "light")
-      });
-
-      return () => window?.matchMedia('(prefers-color-scheme: dark)')?.removeEventListener('change', e => {
-        toggleThemeMode(e?.matches ? "dark" : "light")
-      })
-    }, [])
+    const { themeMode, toggleThemeMode } = useContext(AppThemeProvider.Context)
 
     let childrenInjectedWithProps = React.cloneElement(props.children, { health, nodeHealth, isLoadingHealth, isLoadingNodeHealth })
 
     return (
-        <div>
-            <SideBar {...props} themeMode={themeMode} health={health} nodeHealth={nodeHealth} />
-            <NavBar themeMode={themeMode} />
-            <main className={classes.content} >
-                {childrenInjectedWithProps}
-            </main>
-        </div>
+      <>
+        <SideBar {...props} themeMode={themeMode} health={health} nodeHealth={nodeHealth} />
+        <NavBar themeMode={themeMode} toggleThemeMode={toggleThemeMode} />
+        <main className={classes.content} >
+            {childrenInjectedWithProps}
+        </main>
+      </>
     )
 }
 

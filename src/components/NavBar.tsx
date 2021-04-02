@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import { Toolbar, Chip, IconButton } from '@material-ui/core/';
 
@@ -19,21 +17,12 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
+interface Props {
+  toggleThemeMode: () => void
+  themeMode: ThemeMode
+}
 
-export default function SideBar(props: any) {
-  const [darkMode, toggleDarkMode] = useState(false);
-
-  const switchTheme = () => {
-    let theme = localStorage.getItem('theme')
-    if (theme) {
-      localStorage.setItem('theme', theme === 'light' ? 'dark' : 'light')
-    } else {
-      localStorage.setItem('theme', darkMode ? 'dark' : 'light')
-    }
-
-    toggleDarkMode(!darkMode)
-    window.location.reload()
-  }
+export default function SideBar({toggleThemeMode, themeMode}: Props) {
 
   const classes = useStyles();
 
@@ -49,17 +38,13 @@ export default function SideBar(props: any) {
           />
           <div style={{ width: '100%' }}>
             <div style={{ float: 'right' }} >
-              <IconButton style={{ marginRight: '10px' }} aria-label="dark-mode" onClick={() => switchTheme()}>
-                {props.themeMode === 'dark' ?
+              <IconButton style={{ marginRight: '10px' }} aria-label="dark-mode" onClick={toggleThemeMode}>
+                {themeMode === 'dark' ?
                   <Moon />
                   :
                   <Sun />
                 }
               </IconButton>
-              {/* <Chip 
-              label="Connect Wallet"
-              color="primary"
-              /> */}
             </div>
           </div>
         </Toolbar>

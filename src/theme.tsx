@@ -6,6 +6,16 @@ declare module '@material-ui/core/styles/createPalette' {
   }
 }
 
+const fontFamily = [
+  'Work Sans',
+  'Montserrat',
+  'Nunito',
+  'Roboto',
+  '"Helvetica Neue"',
+  'Arial',
+  'sans-serif'
+].join(',')
+
 export const lightTheme = createMuiTheme({
     palette: {
       type: "light",
@@ -20,15 +30,7 @@ export const lightTheme = createMuiTheme({
       },
     },
     typography: {
-      fontFamily: [
-        'Work Sans',
-        'Montserrat',
-        'Nunito',
-        'Roboto',
-        '"Helvetica Neue"',
-        'Arial',
-        'sans-serif'
-      ].join(','),
+      fontFamily
     }
 });
   
@@ -47,14 +49,6 @@ export const darkTheme = createMuiTheme({
       },
     },
     typography: {
-      fontFamily: [
-        'Work Sans',
-        'Montserrat',
-        'Nunito',
-        'Roboto',
-        '"Helvetica Neue"',
-        'Arial',
-        'sans-serif'
-      ].join(','),
+      fontFamily
     }
 }); 
