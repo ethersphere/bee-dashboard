@@ -234,7 +234,7 @@ export const useApiSettlements = () => {
         setLoading(true)
         beeDebugApi.settlements.getSettlements()
         .then(res => {
-            setSettlements(res.data)
+            setSettlements(res)
         })
         .catch(error => {
             setError(error)
