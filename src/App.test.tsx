@@ -1,5 +1,5 @@
-import { render } from '@testing-library/react';
-import App from './App';
+import { render } from '@testing-library/react'
+import App from './App'
 
 // Mocks methods that are not implemented in JSDOM
 // see https://jestjs.io/docs/manual-mocks#mocking-methods-which-are-not-implemented-in-jsdom
@@ -15,9 +15,9 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: jest.fn(),
     dispatchEvent: jest.fn(),
   })),
-});
+})
 
 // TODO: this is not a good test and should be removed. Keeping it in to make sure the whole app renders (to be used in CI)
-test('should render the app', async () => {
-  render(<App />);
-});
+test('should render the app', () => {
+  render(<App />)
+})

@@ -1,166 +1,168 @@
-import React from 'react';
-import { withStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { Tabs, Tab, Box, Typography, Container, CircularProgress } from '@material-ui/core';
+import { ReactElement, useState, ChangeEvent, ReactChild } from 'react'
+import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
+import { Tabs, Tab, Box, Typography, Container, CircularProgress } from '@material-ui/core'
 
-import AccountCard from '../accounting/AccountCard';
-import BalancesTable from './BalancesTable';
-import ChequebookTable from './ChequebookTable';
-import SettlementsTable from './SettlementsTable';
-import EthereumAddressCard from '../../components/EthereumAddressCard';
-import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard';
+import AccountCard from '../accounting/AccountCard'
+import BalancesTable from './BalancesTable'
+import ChequebookTable from './ChequebookTable'
+import SettlementsTable from './SettlementsTable'
+import EthereumAddressCard from '../../components/EthereumAddressCard'
+import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 
-import { useApiNodeAddresses, useApiChequebookAddress, useApiChequebookBalance, useApiPeerBalances, useApiPeerCheques, useApiSettlements } from '../../hooks/apiHooks';
+import {
+  useApiNodeAddresses,
+  useApiChequebookAddress,
+  useApiChequebookBalance,
+  useApiPeerBalances,
+  useApiPeerCheques,
+  useApiSettlements,
+  useApiHealth,
+  useDebugApiHealth,
+} from '../../hooks/apiHooks'
 
 interface TabPanelProps {
-    children?: React.ReactNode;
-    index: any;
-    value: any;
+  children?: ReactChild
+  index: number
+  value: number
 }
 
-
-function a11yProps(index: any) {
-    return {
-        id: `simple-tab-${index}`,
-        'aria-controls': `simple-tabpanel-${index}`,
-    };
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  }
 }
 
-export default function Accounting(props: any) {
-    const [value, setValue] = React.useState(0);
+export default function Accounting(): ReactElement {
+  const [value, setValue] = useState(0)
 
-    const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-        setValue(newValue);
-    };
+  const handleChange = (event: ChangeEvent<unknown>, newValue: number) => {
+    setValue(newValue)
+  }
 
-    const { chequebookAddress, isLoadingChequebookAddress } = useApiChequebookAddress()
-    const { chequebookBalance, isLoadingChequebookBalance } = useApiChequebookBalance()
-    const { peerBalances, isLoadingPeerBalances } = useApiPeerBalances()
-    const { nodeAddresses, isLoadingNodeAddresses } = useApiNodeAddresses()
+  const { chequebookAddress, isLoadingChequebookAddress } = useApiChequebookAddress()
+  const { chequebookBalance, isLoadingChequebookBalance } = useApiChequebookBalance()
+  const { peerBalances, isLoadingPeerBalances } = useApiPeerBalances()
+  const { nodeAddresses, isLoadingNodeAddresses } = useApiNodeAddresses()
+  const { health, isLoadingHealth } = useApiHealth()
+  const { nodeHealth, isLoadingNodeHealth } = useDebugApiHealth()
 
-    const { peerCheques, isLoadingPeerCheques } = useApiPeerCheques()
-    const { settlements, isLoadingSettlements } = useApiSettlements()
+  const { peerCheques, isLoadingPeerCheques } = useApiPeerCheques()
+  const { settlements, isLoadingSettlements } = useApiSettlements()
 
+  function TabPanel(props: TabPanelProps) {
+    const { children, value, index, ...other } = props
 
-    function TabPanel(props: TabPanelProps) {
-        const { children, value, index, ...other } = props;
-      
-        return (
-          <div
-            role="tabpanel"
-            hidden={value !== index}
-            id={`simple-tabpanel-${index}`}
-            aria-labelledby={`simple-tab-${index}`}
-            {...other}
-          >
-            {value === index && (
-              <Box style={{ marginTop: '20px' }}>
-                <Typography component="div">{children}</Typography>
-              </Box>
-            )}
-          </div>
-        );
-      }
-
-      const AntTabs = withStyles({
-        root: {
-          borderBottom: '1px solid #e8e8e8',
-        },
-        indicator: {
-          backgroundColor: '#3f51b5',
-        },
-      })(Tabs);
-
-      interface StyledTabProps {
-        label: string;
-      }
-      
-      const AntTab = withStyles((theme: Theme) =>
-        createStyles({
-          root: {
-            textTransform: 'none',
-            minWidth: 72,
-            backgroundColor: 'transparent',
-            fontWeight: theme.typography.fontWeightRegular,
-            marginRight: theme.spacing(4),
-            fontFamily: [
-              '-apple-system',
-              'BlinkMacSystemFont',
-              '"Segoe UI"',
-              'Roboto',
-              '"Helvetica Neue"',
-              'Arial',
-              'sans-serif',
-              '"Apple Color Emoji"',
-              '"Segoe UI Emoji"',
-              '"Segoe UI Symbol"',
-            ].join(','),
-            '&:hover': {
-              color: '#3f51b5',
-              opacity: 1,
-            },
-            '&$selected': {
-              color: '#3f51b5',
-              fontWeight: theme.typography.fontWeightMedium,
-            },
-            '&:focus': {
-              color: '#3f51b5',
-            },
-          },
-          selected: {},
-        }),
-      )((props: StyledTabProps) => <Tab disableRipple {...props} />);
-
-    
     return (
-        <div>
-          {props.nodeHealth?.status === 'ok' && props.health ?
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`simple-tabpanel-${index}`}
+        aria-labelledby={`simple-tab-${index}`}
+        {...other}
+      >
+        {value === index && (
+          <Box style={{ marginTop: '20px' }}>
+            <Typography component="div">{children}</Typography>
+          </Box>
+        )}
+      </div>
+    )
+  }
+
+  const AntTabs = withStyles({
+    root: {
+      borderBottom: '1px solid #e8e8e8',
+    },
+    indicator: {
+      backgroundColor: '#3f51b5',
+    },
+  })(Tabs)
+
+  interface StyledTabProps {
+    label: string
+  }
+
+  const AntTab = withStyles((theme: Theme) =>
+    createStyles({
+      root: {
+        textTransform: 'none',
+        minWidth: 72,
+        backgroundColor: 'transparent',
+        fontWeight: theme.typography.fontWeightRegular,
+        marginRight: theme.spacing(4),
+        fontFamily: [
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"Segoe UI"',
+          'Roboto',
+          '"Helvetica Neue"',
+          'Arial',
+          'sans-serif',
+          '"Apple Color Emoji"',
+          '"Segoe UI Emoji"',
+          '"Segoe UI Symbol"',
+        ].join(','),
+        '&:hover': {
+          color: '#3f51b5',
+          opacity: 1,
+        },
+        '&$selected': {
+          color: '#3f51b5',
+          fontWeight: theme.typography.fontWeightMedium,
+        },
+        '&:focus': {
+          color: '#3f51b5',
+        },
+      },
+      selected: {},
+    }),
+  )((props: StyledTabProps) => <Tab disableRipple {...props} />)
+
+  return (
+    <div>
+      {
+        // FIXME: this should be broken up
+        /* eslint-disable no-nested-ternary */
+        nodeHealth?.status === 'ok' && health ? (
           <div>
             <AccountCard
-            chequebookAddress={chequebookAddress}
-            isLoadingChequebookAddress={isLoadingChequebookAddress}
-            chequebookBalance={chequebookBalance}
-            isLoadingChequebookBalance={isLoadingChequebookBalance}
-            settlements={settlements}
-            isLoadingSettlements={isLoadingSettlements}
+              chequebookAddress={chequebookAddress}
+              isLoadingChequebookAddress={isLoadingChequebookAddress}
+              chequebookBalance={chequebookBalance}
+              isLoadingChequebookBalance={isLoadingChequebookBalance}
+              settlements={settlements}
+              isLoadingSettlements={isLoadingSettlements}
             />
-            <EthereumAddressCard 
-            nodeAddresses={nodeAddresses} 
-            isLoadingNodeAddresses={isLoadingNodeAddresses}
-            chequebookAddress={chequebookAddress}
-            isLoadingChequebookAddress={isLoadingChequebookAddress} 
+            <EthereumAddressCard
+              nodeAddresses={nodeAddresses}
+              isLoadingNodeAddresses={isLoadingNodeAddresses}
+              chequebookAddress={chequebookAddress}
+              isLoadingChequebookAddress={isLoadingChequebookAddress}
             />
             <AntTabs style={{ marginTop: '12px' }} value={value} onChange={handleChange} aria-label="ant example">
-                <AntTab label="Balances" {...a11yProps(0)} />
-                <AntTab label="Chequebook" {...a11yProps(1)} />
-                <AntTab label="Settlements" {...a11yProps(2)} />
+              <AntTab label="Balances" {...a11yProps(0)} />
+              <AntTab label="Chequebook" {...a11yProps(1)} />
+              <AntTab label="Settlements" {...a11yProps(2)} />
             </AntTabs>
             <TabPanel value={value} index={0}>
-              <BalancesTable
-              peerBalances={peerBalances}
-              loading={isLoadingPeerBalances}
-              />
+              <BalancesTable peerBalances={peerBalances} loading={isLoadingPeerBalances} />
             </TabPanel>
             <TabPanel value={value} index={1}>
-              <ChequebookTable
-              peerCheques={peerCheques}
-              loading={isLoadingPeerCheques}
-              />
+              <ChequebookTable peerCheques={peerCheques} loading={isLoadingPeerCheques} />
             </TabPanel>
             <TabPanel value={value} index={2}>
-              <SettlementsTable
-              nodeSettlements={settlements}
-              loading={isLoadingSettlements}
-              />
+              <SettlementsTable nodeSettlements={settlements} loading={isLoadingSettlements} />
             </TabPanel>
-            </div>
-            :
-            props.isLoadingHealth || props.isLoadingNodeHealth ?
-            <Container style={{textAlign:'center', padding:'50px'}}>
-                <CircularProgress />
-            </Container>
-            :
-            <TroubleshootConnectionCard />
-            }
-        </div>
-    )
+          </div>
+        ) : isLoadingHealth || isLoadingNodeHealth ? (
+          <Container style={{ textAlign: 'center', padding: '50px' }}>
+            <CircularProgress />
+          </Container>
+        ) : (
+          <TroubleshootConnectionCard />
+        ) /* eslint-enable no-nested-ternary */
+      }
+    </div>
+  )
 }
