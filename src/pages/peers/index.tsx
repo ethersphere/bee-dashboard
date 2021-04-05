@@ -1,59 +1,32 @@
-import React from 'react'
+import { Container, CircularProgress } from '@material-ui/core/'
+import PeerTable from './PeerTable'
+import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 
-import { Grid, Container, CircularProgress } from '@material-ui/core/';
+import { useApiNodeTopology, useApiNodePeers, useDebugApiHealth } from '../../hooks/apiHooks'
+import TopologyStats from '../../components/TopologyStats'
+import { ReactElement } from 'react'
 
-import StatCard from '../../components/StatCard';
-import PeerTable from './PeerTable';
-import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard';
+export default function Peers(): ReactElement {
+  const topology = useApiNodeTopology()
+  const debugHealth = useDebugApiHealth()
+  const peers = useApiNodePeers()
 
-import { useApiNodeTopology, useApiNodePeers } from '../../hooks/apiHooks';
-
-export default function Peers(props: any) {
-    const { nodeTopology, isLoadingNodeTopology } = useApiNodeTopology()
-    const { nodePeers, isLoadingNodePeers } = useApiNodePeers()
-
+  if (debugHealth.isLoadingNodeHealth) {
     return (
-        <div>
-            {props.nodeHealth?.status === 'ok' && props.health ?
-            <div>
-            <Grid style={{ marginBottom: '20px', flexGrow: 1 }}>
-                <Grid container spacing={3}>
-                    <Grid key={1} item xs={12} sm={12} md={6} lg={4} xl={4}>
-                        <StatCard
-                        label='Connected Peers'
-                        statistic={nodeTopology.connected.toString()}
-                        loading={isLoadingNodeTopology}
-                        />
-                    </Grid>
-                    <Grid key={2} item xs={12} sm={12} md={6} lg={4} xl={4}>
-                        <StatCard
-                        label='Population'
-                        statistic={nodeTopology.population.toString()}
-                        loading={isLoadingNodeTopology}
-                        />
-                    </Grid>
-                    <Grid key={3} item xs={12} sm={12} md={6} lg={4} xl={4}>
-                        <StatCard
-                        label='Depth'
-                        statistic={nodeTopology.depth.toString()}
-                        loading={isLoadingNodeTopology}
-                        />
-                    </Grid>
-                </Grid> 
-            </Grid>
-            <PeerTable
-            nodePeers={nodePeers}
-            loading={isLoadingNodePeers}
-            />
-            </div>
-            :
-            props.isLoadingHealth || props.isLoadingNodeHealth ?
-            <Container style={{textAlign:'center', padding:'50px'}}>
-                <CircularProgress />
-            </Container>
-            :
-            <TroubleshootConnectionCard />
-            }
-        </div>
+      <Container style={{ textAlign: 'center', padding: '50px' }}>
+        <CircularProgress />
+      </Container>
     )
+  }
+
+  if (debugHealth.error) {
+    return <TroubleshootConnectionCard />
+  }
+
+  return (
+    <>
+      <TopologyStats {...topology} />
+      <PeerTable {...peers} />
+    </>
+  )
 }

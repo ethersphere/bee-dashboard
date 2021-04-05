@@ -1,77 +1,70 @@
-import React from 'react';
-import Button from '@material-ui/core/Button';
-import Input from '@material-ui/core/Input';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import { Snackbar } from '@material-ui/core';
+import { ReactElement, useState } from 'react'
+import Button from '@material-ui/core/Button'
+import Input from '@material-ui/core/Input'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogContentText from '@material-ui/core/DialogContentText'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import { Snackbar } from '@material-ui/core'
 
-import { beeDebugApi } from '../services/bee';
+import { beeDebugApi } from '../services/bee'
 
-export default function WithdrawlModal() {
-  const [open, setOpen] = React.useState(false);
-  const [amount, setAmount] = React.useState(BigInt(0));
-  const [showToast, setToastVisibility] = React.useState(false);
-  const [toastContent, setToastContent] = React.useState('');
+export default function WithdrawlModal(): ReactElement {
+  const [open, setOpen] = useState(false)
+  const [amount, setAmount] = useState(BigInt(0))
+  const [showToast, setToastVisibility] = useState(false)
+  const [toastContent, setToastContent] = useState('')
 
   const handleClickOpen = () => {
-    setOpen(true);
-  };
+    setOpen(true)
+  }
 
   const handleClose = () => {
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   const handleWithdraw = () => {
     if (amount > 0) {
-        beeDebugApi.chequebook.withdraw(amount)
+      beeDebugApi.chequebook
+        .withdraw(amount)
         .then(res => {
-            setOpen(false);
-            handleToast(`Successful withdrawl. Transaction ${res.data.transactionHash}`)
+          setOpen(false)
+          handleToast(`Successful withdrawl. Transaction ${res.transactionHash}`)
         })
-        .catch(error => {
-            handleToast('Error with withdrawl')
+        .catch(() => {
+          // FIXME: should probably detail the error
+          handleToast('Error with withdrawing')
         })
     } else {
-        handleToast('Must be amount of greater than 0')
+      handleToast('Must be amount of greater than 0')
     }
-  };
+  }
 
   const handleToast = (text: string) => {
     setToastContent(text)
-    setToastVisibility(true);
-    setTimeout(
-      () => setToastVisibility(false), 
-      7000
-    );
-  };
+    setToastVisibility(true)
+    setTimeout(() => setToastVisibility(false), 7000)
+  }
 
   return (
     <div>
       <Button variant="outlined" color="primary" onClick={handleClickOpen}>
         Withdraw
       </Button>
-        <Snackbar
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        open={showToast}
-        message={toastContent}
-        />
+      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={showToast} message={toastContent} />
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Withdraw Funds</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Specify the amount you would like to withdraw from your node.
-          </DialogContentText>
+          <DialogContentText>Specify the amount you would like to withdraw from your node.</DialogContentText>
           <Input
             autoFocus
             margin="dense"
             id="name"
             type="number"
-            placeholder='Amount'
+            placeholder="Amount"
             fullWidth
-            onChange={(e) => setAmount(BigInt(e.target.value))}
+            onChange={e => setAmount(BigInt(e.target.value))}
           />
         </DialogContent>
         <DialogActions>
@@ -84,5 +77,5 @@ export default function WithdrawlModal() {
         </DialogActions>
       </Dialog>
     </div>
-  );
+  )
 }

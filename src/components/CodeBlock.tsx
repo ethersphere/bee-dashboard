@@ -1,24 +1,20 @@
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { hybrid } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import type { ReactElement } from 'react'
+import SyntaxHighlighter from 'react-syntax-highlighter'
 
-interface IProps {
-    code: string,
-    language: string,
-    showLineNumbers?: boolean,
+interface Props {
+  code: string
+  language: string
+  showLineNumbers?: boolean
 }
 
-const CodeBlock = (props: IProps) => {
+const CodeBlock = (props: Props): ReactElement => {
   return (
-    <div style={{textAlign:'left'}}>
-        <SyntaxHighlighter 
-        language={props.language} 
-        style={hybrid}
-        showLineNumbers={props.showLineNumbers}
-        >
+    <div style={{ textAlign: 'left' }}>
+      <SyntaxHighlighter language={props.language} showLineNumbers={props.showLineNumbers}>
         {props.code}
-        </SyntaxHighlighter>
+      </SyntaxHighlighter>
     </div>
-  );
-};
+  )
+}
 
-export default CodeBlock;
+export default CodeBlock
