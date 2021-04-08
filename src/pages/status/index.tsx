@@ -73,71 +73,77 @@ export default function Status(): ReactElement {
     fetchLatestBeeRelease()
   }, [])
 
-  // FIXME: this should be broken up
-  /* eslint-disable no-nested-ternary */
-  return (
-    <div>
-      {nodeHealth?.status === 'ok' &&
-      health &&
-      beeRelease &&
-      beeRelease.name === `v${nodeHealth?.version?.split('-')[0]}` &&
-      nodeAddresses?.ethereum &&
-      chequebookAddress?.chequebookaddress &&
-      chequebookBalance &&
-      chequebookBalance?.totalBalance > 0 &&
-      nodeTopology?.connected &&
-      nodeTopology?.connected > 0 &&
-      !statusChecksVisible ? (
-        <div>
-          <StatusCard
-            nodeHealth={nodeHealth}
-            loadingNodeHealth={isLoadingNodeHealth}
-            beeRelease={beeRelease}
-            loadingBeeRelease={isLoadingBeeRelease}
-            nodeAddresses={nodeAddresses}
-            loadingNodeTopology={isLoadingNodeTopology}
-            nodeTopology={nodeTopology}
-            setStatusChecksVisible={setStatusChecksVisible}
-          />
-          <EthereumAddressCard
-            nodeAddresses={nodeAddresses}
-            isLoadingNodeAddresses={isLoadingNodeAddresses}
-            chequebookAddress={chequebookAddress}
-            isLoadingChequebookAddress={isLoadingChequebookAddress}
-          />
-        </div>
-      ) : isLoadingNodeHealth ||
-        isLoadingHealth ||
-        isLoadingChequebookAddress ||
-        isLoadingNodeTopology ||
-        isLoadingBeeRelease ||
-        isLoadingNodeAddresses ||
-        isLoadingBeeRelease ||
-        isLoadingChequebookBalance ? (
-        <Container style={{ textAlign: 'center', padding: '50px' }}>
-          <CircularProgress />
-        </Container>
-      ) : (
-        <NodeSetupWorkflow
-          beeRelease={beeRelease}
-          isLoadingBeeRelease={isLoadingBeeRelease}
+  if (
+    isLoadingNodeHealth ||
+    isLoadingHealth ||
+    isLoadingChequebookAddress ||
+    isLoadingNodeTopology ||
+    isLoadingBeeRelease ||
+    isLoadingNodeAddresses ||
+    isLoadingBeeRelease ||
+    isLoadingChequebookBalance
+  ) {
+    return (
+      <Container style={{ textAlign: 'center', padding: '50px' }}>
+        <CircularProgress />
+      </Container>
+    )
+  }
+
+  if (
+    nodeHealth?.status === 'ok' &&
+    health &&
+    beeRelease &&
+    beeRelease.name === `v${nodeHealth?.version?.split('-')[0]}` &&
+    nodeAddresses?.ethereum &&
+    chequebookAddress?.chequebookaddress &&
+    chequebookBalance &&
+    chequebookBalance?.totalBalance > 0 &&
+    nodeTopology?.connected &&
+    nodeTopology?.connected > 0 &&
+    !statusChecksVisible
+  ) {
+    return (
+      <div>
+        <StatusCard
           nodeHealth={nodeHealth}
-          isLoadingNodeHealth={isLoadingNodeHealth}
+          loadingNodeHealth={isLoadingNodeHealth}
+          beeRelease={beeRelease}
+          loadingBeeRelease={isLoadingBeeRelease}
           nodeAddresses={nodeAddresses}
-          isLoadingNodeAddresses={isLoadingNodeAddresses}
+          loadingNodeTopology={isLoadingNodeTopology}
           nodeTopology={nodeTopology}
-          isLoadingNodeTopology={isLoadingNodeTopology}
-          nodeApiHealth={health}
-          isLoadingHealth={isLoadingHealth}
-          chequebookAddress={chequebookAddress}
-          isLoadingChequebookAddress={isLoadingChequebookAddress}
-          chequebookBalance={chequebookBalance}
-          isLoadingChequebookBalance={isLoadingChequebookBalance}
-          apiHost={apiHost}
-          debugApiHost={debugApiHost}
           setStatusChecksVisible={setStatusChecksVisible}
         />
-      )}
-    </div>
+        <EthereumAddressCard
+          nodeAddresses={nodeAddresses}
+          isLoadingNodeAddresses={isLoadingNodeAddresses}
+          chequebookAddress={chequebookAddress}
+          isLoadingChequebookAddress={isLoadingChequebookAddress}
+        />
+      </div>
+    )
+  }
+
+  return (
+    <NodeSetupWorkflow
+      beeRelease={beeRelease}
+      isLoadingBeeRelease={isLoadingBeeRelease}
+      nodeHealth={nodeHealth}
+      isLoadingNodeHealth={isLoadingNodeHealth}
+      nodeAddresses={nodeAddresses}
+      isLoadingNodeAddresses={isLoadingNodeAddresses}
+      nodeTopology={nodeTopology}
+      isLoadingNodeTopology={isLoadingNodeTopology}
+      nodeApiHealth={health}
+      isLoadingHealth={isLoadingHealth}
+      chequebookAddress={chequebookAddress}
+      isLoadingChequebookAddress={isLoadingChequebookAddress}
+      chequebookBalance={chequebookBalance}
+      isLoadingChequebookBalance={isLoadingChequebookBalance}
+      apiHost={apiHost}
+      debugApiHost={debugApiHost}
+      setStatusChecksVisible={setStatusChecksVisible}
+    />
   )
 }
