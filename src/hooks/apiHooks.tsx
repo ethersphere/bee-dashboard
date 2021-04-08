@@ -16,6 +16,7 @@ import {
 } from '@ethersphere/bee-js'
 
 import { beeDebugApi, beeApi } from '../services/bee'
+import axios from 'axios'
 
 export interface HealthHook {
   health: boolean
@@ -390,4 +391,32 @@ export const useApiPeerLastCashout = (peerId: string): PeerLastCashoutHook => {
   }, [peerId])
 
   return { peerCashout, isLoadingPeerCashout, error }
+}
+
+export interface LatestBeeReleaseHook {
+  latestBeeRelease: LatestBeeRelease | null
+  isLoadingLatestBeeRelease: boolean
+  error: Error | null
+}
+
+export const useLatestBeeRelease = (): LatestBeeReleaseHook => {
+  const [latestBeeRelease, setLatestBeeRelease] = useState<LatestBeeRelease | null>(null)
+  const [isLoadingLatestBeeRelease, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<Error | null>(null)
+
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_BEE_GITHUB_REPO_URL}/releases/latest`)
+      .then(res => {
+        setLatestBeeRelease(res.data)
+      })
+      .catch((error: Error) => {
+        setError(error)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }, [])
+
+  return { latestBeeRelease, isLoadingLatestBeeRelease, error }
 }

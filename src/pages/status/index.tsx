@@ -1,5 +1,4 @@
 import { useState, useEffect, ReactElement } from 'react'
-import axios from 'axios'
 import { Container, CircularProgress } from '@material-ui/core'
 
 import NodeSetupWorkflow from './NodeSetupWorkflow'
@@ -12,12 +11,10 @@ import {
   useApiChequebookAddress,
   useApiNodeTopology,
   useApiChequebookBalance,
+  useLatestBeeRelease,
 } from '../../hooks/apiHooks'
 
 export default function Status(): ReactElement {
-  const [beeRelease, setBeeRelease] = useState<LatestBeeRelease | null>(null)
-  const [isLoadingBeeRelease, setIsLoadingBeeRelease] = useState<boolean>(false)
-
   const [apiHost, setApiHost] = useState('')
   const [debugApiHost, setDebugApiHost] = useState('')
 
@@ -29,21 +26,7 @@ export default function Status(): ReactElement {
   const { chequebookAddress, isLoadingChequebookAddress } = useApiChequebookAddress()
   const { topology: nodeTopology, isLoading: isLoadingNodeTopology } = useApiNodeTopology()
   const { chequebookBalance, isLoadingChequebookBalance } = useApiChequebookBalance()
-
-  const fetchLatestBeeRelease = () => {
-    setIsLoadingBeeRelease(true)
-    axios
-      .get(`${process.env.REACT_APP_BEE_GITHUB_REPO_URL}/releases/latest`)
-      .then(res => {
-        setBeeRelease(res.data)
-      })
-      .catch(() => {
-        // FIXME: should do something about the error
-      })
-      .finally(() => {
-        setIsLoadingBeeRelease(false)
-      })
-  }
+  const { latestBeeRelease, isLoadingLatestBeeRelease } = useLatestBeeRelease()
 
   const fetchApiHost = () => {
     let apiHost
@@ -70,7 +53,6 @@ export default function Status(): ReactElement {
   useEffect(() => {
     fetchApiHost()
     fetchDebugApiHost()
-    fetchLatestBeeRelease()
   }, [])
 
   if (
@@ -78,9 +60,8 @@ export default function Status(): ReactElement {
     isLoadingHealth ||
     isLoadingChequebookAddress ||
     isLoadingNodeTopology ||
-    isLoadingBeeRelease ||
     isLoadingNodeAddresses ||
-    isLoadingBeeRelease ||
+    isLoadingLatestBeeRelease ||
     isLoadingChequebookBalance
   ) {
     return (
@@ -93,8 +74,7 @@ export default function Status(): ReactElement {
   if (
     nodeHealth?.status === 'ok' &&
     health &&
-    beeRelease &&
-    beeRelease.name === `v${nodeHealth?.version?.split('-')[0]}` &&
+    latestBeeRelease?.name === `v${nodeHealth?.version?.split('-')[0]}` &&
     nodeAddresses?.ethereum &&
     chequebookAddress?.chequebookaddress &&
     chequebookBalance &&
@@ -108,8 +88,8 @@ export default function Status(): ReactElement {
         <StatusCard
           nodeHealth={nodeHealth}
           loadingNodeHealth={isLoadingNodeHealth}
-          beeRelease={beeRelease}
-          loadingBeeRelease={isLoadingBeeRelease}
+          beeRelease={latestBeeRelease}
+          loadingBeeRelease={isLoadingLatestBeeRelease}
           nodeAddresses={nodeAddresses}
           loadingNodeTopology={isLoadingNodeTopology}
           nodeTopology={nodeTopology}
@@ -127,8 +107,8 @@ export default function Status(): ReactElement {
 
   return (
     <NodeSetupWorkflow
-      beeRelease={beeRelease}
-      isLoadingBeeRelease={isLoadingBeeRelease}
+      beeRelease={latestBeeRelease}
+      isLoadingBeeRelease={isLoadingLatestBeeRelease}
       nodeHealth={nodeHealth}
       isLoadingNodeHealth={isLoadingNodeHealth}
       nodeAddresses={nodeAddresses}
