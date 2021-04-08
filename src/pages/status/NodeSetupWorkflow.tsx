@@ -1,7 +1,7 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Typography, Paper, Button, Step, StepLabel, StepContent, Stepper, StepButton } from '@material-ui/core/'
-import { CheckCircle, Error, Sync, ExpandLessSharp, ExpandMoreSharp } from '@material-ui/icons/'
+import { CheckCircle, Error, Sync, ExpandLessSharp, ExpandMoreSharp, Autorenew } from '@material-ui/icons/'
 
 import DebugConnectionCheck from './SetupSteps/DebugConnectionCheck'
 import NodeConnectionCheck from './SetupSteps/NodeConnectionCheck'
@@ -9,17 +9,12 @@ import VersionCheck from './SetupSteps/VersionCheck'
 import EthereumConnectionCheck from './SetupSteps/EthereumConnectionCheck'
 import ChequebookDeployFund from './SetupSteps/ChequebookDeployFund'
 import PeerConnection from './SetupSteps/PeerConnection'
-import type {
-  ChequebookAddressResponse,
-  ChequebookBalanceResponse,
-  Health,
-  NodeAddresses,
-  Topology,
-} from '@ethersphere/bee-js'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
+      marginTop: theme.spacing(3),
+      padding: theme.spacing(2),
       width: '100%',
     },
     button: {
@@ -35,100 +30,85 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-interface Props {
-  nodeHealth: Health | null
-  nodeApiHealth: boolean
-  nodeAddresses: NodeAddresses | null
-  chequebookAddress: ChequebookAddressResponse | null
-  chequebookBalance: ChequebookBalanceResponse | null
-  beeRelease: LatestBeeRelease | null
-  nodeTopology: Topology | null
-  isLoadingBeeRelease: boolean
-  isLoadingNodeHealth: boolean
-  isLoadingNodeAddresses: boolean
-  isLoadingNodeTopology: boolean
-  isLoadingHealth: boolean
-  isLoadingChequebookAddress: boolean
-  isLoadingChequebookBalance: boolean
-  setStatusChecksVisible: (value: boolean) => void
-  apiHost: string
-  debugApiHost: string
-}
-
 interface Step {
   label: string
   condition: boolean
+  isLoading: boolean
   component: ReactElement
 }
 
-export default function NodeSetupWorkflow(props: Props): ReactElement {
-  const {
-    debugApiHost,
-    nodeHealth,
-    beeRelease,
-    isLoadingBeeRelease,
-    nodeAddresses,
-    isLoadingNodeAddresses,
-    isLoadingChequebookBalance,
-    chequebookAddress,
-    chequebookBalance,
-    isLoadingChequebookAddress,
-    nodeApiHealth,
-    apiHost,
-    isLoadingNodeTopology,
-    nodeTopology,
-    setStatusChecksVisible,
-  } = props
+interface Props {
+  nodeVersion: StatusNodeVersionHook
+  ethereumConnection: StatusEthereumConnectionHook
+  debugApiConnection: StatusHookCommon
+  apiConnection: StatusHookCommon
+  topology: StatusTopologyHook
+  chequebook: StatusChequebookHook
+}
+
+export default function NodeSetupWorkflow({
+  nodeVersion,
+  ethereumConnection,
+  debugApiConnection,
+  apiConnection,
+  topology,
+  chequebook,
+}: Props): ReactElement {
   const classes = useStyles()
-  const [activeStep, setActiveStep] = useState(0)
+  const [activeStep, setActiveStep] = useState(-1)
 
   const steps: Step[] = [
     {
-      label: 'Debug Connection Check',
-      condition: nodeHealth?.status === 'ok',
-      component: <DebugConnectionCheck nodeHealth={nodeHealth} debugApiHost={debugApiHost} />,
+      label: 'Connected to Node DebugAPI',
+      condition: debugApiConnection.isOk,
+      isLoading: debugApiConnection.isLoading,
+      component: <DebugConnectionCheck {...debugApiConnection} />,
     },
     {
-      label: 'Version Check',
-      condition: beeRelease !== null && beeRelease.name === `v${nodeHealth?.version?.split('-')[0]}`,
-      component: (
-        <VersionCheck nodeHealth={nodeHealth} beeRelease={beeRelease} isLoadingBeeRelease={isLoadingBeeRelease} />
-      ),
+      label: 'Running latest Bee version',
+      condition: nodeVersion.isOk,
+      isLoading: nodeVersion.isLoading,
+      component: <VersionCheck {...nodeVersion} />,
     },
     {
-      label: 'Connect to Ethereum Blockchain',
-      condition: nodeAddresses !== null,
-      component: (
-        <EthereumConnectionCheck nodeAddresses={nodeAddresses} isLoadingNodeAddresses={isLoadingNodeAddresses} />
-      ),
+      label: 'Connected to Ethereum Blockchain',
+      condition: ethereumConnection.isOk,
+      isLoading: ethereumConnection.isLoading,
+      component: <EthereumConnectionCheck {...ethereumConnection} />,
     },
     {
-      label: 'Deploy and Fund Chequebook',
-      condition:
-        chequebookAddress !== null &&
-        Boolean(chequebookAddress.chequebookaddress) &&
-        chequebookBalance !== null &&
-        chequebookBalance.totalBalance > 0,
-      component: (
-        <ChequebookDeployFund
-          chequebookAddress={chequebookAddress}
-          chequebookBalance={chequebookBalance}
-          isLoadingChequebookAddress={isLoadingChequebookAddress}
-          isLoadingChequebookBalance={isLoadingChequebookBalance}
-        />
-      ),
+      label: 'Deployed and Funded Chequebook',
+      condition: chequebook.isOk,
+      isLoading: chequebook.isLoading,
+      component: <ChequebookDeployFund {...chequebook} />,
     },
     {
-      label: 'Node Connection Check',
-      condition: nodeApiHealth,
-      component: <NodeConnectionCheck nodeApiHealth={nodeApiHealth} apiHost={apiHost} />,
+      label: 'Connected to Node API',
+      condition: apiConnection.isOk,
+      isLoading: apiConnection.isLoading,
+      component: <NodeConnectionCheck {...apiConnection} />,
     },
     {
-      label: 'Connect to Peers',
-      condition: nodeTopology !== null && nodeTopology?.connected > 0,
-      component: <PeerConnection nodeTopology={nodeTopology} isLoadingNodeTopology={isLoadingNodeTopology} />,
+      label: 'Connected to Peers',
+      condition: topology.isOk,
+      isLoading: topology.isLoading,
+      component: <PeerConnection {...topology} />,
     },
   ]
+
+  useEffect(() => {
+    // If the user already changed the active step we don't want to overwrite it
+    if (activeStep > 0 && activeStep < steps.length) return
+
+    // Select first step that is not OK
+    for (let i = 0; i < steps.length; ++i) {
+      if (!steps[i].condition) {
+        setActiveStep(i)
+
+        return
+      }
+    }
+  }, [steps])
 
   const handleNext = () => {
     setActiveStep(prevActiveStep => prevActiveStep + 1)
@@ -138,13 +118,9 @@ export default function NodeSetupWorkflow(props: Props): ReactElement {
     setActiveStep(prevActiveStep => prevActiveStep - 1)
   }
 
-  const handleSetupComplete = () => {
-    setStatusChecksVisible(false)
-  }
-
   return (
-    <div className={classes.root}>
-      <Typography variant="h4" gutterBottom>
+    <Paper className={classes.root}>
+      <Typography variant="h5" gutterBottom>
         Node Setup
         <span style={{ marginLeft: '25px' }}>
           <Button variant="outlined" size="small" onClick={() => window.location.reload()}>
@@ -154,19 +130,21 @@ export default function NodeSetupWorkflow(props: Props): ReactElement {
         </span>
       </Typography>
       <Stepper nonLinear activeStep={activeStep} orientation="vertical">
-        {steps.map(({ label, condition, component }, index) => (
+        {steps.map(({ label, condition, component, isLoading }, index) => (
           <Step key={label}>
             <StepLabel
+              disabled={isLoading}
               onClick={() => setActiveStep(index === activeStep ? steps.length : index)}
-              StepIconComponent={() =>
-                condition ? (
-                  <CheckCircle style={{ color: '#32c48d', height: '25px', cursor: 'pointer' }} />
-                ) : (
-                  <Error style={{ color: '#c9201f', height: '25px', cursor: 'pointer' }} />
-                )
-              }
+              StepIconComponent={() => {
+                if (isLoading) return <Autorenew style={{ height: '25px', cursor: 'pointer' }} />
+
+                if (condition) return <CheckCircle style={{ color: '#32c48d', height: '25px', cursor: 'pointer' }} />
+
+                return <Error style={{ color: '#c9201f', height: '25px', cursor: 'pointer' }} />
+              }}
             >
               <StepButton
+                disabled={isLoading}
                 onClick={() => setActiveStep(index === activeStep ? steps.length : index)}
                 style={{ justifyContent: 'space-between' }}
               >
@@ -186,7 +164,7 @@ export default function NodeSetupWorkflow(props: Props): ReactElement {
                     Back
                   </Button>
                   <Button variant="contained" color="primary" onClick={handleNext} className={classes.button}>
-                    Next
+                    {index < steps.length - 1 ? 'Next' : 'Finish'}
                   </Button>
                 </div>
               </div>
@@ -194,17 +172,6 @@ export default function NodeSetupWorkflow(props: Props): ReactElement {
           </Step>
         ))}
       </Stepper>
-      {Object.values(steps).every(s => s.condition) ? (
-        <Paper square elevation={0} className={classes.resetContainer}>
-          <Typography>Bee setup complete! Welcome to the swarm and the internet of decentralized storage</Typography>
-          <Button onClick={handleBack} className={classes.button}>
-            Back
-          </Button>
-          <Button onClick={handleSetupComplete} variant="contained" color="primary" className={classes.button}>
-            Complete
-          </Button>
-        </Paper>
-      ) : null}
-    </div>
+    </Paper>
   )
 }

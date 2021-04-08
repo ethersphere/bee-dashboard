@@ -1,35 +1,29 @@
 import React, { ReactElement } from 'react'
 import { Typography, Accordion, AccordionSummary, AccordionDetails } from '@material-ui/core/'
-import { CheckCircle, Error, ExpandMoreSharp } from '@material-ui/icons/'
+import { ExpandMoreSharp } from '@material-ui/icons/'
 
 import ConnectToHost from '../../../components/ConnectToHost'
 import CodeBlockTabs from '../../../components/CodeBlockTabs'
+import { apiHost } from '../../../constants'
 
-interface Props {
-  nodeApiHealth: boolean
-  apiHost: string
-}
+type Props = StatusHookCommon
 
-export default function NodeConnectionCheck(props: Props): ReactElement {
+export default function NodeConnectionCheck({ isLoading, isOk }: Props): ReactElement | null {
+  if (isLoading) return null
+
   return (
     <div>
-      <p>Connect to Bee Node API</p>
       <div style={{ display: 'flex', marginBottom: '25px' }}>
-        {props.nodeApiHealth ? (
-          <CheckCircle style={{ color: '#32c48d', marginRight: '7px', height: '18px' }} />
-        ) : (
-          <Error style={{ color: '#c9201f', marginRight: '7px', height: '18px' }} />
-        )}
         <span style={{ marginRight: '15px' }}>
-          Node API (<Typography variant="button">{props.apiHost}</Typography>)
+          Node API (<Typography variant="button">{apiHost}</Typography>)
         </span>
-        <ConnectToHost hostName="api_host" defaultHost={props.apiHost} />
+        <ConnectToHost hostName="api_host" defaultHost={apiHost} />
       </div>
       <div>
-        {!props.nodeApiHealth ? (
+        {!isOk && (
           <Typography component="div" variant="body2" gutterBottom style={{ margin: '15px' }}>
-            We cannot connect to your nodes API at <Typography variant="button">{props.apiHost}</Typography>. Please
-            check the following to troubleshoot your issue.
+            We cannot connect to your nodes API at <Typography variant="button">{apiHost}</Typography>. Please check the
+            following to troubleshoot your issue.
             <Accordion style={{ marginTop: '20px' }}>
               <AccordionSummary expandIcon={<ExpandMoreSharp />} aria-controls="panel1a-content" id="panel1a-header">
                 <Typography>Troubleshoot</Typography>
@@ -64,7 +58,7 @@ export default function NodeConnectionCheck(props: Props): ReactElement {
               </AccordionDetails>
             </Accordion>
           </Typography>
-        ) : null}
+        )}
       </div>
     </div>
   )
