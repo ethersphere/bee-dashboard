@@ -20,26 +20,11 @@ import {
   Topology,
   WithdrawTokensResponse,
 } from '@ethersphere/bee-js'
+import { apiHost, debugApiHost } from '../constants'
 
-const beeJSClient = () => {
-  let apiHost = process.env.REACT_APP_BEE_HOST || 'http://localhost:1633'
+const beeJSClient = () => new Bee(apiHost)
 
-  if (sessionStorage.getItem('api_host')) {
-    apiHost = String(sessionStorage.getItem('api_host'))
-  }
-
-  return new Bee(apiHost)
-}
-
-const beeJSDebugClient = () => {
-  let debugApiHost = process.env.REACT_APP_BEE_DEBUG_HOST || 'http://localhost:1635'
-
-  if (sessionStorage.getItem('debug_api_host')) {
-    debugApiHost = String(sessionStorage.getItem('debug_api_host'))
-  }
-
-  return new BeeDebug(debugApiHost)
-}
+const beeJSDebugClient = () => new BeeDebug(debugApiHost)
 
 export const beeApi = {
   status: {
