@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Typography, Paper, Button, Step, StepLabel, StepContent, Stepper, StepButton } from '@material-ui/core/'
 import { CheckCircle, Error, Sync, ExpandLessSharp, ExpandMoreSharp } from '@material-ui/icons/'
@@ -35,16 +35,6 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-function getSteps() {
-  return [
-    'Debug Connection Check',
-    'Version Check',
-    'Connect to Ethereum Blockchain',
-    'Deploy and Fund Chequebook',
-    'Node Connection Check',
-    'Connect to Peers',
-  ]
-}
 interface Props {
   nodeHealth: Health | null
   nodeApiHealth: boolean
@@ -65,10 +55,16 @@ interface Props {
   debugApiHost: string
 }
 
-function getStepContent(step: number, props: Props) {
+interface Step {
+  label: string
+  condition: boolean
+  component: ReactElement
+}
+
+export default function NodeSetupWorkflow(props: Props): ReactElement {
   const {
-    nodeHealth,
     debugApiHost,
+    nodeHealth,
     beeRelease,
     isLoadingBeeRelease,
     nodeAddresses,
@@ -81,95 +77,58 @@ function getStepContent(step: number, props: Props) {
     apiHost,
     isLoadingNodeTopology,
     nodeTopology,
+    setStatusChecksVisible,
   } = props
-  switch (step) {
-    case 0:
-      return <DebugConnectionCheck nodeHealth={nodeHealth} debugApiHost={debugApiHost} />
-    case 1:
-      return <VersionCheck nodeHealth={nodeHealth} beeRelease={beeRelease} isLoadingBeeRelease={isLoadingBeeRelease} />
-    case 2:
-      return <EthereumConnectionCheck nodeAddresses={nodeAddresses} isLoadingNodeAddresses={isLoadingNodeAddresses} />
-    case 3:
-      return (
+  const classes = useStyles()
+  const [activeStep, setActiveStep] = useState(0)
+
+  const steps: Step[] = [
+    {
+      label: 'Debug Connection Check',
+      condition: nodeHealth?.status === 'ok',
+      component: <DebugConnectionCheck nodeHealth={nodeHealth} debugApiHost={debugApiHost} />,
+    },
+    {
+      label: 'Version Check',
+      condition: beeRelease !== null && beeRelease.name === `v${nodeHealth?.version?.split('-')[0]}`,
+      component: (
+        <VersionCheck nodeHealth={nodeHealth} beeRelease={beeRelease} isLoadingBeeRelease={isLoadingBeeRelease} />
+      ),
+    },
+    {
+      label: 'Connect to Ethereum Blockchain',
+      condition: nodeAddresses !== null,
+      component: (
+        <EthereumConnectionCheck nodeAddresses={nodeAddresses} isLoadingNodeAddresses={isLoadingNodeAddresses} />
+      ),
+    },
+    {
+      label: 'Deploy and Fund Chequebook',
+      condition:
+        chequebookAddress !== null &&
+        Boolean(chequebookAddress.chequebookaddress) &&
+        chequebookBalance !== null &&
+        chequebookBalance.totalBalance > 0,
+      component: (
         <ChequebookDeployFund
           chequebookAddress={chequebookAddress}
           chequebookBalance={chequebookBalance}
           isLoadingChequebookAddress={isLoadingChequebookAddress}
           isLoadingChequebookBalance={isLoadingChequebookBalance}
         />
-      )
-    case 4:
-      return <NodeConnectionCheck nodeApiHealth={nodeApiHealth} apiHost={apiHost} />
-    default:
-      return <PeerConnection nodeTopology={nodeTopology} isLoadingNodeTopology={isLoadingNodeTopology} />
-  }
-}
-
-export default function NodeSetupWorkflow(props: Props): ReactElement {
-  const {
-    nodeHealth,
-    nodeApiHealth,
-    nodeAddresses,
-    chequebookAddress,
-    chequebookBalance,
-    beeRelease,
-    nodeTopology,
-    setStatusChecksVisible,
-  } = props
-  const classes = useStyles()
-  const [activeStep, setActiveStep] = useState(0)
-  const [completed, setCompleted] = useState<{ [k: number]: boolean }>({})
-  const steps = getSteps()
-
-  useEffect(() => {
-    const handleComplete = (index: number) => {
-      const newCompleted = completed
-      newCompleted[index] = true
-      setCompleted(newCompleted)
-    }
-
-    const evaluateNodeStatus = () => {
-      if (nodeHealth?.status === 'ok') {
-        handleComplete(0)
-        setActiveStep(1)
-      }
-
-      if (beeRelease && beeRelease.name === `v${nodeHealth?.version?.split('-')[0]}`) {
-        handleComplete(1)
-        setActiveStep(2)
-      }
-
-      if (nodeAddresses?.ethereum) {
-        handleComplete(2)
-        setActiveStep(3)
-      }
-
-      if (chequebookAddress?.chequebookaddress && chequebookBalance && chequebookBalance.totalBalance > 0) {
-        handleComplete(3)
-        setActiveStep(4)
-      }
-
-      if (nodeApiHealth) {
-        handleComplete(4)
-        setActiveStep(5)
-      }
-
-      if (nodeTopology?.connected && nodeTopology?.connected > 0) {
-        handleComplete(5)
-        setActiveStep(6)
-      }
-    }
-    evaluateNodeStatus()
-  }, [
-    nodeHealth,
-    nodeApiHealth,
-    nodeAddresses,
-    chequebookAddress,
-    beeRelease,
-    chequebookBalance,
-    nodeTopology,
-    completed,
-  ])
+      ),
+    },
+    {
+      label: 'Node Connection Check',
+      condition: nodeApiHealth,
+      component: <NodeConnectionCheck nodeApiHealth={nodeApiHealth} apiHost={apiHost} />,
+    },
+    {
+      label: 'Connect to Peers',
+      condition: nodeTopology !== null && nodeTopology?.connected > 0,
+      component: <PeerConnection nodeTopology={nodeTopology} isLoadingNodeTopology={isLoadingNodeTopology} />,
+    },
+  ]
 
   const handleNext = () => {
     setActiveStep(prevActiveStep => prevActiveStep + 1)
@@ -195,20 +154,20 @@ export default function NodeSetupWorkflow(props: Props): ReactElement {
         </span>
       </Typography>
       <Stepper nonLinear activeStep={activeStep} orientation="vertical">
-        {steps.map((label, index) => (
+        {steps.map(({ label, condition, component }, index) => (
           <Step key={label}>
             <StepLabel
-              onClick={() => setActiveStep(index === activeStep ? 6 : index)}
-              StepIconComponent={() => {
-                if (completed[index]) {
-                  return <CheckCircle style={{ color: '#32c48d', height: '25px', cursor: 'pointer' }} />
-                } else {
-                  return <Error style={{ color: '#c9201f', height: '25px', cursor: 'pointer' }} />
-                }
-              }}
+              onClick={() => setActiveStep(index === activeStep ? steps.length : index)}
+              StepIconComponent={() =>
+                condition ? (
+                  <CheckCircle style={{ color: '#32c48d', height: '25px', cursor: 'pointer' }} />
+                ) : (
+                  <Error style={{ color: '#c9201f', height: '25px', cursor: 'pointer' }} />
+                )
+              }
             >
               <StepButton
-                onClick={() => setActiveStep(index === activeStep ? 6 : index)}
+                onClick={() => setActiveStep(index === activeStep ? steps.length : index)}
                 style={{ justifyContent: 'space-between' }}
               >
                 <div style={{ display: 'flex' }}>
@@ -220,7 +179,7 @@ export default function NodeSetupWorkflow(props: Props): ReactElement {
               </StepButton>
             </StepLabel>
             <StepContent>
-              <Typography component="div">{getStepContent(index, props)}</Typography>
+              <Typography component="div">{component}</Typography>
               <div className={classes.actionsContainer}>
                 <div>
                   <Button disabled={activeStep === 0} onClick={handleBack} className={classes.button}>
@@ -235,7 +194,7 @@ export default function NodeSetupWorkflow(props: Props): ReactElement {
           </Step>
         ))}
       </Stepper>
-      {Object.values(completed).filter(value => value).length === 6 ? (
+      {Object.values(steps).every(s => s.condition) ? (
         <Paper square elevation={0} className={classes.resetContainer}>
           <Typography>Bee setup complete! Welcome to the swarm and the internet of decentralized storage</Typography>
           <Button onClick={handleBack} className={classes.button}>
