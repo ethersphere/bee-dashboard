@@ -36,9 +36,9 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function Files(): ReactElement {
   const classes = useStyles()
 
-  const [inputMode, setInputMode] = useState<'browse' | 'upload'>('browse')
-  const [searchInput, setSearchInput] = useState('')
-  const [searchError, setSearchError] = useState<Error | null>(null)
+  const [inputMode, setInputMode] = useState<'retrieve' | 'upload'>('retrieve')
+  const [referenceInput, setReferenceInput] = useState('')
+  const [referenceError, setReferenceError] = useState<Error | null>(null)
   const { health, isLoadingHealth } = useApiHealth()
   const { nodeHealth, isLoadingNodeHealth } = useDebugApiHealth()
 
@@ -71,10 +71,10 @@ export default function Files(): ReactElement {
   }
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setSearchInput(e.target.value)
+    setReferenceInput(e.target.value)
 
-    if (Utils.Hex.isHexString(e.target.value, 64)) setSearchError(null)
-    else setSearchError(new Error('Incorrect format of swarm hash'))
+    if (Utils.Hex.isHexString(e.target.value, 64)) setReferenceError(null)
+    else setReferenceError(new Error('Incorrect format of swarm hash'))
   }
 
   if (isLoadingHealth || isLoadingNodeHealth) {
@@ -90,34 +90,34 @@ export default function Files(): ReactElement {
   return (
     <Container maxWidth="sm">
       <div style={{ marginBottom: '7px' }}>
-        <Button color="primary" style={{ marginRight: '7px' }} onClick={() => setInputMode('browse')}>
+        <Button color="primary" style={{ marginRight: '7px' }} onClick={() => setInputMode('retrieve')}>
           Browse
         </Button>
         <Button color="primary" onClick={() => setInputMode('upload')}>
           Upload
         </Button>
       </div>
-      {inputMode === 'browse' && (
+      {inputMode === 'retrieve' && (
         <>
           <Paper className={classes.root}>
             <InputBase
               className={classes.input}
-              placeholder="Enter hash e.g. 0773a91efd6547c754fc1d95fb1c62c7d1b47f959c2caa685dfec8736da95c1c"
-              inputProps={{ 'aria-label': 'search swarm nodes' }}
-              value={searchInput}
+              placeholder="Enter swarm reference e.g. 0773a91efd6547c754fc1d95fb1c62c7d1b47f959c2caa685dfec8736da95c1c"
+              inputProps={{ 'aria-label': 'retriefe file from swarm' }}
+              value={referenceInput}
               onChange={handleSearchChange}
             />
             <IconButton
-              href={`${apiHost}/files/${searchInput}`}
+              href={`${apiHost}/files/${referenceInput}`}
               target="_blank"
-              disabled={searchError !== null || !searchInput}
+              disabled={referenceError !== null || !referenceInput}
               className={classes.iconButton}
-              aria-label="search"
+              aria-label="retrieve"
             >
               <Search />
             </IconButton>
           </Paper>
-          {searchError && <FormHelperText error>{searchError.message}</FormHelperText>}
+          {referenceError && <FormHelperText error>{referenceError.message}</FormHelperText>}
         </>
       )}
       {inputMode === 'upload' && (
