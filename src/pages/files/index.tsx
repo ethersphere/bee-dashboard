@@ -44,22 +44,22 @@ export default function Files(): ReactElement {
 
   const [file, setFile] = useState<File | null>(null)
   const [uploadReference, setUploadReference] = useState('')
-  const [uploadingFile, setUploadingFile] = useState(false)
+  const [uploadError, setUploadError] = useState<Error | null>(null)
+  const [isUploadingFile, setIsUploadingFile] = useState(false)
 
   const uploadFile = () => {
     if (file === null) return
-    setUploadingFile(true)
+    setIsUploadingFile(true)
+    setUploadError(null)
     beeApi.files
       .uploadFile(file)
       .then(hash => {
         setUploadReference(hash)
         setFile(null)
       })
-      .catch(() => {
-        // FIXME: handle the error
-      })
+      .catch(setUploadError)
       .finally(() => {
-        setUploadingFile(false)
+        setIsUploadingFile(false)
       })
   }
 
@@ -125,10 +125,10 @@ export default function Files(): ReactElement {
           <div>
             <DropzoneArea onChange={handleChange} filesLimit={1} />
             <div style={{ marginTop: '15px' }}>
-              <Button disabled={!file} onClick={() => uploadFile()} className={classes.iconButton}>
+              <Button disabled={!file && isUploadingFile} onClick={() => uploadFile()} className={classes.iconButton}>
                 Upload
               </Button>
-              {uploadingFile && (
+              {isUploadingFile && (
                 <Container style={{ textAlign: 'center', padding: '50px' }}>
                   <CircularProgress />
                 </Container>
@@ -139,6 +139,7 @@ export default function Files(): ReactElement {
                   <ClipboardCopy value={uploadReference} />
                 </div>
               )}
+              {uploadError && <FormHelperText error>{uploadError.message}</FormHelperText>}
             </div>
           </div>
         </div>
