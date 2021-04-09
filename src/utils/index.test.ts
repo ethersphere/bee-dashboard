@@ -3,7 +3,8 @@ import { toBZZbaseUnit, fromBZZbaseUnit, assertSafeBZZ } from './index'
 describe('utils', () => {
   const values = [
     { bzz: 0, baseUnits: 0 },
-    { bzz: 1, baseUnits: 1e15 },
+    { bzz: 0.1, baseUnits: 1e15 },
+    { bzz: 0.9, baseUnits: 9e15 },
   ]
 
   describe('toBZZbaseUnit', () => {
@@ -23,8 +24,8 @@ describe('utils', () => {
   })
 
   describe('assertSafeBZZ', () => {
-    const correctNums = [0, 1, 9, -0.324, -1.534315351351353]
-    const wrongNums = [10, -10]
+    const correctNums = [0, 0.1, 0.9, -0.324, -0.1534315351351353]
+    const wrongNums = [1, -1, 10, -10]
 
     const correctValues = [...correctNums, ...correctNums.map(String), '.5']
     const wrongValues = [...wrongNums, ...wrongNums.map(String), new Function(), {}, undefined]
