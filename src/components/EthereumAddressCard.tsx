@@ -12,7 +12,9 @@ const useStyles = makeStyles(() =>
   createStyles({
     root: {
       display: 'flex',
-      marginTop: '20px',
+      alignItems: 'center',
+      justifyContent: 'space-around',
+      flexWrap: 'wrap',
     },
     details: {
       display: 'flex',
@@ -20,10 +22,6 @@ const useStyles = makeStyles(() =>
     },
     content: {
       flex: '1 0 auto',
-    },
-    status: {
-      color: '#fff',
-      backgroundColor: '#76a9fa',
     },
   }),
 )
@@ -39,40 +37,38 @@ function EthereumAddressCard(props: Props): ReactElement {
   const classes = useStyles()
 
   return (
-    <div>
-      <Card className={classes.root}>
-        {props.isLoadingNodeAddresses ? (
-          <div style={{ padding: '16px' }}>
-            <Skeleton width={300} height={30} animation="wave" />
-            <Skeleton width={300} height={50} animation="wave" />
-          </div>
-        ) : (
-          <div className={classes.details}>
-            <CardContent className={classes.content}>
-              <Typography variant="subtitle1" gutterBottom>
-                Ethereum Address
-              </Typography>
-              <EthereumAddress address={props.nodeAddresses?.ethereum} network={'goerli'} />
-            </CardContent>
-          </div>
-        )}
-        {props.isLoadingChequebookAddress ? (
-          <div style={{ padding: '16px' }}>
-            <Skeleton width={300} height={30} animation="wave" />
-            <Skeleton width={300} height={50} animation="wave" />
-          </div>
-        ) : (
-          <div className={classes.details}>
-            <CardContent className={classes.content}>
-              <Typography variant="subtitle1" gutterBottom>
-                Chequebook Contract Address
-              </Typography>
-              <EthereumAddress address={props.chequebookAddress?.chequebookaddress} network={'goerli'} />
-            </CardContent>
-          </div>
-        )}
-      </Card>
-    </div>
+    <Card className={classes.root}>
+      {props.isLoadingNodeAddresses ? (
+        <div style={{ padding: '16px' }}>
+          <Skeleton width={300} height={30} animation="wave" />
+          <Skeleton width={300} height={50} animation="wave" />
+        </div>
+      ) : (
+        <div className={classes.details}>
+          <CardContent className={classes.content}>
+            <Typography variant="subtitle1" gutterBottom>
+              Ethereum Address
+            </Typography>
+            <EthereumAddress address={props.nodeAddresses?.ethereum} network={'goerli'} />
+          </CardContent>
+        </div>
+      )}
+      {props.isLoadingChequebookAddress ? (
+        <div style={{ padding: '16px' }}>
+          <Skeleton width={300} height={30} animation="wave" />
+          <Skeleton width={300} height={50} animation="wave" />
+        </div>
+      ) : (
+        <div className={classes.details}>
+          <CardContent className={classes.content}>
+            <Typography variant="subtitle1" gutterBottom>
+              Chequebook Contract Address
+            </Typography>
+            <EthereumAddress address={props.chequebookAddress?.chequebookaddress} network={'goerli'} />
+          </CardContent>
+        </div>
+      )}
+    </Card>
   )
 }
 

@@ -13,7 +13,6 @@ import PeerConnection from './SetupSteps/PeerConnection'
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      marginTop: theme.spacing(3),
       padding: theme.spacing(2),
       width: '100%',
     },
@@ -23,9 +22,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     actionsContainer: {
       margin: theme.spacing(2),
-    },
-    resetContainer: {
-      padding: theme.spacing(5),
     },
   }),
 )

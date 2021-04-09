@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
 import { Container, CircularProgress } from '@material-ui/core'
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 
 import NodeSetupWorkflow from './NodeSetupWorkflow'
 import StatusCard from './StatusCard'
@@ -13,7 +14,19 @@ import {
   useStatusChequebook,
 } from '../../hooks/status'
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      width: '100%',
+      display: 'grid',
+      rowGap: theme.spacing(3),
+    },
+  }),
+)
+
 export default function Status(): ReactElement {
+  const classes = useStyles()
+
   const nodeVersion = useStatusNodeVersion()
   const ethereumConnection = useStatusEthereumConnection()
   const debugApiConnection = useStatusDebugConnection()
@@ -33,7 +46,7 @@ export default function Status(): ReactElement {
   }
 
   return (
-    <div>
+    <div className={classes.root}>
       <StatusCard
         userBeeVersion={nodeVersion.userVersion}
         latestBeeVersion={nodeVersion.latestVersion}

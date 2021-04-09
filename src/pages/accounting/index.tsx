@@ -1,5 +1,5 @@
 import { ReactElement, useState, ChangeEvent, ReactChild } from 'react'
-import { withStyles, Theme, createStyles } from '@material-ui/core/styles'
+import { withStyles, Theme, createStyles, makeStyles } from '@material-ui/core/styles'
 import { Tabs, Tab, Box, Typography, Container, CircularProgress } from '@material-ui/core'
 
 import AccountCard from '../accounting/AccountCard'
@@ -33,8 +33,19 @@ function a11yProps(index: number) {
   }
 }
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      width: '100%',
+      display: 'grid',
+      rowGap: theme.spacing(3),
+    },
+  }),
+)
+
 export default function Accounting(): ReactElement {
   const [value, setValue] = useState(0)
+  const classes = useStyles()
 
   const handleChange = (event: ChangeEvent<unknown>, newValue: number) => {
     setValue(newValue)
@@ -115,7 +126,6 @@ export default function Accounting(): ReactElement {
           color: '#3f51b5',
         },
       },
-      selected: {},
     }),
   )((props: StyledTabProps) => <Tab disableRipple {...props} />)
 
@@ -125,7 +135,7 @@ export default function Accounting(): ReactElement {
         // FIXME: this should be broken up
         /* eslint-disable no-nested-ternary */
         nodeHealth?.status === 'ok' && health ? (
-          <div>
+          <div className={classes.root}>
             <AccountCard
               chequebookAddress={chequebookAddress}
               isLoadingChequebookAddress={isLoadingChequebookAddress}
@@ -140,20 +150,22 @@ export default function Accounting(): ReactElement {
               chequebookAddress={chequebookAddress}
               isLoadingChequebookAddress={isLoadingChequebookAddress}
             />
-            <AntTabs style={{ marginTop: '12px' }} value={value} onChange={handleChange} aria-label="ant example">
-              <AntTab label="Balances" {...a11yProps(0)} />
-              <AntTab label="Chequebook" {...a11yProps(1)} />
-              <AntTab label="Settlements" {...a11yProps(2)} />
-            </AntTabs>
-            <TabPanel value={value} index={0}>
-              <BalancesTable peerBalances={peerBalances} loading={isLoadingPeerBalances} />
-            </TabPanel>
-            <TabPanel value={value} index={1}>
-              <ChequebookTable peerCheques={peerCheques} loading={isLoadingPeerCheques} />
-            </TabPanel>
-            <TabPanel value={value} index={2}>
-              <SettlementsTable nodeSettlements={settlements} loading={isLoadingSettlements} />
-            </TabPanel>
+            <div>
+              <AntTabs style={{ marginTop: '12px' }} value={value} onChange={handleChange} aria-label="ant example">
+                <AntTab label="Balances" {...a11yProps(0)} />
+                <AntTab label="Chequebook" {...a11yProps(1)} />
+                <AntTab label="Settlements" {...a11yProps(2)} />
+              </AntTabs>
+              <TabPanel value={value} index={0}>
+                <BalancesTable peerBalances={peerBalances} loading={isLoadingPeerBalances} />
+              </TabPanel>
+              <TabPanel value={value} index={1}>
+                <ChequebookTable peerCheques={peerCheques} loading={isLoadingPeerCheques} />
+              </TabPanel>
+              <TabPanel value={value} index={2}>
+                <SettlementsTable nodeSettlements={settlements} loading={isLoadingSettlements} />
+              </TabPanel>
+            </div>
           </div>
         ) : isLoadingHealth || isLoadingNodeHealth ? (
           <Container style={{ textAlign: 'center', padding: '50px' }}>
