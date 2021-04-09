@@ -11,7 +11,6 @@ import {
   Health,
   Peer,
   Topology,
-  PingResponse,
   LastChequesForPeerResponse,
 } from '@ethersphere/bee-js'
 
@@ -332,35 +331,6 @@ export const useApiSettlements = (): SettlementsHook => {
   }, [])
 
   return { settlements, isLoadingSettlements, error }
-}
-
-export interface PingPeerHook {
-  peerRTP: PingResponse | null
-  isPingingPeer: boolean
-  error: Error | null
-}
-
-export const useApiPingPeer = (peerId: string): PingPeerHook => {
-  const [peerRTP, setPeerRTP] = useState<PingResponse | null>(null)
-  const [isPingingPeer, setPingingPeer] = useState<boolean>(true)
-  const [error, setError] = useState<Error | null>(null)
-
-  useEffect(() => {
-    setPingingPeer(true)
-    beeDebugApi.connectivity
-      .ping(peerId)
-      .then(res => {
-        setPeerRTP(res)
-      })
-      .catch(error => {
-        setError(error)
-      })
-      .finally(() => {
-        setPingingPeer(false)
-      })
-  }, [peerId])
-
-  return { peerRTP, isPingingPeer, error }
 }
 
 export interface PeerLastCashoutHook {
