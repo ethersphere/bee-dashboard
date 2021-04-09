@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function Files(): ReactElement {
   const classes = useStyles()
 
-  const [inputMode, setInputMode] = useState<'retrieve' | 'upload'>('retrieve')
+  const [inputMode, setInputMode] = useState<'download' | 'upload'>('download')
   const [referenceInput, setReferenceInput] = useState('')
   const [referenceError, setReferenceError] = useState<Error | null>(null)
   const { health, isLoadingHealth } = useApiHealth()
@@ -70,7 +70,7 @@ export default function Files(): ReactElement {
     }
   }
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleReferenceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setReferenceInput(e.target.value)
 
     if (Utils.Hex.isHexString(e.target.value, 64)) setReferenceError(null)
@@ -90,14 +90,14 @@ export default function Files(): ReactElement {
   return (
     <Container maxWidth="sm">
       <div style={{ marginBottom: '7px' }}>
-        <Button color="primary" style={{ marginRight: '7px' }} onClick={() => setInputMode('retrieve')}>
-          Browse
+        <Button color="primary" style={{ marginRight: '7px' }} onClick={() => setInputMode('download')}>
+          Download
         </Button>
         <Button color="primary" onClick={() => setInputMode('upload')}>
           Upload
         </Button>
       </div>
-      {inputMode === 'retrieve' && (
+      {inputMode === 'download' && (
         <>
           <Paper className={classes.root}>
             <InputBase
@@ -105,14 +105,14 @@ export default function Files(): ReactElement {
               placeholder="Enter swarm reference e.g. 0773a91efd6547c754fc1d95fb1c62c7d1b47f959c2caa685dfec8736da95c1c"
               inputProps={{ 'aria-label': 'retriefe file from swarm' }}
               value={referenceInput}
-              onChange={handleSearchChange}
+              onChange={handleReferenceChange}
             />
             <IconButton
               href={`${apiHost}/files/${referenceInput}`}
               target="_blank"
               disabled={referenceError !== null || !referenceInput}
               className={classes.iconButton}
-              aria-label="retrieve"
+              aria-label="download"
             >
               <Search />
             </IconButton>
