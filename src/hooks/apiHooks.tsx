@@ -11,7 +11,6 @@ import {
   Health,
   Peer,
   Topology,
-  PingResponse,
   LastChequesForPeerResponse,
 } from '@ethersphere/bee-js'
 
@@ -24,7 +23,7 @@ export interface HealthHook {
 }
 export const useApiHealth = (): HealthHook => {
   const [health, setHealth] = useState<boolean>(false)
-  const [isLoadingHealth, setLoading] = useState<boolean>(false)
+  const [isLoadingHealth, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
@@ -53,7 +52,7 @@ export interface DebugHealthHook {
 
 export const useDebugApiHealth = (): DebugHealthHook => {
   const [nodeHealth, setNodeHealth] = useState<Health | null>(null)
-  const [isLoadingNodeHealth, setLoading] = useState<boolean>(false)
+  const [isLoadingNodeHealth, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
@@ -82,7 +81,7 @@ export interface NodeAddressesHook {
 
 export const useApiNodeAddresses = (): NodeAddressesHook => {
   const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses | null>(null)
-  const [isLoadingNodeAddresses, setLoading] = useState<boolean>(false)
+  const [isLoadingNodeAddresses, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
@@ -111,7 +110,7 @@ export interface NodeTopologyHook {
 
 export const useApiNodeTopology = (): NodeTopologyHook => {
   const [topology, setNodeTopology] = useState<Topology | null>(null)
-  const [isLoading, setLoading] = useState<boolean>(false)
+  const [isLoading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
@@ -139,7 +138,7 @@ export interface ChequebookAddressHook {
 
 export const useApiChequebookAddress = (): ChequebookAddressHook => {
   const [chequebookAddress, setChequebookAddress] = useState<ChequebookAddressResponse | null>(null)
-  const [isLoadingChequebookAddress, setLoading] = useState<boolean>(false)
+  const [isLoadingChequebookAddress, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
@@ -168,7 +167,7 @@ export interface NodePeersHook {
 
 export const useApiNodePeers = (): NodePeersHook => {
   const [peers, setPeers] = useState<Peer[] | null>(null)
-  const [isLoading, setLoading] = useState<boolean>(false)
+  const [isLoading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
@@ -197,7 +196,7 @@ export interface ChequebookBalanceHook {
 
 export const useApiChequebookBalance = (): ChequebookBalanceHook => {
   const [chequebookBalance, setChequebookBalance] = useState<ChequebookBalanceResponse | null>(null)
-  const [isLoadingChequebookBalance, setLoading] = useState<boolean>(false)
+  const [isLoadingChequebookBalance, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
@@ -226,7 +225,7 @@ export interface PeerBalanceHook {
 
 export const useApiPeerBalances = (): PeerBalanceHook => {
   const [peerBalances, setPeerBalances] = useState<BalanceResponse | null>(null)
-  const [isLoadingPeerBalances, setLoading] = useState<boolean>(false)
+  const [isLoadingPeerBalances, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
@@ -255,7 +254,7 @@ export interface PeerChequesHook {
 
 export const useApiPeerCheques = (): PeerChequesHook => {
   const [peerCheques, setPeerCheques] = useState<LastChequesResponse | null>(null)
-  const [isLoadingPeerCheques, setLoading] = useState<boolean>(false)
+  const [isLoadingPeerCheques, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
@@ -284,7 +283,7 @@ export interface PeerLastChequesHook {
 
 export const useApiPeerLastCheque = (peerId: string): PeerLastChequesHook => {
   const [peerCheque, setPeerCheque] = useState<LastChequesForPeerResponse | null>(null)
-  const [isLoadingPeerCheque, setLoading] = useState<boolean>(false)
+  const [isLoadingPeerCheque, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
@@ -313,7 +312,7 @@ export interface SettlementsHook {
 
 export const useApiSettlements = (): SettlementsHook => {
   const [settlements, setSettlements] = useState<AllSettlements | null>(null)
-  const [isLoadingSettlements, setLoading] = useState<boolean>(false)
+  const [isLoadingSettlements, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
@@ -334,35 +333,6 @@ export const useApiSettlements = (): SettlementsHook => {
   return { settlements, isLoadingSettlements, error }
 }
 
-export interface PingPeerHook {
-  peerRTP: PingResponse | null
-  isPingingPeer: boolean
-  error: Error | null
-}
-
-export const useApiPingPeer = (peerId: string): PingPeerHook => {
-  const [peerRTP, setPeerRTP] = useState<PingResponse | null>(null)
-  const [isPingingPeer, setPingingPeer] = useState<boolean>(false)
-  const [error, setError] = useState<Error | null>(null)
-
-  useEffect(() => {
-    setPingingPeer(true)
-    beeDebugApi.connectivity
-      .ping(peerId)
-      .then(res => {
-        setPeerRTP(res)
-      })
-      .catch(error => {
-        setError(error)
-      })
-      .finally(() => {
-        setPingingPeer(false)
-      })
-  }, [peerId])
-
-  return { peerRTP, isPingingPeer, error }
-}
-
 export interface PeerLastCashoutHook {
   peerCashout: LastCashoutActionResponse | null
   isLoadingPeerCashout: boolean
@@ -371,7 +341,7 @@ export interface PeerLastCashoutHook {
 
 export const useApiPeerLastCashout = (peerId: string): PeerLastCashoutHook => {
   const [peerCashout, setPeerCashout] = useState<LastCashoutActionResponse | null>(null)
-  const [isLoadingPeerCashout, setLoading] = useState<boolean>(false)
+  const [isLoadingPeerCashout, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
