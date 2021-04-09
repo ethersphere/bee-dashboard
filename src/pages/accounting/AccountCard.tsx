@@ -7,7 +7,7 @@ import WithdrawlModal from '../../components/WithdrawlModal'
 import DepositModal from '../../components/DepositModal'
 import CashoutModal from '../../components/CashoutModal'
 
-import { ConvertBalanceToBZZ } from '../../utils/common'
+import { fromBZZbaseUnit } from '../../utils'
 
 import type { AllSettlements, ChequebookAddressResponse } from '@ethersphere/bee-js'
 
@@ -71,7 +71,7 @@ function AccountCard(props: Props): ReactElement {
                     Total Balance
                   </Typography>
                   <Typography component="p" variant="h5">
-                    {ConvertBalanceToBZZ(props.chequebookBalance.totalBalance)}
+                    {fromBZZbaseUnit(props.chequebookBalance.totalBalance)}
                   </Typography>
                 </Grid>
                 <Grid item>
@@ -79,7 +79,7 @@ function AccountCard(props: Props): ReactElement {
                     Available Balance
                   </Typography>
                   <Typography component="p" variant="h5">
-                    {ConvertBalanceToBZZ(props.chequebookBalance.availableBalance)}
+                    {fromBZZbaseUnit(props.chequebookBalance.availableBalance)}
                   </Typography>
                 </Grid>
                 <Grid item>
@@ -88,8 +88,8 @@ function AccountCard(props: Props): ReactElement {
                   </Typography>
                   <Typography component="div" variant="h5">
                     <span style={{ marginRight: '7px' }}>
-                      {ConvertBalanceToBZZ(props.settlements?.totalsent || 0)} /{' '}
-                      {ConvertBalanceToBZZ(props.settlements?.totalreceived || 0)}
+                      {fromBZZbaseUnit(props.settlements?.totalsent || 0)} /{' '}
+                      {fromBZZbaseUnit(props.settlements?.totalreceived || 0)}
                     </span>
                     <span
                       style={{
@@ -100,7 +100,7 @@ function AccountCard(props: Props): ReactElement {
                       }}
                     >
                       (
-                      {ConvertBalanceToBZZ(
+                      {fromBZZbaseUnit(
                         (props.settlements && props.settlements?.totalsent - props.settlements?.totalreceived) || 0,
                       )}
                       )

@@ -12,7 +12,7 @@ import {
   CircularProgress,
 } from '@material-ui/core'
 
-import { ConvertBalanceToBZZ } from '../../utils/common'
+import { fromBZZbaseUnit } from '../../utils'
 
 const useStyles = makeStyles({
   table: {
@@ -59,12 +59,12 @@ function BalancesTable(props: Props): ReactElement {
                   <TableCell>{peerBalance.peer}</TableCell>
                   <TableCell
                     style={{
-                      color: ConvertBalanceToBZZ(peerBalance.balance) > 0 ? '#32c48d' : '#c9201f',
+                      color: fromBZZbaseUnit(peerBalance.balance) > 0 ? '#32c48d' : '#c9201f',
                       textAlign: 'right',
                       fontFamily: 'monospace, monospace',
                     }}
                   >
-                    {ConvertBalanceToBZZ(peerBalance.balance).toFixed(7).toLocaleString()}
+                    {fromBZZbaseUnit(peerBalance.balance).toFixed(7).toLocaleString()}
                   </TableCell>
                   <TableCell align="right"></TableCell>
                 </TableRow>

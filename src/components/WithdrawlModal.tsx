@@ -56,7 +56,10 @@ export default function WithdrawlModal(): ReactElement {
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Withdraw Funds</DialogTitle>
         <DialogContent>
-          <DialogContentText>Specify the amount you would like to withdraw from your node.</DialogContentText>
+          <DialogContentText>
+            <p>Specify the amount you would like to withdraw from your node.</p>
+            <p>Test</p>
+          </DialogContentText>
           <Input
             autoFocus
             margin="dense"
