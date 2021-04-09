@@ -6,13 +6,15 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
-import { Snackbar } from '@material-ui/core'
+import { FormHelperText, Snackbar } from '@material-ui/core'
 
 import { beeDebugApi } from '../services/bee'
+import { assertSafeBZZ, toBZZbaseUnitSafe } from '../utils'
 
 export default function WithdrawlModal(): ReactElement {
   const [open, setOpen] = useState(false)
-  const [amount, setAmount] = useState(BigInt(0))
+  const [amount, setAmount] = useState('')
+  const [amountError, setAmountError] = useState<Error | null>(null)
   const [showToast, setToastVisibility] = useState(false)
   const [toastContent, setToastContent] = useState('')
 
@@ -24,20 +26,20 @@ export default function WithdrawlModal(): ReactElement {
     setOpen(false)
   }
 
-  const handleWithdraw = () => {
-    if (amount > 0) {
-      beeDebugApi.chequebook
-        .withdraw(amount)
-        .then(res => {
-          setOpen(false)
-          handleToast(`Successful withdrawl. Transaction ${res.transactionHash}`)
-        })
-        .catch(() => {
-          // FIXME: should probably detail the error
-          handleToast('Error with withdrawing')
-        })
-    } else {
-      handleToast('Must be amount of greater than 0')
+  const handleWithdraw = async () => {
+    try {
+      const a = toBZZbaseUnitSafe(Number(amount))
+
+      if (a > 0) {
+        const { transactionHash } = await beeDebugApi.chequebook.withdraw(BigInt(a))
+        setOpen(false)
+        handleToast(`Successful withdrawl. Transaction ${transactionHash}`)
+      } else {
+        handleToast('Must be amount of greater than 0')
+      }
+    } catch (e) {
+      // FIXME: should probably detail the error
+      handleToast('Error with withdrawing')
     }
   }
 
@@ -45,6 +47,17 @@ export default function WithdrawlModal(): ReactElement {
     setToastContent(text)
     setToastVisibility(true)
     setTimeout(() => setToastVisibility(false), 7000)
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    const value = e.target.value
+    setAmount(value)
+    setAmountError(null)
+    try {
+      assertSafeBZZ(value)
+    } catch (e) {
+      setAmountError(e)
+    }
   }
 
   return (
@@ -56,19 +69,20 @@ export default function WithdrawlModal(): ReactElement {
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Withdraw Funds</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            <p>Specify the amount you would like to withdraw from your node.</p>
-            <p>Test</p>
-          </DialogContentText>
+          <DialogContentText>Specify the amount of BZZ you would like to withdraw from your node.</DialogContentText>
           <Input
             autoFocus
             margin="dense"
             id="name"
-            type="number"
+            type="text"
             placeholder="Amount"
             fullWidth
-            onChange={e => setAmount(BigInt(e.target.value))}
+            value={amount}
+            onChange={handleChange}
           />
+          {amountError && (
+            <FormHelperText error>Please provide valid BZZ value no greater than 0.9 BZZ </FormHelperText>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">

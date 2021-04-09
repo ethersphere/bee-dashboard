@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import {
   Table,
