@@ -68,7 +68,7 @@ function AccountCard(props: Props): ReactElement {
               <Grid container spacing={5}>
                 <Grid item>
                   <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                    Total Balance
+                    Total Balance (BZZ)
                   </Typography>
                   <Typography component="p" variant="h5">
                     {fromBZZbaseUnit(props.chequebookBalance.totalBalance)}
@@ -76,7 +76,7 @@ function AccountCard(props: Props): ReactElement {
                 </Grid>
                 <Grid item>
                   <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                    Available Balance
+                    Available Balance (BZZ)
                   </Typography>
                   <Typography component="p" variant="h5">
                     {fromBZZbaseUnit(props.chequebookBalance.availableBalance)}
@@ -84,7 +84,7 @@ function AccountCard(props: Props): ReactElement {
                 </Grid>
                 <Grid item>
                   <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                    Total Sent / Received
+                    Total Sent / Received (BZZ)
                   </Typography>
                   <Typography component="div" variant="h5">
                     <span style={{ marginRight: '7px' }}>

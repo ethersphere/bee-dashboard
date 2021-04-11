@@ -9,11 +9,12 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import { FormHelperText, Snackbar } from '@material-ui/core'
 
 import { beeDebugApi } from '../services/bee'
-import { assertSafeBZZ, toBZZbaseUnitSafe } from '../utils'
+import { Token } from '../models/Token'
 
 export default function WithdrawlModal(): ReactElement {
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState('')
+  const [amountToken, setAmountToken] = useState<Token | null>(null)
   const [amountError, setAmountError] = useState<Error | null>(null)
   const [showToast, setToastVisibility] = useState(false)
   const [toastContent, setToastContent] = useState('')
@@ -27,20 +28,16 @@ export default function WithdrawlModal(): ReactElement {
   }
 
   const handleWithdraw = async () => {
-    try {
-      const a = toBZZbaseUnitSafe(Number(amount))
-
-      if (a > 0) {
-        const { transactionHash } = await beeDebugApi.chequebook.withdraw(BigInt(a))
+    if (amountToken?.toBigNumber.isGreaterThan(0)) {
+      try {
+        const { transactionHash } = await beeDebugApi.chequebook.withdraw(amountToken.toBigInt)
         setOpen(false)
         handleToast(`Successful withdrawl. Transaction ${transactionHash}`)
-      } else {
-        handleToast('Must be amount of greater than 0')
+      } catch (e) {
+        // FIXME: should probably detail the error
+        handleToast(`Error with withdrawing. Error: ${e.message}`)
       }
-    } catch (e) {
-      // FIXME: should probably detail the error
-      handleToast('Error with withdrawing')
-    }
+    } else handleToast('Must be amount of greater than 0')
   }
 
   const handleToast = (text: string) => {
@@ -54,7 +51,8 @@ export default function WithdrawlModal(): ReactElement {
     setAmount(value)
     setAmountError(null)
     try {
-      assertSafeBZZ(value)
+      const t = Token.fromDecimal(value)
+      setAmountToken(t)
     } catch (e) {
       setAmountError(e)
     }
@@ -81,7 +79,9 @@ export default function WithdrawlModal(): ReactElement {
             onChange={handleChange}
           />
           {amountError && (
-            <FormHelperText error>Please provide valid BZZ value no greater than 0.9 BZZ </FormHelperText>
+            <FormHelperText error>
+              Please provide valid BZZ amount (max 16 decimals). Error: {amountError.message}
+            </FormHelperText>
           )}
         </DialogContent>
         <DialogActions>

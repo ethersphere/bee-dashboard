@@ -1,4 +1,4 @@
-import React from 'react'
+import type { ReactElement } from 'react'
 
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Paper, InputBase, IconButton } from '@material-ui/core'
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-export default function SearchBar() {
+export default function SearchBar(): ReactElement {
   const classes = useStyles()
 
   return (

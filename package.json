@@ -28,6 +28,7 @@
     "@types/react-router": "^5.1.13",
     "@types/react-router-dom": "^5.1.7",
     "axios": "^0.21.1",
+    "bignumber.js": "^9.0.1",
     "feather-icons": "^4.28.0",
     "material-ui-dropzone": "^3.5.0",
     "qrcode.react": "^1.0.1",
