@@ -7,11 +7,28 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { FormHelperText, Snackbar } from '@material-ui/core'
-
-import { beeDebugApi } from '../services/bee'
 import { Token } from '../models/Token'
+import type { BigNumber } from 'bignumber.js'
 
-export default function WithdrawlModal(): ReactElement {
+interface Props {
+  successMessage: string
+  errorMessage: string
+  dialogMessage: string
+  label: string
+  max?: BigNumber
+  min?: BigNumber
+  action: (amount: bigint) => Promise<{ transactionHash: string }>
+}
+
+export default function WithdrawModal({
+  successMessage,
+  errorMessage,
+  dialogMessage,
+  min,
+  max,
+  label,
+  action,
+}: Props): ReactElement {
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState('')
   const [amountToken, setAmountToken] = useState<Token | null>(null)
@@ -27,17 +44,16 @@ export default function WithdrawlModal(): ReactElement {
     setOpen(false)
   }
 
-  const handleWithdraw = async () => {
-    if (amountToken?.toBigNumber.isGreaterThan(0)) {
-      try {
-        const { transactionHash } = await beeDebugApi.chequebook.withdraw(amountToken.toBigInt)
-        setOpen(false)
-        handleToast(`Successful withdrawl. Transaction ${transactionHash}`)
-      } catch (e) {
-        // FIXME: should probably detail the error
-        handleToast(`Error with withdrawing. Error: ${e.message}`)
-      }
-    } else handleToast('Must be amount of greater than 0')
+  const handleAction = async () => {
+    if (amountToken === null) return
+
+    try {
+      const { transactionHash } = await action(amountToken.toBigInt)
+      setOpen(false)
+      handleToast(`${successMessage} Transaction ${transactionHash}`)
+    } catch (e) {
+      handleToast(`${errorMessage} Error: ${e.message}`)
+    }
   }
 
   const handleToast = (text: string) => {
@@ -53,6 +69,10 @@ export default function WithdrawlModal(): ReactElement {
     try {
       const t = Token.fromDecimal(value)
       setAmountToken(t)
+
+      if (min && t.toDecimal.isLessThan(min)) setAmountError(new Error(`Needs to be more than ${min}`))
+
+      if (max && t.toDecimal.isGreaterThan(max)) setAmountError(new Error(`Needs to be less than ${max}`))
     } catch (e) {
       setAmountError(e)
     }
@@ -61,13 +81,13 @@ export default function WithdrawlModal(): ReactElement {
   return (
     <div>
       <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-        Withdraw
+        {label}
       </Button>
       <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={showToast} message={toastContent} />
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Withdraw Funds</DialogTitle>
+        <DialogTitle id="form-dialog-title">{label}</DialogTitle>
         <DialogContent>
-          <DialogContentText>Specify the amount of BZZ you would like to withdraw from your node.</DialogContentText>
+          <DialogContentText>{dialogMessage}</DialogContentText>
           <Input
             autoFocus
             margin="dense"
@@ -88,8 +108,8 @@ export default function WithdrawlModal(): ReactElement {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleWithdraw} color="primary">
-            Withdraw
+          <Button onClick={handleAction} color="primary">
+            {label}
           </Button>
         </DialogActions>
       </Dialog>

@@ -3,8 +3,8 @@ import { ReactElement } from 'react'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { Card, CardContent, Typography, Grid } from '@material-ui/core/'
 import { Skeleton } from '@material-ui/lab'
-import WithdrawlModal from '../../components/WithdrawlModal'
-import DepositModal from '../../components/DepositModal'
+import WithdrawModal from '../../containers/WithdrawModal'
+import DepositModal from '../../containers/DepositModal'
 import CashoutModal from '../../components/CashoutModal'
 
 import { fromBZZbaseUnit } from '../../utils'
@@ -55,7 +55,7 @@ function AccountCard(props: Props): ReactElement {
       <div style={{ justifyContent: 'space-between', display: 'flex' }}>
         <h2 style={{ marginTop: '0px' }}>Accounting</h2>
         <div style={{ display: 'flex' }}>
-          <WithdrawlModal />
+          <WithdrawModal />
           <DepositModal />
           <CashoutModal />
         </div>
