@@ -1,20 +1,22 @@
 import { BigNumber } from 'bignumber.js'
 import { isInteger, makeBigNumber } from '../utils'
 
-const BZZ_DECIMALS = new BigNumber(16)
+const POSSIBLE_DECIMALS = [18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+type digits = typeof POSSIBLE_DECIMALS[number]
+
+const BZZ_DECIMALS = 16
 
 export class Token {
   private amount: BigNumber
-  private readonly decimals: BigNumber
+  private readonly decimals: digits
 
-  constructor(amount: BigNumber | string | bigint, decimals: BigNumber | string | bigint = BZZ_DECIMALS) {
+  constructor(amount: BigNumber | string | bigint, decimals: digits = BZZ_DECIMALS) {
     const a = makeBigNumber(amount)
-    const d = makeBigNumber(decimals)
 
-    if (!isInteger(a) || !isInteger(d)) throw new TypeError('Not a valid token values')
+    if (!isInteger(a) || !POSSIBLE_DECIMALS.includes(decimals)) throw new TypeError('Not a valid token values')
 
     this.amount = a
-    this.decimals = d
+    this.decimals = decimals
   }
 
   /**
@@ -27,17 +29,13 @@ export class Token {
    *
    * @returns new Token
    */
-  static fromDecimal(
-    amount: BigNumber | string | bigint,
-    decimals: BigNumber | string | bigint = BZZ_DECIMALS,
-  ): Token | never {
+  static fromDecimal(amount: BigNumber | string | bigint, decimals: digits = BZZ_DECIMALS): Token | never {
     const a = makeBigNumber(amount)
-    const d = makeBigNumber(decimals)
 
     // No need to do any validation here, it is done when the new token is created
-    const t = a.multipliedBy(new BigNumber(10).pow(d))
+    const t = a.multipliedBy(new BigNumber(10).pow(decimals))
 
-    return new Token(t, d)
+    return new Token(t, decimals)
   }
 
   get toBigInt(): bigint {

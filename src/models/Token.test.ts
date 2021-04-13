@@ -4,14 +4,22 @@ import { Token } from './Token'
 describe('models/Token', () => {
   describe('Token.fromDecimal', () => {
     const values = [
-      { bzz: '0', baseUnits: 0 },
+      { bzz: '0', baseUnits: '0' },
       { bzz: '0.1', baseUnits: BigInt('1000000000000000') },
       { bzz: '9.9', baseUnits: BigInt('99000000000000000') },
     ]
 
+    // Test with default 16 decimal places
     values.forEach(({ bzz, baseUnits }) => {
       test(`converting ${bzz} => ${baseUnits}`, () => {
         expect(Token.fromDecimal(bzz).toBigNumber.eq(baseUnits.toString())).toBe(true)
+      })
+    })
+
+    // Test with 0 decimal places
+    values.forEach(({ baseUnits }) => {
+      test(`converting ${baseUnits} => ${baseUnits} with 0 decimals`, () => {
+        expect(Token.fromDecimal(baseUnits, 0).toBigNumber.eq(baseUnits.toString())).toBe(true)
       })
     })
   })
