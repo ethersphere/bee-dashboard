@@ -7,7 +7,7 @@ type digits = typeof POSSIBLE_DECIMALS[number]
 const BZZ_DECIMALS = 16
 
 export class Token {
-  private amount: BigNumber
+  private amount: BigNumber // Represented in the base units, so it is always an integer value
   private readonly decimals: digits
 
   constructor(amount: BigNumber | string | bigint, decimals: digits = BZZ_DECIMALS) {
