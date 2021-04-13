@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import {
   Table,
@@ -12,7 +12,7 @@ import {
   CircularProgress,
 } from '@material-ui/core'
 
-import { ConvertBalanceToBZZ } from '../../utils/common'
+import { fromBZZbaseUnit } from '../../utils'
 import EthereumAddress from '../../components/EthereumAddress'
 import ClipboardCopy from '../../components/ClipboardCopy'
 import PeerDetailDrawer from './PeerDetailDrawer'
@@ -80,7 +80,7 @@ function ChequebookTable(props: Props): ReactElement {
                       <p style={{ marginBottom: '0px', fontFamily: 'monospace, monospace', display: 'flex' }}>
                         <span style={{ whiteSpace: 'nowrap', marginRight: '12px', paddingTop: '3px' }}>
                           {peerCheque.lastreceived?.payout
-                            ? `${ConvertBalanceToBZZ(peerCheque.lastreceived?.payout).toFixed(7).toLocaleString()} from`
+                            ? `${fromBZZbaseUnit(peerCheque.lastreceived?.payout).toFixed(7).toLocaleString()} from`
                             : '-'}
                         </span>
                         {peerCheque.lastreceived ? (
@@ -97,7 +97,7 @@ function ChequebookTable(props: Props): ReactElement {
                       <p style={{ marginBottom: '0px', fontFamily: 'monospace, monospace', display: 'flex' }}>
                         <span style={{ whiteSpace: 'nowrap', marginRight: '12px', paddingTop: '3px' }}>
                           {peerCheque.lastsent?.payout
-                            ? `${ConvertBalanceToBZZ(peerCheque.lastsent?.payout).toFixed(7).toLocaleString()} to`
+                            ? `${fromBZZbaseUnit(peerCheque.lastsent?.payout).toFixed(7).toLocaleString()} to`
                             : '-'}
                         </span>
                         {peerCheque.lastsent ? (

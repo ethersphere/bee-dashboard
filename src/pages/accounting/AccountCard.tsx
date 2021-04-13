@@ -3,11 +3,11 @@ import { ReactElement } from 'react'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { Card, CardContent, Typography, Grid } from '@material-ui/core/'
 import { Skeleton } from '@material-ui/lab'
-import WithdrawlModal from '../../components/WithdrawlModal'
-import DepositModal from '../../components/DepositModal'
+import WithdrawModal from '../../containers/WithdrawModal'
+import DepositModal from '../../containers/DepositModal'
 import CashoutModal from '../../components/CashoutModal'
 
-import { ConvertBalanceToBZZ } from '../../utils/common'
+import { fromBZZbaseUnit } from '../../utils'
 
 import type { AllSettlements, ChequebookAddressResponse } from '@ethersphere/bee-js'
 
@@ -55,7 +55,7 @@ function AccountCard(props: Props): ReactElement {
       <div style={{ justifyContent: 'space-between', display: 'flex' }}>
         <h2 style={{ marginTop: '0px' }}>Accounting</h2>
         <div style={{ display: 'flex' }}>
-          <WithdrawlModal />
+          <WithdrawModal />
           <DepositModal />
           <CashoutModal />
         </div>
@@ -68,28 +68,28 @@ function AccountCard(props: Props): ReactElement {
               <Grid container spacing={5}>
                 <Grid item>
                   <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                    Total Balance
+                    Total Balance (BZZ)
                   </Typography>
                   <Typography component="p" variant="h5">
-                    {ConvertBalanceToBZZ(props.chequebookBalance.totalBalance)}
+                    {fromBZZbaseUnit(props.chequebookBalance.totalBalance)}
                   </Typography>
                 </Grid>
                 <Grid item>
                   <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                    Available Balance
+                    Available Balance (BZZ)
                   </Typography>
                   <Typography component="p" variant="h5">
-                    {ConvertBalanceToBZZ(props.chequebookBalance.availableBalance)}
+                    {fromBZZbaseUnit(props.chequebookBalance.availableBalance)}
                   </Typography>
                 </Grid>
                 <Grid item>
                   <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                    Total Sent / Received
+                    Total Sent / Received (BZZ)
                   </Typography>
                   <Typography component="div" variant="h5">
                     <span style={{ marginRight: '7px' }}>
-                      {ConvertBalanceToBZZ(props.settlements?.totalsent || 0)} /{' '}
-                      {ConvertBalanceToBZZ(props.settlements?.totalreceived || 0)}
+                      {fromBZZbaseUnit(props.settlements?.totalsent || 0)} /{' '}
+                      {fromBZZbaseUnit(props.settlements?.totalreceived || 0)}
                     </span>
                     <span
                       style={{
@@ -100,7 +100,7 @@ function AccountCard(props: Props): ReactElement {
                       }}
                     >
                       (
-                      {ConvertBalanceToBZZ(
+                      {fromBZZbaseUnit(
                         (props.settlements && props.settlements?.totalsent - props.settlements?.totalreceived) || 0,
                       )}
                       )

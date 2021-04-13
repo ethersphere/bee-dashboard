@@ -1,6 +1,6 @@
 import { Typography } from '@material-ui/core/'
 import EthereumAddress from '../../../components/EthereumAddress'
-import DepositModal from '../../../components/DepositModal'
+import DepositModal from '../../../containers/DepositModal'
 import CodeBlockTabs from '../../../components/CodeBlockTabs'
 import type { ReactElement } from 'react'
 

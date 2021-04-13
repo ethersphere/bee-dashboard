@@ -12,7 +12,7 @@ import {
   CircularProgress,
 } from '@material-ui/core'
 
-import { ConvertBalanceToBZZ } from '../../utils/common'
+import { fromBZZbaseUnit } from '../../utils'
 
 import type { AllSettlements, Settlements } from '@ethersphere/bee-js'
 
@@ -51,10 +51,10 @@ function SettlementsTable(props: Props): ReactElement {
                 <TableRow key={item.peer}>
                   <TableCell>{item.peer}</TableCell>
                   <TableCell style={{ fontFamily: 'monospace, monospace' }}>
-                    {item.received > 0 ? ConvertBalanceToBZZ(item.received).toFixed(7).toLocaleString() : item.received}
+                    {item.received > 0 ? fromBZZbaseUnit(item.received).toFixed(7).toLocaleString() : item.received}
                   </TableCell>
                   <TableCell style={{ fontFamily: 'monospace, monospace' }}>
-                    {item.sent > 0 ? ConvertBalanceToBZZ(item.sent).toFixed(7).toLocaleString() : item.sent}
+                    {item.sent > 0 ? fromBZZbaseUnit(item.sent).toFixed(7).toLocaleString() : item.sent}
                   </TableCell>
                 </TableRow>
               ))}

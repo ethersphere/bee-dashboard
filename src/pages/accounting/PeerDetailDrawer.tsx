@@ -3,7 +3,7 @@ import { Paper, Container, Drawer, Button, Typography, CircularProgress, Grid } 
 import ClipboardCopy from '../../components/ClipboardCopy'
 import { beeDebugApi } from '../../services/bee'
 import EthereumAddress from '../../components/EthereumAddress'
-import { ConvertBalanceToBZZ } from '../../utils/common'
+import { fromBZZbaseUnit } from '../../utils'
 import { LastCashoutActionResponse, LastChequesForPeerResponse } from '@ethersphere/bee-js'
 
 function truncStringPortion(str: string, firstCharCount = 10, endCharCount = 10) {
@@ -87,7 +87,7 @@ export default function Index(props: Props): ReactElement {
                       Payout:
                       <span style={{ marginBottom: '0px', fontFamily: 'monospace, monospace' }}>
                         {' '}
-                        {peerCheque?.lastsent?.payout ? ConvertBalanceToBZZ(peerCheque?.lastsent?.payout) : '-'}
+                        {peerCheque?.lastsent?.payout ? fromBZZbaseUnit(peerCheque?.lastsent?.payout) : '-'}
                       </span>
                     </p>
                     <p>
@@ -105,7 +105,7 @@ export default function Index(props: Props): ReactElement {
                       Payout:
                       <span style={{ marginBottom: '0px', fontFamily: 'monospace, monospace' }}>
                         {' '}
-                        {peerCheque?.lastreceived?.payout ? ConvertBalanceToBZZ(peerCheque?.lastreceived?.payout) : '-'}
+                        {peerCheque?.lastreceived?.payout ? fromBZZbaseUnit(peerCheque?.lastreceived?.payout) : '-'}
                       </span>
                     </p>
                     <p>
@@ -124,14 +124,14 @@ export default function Index(props: Props): ReactElement {
                     <p>
                       Cumulative Payout:
                       <span style={{ marginBottom: '0px', fontFamily: 'monospace, monospace' }}>
-                        {peerCashout?.cumulativePayout ? ConvertBalanceToBZZ(peerCashout?.cumulativePayout) : '-'}
+                        {peerCashout?.cumulativePayout ? fromBZZbaseUnit(peerCashout?.cumulativePayout) : '-'}
                       </span>
                     </p>
                     <p>
                       Last Payout:
                       <span style={{ marginBottom: '0px', fontFamily: 'monospace, monospace' }}>
                         {' '}
-                        {peerCashout?.result.lastPayout ? ConvertBalanceToBZZ(peerCashout?.result.lastPayout) : '-'}
+                        {peerCashout?.result.lastPayout ? fromBZZbaseUnit(peerCashout?.result.lastPayout) : '-'}
                       </span>
                       <span> {peerCashout?.result.bounced ? 'Bounced' : ''}</span>
                     </p>
