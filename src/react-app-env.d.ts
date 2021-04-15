@@ -28,6 +28,7 @@ interface StatusChequebookHook extends StatusHookCommon {
 }
 
 interface Accounting {
+  uncashedAmount: number
   balance: number
   received: number
   sent: number

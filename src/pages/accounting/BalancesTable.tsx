@@ -17,9 +17,10 @@ const useStyles = makeStyles({
 })
 interface Props {
   accounting: Record<string, Accounting> | null
+  isLoadingUncashed: boolean
 }
 
-function BalancesTable({ accounting }: Props): ReactElement | null {
+function BalancesTable({ accounting, isLoadingUncashed }: Props): ReactElement | null {
   if (accounting === null) return null
   const classes = useStyles()
 
@@ -32,6 +33,7 @@ function BalancesTable({ accounting }: Props): ReactElement | null {
             <TableCell style={{ textAlign: 'right' }}>Outstanding Balance</TableCell>
             <TableCell style={{ textAlign: 'right' }}>Settlements Sent / Received</TableCell>
             <TableCell style={{ textAlign: 'right' }}>Total</TableCell>
+            <TableCell style={{ textAlign: 'right' }}>Uncashed Amount</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -67,6 +69,10 @@ function BalancesTable({ accounting }: Props): ReactElement | null {
                   {fromBZZbaseUnit(values.balance + values.received - values.sent).toFixed(7)}
                 </span>{' '}
                 BZZ
+              </TableCell>
+              <TableCell className={classes.values}>
+                {isLoadingUncashed && 'loading...'}
+                {!isLoadingUncashed && `${fromBZZbaseUnit(values.uncashedAmount).toFixed(7)} BZZ`}
               </TableCell>
             </TableRow>
           ))}
