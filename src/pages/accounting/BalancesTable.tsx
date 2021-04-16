@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper
 
 import { fromBZZbaseUnit } from '../../utils'
 import ClipboardCopy from '../../components/ClipboardCopy'
+import CashoutModal from '../../components/CashoutModal'
 import PeerDetailDrawer from './PeerDetail'
 
 const useStyles = makeStyles({
@@ -34,6 +35,7 @@ function BalancesTable({ accounting, isLoadingUncashed }: Props): ReactElement |
             <TableCell style={{ textAlign: 'right' }}>Settlements Sent / Received</TableCell>
             <TableCell style={{ textAlign: 'right' }}>Total</TableCell>
             <TableCell style={{ textAlign: 'right' }}>Uncashed Amount</TableCell>
+            <TableCell style={{ textAlign: 'right' }}></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -72,7 +74,13 @@ function BalancesTable({ accounting, isLoadingUncashed }: Props): ReactElement |
               </TableCell>
               <TableCell className={classes.values}>
                 {isLoadingUncashed && 'loading...'}
-                {!isLoadingUncashed && `${fromBZZbaseUnit(values.uncashedAmount).toFixed(7)} BZZ`}
+                {!isLoadingUncashed && values.uncashedAmount > 0 && (
+                  <>{fromBZZbaseUnit(values.uncashedAmount).toFixed(7)} BZZ</>
+                )}
+                {!isLoadingUncashed && values.uncashedAmount <= 0 && '0 BZZ'}
+              </TableCell>
+              <TableCell className={classes.values}>
+                {values.uncashedAmount > 0 && <CashoutModal uncashedAmount={values.uncashedAmount} peerId={peer} />}
               </TableCell>
             </TableRow>
           ))}
