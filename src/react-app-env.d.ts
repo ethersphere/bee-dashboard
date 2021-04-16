@@ -28,6 +28,7 @@ interface StatusChequebookHook extends StatusHookCommon {
 }
 
 interface Accounting {
+  peer: string
   uncashedAmount: number
   balance: number
   received: number

@@ -34,7 +34,7 @@ export default function Accounting(): ReactElement {
   const { nodeAddresses, isLoadingNodeAddresses } = useApiNodeAddresses()
   const { health, isLoadingHealth } = useApiHealth()
   const { nodeHealth, isLoadingNodeHealth } = useDebugApiHealth()
-  const { isLoading, totalsent, totalreceived, accounting, isLoadingUncashed } = useAccounting()
+  const { isLoading, totalsent, totalreceived, accounting, isLoadingUncashed, error } = useAccounting()
 
   if (isLoadingHealth || isLoadingNodeHealth) {
     return (
@@ -61,7 +61,12 @@ export default function Accounting(): ReactElement {
         chequebookAddress={chequebookAddress}
         isLoadingChequebookAddress={isLoadingChequebookAddress}
       />
-      <BalancesTable accounting={accounting} isLoadingUncashed={isLoadingUncashed} />
+      {error && (
+        <Container style={{ textAlign: 'center', padding: '50px' }}>
+          Error loading accountin details: {error.message}
+        </Container>
+      )}
+      {!error && <BalancesTable accounting={accounting} isLoadingUncashed={isLoadingUncashed} />}
     </div>
   )
 }

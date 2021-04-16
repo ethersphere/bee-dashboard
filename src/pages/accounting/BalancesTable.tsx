@@ -17,8 +17,8 @@ const useStyles = makeStyles({
   },
 })
 interface Props {
-  accounting: Record<string, Accounting> | null
   isLoadingUncashed: boolean
+  accounting: Accounting[] | null
 }
 
 function BalancesTable({ accounting, isLoadingUncashed }: Props): ReactElement | null {
@@ -39,7 +39,7 @@ function BalancesTable({ accounting, isLoadingUncashed }: Props): ReactElement |
           </TableRow>
         </TableHead>
         <TableBody>
-          {Object.entries(accounting).map(([peer, values]) => (
+          {accounting.map(({ peer, balance, received, sent, uncashedAmount }) => (
             <TableRow key={peer}>
               <TableCell>
                 <div style={{ display: 'flex' }}>
@@ -52,35 +52,33 @@ function BalancesTable({ accounting, isLoadingUncashed }: Props): ReactElement |
               <TableCell className={classes.values}>
                 <span
                   style={{
-                    color: values.balance > 0 ? '#32c48d' : '#c9201f',
+                    color: balance > 0 ? '#32c48d' : '#c9201f',
                   }}
                 >
-                  {fromBZZbaseUnit(values.balance).toFixed(7).toLocaleString()}
+                  {fromBZZbaseUnit(balance).toFixed(7).toLocaleString()}
                 </span>{' '}
                 BZZ
               </TableCell>
               <TableCell className={classes.values}>
-                -{fromBZZbaseUnit(values.sent).toFixed(7)} / {fromBZZbaseUnit(values.received).toFixed(7)} BZZ
+                -{fromBZZbaseUnit(sent).toFixed(7)} / {fromBZZbaseUnit(received).toFixed(7)} BZZ
               </TableCell>
               <TableCell className={classes.values}>
                 <span
                   style={{
-                    color: values.balance + values.received - values.sent > 0 ? '#32c48d' : '#c9201f',
+                    color: balance + received - sent > 0 ? '#32c48d' : '#c9201f',
                   }}
                 >
-                  {fromBZZbaseUnit(values.balance + values.received - values.sent).toFixed(7)}
+                  {fromBZZbaseUnit(balance + received - sent).toFixed(7)}
                 </span>{' '}
                 BZZ
               </TableCell>
               <TableCell className={classes.values}>
                 {isLoadingUncashed && 'loading...'}
-                {!isLoadingUncashed && values.uncashedAmount > 0 && (
-                  <>{fromBZZbaseUnit(values.uncashedAmount).toFixed(7)} BZZ</>
-                )}
-                {!isLoadingUncashed && values.uncashedAmount <= 0 && '0 BZZ'}
+                {!isLoadingUncashed && uncashedAmount > 0 && <>{fromBZZbaseUnit(uncashedAmount).toFixed(7)} BZZ</>}
+                {!isLoadingUncashed && uncashedAmount <= 0 && '0 BZZ'}
               </TableCell>
               <TableCell className={classes.values}>
-                {values.uncashedAmount > 0 && <CashoutModal uncashedAmount={values.uncashedAmount} peerId={peer} />}
+                {uncashedAmount > 0 && <CashoutModal uncashedAmount={uncashedAmount} peerId={peer} />}
               </TableCell>
             </TableRow>
           ))}
