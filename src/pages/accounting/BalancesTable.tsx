@@ -74,8 +74,7 @@ function BalancesTable({ accounting, isLoadingUncashed }: Props): ReactElement |
               </TableCell>
               <TableCell className={classes.values}>
                 {isLoadingUncashed && 'loading...'}
-                {!isLoadingUncashed && uncashedAmount > 0 && <>{fromBZZbaseUnit(uncashedAmount).toFixed(7)} BZZ</>}
-                {!isLoadingUncashed && uncashedAmount <= 0 && '0 BZZ'}
+                {!isLoadingUncashed && <>{uncashedAmount > 0 ? fromBZZbaseUnit(uncashedAmount).toFixed(7) : '0'} BZZ</>}
               </TableCell>
               <TableCell className={classes.values}>
                 {uncashedAmount > 0 && <CashoutModal uncashedAmount={uncashedAmount} peerId={peer} />}
