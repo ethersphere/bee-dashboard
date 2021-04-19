@@ -66,7 +66,7 @@ function AccountCard({ totalreceived, totalsent, chequebookBalance, isLoading }:
               <Typography component="h2" variant="h6" color="primary" gutterBottom>
                 Total Balance
               </Typography>
-              <Typography component="p" variant="h5">
+              <Typography variant="h5">
                 {fromBZZbaseUnit(chequebookBalance?.totalBalance || 0).toFixed(7)} BZZ
               </Typography>
             </div>
@@ -74,7 +74,7 @@ function AccountCard({ totalreceived, totalsent, chequebookBalance, isLoading }:
               <Typography component="h2" variant="h6" color="primary" gutterBottom>
                 Available Uncommitted Balance
               </Typography>
-              <Typography component="p" variant="h5">
+              <Typography variant="h5">
                 {fromBZZbaseUnit(chequebookBalance?.availableBalance || 0).toFixed(7)} BZZ
               </Typography>
             </div>
@@ -82,10 +82,8 @@ function AccountCard({ totalreceived, totalsent, chequebookBalance, isLoading }:
               <Typography component="h2" variant="h6" color="primary" gutterBottom>
                 Total Sent / Received
               </Typography>
-              <Typography component="div" variant="h5">
-                <span style={{ marginRight: '7px' }}>
-                  {fromBZZbaseUnit(totalsent).toFixed(7)} / {fromBZZbaseUnit(totalreceived).toFixed(7)} BZZ
-                </span>
+              <Typography variant="h5">
+                {fromBZZbaseUnit(totalsent).toFixed(7)} / {fromBZZbaseUnit(totalreceived).toFixed(7)} BZZ
               </Typography>
             </div>
           </CardContent>

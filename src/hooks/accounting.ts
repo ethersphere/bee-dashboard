@@ -33,10 +33,14 @@ function mergeAccounting(
 
   balances.forEach(
     // Some peers may not have settlement but all have balance (therefore initialize sent, received and uncashed to 0)
-    ({ peer, balance }) => (accounting[peer] = { peer, balance, sent: 0, received: 0, uncashedAmount: 0 }),
+    ({ peer, balance }) =>
+      (accounting[peer] = { peer, balance, sent: 0, received: 0, uncashedAmount: 0, total: balance }),
   )
 
-  settlements.forEach(({ peer, sent, received }) => (accounting[peer] = { ...accounting[peer], sent, received }))
+  settlements.forEach(
+    ({ peer, sent, received }) =>
+      (accounting[peer] = { ...accounting[peer], sent, received, total: accounting[peer].balance + received - sent }),
+  )
 
   // If there are no cheques (and hence last cashout actions), we don't need to sort and can return values right away
   if (!uncashedAmounts) return Object.values(accounting)

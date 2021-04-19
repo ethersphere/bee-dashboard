@@ -33,4 +33,5 @@ interface Accounting {
   balance: number
   received: number
   sent: number
+  total: number
 }

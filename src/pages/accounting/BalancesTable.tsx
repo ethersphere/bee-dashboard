@@ -27,19 +27,19 @@ function BalancesTable({ accounting, isLoadingUncashed }: Props): ReactElement |
 
   return (
     <TableContainer component={Paper}>
-      <Table className={classes.table} size="small" aria-label="simple table">
+      <Table className={classes.table} size="small" aria-label="Balances Table">
         <TableHead>
           <TableRow>
             <TableCell>Peer</TableCell>
-            <TableCell style={{ textAlign: 'right' }}>Outstanding Balance</TableCell>
-            <TableCell style={{ textAlign: 'right' }}>Settlements Sent / Received</TableCell>
-            <TableCell style={{ textAlign: 'right' }}>Total</TableCell>
-            <TableCell style={{ textAlign: 'right' }}>Uncashed Amount</TableCell>
-            <TableCell style={{ textAlign: 'right' }}></TableCell>
+            <TableCell align="right">Outstanding Balance</TableCell>
+            <TableCell align="right">Settlements Sent / Received</TableCell>
+            <TableCell align="right">Total</TableCell>
+            <TableCell align="right">Uncashed Amount</TableCell>
+            <TableCell />
           </TableRow>
         </TableHead>
         <TableBody>
-          {accounting.map(({ peer, balance, received, sent, uncashedAmount }) => (
+          {accounting.map(({ peer, balance, received, sent, uncashedAmount, total }) => (
             <TableRow key={peer}>
               <TableCell>
                 <div style={{ display: 'flex' }}>
@@ -65,10 +65,10 @@ function BalancesTable({ accounting, isLoadingUncashed }: Props): ReactElement |
               <TableCell className={classes.values}>
                 <span
                   style={{
-                    color: balance + received - sent > 0 ? '#32c48d' : '#c9201f',
+                    color: total > 0 ? '#32c48d' : '#c9201f',
                   }}
                 >
-                  {fromBZZbaseUnit(balance + received - sent).toFixed(7)}
+                  {fromBZZbaseUnit(total).toFixed(7)}
                 </span>{' '}
                 BZZ
               </TableCell>
