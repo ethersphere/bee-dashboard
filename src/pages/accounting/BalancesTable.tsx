@@ -1,79 +1,89 @@
 import type { ReactElement } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  TableHead,
-  Paper,
-  Container,
-  CircularProgress,
-} from '@material-ui/core'
+import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper } from '@material-ui/core'
 
 import { fromBZZbaseUnit } from '../../utils'
+import ClipboardCopy from '../../components/ClipboardCopy'
+import CashoutModal from '../../components/CashoutModal'
+import PeerDetailDrawer from './PeerDetail'
 
 const useStyles = makeStyles({
   table: {
     minWidth: 650,
   },
+  values: {
+    textAlign: 'right',
+    fontFamily: 'monospace, monospace',
+  },
 })
-
-interface PeerBalance {
-  balance: number
-  peer: string
-}
-
-interface PeerBalances {
-  balances: Array<PeerBalance>
-}
-
 interface Props {
-  peerBalances: PeerBalances | null
-  loading?: boolean
+  isLoadingUncashed: boolean
+  accounting: Accounting[] | null
 }
 
-function BalancesTable(props: Props): ReactElement {
+function BalancesTable({ accounting, isLoadingUncashed }: Props): ReactElement | null {
+  if (accounting === null) return null
   const classes = useStyles()
 
   return (
-    <div>
-      {props.loading ? (
-        <Container style={{ textAlign: 'center', padding: '50px' }}>
-          <CircularProgress />
-        </Container>
-      ) : (
-        <TableContainer component={Paper}>
-          <Table className={classes.table} size="small" aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Peer</TableCell>
-                <TableCell style={{ textAlign: 'right' }}>Balance (BZZ)</TableCell>
-                <TableCell align="right"></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {props.peerBalances?.balances.map((peerBalance: PeerBalance) => (
-                <TableRow key={peerBalance.peer}>
-                  <TableCell>{peerBalance.peer}</TableCell>
-                  <TableCell
-                    style={{
-                      color: fromBZZbaseUnit(peerBalance.balance) > 0 ? '#32c48d' : '#c9201f',
-                      textAlign: 'right',
-                      fontFamily: 'monospace, monospace',
-                    }}
-                  >
-                    {fromBZZbaseUnit(peerBalance.balance).toFixed(7).toLocaleString()}
-                  </TableCell>
-                  <TableCell align="right"></TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-    </div>
+    <TableContainer component={Paper}>
+      <Table className={classes.table} size="small" aria-label="Balances Table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Peer</TableCell>
+            <TableCell align="right">Outstanding Balance</TableCell>
+            <TableCell align="right">Settlements Sent / Received</TableCell>
+            <TableCell align="right">Total</TableCell>
+            <TableCell align="right">Uncashed Amount</TableCell>
+            <TableCell />
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {accounting.map(({ peer, balance, received, sent, uncashedAmount, total }) => (
+            <TableRow key={peer}>
+              <TableCell>
+                <div style={{ display: 'flex' }}>
+                  <small>
+                    <PeerDetailDrawer peerId={peer} />
+                  </small>
+                  <ClipboardCopy value={peer} />
+                </div>
+              </TableCell>
+              <TableCell className={classes.values}>
+                <span
+                  style={{
+                    color: balance > 0 ? '#32c48d' : '#c9201f',
+                  }}
+                >
+                  {fromBZZbaseUnit(balance).toFixed(7).toLocaleString()}
+                </span>{' '}
+                BZZ
+              </TableCell>
+              <TableCell className={classes.values}>
+                -{fromBZZbaseUnit(sent).toFixed(7)} / {fromBZZbaseUnit(received).toFixed(7)} BZZ
+              </TableCell>
+              <TableCell className={classes.values}>
+                <span
+                  style={{
+                    color: total > 0 ? '#32c48d' : '#c9201f',
+                  }}
+                >
+                  {fromBZZbaseUnit(total).toFixed(7)}
+                </span>{' '}
+                BZZ
+              </TableCell>
+              <TableCell className={classes.values}>
+                {isLoadingUncashed && 'loading...'}
+                {!isLoadingUncashed && <>{uncashedAmount > 0 ? fromBZZbaseUnit(uncashedAmount).toFixed(7) : '0'} BZZ</>}
+              </TableCell>
+              <TableCell className={classes.values}>
+                {uncashedAmount > 0 && <CashoutModal uncashedAmount={uncashedAmount} peerId={peer} />}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   )
 }
 
