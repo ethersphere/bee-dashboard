@@ -1,7 +1,7 @@
 {
-  "name": "bee-status",
+  "name": "bee-dashboard",
   "version": "0.1.0",
-  "description": "Simple dApp to show the status of the bee node",
+  "description": "An app which helps users to setup their Bee node and do actions like cash out cheques",
   "keywords": [
     "bee",
     "swarm",
@@ -13,12 +13,12 @@
   ],
   "homepage": ".",
   "bugs": {
-    "url": "https://github.com/ethersphere/bee-status/issues/"
+    "url": "https://github.com/ethersphere/bee-dashboard/issues/"
   },
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ethersphere/bee-status.git"
+    "url": "https://github.com/ethersphere/bee-dashboard.git"
   },
   "dependencies": {
     "@ethersphere/bee-js": "^0.7.1",

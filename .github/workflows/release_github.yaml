@@ -16,5 +16,5 @@ jobs:
         with:
           token: ${{ secrets.REPO_GHA_PAT }}
           release-type: node
-          package-name: bee-status
+          package-name: bee-dashboard
           bump-minor-pre-major: true
