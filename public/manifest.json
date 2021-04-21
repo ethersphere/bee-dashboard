@@ -1,6 +1,6 @@
 {
-  "short_name": "Bee node status",
-  "name": "Bee node status",
+  "short_name": "Bee Dashboard",
+  "name": "Bee Dashboard",
   "icons": [
     {
       "src": "favicon.ico",
