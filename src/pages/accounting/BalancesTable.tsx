@@ -2,10 +2,10 @@ import type { ReactElement } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper } from '@material-ui/core'
 
-import { fromBZZbaseUnit } from '../../utils'
 import ClipboardCopy from '../../components/ClipboardCopy'
 import CashoutModal from '../../components/CashoutModal'
 import PeerDetailDrawer from './PeerDetail'
+import { Accounting } from '../../hooks/accounting'
 
 const useStyles = makeStyles({
   table: {
@@ -52,32 +52,36 @@ function BalancesTable({ accounting, isLoadingUncashed }: Props): ReactElement |
               <TableCell className={classes.values}>
                 <span
                   style={{
-                    color: balance > 0 ? '#32c48d' : '#c9201f',
+                    color: balance.toBigNumber.isPositive() ? '#32c48d' : '#c9201f',
                   }}
                 >
-                  {fromBZZbaseUnit(balance).toFixed(7).toLocaleString()}
+                  {balance.toFixedDecimal()}
                 </span>{' '}
                 BZZ
               </TableCell>
               <TableCell className={classes.values}>
-                -{fromBZZbaseUnit(sent).toFixed(7)} / {fromBZZbaseUnit(received).toFixed(7)} BZZ
+                -{sent.toFixedDecimal()} / {received.toFixedDecimal()} BZZ
               </TableCell>
               <TableCell className={classes.values}>
                 <span
                   style={{
-                    color: total > 0 ? '#32c48d' : '#c9201f',
+                    color: total.toBigNumber.isPositive() ? '#32c48d' : '#c9201f',
                   }}
                 >
-                  {fromBZZbaseUnit(total).toFixed(7)}
+                  {total.toFixedDecimal()}
                 </span>{' '}
                 BZZ
               </TableCell>
               <TableCell className={classes.values}>
                 {isLoadingUncashed && 'loading...'}
-                {!isLoadingUncashed && <>{uncashedAmount > 0 ? fromBZZbaseUnit(uncashedAmount).toFixed(7) : '0'} BZZ</>}
+                {!isLoadingUncashed && (
+                  <>{uncashedAmount.toBigNumber.isGreaterThan('0') ? uncashedAmount.toFixedDecimal() : '0'} BZZ</>
+                )}
               </TableCell>
               <TableCell className={classes.values}>
-                {uncashedAmount > 0 && <CashoutModal uncashedAmount={uncashedAmount} peerId={peer} />}
+                {uncashedAmount.toBigNumber.isGreaterThan('0') && (
+                  <CashoutModal uncashedAmount={uncashedAmount.toFixedDecimal()} peerId={peer} />
+                )}
               </TableCell>
             </TableRow>
           ))}

@@ -1,4 +1,6 @@
+import { ChequebookAddressResponse } from '@ethersphere/bee-js'
 import {
+  ChequebookBalance,
   useApiChequebookAddress,
   useApiChequebookBalance,
   useApiHealth,
@@ -7,6 +9,11 @@ import {
   useDebugApiHealth,
   useLatestBeeRelease,
 } from './apiHooks'
+
+export interface StatusChequebookHook extends StatusHookCommon {
+  chequebookBalance: ChequebookBalance | null
+  chequebookAddress: ChequebookAddressResponse | null
+}
 
 export const useStatusNodeVersion = (): StatusNodeVersionHook => {
   const { latestBeeRelease, isLoadingLatestBeeRelease } = useLatestBeeRelease()
@@ -66,7 +73,9 @@ export const useStatusChequebook = (): StatusChequebookHook => {
   return {
     isLoading: isLoadingChequebookAddress || isLoadingChequebookBalance,
     isOk:
-      Boolean(chequebookAddress?.chequebookaddress) && chequebookBalance !== null && chequebookBalance.totalBalance > 0,
+      Boolean(chequebookAddress?.chequebookaddress) &&
+      chequebookBalance !== null &&
+      chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0),
     chequebookBalance,
     chequebookAddress,
   }
