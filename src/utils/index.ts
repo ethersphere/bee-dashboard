@@ -27,5 +27,8 @@ export function makeBigNumber(value: BigNumber | BigInt | string): BigNumber | n
 
   if (typeof value === 'bigint') return new BigNumber(value.toString())
 
+  // FIXME: bee-js still returns some values as numbers and even outside of SAFE INTEGER bounds
+  if (typeof value === 'number' /* && Number.isSafeInteger(value)*/) return new BigNumber(value)
+
   throw new TypeError(`Not a BigNumber or BigNumber convertible value. Type: ${typeof value} value: ${value}`)
 }

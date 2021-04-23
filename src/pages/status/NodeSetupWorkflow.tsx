@@ -9,6 +9,7 @@ import VersionCheck from './SetupSteps/VersionCheck'
 import EthereumConnectionCheck from './SetupSteps/EthereumConnectionCheck'
 import ChequebookDeployFund from './SetupSteps/ChequebookDeployFund'
 import PeerConnection from './SetupSteps/PeerConnection'
+import { StatusChequebookHook } from '../../hooks/status'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

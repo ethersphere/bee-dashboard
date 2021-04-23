@@ -208,8 +208,8 @@ export const useApiChequebookBalance = (): ChequebookBalanceHook => {
       .balance()
       .then(({ totalBalance, availableBalance }) => {
         const balance = {
-          totalBalance: new Token(totalBalance.toString()), // for some reason sometimes these are numbers and not BigInts
-          availableBalance: new Token(availableBalance.toString()), // for some reason sometimes these are numbers and not BigInts
+          totalBalance: new Token(totalBalance),
+          availableBalance: new Token(availableBalance),
         }
         setChequebookBalance(balance)
       })
@@ -246,7 +246,7 @@ export const useApiPeerBalances = (): PeerBalanceHook => {
       .balances()
       .then(res => {
         // for some reason sometimes these are numbers and not BigInts
-        const balances = res.balances.map(({ peer, balance }) => ({ peer, balance: new Token(balance.toString()) }))
+        const balances = res.balances.map(({ peer, balance }) => ({ peer, balance: new Token(balance) }))
         setPeerBalances(balances)
       })
       .catch(error => {
@@ -347,12 +347,12 @@ export const useApiSettlements = (): SettlementsHook => {
       .getSettlements()
       .then(({ totalreceived, settlements, totalsent }) => {
         const set = {
-          totalreceived: new Token(totalreceived.toString()),
-          totalsent: new Token(totalsent.toString()),
+          totalreceived: new Token(totalreceived),
+          totalsent: new Token(totalsent),
           settlements: settlements.map(({ peer, received, sent }) => ({
             peer,
-            received: new Token(received.toString()),
-            sent: new Token(sent.toString()),
+            received: new Token(received),
+            sent: new Token(sent),
           })),
         }
         setSettlements(set)
@@ -389,7 +389,7 @@ export const useApiPeerLastCashout = (peerId: string): PeerLastCashoutHook => {
     beeDebugApi.chequebook
       .getPeerLastCashout(peerId)
       .then(({ peer, cumulativePayout }) => {
-        setPeerCashout({ peer, cumulativePayout: new Token(cumulativePayout.toString()) })
+        setPeerCashout({ peer, cumulativePayout: new Token(cumulativePayout) })
       })
       .catch(error => {
         setError(error)

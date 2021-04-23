@@ -21,8 +21,3 @@ interface StatusEthereumConnectionHook extends StatusHookCommon {
 interface StatusTopologyHook extends StatusHookCommon {
   topology: Topology | null
 }
-
-interface StatusChequebookHook extends StatusHookCommon {
-  chequebookBalance: ChequebookBalanceResponse | null
-  chequebookAddress: ChequebookAddressResponse | null
-}
