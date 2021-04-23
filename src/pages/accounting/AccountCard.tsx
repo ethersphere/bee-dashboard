@@ -29,6 +29,11 @@ const useStyles = makeStyles((theme: Theme) =>
       flexWrap: 'wrap',
       justifyContent: 'space-between',
     },
+    chequebookActions: {
+      justifyContent: 'space-between',
+      display: 'flex',
+      marginBottom: theme.spacing(1),
+    },
   }),
 )
 
@@ -50,8 +55,10 @@ function AccountCard({ totalreceived, totalsent, chequebookBalance, isLoading }:
 
   return (
     <div>
-      <div style={{ justifyContent: 'space-between', display: 'flex' }}>
-        <h2 style={{ marginTop: '0px' }}>Chequebook</h2>
+      <div className={classes.chequebookActions}>
+        <Typography component="h2" variant="h6">
+          Chequebook
+        </Typography>
         <div className={classes.buttons}>
           <WithdrawModal />
           <DepositModal />
