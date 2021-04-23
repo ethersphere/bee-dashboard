@@ -12,9 +12,9 @@
 
 ![Status page](/ui_samples/status.png)
 
-| Node Setup | Browse Files | Accounting | Peers | Settings |
+| Node Setup | Browse & Upload Files | Accounting | Peers | Settings |
 |-------|---------|-------|----------|------|
-| ![Setup](/ui_samples/node_setup.png) | ![Files](/ui_samples/file_browse.png) | ![Accounting](/ui_samples/accounting.png) | ![Peers](/ui_samples/peers.png) | ![Settings](/ui_samples/settings.png) |
+| ![Setup](/ui_samples/node_setup.png) | ![Files](/ui_samples/file_upload.png) | ![Accounting](/ui_samples/accounting.png) | ![Peers](/ui_samples/peers.png) | ![Settings](/ui_samples/settings.png) |
 
 
 ## Table of Contents
