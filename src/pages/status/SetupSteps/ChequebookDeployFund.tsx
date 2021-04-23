@@ -21,13 +21,13 @@ const ChequebookDeployFund = ({
         {chequebookAddress?.chequebookaddress && <DepositModal />}
       </p>
       <div style={{ marginBottom: '10px' }}>
-        {!(chequebookAddress?.chequebookaddress && chequebookBalance && chequebookBalance?.totalBalance > 0) && (
+        {!(chequebookAddress?.chequebookaddress && chequebookBalance?.totalBalance > 0) && (
           <div>
             <span>
               Your chequebook is either not deployed or funded. Join{' '}
               <a href="https://discord.gg/ykCupZMuww">our discord channel</a>, get verified and send a message{' '}
               <pre>sprinkle {ethereumAddress || '<YOUR BEE NODE ETH ADDRESS>'}</pre> in the <pre>#faucet-request</pre>{' '}
-              channel to get goerly ETH and goerly BZZ token.
+              channel to get Goerli ETH and Goerli BZZ token.
             </span>
           </div>
         )}
