@@ -76,7 +76,7 @@ export default function NodeSetupWorkflow({
       label: 'Deployed and Funded Chequebook',
       condition: chequebook.isOk,
       isLoading: chequebook.isLoading,
-      component: <ChequebookDeployFund {...chequebook} />,
+      component: <ChequebookDeployFund ethereumAddress={ethereumConnection.nodeAddresses?.ethereum} {...chequebook} />,
     },
     {
       label: 'Connected to Node API',
