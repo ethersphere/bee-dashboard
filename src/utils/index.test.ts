@@ -1,21 +1,7 @@
 import BigNumber from 'bignumber.js'
-import { fromBZZbaseUnit, isInteger, makeBigNumber } from './index'
+import { isInteger, makeBigNumber } from './index'
 
 describe('utils', () => {
-  describe('fromBZZbaseUnit', () => {
-    const values = [
-      { bzz: 0, baseUnits: 0 },
-      { bzz: 0.1, baseUnits: 1e15 },
-      { bzz: 0.9, baseUnits: 9e15 },
-    ]
-
-    values.forEach(({ bzz, baseUnits }) => {
-      test(`converting ${bzz} => ${baseUnits}`, () => {
-        expect(fromBZZbaseUnit(baseUnits)).toBe(bzz)
-      })
-    })
-  })
-
   describe('isInteger', () => {
     const correctValues = [
       BigInt(0),
@@ -52,8 +38,11 @@ describe('utils', () => {
       new BigNumber('1'),
       new BigNumber('0'),
       new BigNumber('-1'),
+      0,
+      1,
+      -1,
     ]
-    const wrongValues = [new Function(), 0, 1]
+    const wrongValues = [new Function()]
 
     correctValues.forEach(v => {
       test(`testing ${v}`, () => {

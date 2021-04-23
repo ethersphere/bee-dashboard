@@ -20,7 +20,7 @@ export function isInteger(value: unknown): value is BigNumber | bigint {
  *
  * @returns BigNumber - but it may still be NaN or Infinite
  */
-export function makeBigNumber(value: BigNumber | BigInt | string): BigNumber | never {
+export function makeBigNumber(value: BigNumber | BigInt | number | string): BigNumber | never {
   if (BigNumber.isBigNumber(value)) return value
 
   if (typeof value === 'string') return new BigNumber(value)
