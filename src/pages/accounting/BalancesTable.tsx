@@ -79,7 +79,7 @@ function BalancesTable({ accounting, isLoadingUncashed }: Props): ReactElement |
                 )}
               </TableCell>
               <TableCell className={classes.values}>
-                {!uncashedAmount.toBigNumber.isGreaterThan('0') && (
+                {uncashedAmount.toBigNumber.isGreaterThan('0') && (
                   <CashoutModal uncashedAmount={uncashedAmount.toFixedDecimal()} peerId={peer} />
                 )}
               </TableCell>
