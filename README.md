@@ -1,6 +1,5 @@
-# Bee Status
+# Bee Dashboard
 
-[![Dependency Status](https://david-dm.org/ethersphere/bee-dashboard.svg?style=flat-square)](https://david-dm.org/ethersphere/bee-dashboard)
 [![](https://img.shields.io/badge/made%20by-Swarm-blue.svg?style=flat-square)](https://swarm.ethereum.org/)
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
@@ -25,7 +24,7 @@
 - [Contribute](#contribute)
 - [License](#license)
 
-## Install
+## Install & build
 
 ```
 git clone git@github.com:ethersphere/bee-dashboard.git
@@ -33,15 +32,16 @@ git clone git@github.com:ethersphere/bee-dashboard.git
 cd  bee-dashboard
 
 npm ci
+npm run build
 ```
 
-## Usage
+## Serve the Bee Dashboard website
 
 ```sh
-npm run build
-
-serve -s ./build
+npm run serve
 ```
+
+You can now access Bee Dashboard on [http://localhost:5000/](http://localhost:5000/)
 
 ## Contribute
 
