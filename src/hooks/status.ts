@@ -66,7 +66,9 @@ export const useStatusChequebook = (): StatusChequebookHook => {
   return {
     isLoading: isLoadingChequebookAddress || isLoadingChequebookBalance,
     isOk:
-      Boolean(chequebookAddress?.chequebookaddress) && chequebookBalance !== null && chequebookBalance.totalBalance > 0,
+      Boolean(chequebookAddress?.chequebookaddress) &&
+      chequebookBalance !== null &&
+      chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0),
     chequebookBalance,
     chequebookAddress,
   }

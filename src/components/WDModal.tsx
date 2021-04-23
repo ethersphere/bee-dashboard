@@ -48,7 +48,7 @@ export default function WithdrawModal({
     if (amountToken === null) return
 
     try {
-      const { transactionHash } = await action(amountToken.toBigInt)
+      const { transactionHash } = await action(amountToken.toBigInt as bigint)
       setOpen(false)
       handleToast(`${successMessage} Transaction ${transactionHash}`)
     } catch (e) {

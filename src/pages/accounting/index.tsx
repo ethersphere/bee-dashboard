@@ -63,7 +63,7 @@ export default function Accounting(): ReactElement {
       />
       {error && (
         <Container style={{ textAlign: 'center', padding: '50px' }}>
-          Error loading accountin details: {error.message}
+          Error loading accounting details: {error.message}
         </Container>
       )}
       {!error && <BalancesTable accounting={accounting} isLoadingUncashed={isLoadingUncashed} />}

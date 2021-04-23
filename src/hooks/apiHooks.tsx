@@ -3,11 +3,7 @@ import { useState, useEffect } from 'react'
 import {
   NodeAddresses,
   ChequebookAddressResponse,
-  ChequebookBalanceResponse,
-  BalanceResponse,
   LastChequesResponse,
-  AllSettlements,
-  LastCashoutActionResponse,
   Health,
   Peer,
   Topology,
@@ -16,6 +12,7 @@ import {
 
 import { beeDebugApi, beeApi } from '../services/bee'
 import axios from 'axios'
+import { Token } from '../models/Token'
 
 export interface HealthHook {
   health: boolean
@@ -189,14 +186,19 @@ export const useApiNodePeers = (): NodePeersHook => {
   return { peers, isLoading, error }
 }
 
+export interface ChequebookBalance {
+  totalBalance: Token
+  availableBalance: Token
+}
+
 export interface ChequebookBalanceHook {
-  chequebookBalance: ChequebookBalanceResponse | null
+  chequebookBalance: ChequebookBalance | null
   isLoadingChequebookBalance: boolean
   error: Error | null
 }
 
 export const useApiChequebookBalance = (): ChequebookBalanceHook => {
-  const [chequebookBalance, setChequebookBalance] = useState<ChequebookBalanceResponse | null>(null)
+  const [chequebookBalance, setChequebookBalance] = useState<ChequebookBalance | null>(null)
   const [isLoadingChequebookBalance, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
 
@@ -204,8 +206,12 @@ export const useApiChequebookBalance = (): ChequebookBalanceHook => {
     setLoading(true)
     beeDebugApi.chequebook
       .balance()
-      .then(res => {
-        setChequebookBalance(res)
+      .then(({ totalBalance, availableBalance }) => {
+        const balance = {
+          totalBalance: new Token(totalBalance.toString()), // for some reason sometimes these are numbers and not BigInts
+          availableBalance: new Token(availableBalance.toString()), // for some reason sometimes these are numbers and not BigInts
+        }
+        setChequebookBalance(balance)
       })
       .catch(error => {
         setError(error)
@@ -218,14 +224,19 @@ export const useApiChequebookBalance = (): ChequebookBalanceHook => {
   return { chequebookBalance, isLoadingChequebookBalance, error }
 }
 
+export interface Balance {
+  peer: string
+  balance: Token
+}
+
 export interface PeerBalanceHook {
-  peerBalances: BalanceResponse | null
+  peerBalances: Balance[] | null
   isLoadingPeerBalances: boolean
   error: Error | null
 }
 
 export const useApiPeerBalances = (): PeerBalanceHook => {
-  const [peerBalances, setPeerBalances] = useState<BalanceResponse | null>(null)
+  const [peerBalances, setPeerBalances] = useState<Balance[] | null>(null)
   const [isLoadingPeerBalances, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
 
@@ -234,7 +245,9 @@ export const useApiPeerBalances = (): PeerBalanceHook => {
     beeDebugApi.balance
       .balances()
       .then(res => {
-        setPeerBalances(res)
+        // for some reason sometimes these are numbers and not BigInts
+        const balances = res.balances.map(({ peer, balance }) => ({ peer, balance: new Token(balance.toString()) }))
+        setPeerBalances(balances)
       })
       .catch(error => {
         setError(error)
@@ -305,14 +318,26 @@ export const useApiPeerLastCheque = (peerId: string): PeerLastChequesHook => {
   return { peerCheque, isLoadingPeerCheque, error }
 }
 
+export interface Settlement {
+  peer: string
+  received: Token
+  sent: Token
+}
+
+export interface Settlements {
+  totalreceived: Token
+  totalsent: Token
+  settlements: Settlement[]
+}
+
 export interface SettlementsHook {
-  settlements: AllSettlements | null
+  settlements: Settlements | null
   isLoadingSettlements: boolean
   error: Error | null
 }
 
 export const useApiSettlements = (): SettlementsHook => {
-  const [settlements, setSettlements] = useState<AllSettlements | null>(null)
+  const [settlements, setSettlements] = useState<Settlements | null>(null)
   const [isLoadingSettlements, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
 
@@ -320,8 +345,17 @@ export const useApiSettlements = (): SettlementsHook => {
     setLoading(true)
     beeDebugApi.settlements
       .getSettlements()
-      .then(res => {
-        setSettlements(res)
+      .then(({ totalreceived, settlements, totalsent }) => {
+        const set = {
+          totalreceived: new Token(totalreceived.toString()),
+          totalsent: new Token(totalsent.toString()),
+          settlements: settlements.map(({ peer, received, sent }) => ({
+            peer,
+            received: new Token(received.toString()),
+            sent: new Token(sent.toString()),
+          })),
+        }
+        setSettlements(set)
       })
       .catch(error => {
         setError(error)
@@ -334,14 +368,19 @@ export const useApiSettlements = (): SettlementsHook => {
   return { settlements, isLoadingSettlements, error }
 }
 
+export interface LastCashout {
+  peer: string
+  cumulativePayout: Token
+}
+
 export interface PeerLastCashoutHook {
-  peerCashout: LastCashoutActionResponse | null
+  peerCashout: LastCashout | null
   isLoadingPeerCashout: boolean
   error: Error | null
 }
 
 export const useApiPeerLastCashout = (peerId: string): PeerLastCashoutHook => {
-  const [peerCashout, setPeerCashout] = useState<LastCashoutActionResponse | null>(null)
+  const [peerCashout, setPeerCashout] = useState<LastCashout | null>(null)
   const [isLoadingPeerCashout, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
 
@@ -349,8 +388,8 @@ export const useApiPeerLastCashout = (peerId: string): PeerLastCashoutHook => {
     setLoading(true)
     beeDebugApi.chequebook
       .getPeerLastCashout(peerId)
-      .then(res => {
-        setPeerCashout(res)
+      .then(({ peer, cumulativePayout }) => {
+        setPeerCashout({ peer, cumulativePayout: new Token(cumulativePayout.toString()) })
       })
       .catch(error => {
         setError(error)

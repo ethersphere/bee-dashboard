@@ -10,7 +10,7 @@ export class Token {
   private amount: BigNumber // Represented in the base units, so it is always an integer value
   private readonly decimals: digits
 
-  constructor(amount: BigNumber | string | bigint, decimals: digits = BZZ_DECIMALS) {
+  constructor(amount: BigNumber | string | BigInt, decimals: digits = BZZ_DECIMALS) {
     const a = makeBigNumber(amount)
 
     if (!isInteger(a) || !POSSIBLE_DECIMALS.includes(decimals)) throw new TypeError('Not a valid token values')
@@ -29,7 +29,7 @@ export class Token {
    *
    * @returns new Token
    */
-  static fromDecimal(amount: BigNumber | string | bigint, decimals: digits = BZZ_DECIMALS): Token | never {
+  static fromDecimal(amount: BigNumber | string | BigInt, decimals: digits = BZZ_DECIMALS): Token | never {
     const a = makeBigNumber(amount)
 
     // No need to do any validation here, it is done when the new token is created
@@ -38,7 +38,7 @@ export class Token {
     return new Token(t, decimals)
   }
 
-  get toBigInt(): bigint {
+  get toBigInt(): BigInt {
     return BigInt(this.amount.toFixed(0))
   }
 
@@ -52,5 +52,9 @@ export class Token {
 
   get toDecimal(): BigNumber {
     return this.amount.dividedBy(new BigNumber(10).pow(this.decimals))
+  }
+
+  toFixedDecimal(digits = 7): string {
+    return this.toDecimal.toFixed(digits)
   }
 }
