@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Step {
   label: string
-  condition: boolean
+  isOk: boolean
   isLoading: boolean
   component: ReactElement
 }
@@ -57,37 +57,37 @@ export default function NodeSetupWorkflow({
   const steps: Step[] = [
     {
       label: 'Connected to Node DebugAPI',
-      condition: debugApiConnection.isOk,
+      isOk: debugApiConnection.isOk,
       isLoading: debugApiConnection.isLoading,
       component: <DebugConnectionCheck {...debugApiConnection} />,
     },
     {
       label: 'Running latest Bee version',
-      condition: nodeVersion.isOk,
+      isOk: nodeVersion.isOk,
       isLoading: nodeVersion.isLoading,
       component: <VersionCheck {...nodeVersion} />,
     },
     {
       label: 'Connected to Ethereum Blockchain',
-      condition: ethereumConnection.isOk,
+      isOk: ethereumConnection.isOk,
       isLoading: ethereumConnection.isLoading,
       component: <EthereumConnectionCheck {...ethereumConnection} />,
     },
     {
       label: 'Deployed and Funded Chequebook',
-      condition: chequebook.isOk,
+      isOk: chequebook.isOk,
       isLoading: chequebook.isLoading,
       component: <ChequebookDeployFund ethereumAddress={ethereumConnection.nodeAddresses?.ethereum} {...chequebook} />,
     },
     {
       label: 'Connected to Node API',
-      condition: apiConnection.isOk,
+      isOk: apiConnection.isOk,
       isLoading: apiConnection.isLoading,
       component: <NodeConnectionCheck {...apiConnection} />,
     },
     {
       label: 'Connected to Peers',
-      condition: topology.isOk,
+      isOk: topology.isOk,
       isLoading: topology.isLoading,
       component: <PeerConnection {...topology} />,
     },
@@ -101,9 +101,9 @@ export default function NodeSetupWorkflow({
     if (!steps.every(step => !step.isLoading)) return
 
     // Select first step that is not OK
-    // This is deliberately a for condition so that we can terminate the useEffect from within the cycle
+    // This is deliberately a for loop (and not forEach) so that we can terminate the useEffect from within the cycle
     for (let i = 0; i < steps.length; ++i) {
-      if (!steps[i].condition) {
+      if (!steps[i].isOk) {
         setActiveStep(i)
 
         return
@@ -131,7 +131,7 @@ export default function NodeSetupWorkflow({
         </span>
       </Typography>
       <Stepper nonLinear activeStep={activeStep} orientation="vertical">
-        {steps.map(({ label, condition, component, isLoading }, index) => (
+        {steps.map(({ label, isOk, component, isLoading }, index) => (
           <Step key={label}>
             <StepLabel
               disabled={isLoading}
@@ -139,7 +139,7 @@ export default function NodeSetupWorkflow({
               StepIconComponent={() => {
                 if (isLoading) return <Autorenew style={{ height: '25px', cursor: 'pointer' }} />
 
-                if (condition) return <CheckCircle style={{ color: '#32c48d', height: '25px', cursor: 'pointer' }} />
+                if (isOk) return <CheckCircle style={{ color: '#32c48d', height: '25px', cursor: 'pointer' }} />
 
                 return <Error style={{ color: '#c9201f', height: '25px', cursor: 'pointer' }} />
               }}
