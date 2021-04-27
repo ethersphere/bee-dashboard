@@ -95,9 +95,13 @@ export default function NodeSetupWorkflow({
 
   useEffect(() => {
     // If the user already changed the active step we don't want to overwrite it
-    if (activeStep > 0 && activeStep < steps.length) return
+    if (activeStep >= 0 && activeStep < steps.length) return
+
+    // If any step is not fully loaded yet return
+    if (!steps.every(step => !step.isLoading)) return
 
     // Select first step that is not OK
+    // This is deliberately a for condition so that we can terminate the useEffect from within the cycle
     for (let i = 0; i < steps.length; ++i) {
       if (!steps[i].condition) {
         setActiveStep(i)
