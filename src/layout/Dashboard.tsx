@@ -1,4 +1,5 @@
-import React, { useState, useEffect, ReactElement } from 'react'
+import { useState, useEffect, ReactElement } from 'react'
+import ErrorBoundary from '../components/ErrorBoundary'
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 
@@ -71,7 +72,9 @@ const Dashboard = (props: Props): ReactElement => {
     <div>
       <SideBar {...props} themeMode={themeMode} health={health} nodeHealth={nodeHealth} />
       <NavBar themeMode={themeMode} />
-      <main className={classes.content}>{props.children}</main>
+      <ErrorBoundary>
+        <main className={classes.content}>{props.children}</main>
+      </ErrorBoundary>
     </div>
   )
 }
