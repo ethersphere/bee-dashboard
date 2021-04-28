@@ -1,5 +1,5 @@
 {
-  "name": "bee-dashboard",
+  "name": "@ethersphere/bee-dashboard",
   "version": "0.1.0",
   "description": "An app which helps users to setup their Bee node and do actions like cash out cheques",
   "keywords": [
@@ -12,6 +12,9 @@
     "p2p"
   ],
   "homepage": ".",
+  "bin": {
+    "bee-dashboard": "./serve.js"
+  },
   "bugs": {
     "url": "https://github.com/ethersphere/bee-dashboard/issues/"
   },
@@ -30,6 +33,7 @@
     "axios": "^0.21.1",
     "bignumber.js": "^9.0.1",
     "feather-icons": "^4.28.0",
+    "http-serve": "^1.0.1",
     "material-ui-dropzone": "^3.5.0",
     "qrcode.react": "^1.0.1",
     "react": "^17.0.2",
@@ -58,18 +62,19 @@
     "eslint-plugin-react": "^7.23.2",
     "prettier": "^2.2.1",
     "react-scripts": "4.0.3",
-    "serve": "^11.3.2",
     "typescript": "^4.2.4",
     "web-vitals": "^1.1.1"
   },
   "scripts": {
+    "prepare": "npm run build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "serve": "serve -s ./build",
+    "serve": "http-serve -o ./build",
     "lint": "eslint --fix \"src/**/*.ts\" \"src/**/*.tsx\" && prettier --write \"src/**/*.ts\" \"src/**/*.tsx\"",
     "lint:check": "eslint \"src/**/*.ts\" \"src/**/*.tsx\" && prettier --check \"src/**/*.ts\" \"src/**/*.tsx\""
   },
+  "files": ["build", "serve.js"],
   "eslintConfig": {
     "extends": [
       "react-app",
