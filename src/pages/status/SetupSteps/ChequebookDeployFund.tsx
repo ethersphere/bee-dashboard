@@ -1,12 +1,19 @@
 import { Typography } from '@material-ui/core/'
 import EthereumAddress from '../../../components/EthereumAddress'
 import DepositModal from '../../../containers/DepositModal'
-import CodeBlockTabs from '../../../components/CodeBlockTabs'
 import type { ReactElement } from 'react'
+import type { StatusChequebookHook } from '../../../hooks/status'
 
-type Props = StatusChequebookHook
+interface Props extends StatusChequebookHook {
+  ethereumAddress?: string
+}
 
-const ChequebookDeployFund = ({ isLoading, chequebookAddress, chequebookBalance }: Props): ReactElement | null => {
+const ChequebookDeployFund = ({
+  isLoading,
+  chequebookAddress,
+  chequebookBalance,
+  ethereumAddress,
+}: Props): ReactElement | null => {
   if (isLoading) return null
 
   return (
@@ -15,17 +22,14 @@ const ChequebookDeployFund = ({ isLoading, chequebookAddress, chequebookBalance 
         {chequebookAddress?.chequebookaddress && <DepositModal />}
       </p>
       <div style={{ marginBottom: '10px' }}>
-        {!(chequebookAddress?.chequebookaddress && chequebookBalance && chequebookBalance?.totalBalance > 0) && (
+        {!(chequebookAddress?.chequebookaddress && chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0)) && (
           <div>
             <span>
-              Your chequebook is either not deployed or funded. Run the below commands to get your address and deposit
-              ETH. Then visit the BZZaar here{' '}
-              <Typography variant="button">
-                https://bzz.ethswarm.org/?transaction=buy&amount=10&slippage=30&receiver=[ENTER_ADDRESS_HERE]
-              </Typography>{' '}
-              to get BZZ
+              Your chequebook is either not deployed or funded. Join{' '}
+              <a href="https://discord.gg/ykCupZMuww">our discord channel</a>, get verified and send a message{' '}
+              <pre>sprinkle {ethereumAddress || '<YOUR BEE NODE ETH ADDRESS>'}</pre> in the <pre>#faucet-request</pre>{' '}
+              channel to get Goerli ETH and Goerli BZZ token.
             </span>
-            <CodeBlockTabs showLineNumbers linux={`bee-get-addr`} mac={`bee-get-addr`} />
           </div>
         )}
       </div>

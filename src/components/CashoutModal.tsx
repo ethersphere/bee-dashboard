@@ -10,11 +10,10 @@ import { Snackbar, Container, CircularProgress } from '@material-ui/core'
 import { beeDebugApi } from '../services/bee'
 
 import EthereumAddress from './EthereumAddress'
-import { fromBZZbaseUnit } from '../utils'
 
 interface Props {
   peerId: string
-  uncashedAmount: number
+  uncashedAmount: string
 }
 
 export default function DepositModal({ peerId, uncashedAmount }: Props): ReactElement {
@@ -76,8 +75,7 @@ export default function DepositModal({ peerId, uncashedAmount }: Props): ReactEl
             {loadingCashout && (
               <>
                 <span>
-                  Cashing out <strong>{fromBZZbaseUnit(uncashedAmount).toFixed(7)}</strong> from Peer{' '}
-                  <strong>{peerId}</strong>. Please wait...
+                  Cashing out <strong>{uncashedAmount}</strong> from Peer <strong>{peerId}</strong>. Please wait...
                 </span>
                 <Container style={{ textAlign: 'center', padding: '50px' }}>
                   <CircularProgress />
@@ -86,8 +84,8 @@ export default function DepositModal({ peerId, uncashedAmount }: Props): ReactEl
             )}
             {!loadingCashout && (
               <span>
-                Are you sure you want to cashout <strong>{fromBZZbaseUnit(uncashedAmount).toFixed(7)} BZZ</strong> from
-                Peer <strong>{peerId}</strong>?
+                Are you sure you want to cashout <strong>{uncashedAmount} BZZ</strong> from Peer{' '}
+                <strong>{peerId}</strong>?
               </span>
             )}
           </DialogContentText>

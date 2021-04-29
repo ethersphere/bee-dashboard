@@ -1,15 +1,25 @@
-import { LastCashoutActionResponse, PeerBalance, Settlements } from '@ethersphere/bee-js'
+import { LastCashoutActionResponse } from '@ethersphere/bee-js'
 import { useEffect, useState } from 'react'
+import { Token } from '../models/Token'
 import { beeDebugApi } from '../services/bee'
-import { useApiPeerBalances, useApiSettlements } from './apiHooks'
+import { Balance, Settlement, useApiPeerBalances, useApiSettlements } from './apiHooks'
 
 interface UseAccountingHook {
   isLoading: boolean
   isLoadingUncashed: boolean
   error: Error | null
-  totalsent: number
-  totalreceived: number
+  totalsent: Token
+  totalreceived: Token
   accounting: Accounting[] | null
+}
+
+export interface Accounting {
+  peer: string
+  uncashedAmount: Token
+  balance: Token
+  received: Token
+  sent: Token
+  total: Token
 }
 
 /**
@@ -22,8 +32,8 @@ interface UseAccountingHook {
  * @returns
  */
 function mergeAccounting(
-  balances?: PeerBalance[],
-  settlements?: Settlements[],
+  balances: Balance[] | null,
+  settlements?: Settlement[],
   uncashedAmounts?: LastCashoutActionResponse[],
 ): Accounting[] | null {
   // Settlements or balances are still loading or there is an error -> return null
@@ -34,22 +44,38 @@ function mergeAccounting(
   balances.forEach(
     // Some peers may not have settlement but all have balance (therefore initialize sent, received and uncashed to 0)
     ({ peer, balance }) =>
-      (accounting[peer] = { peer, balance, sent: 0, received: 0, uncashedAmount: 0, total: balance }),
+      (accounting[peer] = {
+        peer,
+        balance,
+        sent: new Token('0'),
+        received: new Token('0'),
+        uncashedAmount: new Token('0'),
+        total: balance,
+      }),
   )
 
   settlements.forEach(
     ({ peer, sent, received }) =>
-      (accounting[peer] = { ...accounting[peer], sent, received, total: accounting[peer].balance + received - sent }),
+      (accounting[peer] = {
+        ...accounting[peer],
+        sent,
+        received,
+        total: new Token(accounting[peer].balance.toBigNumber.plus(received.toBigNumber).minus(sent.toBigNumber)),
+      }),
   )
 
   // If there are no cheques (and hence last cashout actions), we don't need to sort and can return values right away
   if (!uncashedAmounts) return Object.values(accounting)
 
-  uncashedAmounts?.forEach(
-    ({ peer, cumulativePayout }) => (accounting[peer].uncashedAmount = accounting[peer].received - cumulativePayout),
-  )
+  uncashedAmounts?.forEach(({ peer, cumulativePayout }) => {
+    accounting[peer].uncashedAmount = new Token(
+      accounting[peer].received.toBigNumber.minus(cumulativePayout.toString()),
+    )
+  })
 
-  return Object.values(accounting).sort((a, b) => b.uncashedAmount - a.uncashedAmount)
+  return Object.values(accounting).sort((a, b) =>
+    b.uncashedAmount.toBigNumber.minus(a.uncashedAmount.toBigNumber).toNumber(),
+  )
 }
 
 export const useAccounting = (): UseAccountingHook => {
@@ -76,18 +102,14 @@ export const useAccounting = (): UseAccountingHook => {
       .finally(() => setIsloadingUncashed(false))
   }, [settlements, isLoadingUncashed, uncashedAmounts, error])
 
-  const accounting = mergeAccounting(
-    balances.peerBalances?.balances,
-    settlements.settlements?.settlements,
-    uncashedAmounts,
-  )
+  const accounting = mergeAccounting(balances.peerBalances, settlements.settlements?.settlements, uncashedAmounts)
 
   return {
     isLoading: settlements.isLoadingSettlements || balances.isLoadingPeerBalances,
     isLoadingUncashed,
     error,
     accounting,
-    totalsent: settlements.settlements?.totalsent || 0,
-    totalreceived: settlements.settlements?.totalreceived || 0,
+    totalsent: settlements.settlements?.totalsent || new Token('0'),
+    totalreceived: settlements.settlements?.totalreceived || new Token('0'),
   }
 }

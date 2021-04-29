@@ -6,9 +6,8 @@ import { Skeleton } from '@material-ui/lab'
 import WithdrawModal from '../../containers/WithdrawModal'
 import DepositModal from '../../containers/DepositModal'
 
-import { fromBZZbaseUnit } from '../../utils'
-
 import type { ChequebookAddressResponse } from '@ethersphere/bee-js'
+import { Token } from '../../models/Token'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -30,19 +29,24 @@ const useStyles = makeStyles((theme: Theme) =>
       flexWrap: 'wrap',
       justifyContent: 'space-between',
     },
+    chequebookActions: {
+      justifyContent: 'space-between',
+      display: 'flex',
+      marginBottom: theme.spacing(1),
+    },
   }),
 )
 
 interface ChequebookBalance {
-  totalBalance: number
-  availableBalance: number
+  totalBalance: Token
+  availableBalance: Token
 }
 
 interface Props {
   chequebookAddress: ChequebookAddressResponse | null
   chequebookBalance: ChequebookBalance | null
-  totalsent: number
-  totalreceived: number
+  totalsent: Token
+  totalreceived: Token
   isLoading: boolean
 }
 
@@ -51,8 +55,10 @@ function AccountCard({ totalreceived, totalsent, chequebookBalance, isLoading }:
 
   return (
     <div>
-      <div style={{ justifyContent: 'space-between', display: 'flex' }}>
-        <h2 style={{ marginTop: '0px' }}>Chequebook</h2>
+      <div className={classes.chequebookActions}>
+        <Typography component="h2" variant="h6">
+          Chequebook
+        </Typography>
         <div className={classes.buttons}>
           <WithdrawModal />
           <DepositModal />
@@ -66,24 +72,20 @@ function AccountCard({ totalreceived, totalsent, chequebookBalance, isLoading }:
               <Typography component="h2" variant="h6" color="primary" gutterBottom>
                 Total Balance
               </Typography>
-              <Typography variant="h5">
-                {fromBZZbaseUnit(chequebookBalance?.totalBalance || 0).toFixed(7)} BZZ
-              </Typography>
+              <Typography variant="h5">{chequebookBalance?.totalBalance.toFixedDecimal()} BZZ</Typography>
             </div>
             <div>
               <Typography component="h2" variant="h6" color="primary" gutterBottom>
                 Available Uncommitted Balance
               </Typography>
-              <Typography variant="h5">
-                {fromBZZbaseUnit(chequebookBalance?.availableBalance || 0).toFixed(7)} BZZ
-              </Typography>
+              <Typography variant="h5">{chequebookBalance?.availableBalance.toFixedDecimal()} BZZ</Typography>
             </div>
             <div>
               <Typography component="h2" variant="h6" color="primary" gutterBottom>
                 Total Sent / Received
               </Typography>
               <Typography variant="h5">
-                {fromBZZbaseUnit(totalsent).toFixed(7)} / {fromBZZbaseUnit(totalreceived).toFixed(7)} BZZ
+                {totalsent.toFixedDecimal()} / {totalreceived.toFixedDecimal()} BZZ
               </Typography>
             </div>
           </CardContent>

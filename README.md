@@ -1,6 +1,5 @@
-# Bee Status
+# Bee Dashboard
 
-[![Dependency Status](https://david-dm.org/ethersphere/bee-dashboard.svg?style=flat-square)](https://david-dm.org/ethersphere/bee-dashboard)
 [![](https://img.shields.io/badge/made%20by-Swarm-blue.svg?style=flat-square)](https://swarm.ethereum.org/)
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
@@ -13,9 +12,9 @@
 
 ![Status page](/ui_samples/status.png)
 
-| Node Setup | Browse Files | Accounting | Peers | Settings |
+| Node Setup | Browse & Upload Files | Accounting | Peers | Settings |
 |-------|---------|-------|----------|------|
-| ![Setup](/ui_samples/node_setup.png) | ![Files](/ui_samples/file_browse.png) | ![Accounting](/ui_samples/accounting.png) | ![Peers](/ui_samples/peers.png) | ![Settings](/ui_samples/settings.png) |
+| ![Setup](/ui_samples/node_setup.png) | ![Files](/ui_samples/file_upload.png) | ![Accounting](/ui_samples/accounting.png) | ![Peers](/ui_samples/peers.png) | ![Settings](/ui_samples/settings.png) |
 
 
 ## Table of Contents
@@ -28,20 +27,23 @@
 ## Install
 
 ```
+$ npm install -g @ethersphere/bee-dashboard
+$ bee-dashboard
+```
+
+## Development
+
+```sh
 git clone git@github.com:ethersphere/bee-dashboard.git
 
 cd  bee-dashboard
 
 npm ci
-```
-
-## Usage
-
-```sh
 npm run build
-
-serve -s ./build
+npm run serve
 ```
+
+You can now access Bee Dashboard on [http://localhost:8080/](http://localhost:8080/)
 
 ## Contribute
 
