@@ -74,7 +74,10 @@
     "lint": "eslint --fix \"src/**/*.ts\" \"src/**/*.tsx\" && prettier --write \"src/**/*.ts\" \"src/**/*.tsx\"",
     "lint:check": "eslint \"src/**/*.ts\" \"src/**/*.tsx\" && prettier --check \"src/**/*.ts\" \"src/**/*.tsx\""
   },
-  "files": ["build", "serve.js"],
+  "files": [
+    "build",
+    "serve.js"
+  ],
   "eslintConfig": {
     "extends": [
       "react-app",
