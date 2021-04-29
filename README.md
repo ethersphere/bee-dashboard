@@ -24,24 +24,26 @@
 - [Contribute](#contribute)
 - [License](#license)
 
-## Install & build
+## Install
 
 ```
+$ npm install -g @ethersphere/bee-dashboard
+$ bee-dashboard
+```
+
+## Development
+
+```sh
 git clone git@github.com:ethersphere/bee-dashboard.git
 
 cd  bee-dashboard
 
 npm ci
 npm run build
-```
-
-## Serve the Bee Dashboard website
-
-```sh
 npm run serve
 ```
 
-You can now access Bee Dashboard on [http://localhost:5000/](http://localhost:5000/)
+You can now access Bee Dashboard on [http://localhost:8080/](http://localhost:8080/)
 
 ## Contribute
 
