@@ -8,5 +8,5 @@ FROM node:15.14-alpine AS final
 RUN npm i -g serve
 WORKDIR /app
 COPY --from=build /src/build .
-EXPOSE 5000
-ENTRYPOINT ["serve"]
+EXPOSE 8080
+ENTRYPOINT ["serve", "-l", "8080"]

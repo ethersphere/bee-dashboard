@@ -45,6 +45,15 @@ npm run serve
 
 You can now access Bee Dashboard on [http://localhost:8080/](http://localhost:8080/)
 
+## Docker
+
+From inside project directory:
+
+```sh
+docker build . -t bee-dashboard
+docker run -p 8080:8080 bee-dashboard
+```
+
 ## Contribute
 
 There are some ways you can make this module better:
