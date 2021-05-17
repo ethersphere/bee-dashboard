@@ -85,11 +85,11 @@ function StatusCard({
               </Typography>
               <Typography component="div" variant="subtitle2" gutterBottom>
                 <span>PUBLIC KEY: </span>
-                <span>{nodeAddresses?.public_key ? nodeAddresses.public_key : '-'}</span>
+                <span>{nodeAddresses?.publicKey ? nodeAddresses.publicKey : '-'}</span>
               </Typography>
               <Typography component="div" variant="subtitle2" gutterBottom>
                 <span>PSS PUBLIC KEY: </span>
-                <span>{nodeAddresses?.pss_public_key ? nodeAddresses.pss_public_key : '-'}</span>
+                <span>{nodeAddresses?.pssPublicKey ? nodeAddresses.pssPublicKey : '-'}</span>
               </Typography>
               <Typography component="div" variant="subtitle2" gutterBottom>
                 <span>OVERLAY ADDRESS (PEER ID): </span>

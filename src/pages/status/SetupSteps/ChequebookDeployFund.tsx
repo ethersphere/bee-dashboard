@@ -19,10 +19,10 @@ const ChequebookDeployFund = ({
   return (
     <div>
       <p style={{ marginBottom: '20px', display: 'flex' }}>
-        {chequebookAddress?.chequebookaddress && <DepositModal />}
+        {chequebookAddress?.chequebookAddress && <DepositModal />}
       </p>
       <div style={{ marginBottom: '10px' }}>
-        {!(chequebookAddress?.chequebookaddress && chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0)) && (
+        {!(chequebookAddress?.chequebookAddress && chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0)) && (
           <div>
             <span>
               Your chequebook is either not deployed or funded. Join{' '}
@@ -36,7 +36,7 @@ const ChequebookDeployFund = ({
       <Typography variant="subtitle1" gutterBottom>
         Chequebook Address
       </Typography>
-      <EthereumAddress address={chequebookAddress?.chequebookaddress} network={'goerli'} />
+      <EthereumAddress address={chequebookAddress?.chequebookAddress} network={'goerli'} />
     </div>
   )
 }

@@ -325,8 +325,8 @@ export interface Settlement {
 }
 
 export interface Settlements {
-  totalreceived: Token
-  totalsent: Token
+  totalReceived: Token
+  totalSent: Token
   settlements: Settlement[]
 }
 
@@ -345,10 +345,10 @@ export const useApiSettlements = (): SettlementsHook => {
     setLoading(true)
     beeDebugApi.settlements
       .getSettlements()
-      .then(({ totalreceived, settlements, totalsent }) => {
+      .then(({ totalReceived, settlements, totalSent }) => {
         const set = {
-          totalreceived: new Token(totalreceived),
-          totalsent: new Token(totalsent),
+          totalReceived: new Token(totalReceived),
+          totalSent: new Token(totalSent),
           settlements: settlements.map(({ peer, received, sent }) => ({
             peer,
             received: new Token(received),

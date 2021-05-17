@@ -109,7 +109,7 @@ export const useAccounting = (): UseAccountingHook => {
     isLoadingUncashed,
     error,
     accounting,
-    totalsent: settlements.settlements?.totalsent || new Token('0'),
-    totalreceived: settlements.settlements?.totalreceived || new Token('0'),
+    totalsent: settlements.settlements?.totalSent || new Token('0'),
+    totalreceived: settlements.settlements?.totalReceived || new Token('0'),
   }
 }
