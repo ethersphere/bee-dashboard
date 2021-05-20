@@ -370,7 +370,7 @@ export const useApiSettlements = (): SettlementsHook => {
 
 export interface LastCashout {
   peer: string
-  cumulativePayout: Token
+  uncashedAmount: Token
 }
 
 export interface PeerLastCashoutHook {
@@ -388,8 +388,8 @@ export const useApiPeerLastCashout = (peerId: string): PeerLastCashoutHook => {
     setLoading(true)
     beeDebugApi.chequebook
       .getPeerLastCashout(peerId)
-      .then(({ peer, cumulativePayout }) => {
-        setPeerCashout({ peer, cumulativePayout: new Token(cumulativePayout) })
+      .then(({ peer, uncashedAmount }) => {
+        setPeerCashout({ peer, uncashedAmount: new Token(uncashedAmount.toString()) })
       })
       .catch(error => {
         setError(error)

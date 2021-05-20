@@ -1,4 +1,5 @@
 import {
+  Address,
   AllSettlements,
   BalanceResponse,
   Bee,
@@ -33,8 +34,8 @@ export const beeApi = {
     },
   },
   files: {
-    uploadFile(file: File): Promise<Reference> {
-      return beeJSClient().uploadFile(file)
+    uploadFile(postageBatchId: Address, file: File): Promise<Reference> {
+      return beeJSClient().uploadFile(postageBatchId, file)
     },
     downloadFile(hash: string | Reference): Promise<FileData<Data>> {
       return beeJSClient().downloadFile(hash)

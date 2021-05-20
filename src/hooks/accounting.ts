@@ -67,10 +67,8 @@ function mergeAccounting(
   // If there are no cheques (and hence last cashout actions), we don't need to sort and can return values right away
   if (!uncashedAmounts) return Object.values(accounting)
 
-  uncashedAmounts?.forEach(({ peer, cumulativePayout }) => {
-    accounting[peer].uncashedAmount = new Token(
-      accounting[peer].received.toBigNumber.minus(cumulativePayout.toString()),
-    )
+  uncashedAmounts?.forEach(({ peer, uncashedAmount }) => {
+    accounting[peer].uncashedAmount = new Token(uncashedAmount)
   })
 
   return Object.values(accounting).sort((a, b) =>
@@ -93,9 +91,10 @@ export const useAccounting = (): UseAccountingHook => {
     if (isLoadingUncashed || !settlements.settlements || uncashedAmounts || error) return
 
     setIsloadingUncashed(true)
-    const promises = settlements.settlements.settlements.map(({ peer }) =>
-      beeDebugApi.chequebook.getPeerLastCashout(peer),
-    )
+    const promises = settlements.settlements.settlements
+      .filter(({ received }) => received.toBigNumber.gt('0'))
+      .map(({ peer }) => beeDebugApi.chequebook.getPeerLastCashout(peer))
+
     Promise.all(promises)
       .then(setUncashedAmounts)
       .catch(setErr)
