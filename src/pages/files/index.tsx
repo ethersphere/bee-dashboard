@@ -74,7 +74,7 @@ export default function Files(): ReactElement {
         <InputBase
           className={classes.input}
           placeholder="Enter swarm reference e.g. 0773a91efd6547c754fc1d95fb1c62c7d1b47f959c2caa685dfec8736da95c1c"
-          inputProps={{ 'aria-label': 'retriefe file from swarm' }}
+          inputProps={{ 'aria-label': 'retrieve file from swarm' }}
           value={referenceInput}
           onChange={handleReferenceChange}
         />
