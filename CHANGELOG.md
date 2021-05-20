@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.1.0...v0.2.0) (2021-05-20)
+
+
+### Features
+
+* update to bee 0.6.0 and bee-js 0.9.0 ([#99](https://www.github.com/ethersphere/bee-dashboard/issues/99)) ([7f5fbd3](https://www.github.com/ethersphere/bee-dashboard/commit/7f5fbd3fb65fe35762cf25ddf7bbaa8b3bd623f9))
+
+
+### Bug Fixes
+
+* serve npm command path specification ([#101](https://www.github.com/ethersphere/bee-dashboard/issues/101)) ([edd4a2f](https://www.github.com/ethersphere/bee-dashboard/commit/edd4a2fc11219843860861343f0317a5f1268ff0)), closes [#98](https://www.github.com/ethersphere/bee-dashboard/issues/98)
+
 ## 0.1.0 (2021-04-29)
 
 
