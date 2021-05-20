@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.1.1](https://www.github.com/ethersphere/bee-dashboard/compare/v0.1.0...v0.1.1) (2021-05-20)
+
+
+### Bug Fixes
+
+* serve npm command path specification ([#101](https://www.github.com/ethersphere/bee-dashboard/issues/101)) ([edd4a2f](https://www.github.com/ethersphere/bee-dashboard/commit/edd4a2fc11219843860861343f0317a5f1268ff0)), closes [#98](https://www.github.com/ethersphere/bee-dashboard/issues/98)
+
 ## 0.1.0 (2021-04-29)
 
 
