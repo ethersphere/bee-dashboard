@@ -325,8 +325,8 @@ export interface Settlement {
 }
 
 export interface Settlements {
-  totalreceived: Token
-  totalsent: Token
+  totalReceived: Token
+  totalSent: Token
   settlements: Settlement[]
 }
 
@@ -345,10 +345,10 @@ export const useApiSettlements = (): SettlementsHook => {
     setLoading(true)
     beeDebugApi.settlements
       .getSettlements()
-      .then(({ totalreceived, settlements, totalsent }) => {
+      .then(({ totalReceived, settlements, totalSent }) => {
         const set = {
-          totalreceived: new Token(totalreceived),
-          totalsent: new Token(totalsent),
+          totalReceived: new Token(totalReceived),
+          totalSent: new Token(totalSent),
           settlements: settlements.map(({ peer, received, sent }) => ({
             peer,
             received: new Token(received),
@@ -370,7 +370,7 @@ export const useApiSettlements = (): SettlementsHook => {
 
 export interface LastCashout {
   peer: string
-  cumulativePayout: Token
+  uncashedAmount: Token
 }
 
 export interface PeerLastCashoutHook {
@@ -388,8 +388,8 @@ export const useApiPeerLastCashout = (peerId: string): PeerLastCashoutHook => {
     setLoading(true)
     beeDebugApi.chequebook
       .getPeerLastCashout(peerId)
-      .then(({ peer, cumulativePayout }) => {
-        setPeerCashout({ peer, cumulativePayout: new Token(cumulativePayout) })
+      .then(({ peer, uncashedAmount }) => {
+        setPeerCashout({ peer, uncashedAmount: new Token(uncashedAmount.toString()) })
       })
       .catch(error => {
         setError(error)

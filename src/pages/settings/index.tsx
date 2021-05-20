@@ -29,7 +29,6 @@ export default function Settings(): ReactElement {
         </Typography>
         <Paper>
           <TextField
-            id="filled-full-width"
             label="API Endpoint"
             style={{ margin: 0 }}
             placeholder="ex: 127.0.0.0.1:1633"
@@ -51,7 +50,6 @@ export default function Settings(): ReactElement {
         </Paper>
         <Paper style={{ marginTop: '20px' }}>
           <TextField
-            id="filled-full-width"
             label="Debug API Endpoint"
             style={{ margin: 0 }}
             placeholder="ex: 127.0.0.0.1:1635"

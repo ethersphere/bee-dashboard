@@ -73,7 +73,7 @@ export const useStatusChequebook = (): StatusChequebookHook => {
   return {
     isLoading: isLoadingChequebookAddress || isLoadingChequebookBalance,
     isOk:
-      Boolean(chequebookAddress?.chequebookaddress) &&
+      Boolean(chequebookAddress?.chequebookAddress) &&
       chequebookBalance !== null &&
       chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0),
     chequebookBalance,
