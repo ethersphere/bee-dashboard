@@ -70,7 +70,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "serve": "http-serve -o ./build",
+    "serve": "http-serve ./build -o",
     "lint": "eslint --fix \"src/**/*.ts\" \"src/**/*.tsx\" && prettier --write \"src/**/*.ts\" \"src/**/*.tsx\"",
     "lint:check": "eslint \"src/**/*.ts\" \"src/**/*.tsx\" && prettier --check \"src/**/*.ts\" \"src/**/*.tsx\""
   },
