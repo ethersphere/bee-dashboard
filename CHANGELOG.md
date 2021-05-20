@@ -2,6 +2,8 @@
 
 ## [0.2.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.1.0...v0.2.0) (2021-05-20)
 
+This release supports the [Bee's 0.6.0 release](https://github.com/ethersphere/bee/releases/tag/v0.6.0) and is fully
+compatible with it. Due to the amount of breaking changes Bee Dashboard no longer supports the Bee version `0.5.3`.
 
 ### Features
 
