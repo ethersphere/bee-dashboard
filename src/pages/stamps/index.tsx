@@ -4,6 +4,7 @@ import { Container, CircularProgress } from '@material-ui/core'
 
 import StampsTable from './StampsTable'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
+import CreatePostageStampModal from './CreatePostageStampModal'
 
 import { useApiHealth, useDebugApiHealth, useGetPostageStamps } from '../../hooks/apiHooks'
 
@@ -41,7 +42,12 @@ export default function Accounting(): ReactElement {
           Error loading postage stamps details: {error.message}
         </Container>
       )}
-      {!error && <StampsTable postageStamps={postageStamps} />}
+      {!error && (
+        <>
+          <CreatePostageStampModal />
+          <StampsTable postageStamps={postageStamps} />
+        </>
+      )}
     </div>
   )
 }
