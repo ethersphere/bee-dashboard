@@ -47,12 +47,11 @@ You can now access Bee Dashboard on [http://localhost:8080/](http://localhost:80
 
 ## Docker
 
-From inside project directory:
+To build Docker image and run it, execute the following from inside project directory:
 
 ```sh
 docker build . -t bee-dashboard
-docker run -p 8080:8080 bee-dashboard
-```
+docker run --rm -p 127.0.0.1:8080:8080 bee-dashboard
 
 ## Contribute
 
