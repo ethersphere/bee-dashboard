@@ -7,11 +7,12 @@ import AppRoute from './AppRoute'
 import Dashboard from '../layout/Dashboard'
 
 // pages
-import Status from '../pages/status/index'
-import Files from '../pages/files/index'
-import Peers from '../pages/peers/index'
-import Accounting from '../pages/accounting/index'
-import Settings from '../pages/settings/index'
+import Status from '../pages/status'
+import Files from '../pages/files'
+import Peers from '../pages/peers'
+import Accounting from '../pages/accounting'
+import Settings from '../pages/settings'
+import Stamps from '../pages/stamps'
 
 const BaseRouter = (): ReactElement => (
   <Switch>
@@ -20,6 +21,7 @@ const BaseRouter = (): ReactElement => (
     <AppRoute exact path="/peers/" layout={Dashboard} component={Peers} />
     <AppRoute exact path="/accounting/" layout={Dashboard} component={Accounting} />
     <AppRoute exact path="/settings/" layout={Dashboard} component={Settings} />
+    <AppRoute exact path="/stamps/" layout={Dashboard} component={Stamps} />
   </Switch>
 )
 

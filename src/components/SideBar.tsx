@@ -4,7 +4,7 @@ import { Link, RouteComponentProps } from 'react-router-dom'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItemText, ListItemIcon, ListItem, Divider, List, Drawer, Link as MUILink } from '@material-ui/core'
 import { OpenInNewSharp } from '@material-ui/icons'
-import { Activity, FileText, DollarSign, Share2, Settings } from 'react-feather'
+import { Activity, FileText, DollarSign, Share2, Settings, Layers } from 'react-feather'
 
 import SwarmLogoOrange from '../assets/swarm-logo-orange.svg'
 import { Health } from '@ethersphere/bee-js'
@@ -23,6 +23,12 @@ const navBarItems = [
     id: 'files',
     path: '/files/',
     icon: FileText,
+  },
+  {
+    label: 'Stamps',
+    id: 'stamps',
+    path: '/stamps/',
+    icon: Layers,
   },
   {
     label: 'Accounting',

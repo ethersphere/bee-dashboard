@@ -17,6 +17,7 @@ import {
   NodeAddresses,
   Peer,
   PingResponse,
+  PostageBatch,
   Reference,
   Topology,
   WithdrawTokensResponse,
@@ -39,6 +40,11 @@ export const beeApi = {
     },
     downloadFile(hash: string | Reference): Promise<FileData<Data>> {
       return beeJSClient().downloadFile(hash)
+    },
+  },
+  stamps: {
+    getPostageStamps(): Promise<PostageBatch[]> {
+      return beeJSClient().getAllPostageBatch()
     },
   },
 }
