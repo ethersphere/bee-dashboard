@@ -1,19 +1,22 @@
-import type { ReactElement } from 'react'
+import { ReactElement, useContext, useEffect } from 'react'
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles'
-import { Container, CircularProgress } from '@material-ui/core'
+import { Container, CircularProgress, LinearProgress } from '@material-ui/core'
 
 import StampsTable from './StampsTable'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import CreatePostageStampModal from './CreatePostageStampModal'
+import LastUpdate from '../../components/LastUpdate'
 
-import { useApiHealth, useDebugApiHealth, useGetPostageStamps } from '../../hooks/apiHooks'
+import { useApiHealth, useDebugApiHealth } from '../../hooks/apiHooks'
+import { Context } from '../../providers/Stamps'
+import { start } from 'node:repl'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       width: '100%',
       display: 'grid',
-      rowGap: theme.spacing(3),
+      rowGap: theme.spacing(2),
     },
   }),
 )
@@ -23,9 +26,14 @@ export default function Accounting(): ReactElement {
 
   const { health, isLoadingHealth } = useApiHealth()
   const { nodeHealth, isLoadingNodeHealth } = useDebugApiHealth()
-  const { postageStamps, isLoading, error } = useGetPostageStamps()
+  const { stamps, isLoading, error, lastUpdate, start, stop } = useContext(Context)
+  useEffect(() => {
+    start()
 
-  if (isLoadingHealth || isLoadingNodeHealth || isLoading) {
+    return () => stop()
+  }, [])
+
+  if (isLoadingHealth || isLoadingNodeHealth) {
     return (
       <Container style={{ textAlign: 'center', padding: '50px' }}>
         <CircularProgress />
@@ -45,7 +53,11 @@ export default function Accounting(): ReactElement {
       {!error && (
         <>
           <CreatePostageStampModal />
-          <StampsTable postageStamps={postageStamps} />
+          <LastUpdate date={lastUpdate} />
+          <div>
+            <div style={{ height: '5px' }}>{isLoading && <LinearProgress />}</div>
+            <StampsTable postageStamps={stamps} />
+          </div>
         </>
       )}
     </div>

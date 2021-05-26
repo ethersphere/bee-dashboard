@@ -7,6 +7,7 @@ import CssBaseline from '@material-ui/core/CssBaseline'
 
 import BaseRouter from './routes/routes'
 import { lightTheme, darkTheme } from './theme'
+import { Provider as StampsProvider } from './providers/Stamps'
 
 const App = (): ReactElement => {
   const [themeMode, toggleThemeMode] = useState('light')
@@ -33,10 +34,14 @@ const App = (): ReactElement => {
   return (
     <div className="App">
       <ThemeProvider theme={themeMode === 'light' ? lightTheme : darkTheme}>
-        <CssBaseline />
-        <Router>
-          <BaseRouter />
-        </Router>
+        <StampsProvider>
+          <>
+            <CssBaseline />
+            <Router>
+              <BaseRouter />
+            </Router>
+          </>
+        </StampsProvider>
       </ThemeProvider>
     </div>
   )

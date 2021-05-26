@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import Dialog from '@material-ui/core/Dialog'
@@ -7,6 +7,7 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import BigNumber from 'bignumber.js'
+import { beeApi } from '../../services/bee'
 
 interface FormValues {
   depth?: string
@@ -57,9 +58,29 @@ export default function FormDialog(): ReactElement {
 
   const [values, setValues] = useState<FormValues>(initialFormValues)
   const [errors, setErrors] = useState<FormValues>()
+  const [hasErrors, setHasErrors] = useState<boolean>(false)
+  useEffect(() => {
+    setHasErrors(errors ? Object.values(errors).some(e => Boolean(e)) : false)
+  }, [errors])
+
+  const resetForm = () => {
+    setValues(initialFormValues)
+    setErrors({})
+  }
 
   const handleClickOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
+  const submitForm = async () => {
+    if (!values.depth) return
+
+    const amount = BigInt(values.amount)
+    const depth = Number.parseInt(values.depth)
+    const options = values.label ? { label: values.label } : undefined
+
+    await beeApi.stamps.buyPostageStamp(amount, depth, options)
+    resetForm()
+    handleClose()
+  }
 
   const handleUserInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target
@@ -71,8 +92,6 @@ export default function FormDialog(): ReactElement {
       const validator = validators[key]
 
       if (validator) setErrors({ ...errors, [key]: validator(value) })
-
-      console.log(name, value) // eslint-disable-line
     }
   }
 
@@ -85,7 +104,11 @@ export default function FormDialog(): ReactElement {
         <DialogTitle id="form-dialog-title">Purchase new postage stamp</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Provide the depth, amount and optionally the label of the postage stamp.
+            Provide the depth, amount and optionally the label of the postage stamp. Please refer to the{' '}
+            <a href="https://docs.ethswarm.org/docs/access-the-swarm/keep-your-data-alive" target="blank">
+              official bee docs
+            </a>{' '}
+            to understand these values.
           </DialogContentText>
           <TextField
             onChange={handleUserInput}
@@ -128,7 +151,7 @@ export default function FormDialog(): ReactElement {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleClose} color="primary">
+          <Button color="primary" disabled={hasErrors} onClick={() => submitForm()}>
             Create
           </Button>
         </DialogActions>

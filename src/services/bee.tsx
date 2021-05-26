@@ -18,6 +18,7 @@ import {
   Peer,
   PingResponse,
   PostageBatch,
+  PostageBatchOptions,
   Reference,
   Topology,
   WithdrawTokensResponse,
@@ -45,6 +46,9 @@ export const beeApi = {
   stamps: {
     getPostageStamps(): Promise<PostageBatch[]> {
       return beeJSClient().getAllPostageBatch()
+    },
+    buyPostageStamp(amount: bigint, depth: number, options: PostageBatchOptions = {}): Promise<Address> {
+      return beeJSClient().createPostageBatch(amount, depth, options)
     },
   },
 }
