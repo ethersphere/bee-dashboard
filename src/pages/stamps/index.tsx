@@ -9,7 +9,6 @@ import LastUpdate from '../../components/LastUpdate'
 
 import { useApiHealth, useDebugApiHealth } from '../../hooks/apiHooks'
 import { Context } from '../../providers/Stamps'
-import { start } from 'node:repl'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

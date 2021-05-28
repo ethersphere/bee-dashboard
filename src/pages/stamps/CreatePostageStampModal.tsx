@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement } from 'react'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import Dialog from '@material-ui/core/Dialog'
@@ -7,6 +7,7 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import BigNumber from 'bignumber.js'
+import { FormikHelpers, useFormik } from 'formik'
 import { beeApi } from '../../services/bee'
 
 interface FormValues {
@@ -14,89 +15,65 @@ interface FormValues {
   amount?: string
   label?: string
 }
-type FormKeys = keyof FormValues
-type Validators<T extends FormValues> = { [key in keyof T]: (value: T[key]) => string | undefined }
-
+type FormErrors = Partial<FormValues>
 const initialFormValues: FormValues = {
   depth: '',
   amount: '',
   label: '',
 }
 
-const validators: Validators<FormValues> = {
-  depth: (value: string | undefined) => {
-    if (!value) return 'Required field'
-
-    const depth = new BigNumber(value)
-
-    if (!depth.isInteger()) return 'Depth must be an integer'
-
-    if (depth.isLessThan(16)) return 'Minimal depth is 16'
-
-    return undefined
-  },
-  amount: (value: string | undefined) => {
-    if (!value) return 'Required field'
-
-    const depth = new BigNumber(value)
-
-    if (!depth.isInteger()) return 'Amount must be an integer'
-
-    if (depth.isLessThanOrEqualTo(0)) return 'Amount must be greater than 0'
-
-    return undefined
-  },
-  label: (value: string | undefined) => {
-    if (value && !/^[0-9a-z]*$/i.test(value)) return 'Label must be an alphanumeric string'
-
-    return undefined
-  },
-}
-
 export default function FormDialog(): ReactElement {
   const [open, setOpen] = React.useState(false)
-
-  const [values, setValues] = useState<FormValues>(initialFormValues)
-  const [errors, setErrors] = useState<FormValues>()
-  const [hasErrors, setHasErrors] = useState<boolean>(false)
-  useEffect(() => {
-    setHasErrors(errors ? Object.values(errors).some(e => Boolean(e)) : false)
-  }, [errors])
-
-  const resetForm = () => {
-    setValues(initialFormValues)
-    setErrors({})
-  }
-
   const handleClickOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
-  const submitForm = async () => {
-    if (!values.depth) return
 
-    const amount = BigInt(values.amount)
-    const depth = Number.parseInt(values.depth)
-    const options = values.label ? { label: values.label } : undefined
+  const formik = useFormik({
+    initialValues: initialFormValues,
+    onSubmit: async (values: FormValues, actions: FormikHelpers<FormValues>) => {
+      try {
+        if (!values.depth) return
 
-    await beeApi.stamps.buyPostageStamp(amount, depth, options)
-    resetForm()
-    handleClose()
-  }
+        const amount = BigInt(values.amount)
+        const depth = Number.parseInt(values.depth)
+        const options = values.label ? { label: values.label } : undefined
+        await beeApi.stamps.buyPostageStamp(amount, depth, options)
+        actions.resetForm()
+        handleClose()
+      } catch (e) {
+        console.error(`${e.message}`) // eslint-disable-line
+        actions.setSubmitting(false)
+      }
+    },
+    validate: (values: FormValues) => {
+      const errors: FormErrors = {}
 
-  const handleUserInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target
+      // Depth
+      if (!values.depth) errors.depth = 'Required field'
+      else {
+        const depth = new BigNumber(values.depth)
 
-    if (Object.keys(initialFormValues).includes(name)) {
-      const key = name as FormKeys
-      setValues({ ...values, [key]: value })
+        if (!depth.isInteger()) errors.depth = 'Depth must be an integer'
+        else if (depth.isLessThan(16)) errors.depth = 'Minimal depth is 16'
+      }
 
-      const validator = validators[key]
+      // Amount
+      if (!values.amount) errors.amount = 'Required field'
+      else {
+        const amount = new BigNumber(values.amount)
 
-      if (validator) setErrors({ ...errors, [key]: validator(value) })
-    }
-  }
+        if (!amount.isInteger()) errors.amount = 'Amount must be an integer'
+        else if (amount.isLessThanOrEqualTo(0)) errors.amount = 'Amount must be greater than 0'
+      }
+
+      // Label
+      if (values.label && !/^[0-9a-z]*$/i.test(values.label)) errors.amount = 'Label must be an alphanumeric string'
+
+      return errors
+    },
+  })
 
   return (
-    <div>
+    <form onReset={formik.handleReset} onSubmit={formik.handleSubmit}>
       <Button variant="outlined" color="primary" onClick={handleClickOpen}>
         Buy Postage Stamp
       </Button>
@@ -111,10 +88,10 @@ export default function FormDialog(): ReactElement {
             to understand these values.
           </DialogContentText>
           <TextField
-            onChange={handleUserInput}
-            value={values.depth}
-            error={Boolean(errors?.depth)}
-            helperText={errors?.depth}
+            onChange={formik.handleChange}
+            value={formik.values.depth}
+            error={Boolean(formik.errors?.depth)}
+            helperText={formik.errors?.depth}
             required
             name="depth"
             autoFocus
@@ -124,10 +101,10 @@ export default function FormDialog(): ReactElement {
             fullWidth
           />
           <TextField
-            onChange={handleUserInput}
-            value={values.amount}
-            error={Boolean(errors?.amount)}
-            helperText={errors?.amount}
+            onChange={formik.handleChange}
+            value={formik.values.amount}
+            error={Boolean(formik.errors?.amount)}
+            helperText={formik.errors?.amount}
             required
             name="amount"
             margin="dense"
@@ -136,10 +113,10 @@ export default function FormDialog(): ReactElement {
             fullWidth
           />
           <TextField
-            onChange={handleUserInput}
-            value={values.label}
-            error={Boolean(errors?.label)}
-            helperText={errors?.label}
+            onChange={formik.handleChange}
+            value={formik.values.label}
+            error={Boolean(formik.errors?.label)}
+            helperText={formik.errors?.label}
             name="label"
             margin="dense"
             label="Label"
@@ -151,11 +128,15 @@ export default function FormDialog(): ReactElement {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button color="primary" disabled={hasErrors} onClick={() => submitForm()}>
+          <Button
+            color="primary"
+            disabled={formik.isSubmitting || !formik.isValid || !formik.values.amount || !formik.values.depth}
+            type="submit"
+          >
             Create
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </form>
   )
 }

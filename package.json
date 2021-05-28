@@ -33,6 +33,7 @@
     "axios": "^0.21.1",
     "bignumber.js": "^9.0.1",
     "feather-icons": "^4.28.0",
+    "formik": "^2.2.8",
     "material-ui-dropzone": "^3.5.0",
     "opener": "^1.5.2",
     "qrcode.react": "^1.0.1",

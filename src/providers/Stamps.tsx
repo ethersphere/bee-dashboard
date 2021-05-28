@@ -49,7 +49,7 @@ export function Provider({ children }: Props): ReactElement {
       .catch(setError)
   }
 
-  const start = (freq = 3000) => setFrequency(freq)
+  const start = (freq = 30000) => setFrequency(freq)
   const stop = () => setFrequency(null)
 
   useEffect(() => {
