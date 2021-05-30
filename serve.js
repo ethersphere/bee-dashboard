@@ -31,4 +31,4 @@ server.listen(8080, () => {
   console.log('Starting up Bee Dashboard on address http://localhost:8080')
   console.log('Hit CTRL-C to stop the server')
   opener('http://localhost:8080')
-});
+})
