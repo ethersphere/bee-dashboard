@@ -33,8 +33,8 @@
     "axios": "^0.21.1",
     "bignumber.js": "^9.0.1",
     "feather-icons": "^4.28.0",
-    "http-serve": "^1.0.1",
     "material-ui-dropzone": "^3.5.0",
+    "opener": "^1.5.2",
     "qrcode.react": "^1.0.1",
     "react": "^17.0.2",
     "react-copy-to-clipboard": "^5.0.3",
@@ -42,7 +42,8 @@
     "react-feather": "^2.0.9",
     "react-identicons": "^1.2.5",
     "react-router-dom": "^5.2.0",
-    "react-syntax-highlighter": "^15.4.3"
+    "react-syntax-highlighter": "^15.4.3",
+    "serve-handler": "^6.1.3"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.12.0",
@@ -70,7 +71,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "serve": "http-serve ./build -o",
+    "serve": "node ./serve.js",
     "lint": "eslint --fix \"src/**/*.ts\" \"src/**/*.tsx\" && prettier --write \"src/**/*.ts\" \"src/**/*.tsx\"",
     "lint:check": "eslint \"src/**/*.ts\" \"src/**/*.tsx\" && prettier --check \"src/**/*.ts\" \"src/**/*.tsx\""
   },
