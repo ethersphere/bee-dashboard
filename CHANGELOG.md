@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.2.0...v0.3.0) (2021-05-31)
+
+
+### Features
+
+* added Dockerfile ([#75](https://www.github.com/ethersphere/bee-dashboard/issues/75)) ([aab0462](https://www.github.com/ethersphere/bee-dashboard/commit/aab0462047a3fcd87ba258b5486aede922865b1e))
+
+
+### Bug Fixes
+
+* add git attributes ([#123](https://www.github.com/ethersphere/bee-dashboard/issues/123)) ([07f987e](https://www.github.com/ethersphere/bee-dashboard/commit/07f987e069cda2f28bc5ebf8958b9b0aa9d875dc))
+* add prod env variables ([#121](https://www.github.com/ethersphere/bee-dashboard/issues/121)) ([a603a86](https://www.github.com/ethersphere/bee-dashboard/commit/a603a86c1adcfb0dcc9995c95c4ee4411c41c25a))
+* replace http-serve with serve-handler ([#122](https://www.github.com/ethersphere/bee-dashboard/issues/122)) ([ba9b498](https://www.github.com/ethersphere/bee-dashboard/commit/ba9b498488dca989bbbda6110d0d22753b33ae8c))
+
 ## [0.2.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.1.0...v0.2.0) (2021-05-20)
 
 This release supports the [Bee's 0.6.0 release](https://github.com/ethersphere/bee/releases/tag/v0.6.0) and is fully
