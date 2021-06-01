@@ -7,9 +7,10 @@ function truncStringPortion(str: string, firstCharCount = 10, endCharCount = 10)
 
 interface Props {
   peerId: string
+  characterLength?: number
 }
 
-export default function PeerDetail(props: Props): ReactElement {
+export default function PeerDetail({ peerId, characterLength }: Props): ReactElement {
   return (
     <Typography
       variant="button"
@@ -17,7 +18,7 @@ export default function PeerDetail(props: Props): ReactElement {
         fontFamily: 'monospace, monospace',
       }}
     >
-      {truncStringPortion(props.peerId)}
+      {truncStringPortion(peerId, characterLength, characterLength)}
     </Typography>
   )
 }
