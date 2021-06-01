@@ -1,6 +1,6 @@
 import { ReactElement, useContext, useEffect } from 'react'
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles'
-import { Container, CircularProgress, LinearProgress } from '@material-ui/core'
+import { Container, CircularProgress } from '@material-ui/core'
 
 import StampsTable from './StampsTable'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
@@ -16,6 +16,15 @@ const useStyles = makeStyles((theme: Theme) =>
       width: '100%',
       display: 'grid',
       rowGap: theme.spacing(2),
+    },
+    actions: {
+      display: 'flex',
+      width: '100%',
+      columnGap: theme.spacing(1),
+      rowGap: theme.spacing(1),
+      flex: '0 1 auto',
+      flexWrap: 'wrap',
+      alignItems: 'center',
     },
   }),
 )
@@ -51,12 +60,12 @@ export default function Accounting(): ReactElement {
       )}
       {!error && (
         <>
-          <CreatePostageStampModal />
-          <LastUpdate date={lastUpdate} />
-          <div>
-            <div style={{ height: '5px' }}>{isLoading && <LinearProgress />}</div>
-            <StampsTable postageStamps={stamps} />
+          <div className={classes.actions}>
+            <CreatePostageStampModal />
+            <LastUpdate date={lastUpdate} />
+            <div style={{ height: '5px' }}>{isLoading && <CircularProgress />}</div>
           </div>
+          <StampsTable postageStamps={stamps} />
         </>
       )}
     </div>

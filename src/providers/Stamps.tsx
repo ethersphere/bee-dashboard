@@ -9,6 +9,7 @@ interface ContextInterface {
   lastUpdate: number | null
   start: (frequency?: number) => void
   stop: () => void
+  refresh: () => Promise<void>
 }
 
 const initialValues: ContextInterface = {
@@ -18,6 +19,7 @@ const initialValues: ContextInterface = {
   lastUpdate: null,
   start: () => {}, // eslint-disable-line
   stop: () => {}, // eslint-disable-line
+  refresh: () => Promise.reject(),
 }
 
 export const Context = createContext<ContextInterface>(initialValues)
@@ -34,19 +36,21 @@ export function Provider({ children }: Props): ReactElement {
   const [lastUpdate, setLastUpdate] = useState<number | null>(initialValues.lastUpdate)
   const [frequency, setFrequency] = useState<number | null>()
 
-  const refresh = () => {
+  const refresh = async () => {
     // Don't want to refresh back to back
     if (isLoading) return
 
-    setIsLoading(true)
-    beeApi.stamps
-      .getPostageStamps()
-      .then(stamps => {
-        setStamps(stamps)
-        setIsLoading(false)
-        setLastUpdate(Date.now())
-      })
-      .catch(setError)
+    try {
+      setIsLoading(true)
+      const stamps = await beeApi.stamps.getPostageStamps()
+
+      setStamps(stamps)
+      setLastUpdate(Date.now())
+    } catch (e) {
+      setError(e)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const start = (freq = 30000) => setFrequency(freq)
@@ -62,5 +66,9 @@ export function Provider({ children }: Props): ReactElement {
     }
   }, [frequency])
 
-  return <Context.Provider value={{ stamps, error, isLoading, lastUpdate, start, stop }}>{children}</Context.Provider>
+  return (
+    <Context.Provider value={{ stamps, error, isLoading, lastUpdate, start, stop, refresh }}>
+      {children}
+    </Context.Provider>
+  )
 }
