@@ -4,6 +4,7 @@ import './App.css'
 
 import { ThemeProvider } from '@material-ui/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
+import { SnackbarProvider } from 'notistack'
 
 import BaseRouter from './routes/routes'
 import { lightTheme, darkTheme } from './theme'
@@ -35,12 +36,14 @@ const App = (): ReactElement => {
     <div className="App">
       <ThemeProvider theme={themeMode === 'light' ? lightTheme : darkTheme}>
         <StampsProvider>
-          <>
-            <CssBaseline />
-            <Router>
-              <BaseRouter />
-            </Router>
-          </>
+          <SnackbarProvider>
+            <>
+              <CssBaseline />
+              <Router>
+                <BaseRouter />
+              </Router>
+            </>
+          </SnackbarProvider>
         </StampsProvider>
       </ThemeProvider>
     </div>
