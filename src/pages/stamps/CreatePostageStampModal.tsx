@@ -45,7 +45,11 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-export default function FormDialog(): ReactElement {
+interface Props {
+  label?: string
+}
+
+export default function FormDialog({ label }: Props): ReactElement {
   const classes = useStyles()
   const [open, setOpen] = React.useState(false)
   const { refresh } = useContext(Context)
@@ -103,7 +107,7 @@ export default function FormDialog(): ReactElement {
       {({ submitForm, isValid, isSubmitting }) => (
         <Form>
           <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-            Buy Postage Stamp
+            {label || 'Buy Postage Stamp'}
             {isSubmitting && <CircularProgress size={24} className={classes.buttonProgress} />}
           </Button>
           <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">

@@ -34,10 +34,10 @@ export function Provider({ children }: Props): ReactElement {
   const [error, setError] = useState<Error | null>(initialValues.error)
   const [isLoading, setIsLoading] = useState<boolean>(initialValues.isLoading)
   const [lastUpdate, setLastUpdate] = useState<number | null>(initialValues.lastUpdate)
-  const [frequency, setFrequency] = useState<number | null>()
+  const [frequency, setFrequency] = useState<number | null>(null)
 
   const refresh = async () => {
-    // Don't want to refresh back to back
+    // Don't want to refresh when already refreshing
     if (isLoading) return
 
     try {
@@ -56,9 +56,11 @@ export function Provider({ children }: Props): ReactElement {
   const start = (freq = 30000) => setFrequency(freq)
   const stop = () => setFrequency(null)
 
+  // Start the update loop
   useEffect(() => {
     refresh()
 
+    // Start autorefresh only if the frequency is set
     if (frequency) {
       const interval = setInterval(refresh, frequency)
 
