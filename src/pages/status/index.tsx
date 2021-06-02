@@ -49,9 +49,10 @@ export default function Status(): ReactElement {
     <div className={classes.root}>
       <StatusCard
         userBeeVersion={nodeVersion.userVersion}
-        latestBeeVersion={nodeVersion.latestVersion}
+        isLatestBeeVersion={nodeVersion.isLatestBeeVersion}
         isOk={checks.every(c => c.isOk)}
         nodeTopology={topology.topology}
+        latestUrl={nodeVersion.latestUrl}
         nodeAddresses={ethereumConnection.nodeAddresses}
       />
       {ethereumConnection.nodeAddresses && chequebook.chequebookAddress && (

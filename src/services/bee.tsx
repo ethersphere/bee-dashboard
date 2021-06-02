@@ -4,11 +4,9 @@ import {
   BalanceResponse,
   Bee,
   BeeDebug,
-  CashoutResponse,
   ChequebookAddressResponse,
   ChequebookBalanceResponse,
   Data,
-  DepositTokensResponse,
   FileData,
   Health,
   LastCashoutActionResponse,
@@ -21,7 +19,6 @@ import {
   PostageBatchOptions,
   Reference,
   Topology,
-  WithdrawTokensResponse,
 } from '@ethersphere/bee-js'
 import { apiHost, debugApiHost } from '../constants'
 
@@ -88,7 +85,7 @@ export const beeDebugApi = {
     getLastCheques(): Promise<LastChequesResponse> {
       return beeJSDebugClient().getLastCheques()
     },
-    peerCashout(peerId: string): Promise<CashoutResponse> {
+    peerCashout(peerId: string): Promise<string> {
       return beeJSDebugClient().cashoutLastCheque(peerId)
     },
     getPeerLastCashout(peerId: string): Promise<LastCashoutActionResponse> {
@@ -97,10 +94,10 @@ export const beeDebugApi = {
     getPeerLastCheques(peerId: string): Promise<LastChequesForPeerResponse> {
       return beeJSDebugClient().getLastChequesForPeer(peerId)
     },
-    withdraw(amount: bigint): Promise<WithdrawTokensResponse> {
+    withdraw(amount: bigint): Promise<string> {
       return beeJSDebugClient().withdrawTokens(amount)
     },
-    deposit(amount: bigint): Promise<DepositTokensResponse> {
+    deposit(amount: bigint): Promise<string> {
       return beeJSDebugClient().depositTokens(amount)
     },
   },

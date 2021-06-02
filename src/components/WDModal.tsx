@@ -18,7 +18,7 @@ interface Props {
   label: string
   max?: BigNumber
   min?: BigNumber
-  action: (amount: bigint) => Promise<{ transactionHash: string }>
+  action: (amount: bigint) => Promise<string>
 }
 
 export default function WithdrawModal({
@@ -48,7 +48,7 @@ export default function WithdrawModal({
     if (amountToken === null) return
 
     try {
-      const { transactionHash } = await action(amountToken.toBigInt as bigint)
+      const transactionHash = await action(amountToken.toBigInt as bigint)
       setOpen(false)
       enqueueSnackbar(`${successMessage} Transaction ${transactionHash}`, { variant: 'success' })
     } catch (e) {

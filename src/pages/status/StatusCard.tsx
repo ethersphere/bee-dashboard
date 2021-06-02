@@ -23,17 +23,19 @@ const useStyles = makeStyles(() =>
 interface Props {
   nodeAddresses: NodeAddresses | null
   nodeTopology: Topology | null
-  userBeeVersion: string | null
-  latestBeeVersion: string | null
+  userBeeVersion?: string
+  isLatestBeeVersion: boolean
   isOk: boolean
+  latestUrl: string
 }
 
 function StatusCard({
   userBeeVersion,
   nodeAddresses,
   nodeTopology,
-  latestBeeVersion,
   isOk,
+  isLatestBeeVersion,
+  latestUrl,
 }: Props): ReactElement | null {
   const classes = useStyles()
 
@@ -72,7 +74,7 @@ function StatusCard({
                   Bee
                 </a>{' '}
                 <span>{userBeeVersion || '-'}</span>
-                {userBeeVersion && latestBeeVersion && userBeeVersion === latestBeeVersion ? (
+                {isLatestBeeVersion ? (
                   <Chip
                     style={{ marginLeft: '7px', color: '#2145a0' }}
                     size="small"
@@ -80,7 +82,9 @@ function StatusCard({
                     className={classes.status}
                   />
                 ) : (
-                  <Typography variant="button">update</Typography>
+                  <Button size="small" variant="outlined" href={latestUrl}>
+                    update
+                  </Button>
                 )}
               </Typography>
               <Typography component="div" variant="subtitle2" gutterBottom>
