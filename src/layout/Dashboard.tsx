@@ -1,5 +1,6 @@
 import { useState, useEffect, ReactElement } from 'react'
 import ErrorBoundary from '../components/ErrorBoundary'
+import AlertVersion from '../components/AlertVersion'
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 
@@ -11,27 +12,12 @@ import { RouteComponentProps } from 'react-router'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    toolbar: theme.mixins.toolbar,
     content: {
       marginLeft: '240px',
       flexGrow: 1,
       backgroundColor: theme.palette.background.default,
       padding: theme.spacing(3),
       paddingBottom: '65px',
-    },
-    footer: {
-      marginLeft: '240px',
-      backgroundColor: theme.palette.background.default,
-      position: 'fixed',
-      bottom: 0,
-      flexGrow: 1,
-      width: '-webkit-fill-available',
-      padding: theme.spacing(2),
-      textAlign: 'center',
-    },
-    logo: {
-      height: '20px',
-      marginRight: '7px',
     },
   }),
 )
@@ -73,7 +59,10 @@ const Dashboard = (props: Props): ReactElement => {
       <SideBar {...props} themeMode={themeMode} health={health} nodeHealth={nodeHealth} />
       <NavBar themeMode={themeMode} />
       <ErrorBoundary>
-        <main className={classes.content}>{props.children}</main>
+        <main className={classes.content}>
+          <AlertVersion />
+          {props.children}
+        </main>
       </ErrorBoundary>
     </div>
   )

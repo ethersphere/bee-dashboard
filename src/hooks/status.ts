@@ -9,6 +9,8 @@ import {
   useDebugApiHealth,
   useLatestBeeRelease,
 } from './apiHooks'
+import semver from 'semver'
+import { engines } from '../../package.json'
 
 export interface StatusChequebookHook extends StatusHookCommon {
   chequebookBalance: ChequebookBalance | null
@@ -19,12 +21,29 @@ export const useStatusNodeVersion = (): StatusNodeVersionHook => {
   const { latestBeeRelease, isLoadingLatestBeeRelease } = useLatestBeeRelease()
   const { nodeHealth, isLoadingNodeHealth } = useDebugApiHealth()
 
+  const latestVersion = semver.coerce(latestBeeRelease?.name)?.version
+  const latestUserVersion = semver.coerce(nodeHealth?.version)?.version
+
+  const isLatestBeeVersion = Boolean(
+    latestVersion &&
+      latestUserVersion &&
+      semver.satisfies(latestVersion, latestUserVersion, {
+        includePrerelease: true,
+      }),
+  )
+
   return {
     isLoading: isLoadingNodeHealth || isLoadingLatestBeeRelease,
-    isOk: Boolean(latestBeeRelease && latestBeeRelease.name === `v${nodeHealth?.version?.split('-')[0]}`),
-    userVersion: nodeHealth?.version?.split('-')[0] || '-',
-    latestVersion: latestBeeRelease?.name.substring(1) || '-',
+    isOk: Boolean(
+      nodeHealth &&
+        semver.satisfies(nodeHealth.version, engines.bee, {
+          includePrerelease: true,
+        }),
+    ),
+    userVersion: nodeHealth?.version,
+    latestVersion,
     latestUrl: latestBeeRelease?.html_url || 'https://github.com/ethersphere/bee/releases/latest',
+    isLatestBeeVersion,
   }
 }
 

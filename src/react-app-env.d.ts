@@ -11,9 +11,10 @@ interface StatusHookCommon {
 }
 
 interface StatusNodeVersionHook extends StatusHookCommon {
-  userVersion: string
-  latestVersion: string
+  userVersion?: string
+  latestVersion?: string
   latestUrl: string
+  isLatestBeeVersion: boolean
 }
 interface StatusEthereumConnectionHook extends StatusHookCommon {
   nodeAddresses: NodeAddresses | null
