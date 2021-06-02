@@ -8,7 +8,7 @@ import { Utils } from '@ethersphere/bee-js'
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      padding: '2px 4px',
+      padding: theme.spacing(0.25),
       display: 'flex',
       alignItems: 'center',
     },
@@ -45,7 +45,7 @@ export default function Files(): ReactElement {
         <InputBase
           className={classes.input}
           placeholder="Enter swarm reference e.g. 0773a91efd6547c754fc1d95fb1c62c7d1b47f959c2caa685dfec8736da95c1c"
-          inputProps={{ 'aria-label': 'retriefe file from swarm' }}
+          inputProps={{ 'aria-label': 'retrieve file from swarm' }}
           value={referenceInput}
           onChange={handleReferenceChange}
         />
