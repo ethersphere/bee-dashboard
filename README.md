@@ -38,7 +38,7 @@ npm install -g @ethersphere/bee-dashboard
 
 ## Usage
 
-:warning: To successfully connect to the Bee node, you will need to enable CORS for it. You can do so by setting `cors-allowed-origins: *` in the Bee config file and then restart the Bee node. To see where the bee config file is, consult the [official Bee documentation](https://docs.ethswarm.org/docs/working-with-bee/configuration#configuring-bee-installed-using-a-package-manager)
+:warning: To successfully connect to the Bee node, you will need to enable the Debug API and CORS. You can do so by setting `cors-allowed-origins: ['*']` and `debug-api-enable: true` in the Bee config file and then restart the Bee node. To see where the config file is, consult the [official Bee documentation](https://docs.ethswarm.org/docs/working-with-bee/configuration#configuring-bee-installed-using-a-package-manager)
 
 ### Terminal
 
