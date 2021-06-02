@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper
 
 import ClipboardCopy from '../../components/ClipboardCopy'
 import CashoutModal from '../../components/CashoutModal'
-import PeerDetailDrawer from './PeerDetail'
+import PeerDetailDrawer from '../../components/PeerDetail'
 import { Accounting } from '../../hooks/accounting'
 
 const useStyles = makeStyles({
