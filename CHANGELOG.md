@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.3.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.2.0...v0.3.0) (2021-06-02)
+
+
+### Features
+
+* added Dockerfile ([#75](https://www.github.com/ethersphere/bee-dashboard/issues/75)) ([aab0462](https://www.github.com/ethersphere/bee-dashboard/commit/aab0462047a3fcd87ba258b5486aede922865b1e))
+* added tolerance to version check and warning if not exact to what we tested ([#133](https://www.github.com/ethersphere/bee-dashboard/issues/133)) ([353db10](https://www.github.com/ethersphere/bee-dashboard/commit/353db10080b85b0e12e13991665297ec262d2806))
+* postage stamps support ([#115](https://www.github.com/ethersphere/bee-dashboard/issues/115)) ([4074a9d](https://www.github.com/ethersphere/bee-dashboard/commit/4074a9de5dae4aaa1654f7dfdd3e3343eaf2bf9b))
+* unified notification with notistack ([#127](https://www.github.com/ethersphere/bee-dashboard/issues/127)) ([bec8405](https://www.github.com/ethersphere/bee-dashboard/commit/bec84051a9582bf62a23f2080a6587a9f458b969))
+* upload files with postage stamps ([#126](https://www.github.com/ethersphere/bee-dashboard/issues/126)) ([92c727e](https://www.github.com/ethersphere/bee-dashboard/commit/92c727e5f5772f612fe04b750ef5373780ccba5c))
+
+
+### Bug Fixes
+
+* add git attributes ([#123](https://www.github.com/ethersphere/bee-dashboard/issues/123)) ([07f987e](https://www.github.com/ethersphere/bee-dashboard/commit/07f987e069cda2f28bc5ebf8958b9b0aa9d875dc))
+* add prod env variables ([#121](https://www.github.com/ethersphere/bee-dashboard/issues/121)) ([a603a86](https://www.github.com/ethersphere/bee-dashboard/commit/a603a86c1adcfb0dcc9995c95c4ee4411c41c25a))
+* replace http-serve with serve-handler ([#122](https://www.github.com/ethersphere/bee-dashboard/issues/122)) ([ba9b498](https://www.github.com/ethersphere/bee-dashboard/commit/ba9b498488dca989bbbda6110d0d22753b33ae8c))
+* troubleshooting on a mac and clearer CORS setup guide ([#131](https://www.github.com/ethersphere/bee-dashboard/issues/131)) ([9fee1aa](https://www.github.com/ethersphere/bee-dashboard/commit/9fee1aa68ac6dbc53615332bc0142a06f3e5f03f))
+
 ## [0.2.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.1.0...v0.2.0) (2021-05-20)
 
 This release supports the [Bee's 0.6.0 release](https://github.com/ethersphere/bee/releases/tag/v0.6.0) and is fully
