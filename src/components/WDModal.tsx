@@ -6,9 +6,10 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
-import { FormHelperText, Snackbar } from '@material-ui/core'
+import FormHelperText from '@material-ui/core/FormHelperText'
 import { Token } from '../models/Token'
 import type { BigNumber } from 'bignumber.js'
+import { useSnackbar } from 'notistack'
 
 interface Props {
   successMessage: string
@@ -33,8 +34,7 @@ export default function WithdrawModal({
   const [amount, setAmount] = useState('')
   const [amountToken, setAmountToken] = useState<Token | null>(null)
   const [amountError, setAmountError] = useState<Error | null>(null)
-  const [showToast, setToastVisibility] = useState(false)
-  const [toastContent, setToastContent] = useState('')
+  const { enqueueSnackbar } = useSnackbar()
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -50,16 +50,10 @@ export default function WithdrawModal({
     try {
       const { transactionHash } = await action(amountToken.toBigInt as bigint)
       setOpen(false)
-      handleToast(`${successMessage} Transaction ${transactionHash}`)
+      enqueueSnackbar(`${successMessage} Transaction ${transactionHash}`, { variant: 'success' })
     } catch (e) {
-      handleToast(`${errorMessage} Error: ${e.message}`)
+      enqueueSnackbar(`${errorMessage} Error: ${e.message}`, { variant: 'error' })
     }
-  }
-
-  const handleToast = (text: string) => {
-    setToastContent(text)
-    setToastVisibility(true)
-    setTimeout(() => setToastVisibility(false), 7000)
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
@@ -83,7 +77,6 @@ export default function WithdrawModal({
       <Button variant="outlined" color="primary" onClick={handleClickOpen}>
         {label}
       </Button>
-      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={showToast} message={toastContent} />
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">{label}</DialogTitle>
         <DialogContent>

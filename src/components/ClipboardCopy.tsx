@@ -1,25 +1,21 @@
-import { ReactElement, useState } from 'react'
-import { IconButton, Snackbar } from '@material-ui/core'
+import type { ReactElement } from 'react'
+import IconButton from '@material-ui/core/IconButton'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { Clipboard } from 'react-feather'
+import { useSnackbar } from 'notistack'
 
 interface Props {
   value: string
 }
 
-export default function ClipboardCopy(props: Props): ReactElement {
-  const [copied, setCopied] = useState(false)
-
-  const handleCopy = () => {
-    setCopied(true)
-    setTimeout(() => setCopied(false), 3000)
-  }
+export default function ClipboardCopy({ value }: Props): ReactElement {
+  const { enqueueSnackbar } = useSnackbar()
+  const handleCopy = () => enqueueSnackbar(`Copied: ${value}`, { variant: 'success' })
 
   return (
     <div style={{ marginRight: '3px', marginLeft: '3px' }}>
-      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={copied} message="Copied" />
       <IconButton color="primary" size="small" onClick={handleCopy}>
-        <CopyToClipboard text={props.value}>
+        <CopyToClipboard text={value}>
           <Clipboard style={{ height: '20px' }} />
         </CopyToClipboard>
       </IconButton>

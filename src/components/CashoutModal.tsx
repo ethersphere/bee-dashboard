@@ -5,7 +5,8 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
-import { Snackbar, Container, CircularProgress } from '@material-ui/core'
+import { Container, CircularProgress } from '@material-ui/core'
+import { useSnackbar } from 'notistack'
 
 import { beeDebugApi } from '../services/bee'
 
@@ -19,8 +20,7 @@ interface Props {
 export default function DepositModal({ peerId, uncashedAmount }: Props): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const [loadingCashout, setLoadingCashout] = useState<boolean>(false)
-  const [showToast, setToastVisibility] = useState<boolean>(false)
-  const [toastContent, setToastContent] = useState<JSX.Element | null>(null)
+  const { enqueueSnackbar } = useSnackbar()
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -37,29 +37,23 @@ export default function DepositModal({ peerId, uncashedAmount }: Props): ReactEl
         .peerCashout(peerId)
         .then(res => {
           setOpen(false)
-          handleToast(
+          enqueueSnackbar(
             <span>
               Successfully cashed out cheque. Transaction
               <EthereumAddress hideBlockie transaction address={res.transactionHash} network={'goerli'} />
             </span>,
+            { variant: 'success' },
           )
         })
-        .catch(() => {
-          // FIXME: handle errors more gracefully
-          handleToast(<span>Error with cashout</span>)
+        .catch((e: Error) => {
+          enqueueSnackbar(<span>Error: {e.message}</span>, { variant: 'error' })
         })
         .finally(() => {
           setLoadingCashout(false)
         })
     } else {
-      handleToast(<span>Peer Id invalid</span>)
+      enqueueSnackbar(<span>Peer Id invalid</span>, { variant: 'error' })
     }
-  }
-
-  const handleToast = (text: JSX.Element) => {
-    setToastContent(text)
-    setToastVisibility(true)
-    setTimeout(() => setToastVisibility(false), 7000)
   }
 
   return (
@@ -67,7 +61,6 @@ export default function DepositModal({ peerId, uncashedAmount }: Props): ReactEl
       <Button variant="contained" color="primary" onClick={handleClickOpen} style={{ marginLeft: '7px' }}>
         Cashout
       </Button>
-      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={showToast} message={toastContent} />
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Cashout Cheque</DialogTitle>
         <DialogContent>

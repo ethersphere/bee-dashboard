@@ -12,6 +12,7 @@ import { TextField } from 'formik-material-ui'
 import { beeApi } from '../../services/bee'
 import { Context } from '../../providers/Stamps'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
+import { useSnackbar } from 'notistack'
 
 interface FormValues {
   depth?: string
@@ -55,6 +56,7 @@ export default function FormDialog({ label }: Props): ReactElement {
   const { refresh } = useContext(Context)
   const handleClickOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
+  const { enqueueSnackbar } = useSnackbar()
 
   return (
     <Formik
@@ -71,8 +73,7 @@ export default function FormDialog({ label }: Props): ReactElement {
           await refresh()
           handleClose()
         } catch (e) {
-          // TODO: trigger notification with notistack
-          console.error(`${e.message}`) // eslint-disable-line
+          enqueueSnackbar(`Error: ${e.message}`, { variant: 'error' })
           actions.setSubmitting(false)
         }
       }}
