@@ -6,7 +6,7 @@
 ![](https://img.shields.io/badge/npm-%3E%3D6.0.0-orange.svg?style=flat-square)
 ![](https://img.shields.io/badge/Node.js-%3E%3D10.0.0-orange.svg?style=flat-square)
 
-> An app which helps users to setup their Bee node and do actions like cash out cheques, upload and downalod files or manage your postage stamps.
+> An app which helps users to setup their Bee node and do actions like cash out cheques, upload and download files or manage your postage stamps.
 
 **Warning: This project is in alpha state. There might (and most probably will) be changes in the future to its API and working. Also, no guarantees can be made about its stability, efficiency, and security at this stage.**
 
