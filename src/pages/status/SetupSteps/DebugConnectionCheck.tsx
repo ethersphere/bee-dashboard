@@ -41,11 +41,7 @@ export default function NodeConnectionCheck({ isLoading, isOk }: Props): ReactEl
               <Typography component="div">
                 <ol>
                   <li>Check the status of your node by running the below command to see if your node is running.</li>
-                  <CodeBlockTabs
-                    showLineNumbers
-                    linux={`sudo systemctl status bee`}
-                    mac={`brew services status swarm-bee`}
-                  />
+                  <CodeBlockTabs showLineNumbers linux={`sudo systemctl status bee`} mac={`brew services list`} />
                   <li>
                     If your node is running, check your firewall settings to make sure that port 1635 (or your custom
                     specified port) is bound to localhost. If your node is not running try executing the below command
@@ -71,19 +67,20 @@ export default function NodeConnectionCheck({ isLoading, isOk }: Props): ReactEl
                   <CodeBlockTabs
                     showLineNumbers
                     linux={`sudo systemctl status bee \njournalctl --lines=100 --follow --unit bee`}
-                    mac={`brew services status swarm-bee \ntail -f /usr/local/var/log/swarm-bee/bee.log`}
+                    mac={`brew services list \ntail -f /usr/local/var/log/swarm-bee/bee.log`}
                   />
                   <li>
                     Lastly, check your nodes configuration settings to validate the debug API is enabled and the Cross
                     Origin Resource Sharing (CORS) setting is configured to allow your host. Config parameter{' '}
                     <strong>debug-api-enable</strong> must be set to <strong>true</strong> and{' '}
-                    <strong>cors-allowed-origins</strong> must be set to your host domain or IP. If edits are made to
-                    the configuration run the restart command below for changes to take effect.
+                    <strong>cors-allowed-origins</strong> must be set to your host domain or IP (you can also use the
+                    wildcard <code>{"cors-allowed-origins: ['*']"}</code>). If edits are made to the configuration run
+                    the restart command below for changes to take effect.
                   </li>
                   <CodeBlockTabs
                     showLineNumbers
                     linux={`sudo vi /etc/bee/bee.yaml\nsudo systemctl restart bee`}
-                    mac={`sudo vi /etc/bee/bee.yaml \nbrew services restart swarm-bee`}
+                    mac={`sudo vi /usr/local/etc/swarm-bee/bee.yaml \nbrew services restart swarm-bee`}
                   />
                 </ol>
               </Typography>
