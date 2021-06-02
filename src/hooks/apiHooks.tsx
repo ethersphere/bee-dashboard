@@ -8,7 +8,6 @@ import {
   Peer,
   Topology,
   LastChequesForPeerResponse,
-  PostageBatch,
 } from '@ethersphere/bee-js'
 
 import { beeDebugApi, beeApi } from '../services/bee'
@@ -429,28 +428,4 @@ export const useLatestBeeRelease = (): LatestBeeReleaseHook => {
   }, [])
 
   return { latestBeeRelease, isLoadingLatestBeeRelease, error }
-}
-
-export interface GetPostageStampsHook {
-  postageStamps: PostageBatch[] | null
-  isLoading: boolean
-  error: Error | null
-}
-
-export const useGetPostageStamps = (): GetPostageStampsHook => {
-  const [postageStamps, setPostageStamps] = useState<PostageBatch[] | null>(null)
-  const [isLoading, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<Error | null>(null)
-
-  useEffect(() => {
-    beeApi.stamps
-      .getPostageStamps()
-      .then(setPostageStamps)
-      .catch(setError)
-      .finally(() => {
-        setLoading(false)
-      })
-  }, [])
-
-  return { postageStamps, isLoading, error }
 }
