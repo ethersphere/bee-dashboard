@@ -45,7 +45,7 @@ export default function Files(): ReactElement {
         setUploadReference(hash)
         setFile(null)
       })
-      .catch(e => enqueueSnackbar(`Error uploading: ${e.message}`, { variant: 'error' })) // FIXME: should instead trigger notification
+      .catch(e => enqueueSnackbar(`Error uploading: ${e.message}`, { variant: 'error' }))
       .finally(() => {
         setIsUploadingFile(false)
       })
