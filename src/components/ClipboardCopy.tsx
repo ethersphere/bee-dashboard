@@ -2,13 +2,14 @@ import type { ReactElement } from 'react'
 import IconButton from '@material-ui/core/IconButton'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { Clipboard } from 'react-feather'
-import { withSnackbar, WithSnackbarProps } from 'notistack'
+import { useSnackbar } from 'notistack'
 
-interface Props extends WithSnackbarProps {
+interface Props {
   value: string
 }
 
-function ClipboardCopy({ value, enqueueSnackbar }: Props): ReactElement {
+export default function ClipboardCopy({ value }: Props): ReactElement {
+  const { enqueueSnackbar } = useSnackbar()
   const handleCopy = () => enqueueSnackbar(`Copied: ${value}`, { variant: 'success' })
 
   return (
@@ -21,5 +22,3 @@ function ClipboardCopy({ value, enqueueSnackbar }: Props): ReactElement {
     </div>
   )
 }
-
-export default withSnackbar(ClipboardCopy)

@@ -6,20 +6,21 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { Container, CircularProgress } from '@material-ui/core'
-import { withSnackbar, WithSnackbarProps } from 'notistack'
+import { useSnackbar } from 'notistack'
 
 import { beeDebugApi } from '../services/bee'
 
 import EthereumAddress from './EthereumAddress'
 
-interface Props extends WithSnackbarProps {
+interface Props {
   peerId: string
   uncashedAmount: string
 }
 
-function DepositModal({ peerId, uncashedAmount, enqueueSnackbar }: Props): ReactElement {
+export default function DepositModal({ peerId, uncashedAmount }: Props): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const [loadingCashout, setLoadingCashout] = useState<boolean>(false)
+  const { enqueueSnackbar } = useSnackbar()
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -44,9 +45,8 @@ function DepositModal({ peerId, uncashedAmount, enqueueSnackbar }: Props): React
             { variant: 'success' },
           )
         })
-        .catch(() => {
-          // FIXME: handle errors more gracefully
-          enqueueSnackbar(<span>Error with cashout</span>, { variant: 'error' })
+        .catch((e: Error) => {
+          enqueueSnackbar(<span>Error: {e.message}</span>, { variant: 'error' })
         })
         .finally(() => {
           setLoadingCashout(false)
@@ -95,5 +95,3 @@ function DepositModal({ peerId, uncashedAmount, enqueueSnackbar }: Props): React
     </div>
   )
 }
-
-export default withSnackbar(DepositModal)

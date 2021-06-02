@@ -9,9 +9,9 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import { Token } from '../models/Token'
 import type { BigNumber } from 'bignumber.js'
-import { withSnackbar, WithSnackbarProps } from 'notistack'
+import { useSnackbar } from 'notistack'
 
-interface Props extends WithSnackbarProps {
+interface Props {
   successMessage: string
   errorMessage: string
   dialogMessage: string
@@ -21,7 +21,7 @@ interface Props extends WithSnackbarProps {
   action: (amount: bigint) => Promise<{ transactionHash: string }>
 }
 
-function WithdrawModal({
+export default function WithdrawModal({
   successMessage,
   errorMessage,
   dialogMessage,
@@ -29,12 +29,12 @@ function WithdrawModal({
   max,
   label,
   action,
-  enqueueSnackbar,
 }: Props): ReactElement {
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState('')
   const [amountToken, setAmountToken] = useState<Token | null>(null)
   const [amountError, setAmountError] = useState<Error | null>(null)
+  const { enqueueSnackbar } = useSnackbar()
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -109,5 +109,3 @@ function WithdrawModal({
     </div>
   )
 }
-
-export default withSnackbar(WithdrawModal)

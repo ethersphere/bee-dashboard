@@ -1,7 +1,7 @@
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { beeApi } from '../../services/bee'
 
-import { Button, Container, CircularProgress, FormHelperText } from '@material-ui/core'
+import { Button, Container, CircularProgress } from '@material-ui/core'
 import { DropzoneArea } from 'material-ui-dropzone'
 import ClipboardCopy from '../../components/ClipboardCopy'
 import { PostageBatch } from '@ethersphere/bee-js'
@@ -11,16 +11,17 @@ import Chip from '@material-ui/core/Chip'
 import Avatar from '@material-ui/core/Avatar'
 import SelectStamp from './SelectStamp'
 import CreatePostageStamp from '../stamps/CreatePostageStampModal'
+import { useSnackbar } from 'notistack'
 
 export default function Files(): ReactElement {
   const [file, setFile] = useState<File | null>(null)
   const [uploadReference, setUploadReference] = useState('')
-  const [uploadError, setUploadError] = useState<Error | null>(null)
   const [isUploadingFile, setIsUploadingFile] = useState(false)
 
   const [selectedStamp, setSelectedStamp] = useState<PostageBatch | null>(null)
 
   const { isLoading, error, stamps } = useContext(Context)
+  const { enqueueSnackbar } = useSnackbar()
 
   // Choose a postage stamp that has the lowest utilization
   useEffect(() => {
@@ -38,14 +39,13 @@ export default function Files(): ReactElement {
   const uploadFile = () => {
     if (file === null || selectedStamp === null) return
     setIsUploadingFile(true)
-    setUploadError(null)
     beeApi.files
       .uploadFile(selectedStamp.batchID, file)
       .then(hash => {
         setUploadReference(hash)
         setFile(null)
       })
-      .catch(setUploadError) // FIXME: should instead trigger notification
+      .catch(e => enqueueSnackbar(`Error uploading: ${e.message}`, { variant: 'error' })) // FIXME: should instead trigger notification
       .finally(() => {
         setIsUploadingFile(false)
       })
@@ -93,7 +93,6 @@ export default function Files(): ReactElement {
               <ClipboardCopy value={uploadReference} />
             </div>
           )}
-          {uploadError && <FormHelperText error>{uploadError.message}</FormHelperText>}
         </div>
       </div>
     </div>
