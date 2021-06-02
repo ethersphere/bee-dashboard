@@ -73,13 +73,14 @@ export default function NodeConnectionCheck({ isLoading, isOk }: Props): ReactEl
                     Lastly, check your nodes configuration settings to validate the debug API is enabled and the Cross
                     Origin Resource Sharing (CORS) setting is configured to allow your host. Config parameter{' '}
                     <strong>debug-api-enable</strong> must be set to <strong>true</strong> and{' '}
-                    <strong>cors-allowed-origins</strong> must be set to your host domain or IP. If edits are made to
-                    the configuration run the restart command below for changes to take effect.
+                    <strong>cors-allowed-origins</strong> must be set to your host domain or IP (you can also use the
+                    wildcard <code>{"cors-allowed-origins: ['*']"}</code>). If edits are made to the configuration run
+                    the restart command below for changes to take effect.
                   </li>
                   <CodeBlockTabs
                     showLineNumbers
                     linux={`sudo vi /etc/bee/bee.yaml\nsudo systemctl restart bee`}
-                    mac={`sudo vi /etc/bee/bee.yaml \nbrew services restart swarm-bee`}
+                    mac={`sudo vi /usr/local/etc/swarm-bee/bee.yaml \nbrew services restart swarm-bee`}
                   />
                 </ol>
               </Typography>
