@@ -41,11 +41,7 @@ export default function NodeConnectionCheck({ isLoading, isOk }: Props): ReactEl
               <Typography component="div">
                 <ol>
                   <li>Check the status of your node by running the below command to see if your node is running.</li>
-                  <CodeBlockTabs
-                    showLineNumbers
-                    linux={`sudo systemctl status bee`}
-                    mac={`brew services status swarm-bee`}
-                  />
+                  <CodeBlockTabs showLineNumbers linux={`sudo systemctl status bee`} mac={`brew services list`} />
                   <li>
                     If your node is running, check your firewall settings to make sure that port 1635 (or your custom
                     specified port) is bound to localhost. If your node is not running try executing the below command
@@ -71,7 +67,7 @@ export default function NodeConnectionCheck({ isLoading, isOk }: Props): ReactEl
                   <CodeBlockTabs
                     showLineNumbers
                     linux={`sudo systemctl status bee \njournalctl --lines=100 --follow --unit bee`}
-                    mac={`brew services status swarm-bee \ntail -f /usr/local/var/log/swarm-bee/bee.log`}
+                    mac={`brew services list \ntail -f /usr/local/var/log/swarm-bee/bee.log`}
                   />
                   <li>
                     Lastly, check your nodes configuration settings to validate the debug API is enabled and the Cross
