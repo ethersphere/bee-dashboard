@@ -1,5 +1,13 @@
 # Changelog
 
+### [0.3.1](https://www.github.com/ethersphere/bee-dashboard/compare/v0.3.0...v0.3.1) (2021-06-03)
+
+
+### Bug Fixes
+
+* don't display version alert when unable to retrieve version from bee node ([#138](https://www.github.com/ethersphere/bee-dashboard/issues/138)) ([5ace762](https://www.github.com/ethersphere/bee-dashboard/commit/5ace7629f2479499fe975dec8be4187ece6221ed))
+* typeerror in the postage stamps form ([#137](https://www.github.com/ethersphere/bee-dashboard/issues/137)) ([465df17](https://www.github.com/ethersphere/bee-dashboard/commit/465df177413afba5376682bd23a712066bd0385c))
+
 ## [0.3.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.2.0...v0.3.0) (2021-06-02)
 
 
