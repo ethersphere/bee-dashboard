@@ -63,7 +63,8 @@ export default function FormDialog({ label }: Props): ReactElement {
       initialValues={initialFormValues}
       onSubmit={async (values: FormValues, actions: FormikHelpers<FormValues>) => {
         try {
-          if (!values.depth) return
+          // This is really just a typeguard, the validation pretty much guarantees these will have the right values
+          if (!values.depth || !values.amount) return
 
           const amount = BigInt(values.amount)
           const depth = Number.parseInt(values.depth)
@@ -105,7 +106,7 @@ export default function FormDialog({ label }: Props): ReactElement {
         return errors
       }}
     >
-      {({ submitForm, isValid, isSubmitting }) => (
+      {({ submitForm, isValid, isSubmitting, values }) => (
         <Form>
           <Button variant="outlined" color="primary" onClick={handleClickOpen}>
             {label || 'Buy Postage Stamp'}
@@ -140,7 +141,7 @@ export default function FormDialog({ label }: Props): ReactElement {
               <div className={classes.wrapper}>
                 <Button
                   color="primary"
-                  disabled={isSubmitting || !isValid}
+                  disabled={isSubmitting || !isValid || !values.amount || !values.depth}
                   type="submit"
                   variant="contained"
                   onClick={submitForm}
