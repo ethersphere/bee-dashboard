@@ -23,7 +23,7 @@ export default function VersionAlert(): ReactElement | null {
 
   const isExactlySupportedBeeVersion = SUPPORTED_BEE_VERSION_EXACT === userVersion
 
-  if (isLoading) return null
+  if (isLoading || !userVersion) return null
 
   return (
     <Collapse in={!isExactlySupportedBeeVersion && open}>
