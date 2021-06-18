@@ -1,4 +1,3 @@
-import { PostageBatch } from '@ethersphere/bee-js'
 import { Button, CircularProgress, Container } from '@material-ui/core'
 import Avatar from '@material-ui/core/Avatar'
 import Chip from '@material-ui/core/Chip'
@@ -8,7 +7,7 @@ import { ReactElement, useContext, useEffect, useState } from 'react'
 import UploadSizeAlert from '../../components/AlertUploadSize'
 import ClipboardCopy from '../../components/ClipboardCopy'
 import PeerDetailDrawer from '../../components/PeerDetail'
-import { Context } from '../../providers/Stamps'
+import { Context, EnrichedPostageBatch } from '../../providers/Stamps'
 import { beeApi } from '../../services/bee'
 import CreatePostageStamp from '../stamps/CreatePostageStampModal'
 import SelectStamp from './SelectStamp'
@@ -20,16 +19,16 @@ export default function Files(): ReactElement {
   const [uploadReference, setUploadReference] = useState('')
   const [isUploadingFile, setIsUploadingFile] = useState(false)
 
-  const [selectedStamp, setSelectedStamp] = useState<PostageBatch | null>(null)
+  const [selectedStamp, setSelectedStamp] = useState<EnrichedPostageBatch | null>(null)
 
   const { isLoading, error, stamps } = useContext(Context)
   const { enqueueSnackbar } = useSnackbar()
 
-  // Choose a postage stamp that has the lowest utilization
+  // Choose a postage stamp that has the lowest usage
   useEffect(() => {
     if (!selectedStamp && stamps && stamps.length > 0) {
       const stamp = stamps.reduce((prev, curr) => {
-        if (curr.utilization < prev.utilization) return curr
+        if (curr.usage < prev.usage) return curr
 
         return prev
       }, stamps[0])
@@ -70,7 +69,7 @@ export default function Files(): ReactElement {
               <small>
                 with Postage Stamp{' '}
                 <Chip
-                  avatar={<Avatar>{selectedStamp.utilization}</Avatar>}
+                  avatar={<Avatar>{selectedStamp.usageText}</Avatar>}
                   label={<PeerDetailDrawer peerId={selectedStamp.batchID} characterLength={6} />}
                   deleteIcon={<ClipboardCopy value={selectedStamp.batchID} />}
                   onDelete={() => {} /* eslint-disable-line*/}
