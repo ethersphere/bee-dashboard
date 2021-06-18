@@ -15,6 +15,7 @@ import SelectStamp from './SelectStamp'
 const MAX_FILE_SIZE = 1_000_000_000 // 1 gigabyte
 
 export default function Files(): ReactElement {
+  const [dropzoneKey, setDropzoneKey] = useState(0)
   const [file, setFile] = useState<File | null>(null)
   const [uploadReference, setUploadReference] = useState('')
   const [isUploadingFile, setIsUploadingFile] = useState(false)
@@ -45,6 +46,7 @@ export default function Files(): ReactElement {
       .then(hash => {
         setUploadReference(hash)
         setFile(null)
+        setDropzoneKey(dropzoneKey + 1)
       })
       .catch(e => enqueueSnackbar(`Error uploading: ${e.message}`, { variant: 'error' }))
       .finally(() => {
@@ -55,14 +57,18 @@ export default function Files(): ReactElement {
   const handleChange = (files?: File[]) => {
     if (files) {
       setFile(files[0])
-      setUploadReference('')
     }
   }
 
   return (
     <div>
       <div>
-        <DropzoneArea onChange={handleChange} filesLimit={1} maxFileSize={MAX_FILE_SIZE} />
+        <DropzoneArea
+          key={'dropzone-' + dropzoneKey}
+          onChange={handleChange}
+          filesLimit={1}
+          maxFileSize={MAX_FILE_SIZE}
+        />
         <div style={{ marginTop: '15px' }}>
           {selectedStamp && (
             <div style={{ display: 'flex' }}>
