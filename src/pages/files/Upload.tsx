@@ -1,17 +1,19 @@
-import { ReactElement, useContext, useEffect, useState } from 'react'
-import { beeApi } from '../../services/bee'
-
-import { Button, Container, CircularProgress } from '@material-ui/core'
-import { DropzoneArea } from 'material-ui-dropzone'
-import ClipboardCopy from '../../components/ClipboardCopy'
 import { PostageBatch } from '@ethersphere/bee-js'
-import { Context } from '../../providers/Stamps'
-import PeerDetailDrawer from '../../components/PeerDetail'
-import Chip from '@material-ui/core/Chip'
+import { Button, CircularProgress, Container } from '@material-ui/core'
 import Avatar from '@material-ui/core/Avatar'
-import SelectStamp from './SelectStamp'
-import CreatePostageStamp from '../stamps/CreatePostageStampModal'
+import Chip from '@material-ui/core/Chip'
+import { DropzoneArea } from 'material-ui-dropzone'
 import { useSnackbar } from 'notistack'
+import { ReactElement, useContext, useEffect, useState } from 'react'
+import UploadSizeAlert from '../../components/AlertUploadSize'
+import ClipboardCopy from '../../components/ClipboardCopy'
+import PeerDetailDrawer from '../../components/PeerDetail'
+import { Context } from '../../providers/Stamps'
+import { beeApi } from '../../services/bee'
+import CreatePostageStamp from '../stamps/CreatePostageStampModal'
+import SelectStamp from './SelectStamp'
+
+const MAX_FILE_SIZE = 1_000_000_000 // 1 gigabyte
 
 export default function Files(): ReactElement {
   const [file, setFile] = useState<File | null>(null)
@@ -61,7 +63,7 @@ export default function Files(): ReactElement {
   return (
     <div>
       <div>
-        <DropzoneArea onChange={handleChange} filesLimit={1} />
+        <DropzoneArea onChange={handleChange} filesLimit={1} maxFileSize={MAX_FILE_SIZE} />
         <div style={{ marginTop: '15px' }}>
           {selectedStamp && (
             <div style={{ display: 'flex' }}>
@@ -82,6 +84,7 @@ export default function Files(): ReactElement {
           <Button disabled={!file && isUploadingFile && !selectedStamp} onClick={() => uploadFile()}>
             Upload
           </Button>
+          {file && <UploadSizeAlert file={file} />}
           {isUploadingFile && (
             <Container style={{ textAlign: 'center', padding: '50px' }}>
               <CircularProgress />
