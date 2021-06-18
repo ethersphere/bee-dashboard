@@ -45,7 +45,7 @@ export const beeApi = {
       return beeJSClient().getAllPostageBatch()
     },
     buyPostageStamp(amount: bigint, depth: number, options: PostageBatchOptions = {}): Promise<Address> {
-      return beeJSClient().createPostageBatch(amount, depth, options)
+      return beeJSClient().createPostageBatch(amount.toString(), depth, options)
     },
   },
 }
@@ -95,10 +95,10 @@ export const beeDebugApi = {
       return beeJSDebugClient().getLastChequesForPeer(peerId)
     },
     withdraw(amount: bigint): Promise<string> {
-      return beeJSDebugClient().withdrawTokens(amount)
+      return beeJSDebugClient().withdrawTokens(amount.toString())
     },
     deposit(amount: bigint): Promise<string> {
-      return beeJSDebugClient().depositTokens(amount)
+      return beeJSDebugClient().depositTokens(amount.toString())
     },
   },
   settlements: {
