@@ -44,9 +44,11 @@ export default function Files(): ReactElement {
     beeApi.files
       .uploadFile(selectedStamp.batchID, file)
       .then(hash => {
-        setUploadReference(hash)
-        setFile(null)
-        setDropzoneKey(dropzoneKey + 1)
+        window.setTimeout(() => {
+          setFile(null)
+          setUploadReference(hash)
+          setDropzoneKey(dropzoneKey + 1)
+        }, 0)
       })
       .catch(e => enqueueSnackbar(`Error uploading: ${e.message}`, { variant: 'error' }))
       .finally(() => {
