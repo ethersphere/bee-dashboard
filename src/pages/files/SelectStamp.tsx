@@ -1,15 +1,15 @@
-import React, { ReactElement } from 'react'
 import Button from '@material-ui/core/Button'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import { PostageBatch } from '@ethersphere/bee-js'
+import React, { ReactElement } from 'react'
 import PeerDetailDrawer from '../../components/PeerDetail'
+import { EnrichedPostageBatch } from '../../providers/Stamps'
 
 interface Props {
-  stamps: PostageBatch[] | null
-  selectedStamp: PostageBatch | null
-  setSelected: (stamp: PostageBatch) => void
+  stamps: EnrichedPostageBatch[] | null
+  selectedStamp: EnrichedPostageBatch | null
+  setSelected: (stamp: EnrichedPostageBatch) => void
 }
 
 export default function SimpleMenu({ stamps, selectedStamp, setSelected }: Props): ReactElement | null {
@@ -38,7 +38,7 @@ export default function SimpleMenu({ stamps, selectedStamp, setSelected }: Props
             }}
             selected={stamp.batchID === selectedStamp?.batchID}
           >
-            <ListItemIcon>{stamp.utilization}</ListItemIcon>
+            <ListItemIcon>{stamp.usageText}</ListItemIcon>
             <PeerDetailDrawer peerId={stamp.batchID} />
           </MenuItem>
         ))}

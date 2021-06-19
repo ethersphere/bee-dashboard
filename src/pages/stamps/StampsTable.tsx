@@ -1,10 +1,9 @@
-import type { ReactElement } from 'react'
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper } from '@material-ui/core'
-
+import type { ReactElement } from 'react'
 import ClipboardCopy from '../../components/ClipboardCopy'
 import PeerDetailDrawer from '../../components/PeerDetail'
-import { PostageBatch } from '@ethersphere/bee-js'
+import { EnrichedPostageBatch } from '../../providers/Stamps'
 
 const useStyles = makeStyles({
   table: {
@@ -16,7 +15,7 @@ const useStyles = makeStyles({
   },
 })
 interface Props {
-  postageStamps: PostageBatch[] | null
+  postageStamps: EnrichedPostageBatch[] | null
 }
 
 function StampsTable({ postageStamps }: Props): ReactElement | null {
@@ -29,11 +28,11 @@ function StampsTable({ postageStamps }: Props): ReactElement | null {
         <TableHead>
           <TableRow>
             <TableCell>Batch ID</TableCell>
-            <TableCell align="right">Utilization</TableCell>
+            <TableCell align="right">Usage</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {postageStamps.map(({ batchID, utilization }) => (
+          {postageStamps.map(({ batchID, usageText }) => (
             <TableRow key={batchID}>
               <TableCell>
                 <div style={{ display: 'flex' }}>
@@ -43,7 +42,7 @@ function StampsTable({ postageStamps }: Props): ReactElement | null {
                   <ClipboardCopy value={batchID} />
                 </div>
               </TableCell>
-              <TableCell className={classes.values}>{utilization}</TableCell>
+              <TableCell className={classes.values}>{usageText}</TableCell>
             </TableRow>
           ))}
         </TableBody>

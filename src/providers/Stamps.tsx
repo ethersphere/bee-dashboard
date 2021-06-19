@@ -2,8 +2,13 @@ import { PostageBatch } from '@ethersphere/bee-js'
 import { createContext, ReactChild, ReactElement, useEffect, useState } from 'react'
 import { beeApi } from '../services/bee'
 
+export interface EnrichedPostageBatch extends PostageBatch {
+  usage: number
+  usageText: string
+}
+
 interface ContextInterface {
-  stamps: PostageBatch[] | null
+  stamps: EnrichedPostageBatch[] | null
   error: Error | null
   isLoading: boolean
   lastUpdate: number | null
@@ -29,8 +34,21 @@ interface Props {
   children: ReactChild
 }
 
+function enrichStamp(postageBatch: PostageBatch): EnrichedPostageBatch {
+  const { depth, bucketDepth, utilization } = postageBatch
+
+  const usage = utilization / Math.pow(2, depth - bucketDepth)
+  const usageText = `${Math.ceil(usage * 100)}%`
+
+  return {
+    ...postageBatch,
+    usage,
+    usageText,
+  }
+}
+
 export function Provider({ children }: Props): ReactElement {
-  const [stamps, setStamps] = useState<PostageBatch[] | null>(initialValues.stamps)
+  const [stamps, setStamps] = useState<EnrichedPostageBatch[] | null>(initialValues.stamps)
   const [error, setError] = useState<Error | null>(initialValues.error)
   const [isLoading, setIsLoading] = useState<boolean>(initialValues.isLoading)
   const [lastUpdate, setLastUpdate] = useState<number | null>(initialValues.lastUpdate)
@@ -44,7 +62,7 @@ export function Provider({ children }: Props): ReactElement {
       setIsLoading(true)
       const stamps = await beeApi.stamps.getPostageStamps()
 
-      setStamps(stamps)
+      setStamps(stamps.map(enrichStamp))
       setLastUpdate(Date.now())
     } catch (e) {
       setError(e)
