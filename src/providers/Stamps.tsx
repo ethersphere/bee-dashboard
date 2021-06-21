@@ -1,6 +1,6 @@
 import { PostageBatch } from '@ethersphere/bee-js'
 import { createContext, ReactChild, ReactElement, useEffect, useState } from 'react'
-import { beeApi } from '../services/bee'
+import { beeDebugApi } from '../services/bee'
 
 export interface EnrichedPostageBatch extends PostageBatch {
   usage: number
@@ -60,7 +60,7 @@ export function Provider({ children }: Props): ReactElement {
 
     try {
       setIsLoading(true)
-      const stamps = await beeApi.stamps.getPostageStamps()
+      const stamps = await beeDebugApi.stamps.getPostageStamps()
 
       setStamps(stamps.map(enrichStamp))
       setLastUpdate(Date.now())

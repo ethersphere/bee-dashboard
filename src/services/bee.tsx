@@ -40,14 +40,6 @@ export const beeApi = {
       return beeJSClient().downloadFile(hash)
     },
   },
-  stamps: {
-    getPostageStamps(): Promise<PostageBatch[]> {
-      return beeJSClient().getAllPostageBatch()
-    },
-    buyPostageStamp(amount: bigint, depth: number, options: PostageBatchOptions = {}): Promise<Address> {
-      return beeJSClient().createPostageBatch(amount.toString(), depth, options)
-    },
-  },
 }
 
 export const beeDebugApi = {
@@ -99,6 +91,14 @@ export const beeDebugApi = {
     },
     deposit(amount: bigint): Promise<string> {
       return beeJSDebugClient().depositTokens(amount.toString())
+    },
+  },
+  stamps: {
+    getPostageStamps(): Promise<PostageBatch[]> {
+      return beeJSClient().getAllPostageBatch()
+    },
+    buyPostageStamp(amount: bigint, depth: number, options: PostageBatchOptions = {}): Promise<Address> {
+      return beeJSClient().createPostageBatch(amount.toString(), depth, options)
     },
   },
   settlements: {

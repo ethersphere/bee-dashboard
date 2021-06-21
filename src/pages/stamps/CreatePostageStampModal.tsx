@@ -1,18 +1,18 @@
-import React, { ReactElement, useContext } from 'react'
 import Button from '@material-ui/core/Button'
+import CircularProgress from '@material-ui/core/CircularProgress'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
-import CircularProgress from '@material-ui/core/CircularProgress'
 import DialogTitle from '@material-ui/core/DialogTitle'
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import BigNumber from 'bignumber.js'
-import { FormikHelpers, Form, Field, Formik } from 'formik'
+import { Field, Form, Formik, FormikHelpers } from 'formik'
 import { TextField } from 'formik-material-ui'
-import { beeApi } from '../../services/bee'
-import { Context } from '../../providers/Stamps'
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { useSnackbar } from 'notistack'
+import React, { ReactElement, useContext } from 'react'
+import { Context } from '../../providers/Stamps'
+import { beeDebugApi } from '../../services/bee'
 
 interface FormValues {
   depth?: string
@@ -69,7 +69,7 @@ export default function FormDialog({ label }: Props): ReactElement {
           const amount = BigInt(values.amount)
           const depth = Number.parseInt(values.depth)
           const options = values.label ? { label: values.label } : undefined
-          await beeApi.stamps.buyPostageStamp(amount, depth, options)
+          await beeDebugApi.stamps.buyPostageStamp(amount, depth, options)
           actions.resetForm()
           await refresh()
           handleClose()
