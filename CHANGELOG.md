@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.3.1...v0.4.0) (2021-06-29)
+
+
+### Features
+
+* display postage batch usage percentage ([#149](https://www.github.com/ethersphere/bee-dashboard/issues/149)) ([6f645dc](https://www.github.com/ethersphere/bee-dashboard/commit/6f645dc6c357cb9d86cec15e454b361bc871bec6))
+
+
+### Bug Fixes
+
+* clear dropzone state after upload ([#150](https://www.github.com/ethersphere/bee-dashboard/issues/150)) ([b190cac](https://www.github.com/ethersphere/bee-dashboard/commit/b190cac7064ad3dffb770c5a83d3db4a14d39607))
+
 ### [0.3.1](https://www.github.com/ethersphere/bee-dashboard/compare/v0.3.0...v0.3.1) (2021-06-03)
 
 
