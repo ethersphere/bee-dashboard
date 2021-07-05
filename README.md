@@ -67,6 +67,8 @@ git clone git@github.com:ethersphere/bee-dashboard.git
 
 cd  bee-dashboard
 
+npm i
+
 npm start
 ```
 
