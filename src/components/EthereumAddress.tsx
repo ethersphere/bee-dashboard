@@ -7,7 +7,6 @@ import { ReactElement } from 'react'
 
 interface Props {
   address: string | undefined
-  network?: string
   hideBlockie?: boolean
   transaction?: boolean
   truncate?: boolean
@@ -37,9 +36,9 @@ export default function EthereumAddress(props: Props): ReactElement {
                     }
                   : { marginRight: '7px' }
               }
-              href={`https://${props.network}.${process.env.REACT_APP_ETHERSCAN_HOST}/${
-                props.transaction ? 'tx' : 'address'
-              }/${props.address}`}
+              href={`${process.env.REACT_APP_BLOCKCHAIN_EXPLORER_URL}/${props.transaction ? 'tx' : 'address'}/${
+                props.address
+              }`}
               target="_blank"
               rel="noreferrer"
             >

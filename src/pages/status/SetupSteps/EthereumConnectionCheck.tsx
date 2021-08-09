@@ -13,28 +13,24 @@ export default function EthereumConnectionCheck({ isLoading, isOk, nodeAddresses
         <Typography variant="subtitle1" gutterBottom>
           Node Address
         </Typography>
-        <EthereumAddress address={nodeAddresses?.ethereum} network={'goerli'} />
+        <EthereumAddress address={nodeAddresses?.ethereum} />
       </div>
     )
   }
 
   return (
     <p>
-      Your Bee node must have access to the Ethereum blockchain, so that it can interact and deploy your chequebook
+      Your Bee node must have access to the xDai blockchain, so that it can interact and deploy your chequebook
       contract. You can run{' '}
-      <a href="https://github.com/goerli/testnet" rel="noreferrer" target="_blank">
-        your own Goerli node
+      <a href="https://www.xdaichain.com/" rel="noreferrer" target="_blank">
+        your own xDai node
       </a>
-      , or use a provider such as{' '}
-      <a href="https://rpc.slock.it/goerli" rel="noreferrer" target="_blank">
-        rpc.slock.it/goerli
-      </a>{' '}
-      or{' '}
-      <a href="https://infura.io/" rel="noreferrer" target="_blank">
-        Infura
+      , or use a provider instead - we recommend{' '}
+      <a href="https://getblock.io/" rel="noreferrer" target="_blank">
+        Getblock
       </a>
-      . By default, Bee expects a local Goerli node at http://localhost:8545. To use a provider instead, simply change
-      your <strong>--swap-endpoint</strong> in your configuration file.
+      . By default, Bee expects a local node at http://localhost:8545. To use a provider instead, simply change the{' '}
+      <strong>swap-endpoint</strong> in your configuration file.
     </p>
   )
 }
