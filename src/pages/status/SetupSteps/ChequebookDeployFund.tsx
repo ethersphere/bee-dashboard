@@ -8,12 +8,7 @@ interface Props extends StatusChequebookHook {
   ethereumAddress?: string
 }
 
-const ChequebookDeployFund = ({
-  isLoading,
-  chequebookAddress,
-  chequebookBalance,
-  ethereumAddress,
-}: Props): ReactElement | null => {
+const ChequebookDeployFund = ({ isLoading, chequebookAddress, chequebookBalance }: Props): ReactElement | null => {
   if (isLoading) return null
 
   return (
@@ -25,10 +20,12 @@ const ChequebookDeployFund = ({
         {!(chequebookAddress?.chequebookAddress && chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0)) && (
           <div>
             <span>
-              Your chequebook is either not deployed or funded. Join{' '}
-              <a href="https://discord.gg/ykCupZMuww">our discord channel</a>, get verified and send a message{' '}
-              <pre>sprinkle {ethereumAddress || '<YOUR BEE NODE ETH ADDRESS>'}</pre> in the <pre>#faucet-request</pre>{' '}
-              channel to get Goerli ETH and Goerli BZZ token.
+              Your chequebook is either not deployed or funded. To run the node you will need xDAI and xBZZ on the xDai
+              network. You may need to aquire BZZ through (e.g. <a href="https://bzz.exchange/">bzz.exchange</a>) and
+              bridge it to the xDai network through the <a href="https://omni.xdaichain.com/bridge">omni bridge</a>. To
+              pay the transaction fees, you will also need xDAI token. You can purchase DAI on the network and bridge it
+              to xDai network through the <a href="https://bridge.xdaichain.com/">xDai Bridge</a>. See the{' '}
+              <a href="https://www.xdaichain.com/#xdai-stable-chain">official xDai website</a> for more information.
             </span>
           </div>
         )}
@@ -36,7 +33,7 @@ const ChequebookDeployFund = ({
       <Typography variant="subtitle1" gutterBottom>
         Chequebook Address
       </Typography>
-      <EthereumAddress address={chequebookAddress?.chequebookAddress} network={'goerli'} />
+      <EthereumAddress address={chequebookAddress?.chequebookAddress} />
     </div>
   )
 }

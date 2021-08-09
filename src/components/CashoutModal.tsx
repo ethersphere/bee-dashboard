@@ -40,7 +40,7 @@ export default function DepositModal({ peerId, uncashedAmount }: Props): ReactEl
           enqueueSnackbar(
             <span>
               Successfully cashed out cheque. Transaction
-              <EthereumAddress hideBlockie transaction address={res} network={'goerli'} />
+              <EthereumAddress hideBlockie transaction address={res} />
             </span>,
             { variant: 'success' },
           )
