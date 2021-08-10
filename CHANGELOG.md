@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.4.0...v0.5.0) (2021-08-09)
+
+
+### Features
+
+* updated troubleshooting instructions and links for mainnet ([#161](https://www.github.com/ethersphere/bee-dashboard/issues/161)) ([960ffb8](https://www.github.com/ethersphere/bee-dashboard/commit/960ffb8fdd6cbfe4928b758da6cac9ba94050c00))
+
+
+### Bug Fixes
+
+* amend readme ([#155](https://www.github.com/ethersphere/bee-dashboard/issues/155)) ([be8b885](https://www.github.com/ethersphere/bee-dashboard/commit/be8b88516b00d79a623798588d3d4dac3340e8b2))
+
 ## [0.4.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.3.1...v0.4.0) (2021-06-29)
 
 
