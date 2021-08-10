@@ -15,13 +15,7 @@ function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props
 
   return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
+    <div role="tabpanel" hidden={value !== index} {...other}>
       {value === index && (
         <Box p={3}>
           <Typography>{children}</Typography>
@@ -44,25 +38,30 @@ interface TabsValues {
 
 interface Props {
   values: TabsValues[]
+  index?: number
+  indexChanged?: (index: number) => void
 }
 
-export default function SimpleTabs({ values }: Props): ReactElement {
+export default function SimpleTabs({ values, index, indexChanged }: Props): ReactElement {
   const classes = useStyles()
-  const [value, setValue] = React.useState<number>(0)
+  const [value, setValue] = React.useState<number>(index || 0)
 
   const handleChange = (event: React.ChangeEvent<Record<string, never>>, newValue: number) => {
-    setValue(newValue)
+    if (indexChanged) indexChanged(newValue)
+    else setValue(newValue)
   }
+
+  const v = index !== undefined ? index : value
 
   return (
     <div className={classes.root}>
-      <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
-        {values.map(({ label }, index) => (
-          <Tab key={index} label={label} />
+      <Tabs value={v} onChange={handleChange}>
+        {values.map(({ label }, idx) => (
+          <Tab key={idx} label={label} />
         ))}
       </Tabs>
-      {values.map(({ component }, index) => (
-        <TabPanel key={index} value={value} index={index}>
+      {values.map(({ component }, idx) => (
+        <TabPanel key={idx} value={v} index={idx}>
           {component}
         </TabPanel>
       ))}
