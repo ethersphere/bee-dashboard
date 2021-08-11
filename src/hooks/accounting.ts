@@ -2,6 +2,7 @@ import { LastCashoutActionResponse } from '@ethersphere/bee-js'
 import { useEffect, useState } from 'react'
 import { Token } from '../models/Token'
 import { beeDebugApi } from '../services/bee'
+import { makeRetriablePromise, unwrapPromiseSettlements } from '../utils'
 import { Balance, Settlement, useApiPeerBalances, useApiSettlements } from './apiHooks'
 
 interface UseAccountingHook {
@@ -80,11 +81,10 @@ export const useAccounting = (): UseAccountingHook => {
   const settlements = useApiSettlements()
   const balances = useApiPeerBalances()
 
-  const [err, setErr] = useState<Error | null>(null)
   const [isLoadingUncashed, setIsloadingUncashed] = useState<boolean>(false)
   const [uncashedAmounts, setUncashedAmounts] = useState<LastCashoutActionResponse[] | undefined>(undefined)
 
-  const error = balances.error || settlements.error || err
+  const error = balances.error || settlements.error
 
   useEffect(() => {
     // We don't have any settlements loaded yet or we are already loading/have loaded the uncashed amounts
@@ -93,12 +93,13 @@ export const useAccounting = (): UseAccountingHook => {
     setIsloadingUncashed(true)
     const promises = settlements.settlements.settlements
       .filter(({ received }) => received.toBigNumber.gt('0'))
-      .map(({ peer }) => beeDebugApi.chequebook.getPeerLastCashout(peer))
+      .map(({ peer }) => makeRetriablePromise(() => beeDebugApi.chequebook.getPeerLastCashout(peer)))
 
-    Promise.all(promises)
-      .then(setUncashedAmounts)
-      .catch(setErr)
-      .finally(() => setIsloadingUncashed(false))
+    Promise.allSettled(promises).then(settlements => {
+      const results = unwrapPromiseSettlements(settlements)
+      setUncashedAmounts(results.fulfilled)
+      setIsloadingUncashed(false)
+    })
   }, [settlements, isLoadingUncashed, uncashedAmounts, error])
 
   const accounting = mergeAccounting(balances.peerBalances, settlements.settlements?.settlements, uncashedAmounts)

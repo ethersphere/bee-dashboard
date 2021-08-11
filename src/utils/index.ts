@@ -32,3 +32,59 @@ export function makeBigNumber(value: BigNumber | BigInt | number | string): BigN
 
   throw new TypeError(`Not a BigNumber or BigNumber convertible value. Type: ${typeof value} value: ${value}`)
 }
+
+export type PromiseSettlements<T> = {
+  fulfilled: PromiseFulfilledResult<T>[]
+  rejected: PromiseRejectedResult[]
+}
+
+export type UnwrappedPromiseSettlements<T> = {
+  fulfilled: T[]
+  rejected: string[]
+}
+
+export async function sleepMs(ms: number): Promise<void> {
+  await new Promise<void>(resolve =>
+    setTimeout(() => {
+      resolve()
+    }, ms),
+  )
+}
+
+// TODO doc
+export function mapPromiseSettlements<T>(promises: PromiseSettledResult<T>[]): PromiseSettlements<T> {
+  const fulfilled = promises.filter(promise => promise.status === 'fulfilled') as PromiseFulfilledResult<T>[]
+  const rejected = promises.filter(promise => promise.status === 'rejected') as PromiseRejectedResult[]
+
+  return { fulfilled, rejected }
+}
+
+// TODO doc
+export function unwrapPromiseSettlements<T>(
+  promiseSettledResults: PromiseSettledResult<T>[],
+): UnwrappedPromiseSettlements<T> {
+  const values = mapPromiseSettlements(promiseSettledResults)
+  const fulfilled = values.fulfilled.map(x => x.value)
+  const rejected = values.rejected.map(x => (x.reason ? String(x.reason) : 'Unknown error'))
+
+  return { fulfilled, rejected }
+}
+
+export function makeRetriablePromise<T>(fn: () => Promise<T>, maxRetries = 3, delayMs = 1000): Promise<T> {
+  return new Promise(async (resolve, reject) => {
+    for (let tries = 0; tries < maxRetries; tries++) {
+      try {
+        const results = await fn()
+        resolve(results)
+
+        return
+      } catch (error) {
+        if (tries < maxRetries) {
+          await sleepMs(delayMs)
+        } else {
+          reject(error)
+        }
+      }
+    }
+  })
+}
