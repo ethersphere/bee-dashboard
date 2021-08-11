@@ -79,7 +79,7 @@ export function makeRetriablePromise<T>(fn: () => Promise<T>, maxRetries = 3, de
 
         return
       } catch (error) {
-        if (tries < maxRetries) {
+        if (tries < maxRetries - 1) {
           await sleepMs(delayMs)
         } else {
           reject(error)
