@@ -1,6 +1,7 @@
 import { createContext, ReactChild, ReactElement, useState, useEffect } from 'react'
 
-export enum ALL_PLATFORMS {
+// These need to be numeric values as they are used as indexes in the TabsContainer
+export enum Platforms {
   macOS = 0,
   Linux,
   Windows,
@@ -8,18 +9,18 @@ export enum ALL_PLATFORMS {
   Android,
 }
 
-export enum SUPPORTED_PLATFORMS {
-  macOS = 0,
-  Linux,
+export enum SupportedPlatforms {
+  macOS = Platforms.macOS,
+  Linux = Platforms.Windows,
 }
 
 interface ContextInterface {
-  platform: SUPPORTED_PLATFORMS
-  setPlatform: (platform: SUPPORTED_PLATFORMS) => void
+  platform: SupportedPlatforms
+  setPlatform: (platform: SupportedPlatforms) => void
 }
 
 const initialValues: ContextInterface = {
-  platform: SUPPORTED_PLATFORMS.macOS,
+  platform: SupportedPlatforms.macOS,
   setPlatform: () => {}, // eslint-disable-line
 }
 
@@ -30,38 +31,38 @@ interface Props {
   children: ReactChild
 }
 
-function isSupportedPlatform(platform: unknown): platform is SUPPORTED_PLATFORMS {
-  return Object.keys(SUPPORTED_PLATFORMS).includes(platform as string)
+function isSupportedPlatform(platform: unknown): platform is SupportedPlatforms {
+  return Object.keys(SupportedPlatforms).includes(platform as string)
 }
 
-function getOS(): ALL_PLATFORMS | null {
+function getOS(): Platforms | null {
   const userAgent = window.navigator.userAgent
   const platform = window.navigator.platform
   const macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K']
   const windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE']
   const iosPlatforms = ['iPhone', 'iPad', 'iPod']
 
-  if (macosPlatforms.includes(platform)) return ALL_PLATFORMS.macOS
+  if (macosPlatforms.includes(platform)) return Platforms.macOS
 
-  if (iosPlatforms.includes(platform)) return ALL_PLATFORMS.iOS
+  if (iosPlatforms.includes(platform)) return Platforms.iOS
 
-  if (windowsPlatforms.includes(platform)) return ALL_PLATFORMS.Windows
+  if (windowsPlatforms.includes(platform)) return Platforms.Windows
 
-  if (/Android/.test(userAgent)) return ALL_PLATFORMS.Android
+  if (/Android/.test(userAgent)) return Platforms.Android
 
-  if (/Linux/.test(platform)) return ALL_PLATFORMS.Linux
+  if (/Linux/.test(platform)) return Platforms.Linux
 
   return null
 }
 
 export function Provider({ children }: Props): ReactElement {
-  const [platform, setPlatform] = useState<SUPPORTED_PLATFORMS>(SUPPORTED_PLATFORMS.Linux)
+  const [platform, setPlatform] = useState<SupportedPlatforms>(SupportedPlatforms.Linux)
 
   // This is in useEffect as it really just needs to run once and not on each re-render
   useEffect(() => {
     const os = getOS()
 
-    setPlatform(isSupportedPlatform(os) ? os : SUPPORTED_PLATFORMS.Linux)
+    setPlatform(isSupportedPlatform(os) ? os : SupportedPlatforms.Linux)
   }, [])
 
   return <Context.Provider value={{ platform, setPlatform }}>{children}</Context.Provider>
