@@ -9,7 +9,7 @@ import { SnackbarProvider } from 'notistack'
 import BaseRouter from './routes/routes'
 import { lightTheme, darkTheme } from './theme'
 import { Provider as StampsProvider } from './providers/Stamps'
-import { Provider as PlatfomrProvider } from './providers/Platform'
+import { Provider as PlatformProvider } from './providers/Platform'
 
 const App = (): ReactElement => {
   const [themeMode, toggleThemeMode] = useState('light')
@@ -37,7 +37,7 @@ const App = (): ReactElement => {
     <div className="App">
       <ThemeProvider theme={themeMode === 'light' ? lightTheme : darkTheme}>
         <StampsProvider>
-          <PlatfomrProvider>
+          <PlatformProvider>
             <SnackbarProvider>
               <>
                 <CssBaseline />
@@ -46,7 +46,7 @@ const App = (): ReactElement => {
                 </Router>
               </>
             </SnackbarProvider>
-          </PlatfomrProvider>
+          </PlatformProvider>
         </StampsProvider>
       </ThemeProvider>
     </div>
