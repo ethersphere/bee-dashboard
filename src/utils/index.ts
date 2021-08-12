@@ -51,7 +51,12 @@ export async function sleepMs(ms: number): Promise<void> {
   )
 }
 
-// TODO doc
+/**
+ * Maps the returned results of `Promise.allSettled` to an object
+ * with `fulfilled` and `rejected` arrays for easy access.
+ *
+ * The results still need to be unwrapped to get the fulfilled values or rejection reasons.
+ */
 export function mapPromiseSettlements<T>(promises: PromiseSettledResult<T>[]): PromiseSettlements<T> {
   const fulfilled = promises.filter(promise => promise.status === 'fulfilled') as PromiseFulfilledResult<T>[]
   const rejected = promises.filter(promise => promise.status === 'rejected') as PromiseRejectedResult[]
@@ -59,7 +64,13 @@ export function mapPromiseSettlements<T>(promises: PromiseSettledResult<T>[]): P
   return { fulfilled, rejected }
 }
 
-// TODO doc
+/**
+ * Maps the returned values of `Promise.allSettled` to an object
+ * with `fulfilled` and `rejected` arrays for easy access.
+ *
+ * For rejected promises, the value is the stringified `reason`,
+ * or `'Unknown error'` string when it is unavailable.
+ */
 export function unwrapPromiseSettlements<T>(
   promiseSettledResults: PromiseSettledResult<T>[],
 ): UnwrappedPromiseSettlements<T> {
@@ -70,6 +81,13 @@ export function unwrapPromiseSettlements<T>(
   return { fulfilled, rejected }
 }
 
+/**
+ * Wraps a `Promise<T>` or async function inside a new `Promise<T>`,
+ * which retries the original function up to `maxRetries` times,
+ * waiting `delayMs` milliseconds between failed attempts.
+ *
+ * If all attempts fail, then this `Promise<T>` also rejects.
+ */
 export function makeRetriablePromise<T>(fn: () => Promise<T>, maxRetries = 3, delayMs = 1000): Promise<T> {
   return new Promise(async (resolve, reject) => {
     for (let tries = 0; tries < maxRetries; tries++) {
