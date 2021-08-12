@@ -1,8 +1,7 @@
-import type { ReactElement } from 'react'
-
-import { makeStyles } from '@material-ui/core/styles'
 import { Card, CardContent, Typography } from '@material-ui/core/'
+import { makeStyles } from '@material-ui/core/styles'
 import { Skeleton } from '@material-ui/lab'
+import type { ReactElement } from 'react'
 
 const useStyles = makeStyles({
   root: {
@@ -11,8 +10,8 @@ const useStyles = makeStyles({
   title: {
     fontSize: 16,
   },
-  pos: {
-    marginBottom: 12,
+  details: {
+    marginTop: 12,
   },
 })
 
@@ -20,9 +19,10 @@ interface Props {
   label: string
   statistic?: string
   loading?: boolean
+  details?: string
 }
 
-export default function StatCard({ loading, label, statistic }: Props): ReactElement {
+export default function StatCard({ loading, label, statistic, details }: Props): ReactElement {
   const classes = useStyles()
 
   return (
@@ -41,6 +41,9 @@ export default function StatCard({ loading, label, statistic }: Props): ReactEle
             </Typography>
             <Typography variant="h5" component="h2">
               {statistic}
+            </Typography>
+            <Typography variant="body2" component="p" className={classes.details}>
+              {details}
             </Typography>
           </>
         )}
