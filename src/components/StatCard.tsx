@@ -2,16 +2,11 @@ import { Card, CardContent, Typography } from '@material-ui/core/'
 import { makeStyles } from '@material-ui/core/styles'
 import { Skeleton } from '@material-ui/lab'
 import type { ReactElement } from 'react'
+import { Title, TooltipTitle } from './Title'
 
 const useStyles = makeStyles({
   root: {
     minWidth: 275,
-  },
-  title: {
-    fontSize: 16,
-  },
-  details: {
-    marginTop: 12,
   },
 })
 
@@ -19,10 +14,10 @@ interface Props {
   label: string
   statistic?: string
   loading?: boolean
-  details?: string
+  tooltip?: string
 }
 
-export default function StatCard({ loading, label, statistic, details }: Props): ReactElement {
+export default function StatCard({ loading, label, statistic, tooltip }: Props): ReactElement {
   const classes = useStyles()
 
   return (
@@ -36,14 +31,10 @@ export default function StatCard({ loading, label, statistic, details }: Props):
         )}
         {!loading && (
           <>
-            <Typography className={classes.title} color="textSecondary" gutterBottom>
-              {label}
-            </Typography>
+            {tooltip && <TooltipTitle label={label} tooltip={tooltip} />}
+            {!tooltip && <Title label={label} />}
             <Typography variant="h5" component="h2">
               {statistic}
-            </Typography>
-            <Typography variant="body2" component="p" className={classes.details}>
-              {details}
             </Typography>
           </>
         )}
