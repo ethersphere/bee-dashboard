@@ -2,7 +2,7 @@ import { Card, CardContent, Typography } from '@material-ui/core/'
 import { makeStyles } from '@material-ui/core/styles'
 import { Skeleton } from '@material-ui/lab'
 import type { ReactElement } from 'react'
-import { Title, TooltipTitle } from './Title'
+import { Title } from './Title'
 
 const useStyles = makeStyles({
   root: {
@@ -31,8 +31,7 @@ export default function StatCard({ loading, label, statistic, tooltip }: Props):
         )}
         {!loading && (
           <>
-            {tooltip && <TooltipTitle label={label} tooltip={tooltip} />}
-            {!tooltip && <Title label={label} />}
+            <Title label={label} tooltip={tooltip} />
             <Typography variant="h5" component="h2">
               {statistic}
             </Typography>

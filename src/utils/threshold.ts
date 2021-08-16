@@ -91,5 +91,11 @@ export function pickThreshold(key: keyof Thresholds, value: number): ThresholdVa
       }
     }
   }
-  throw Error(`Could not find any threshold for ${key} with value ${value}`)
+  const last = thresholds[thresholds.length - 1]
+
+  return {
+    score: last.score,
+    maximumScore,
+    explanation: last.explanation,
+  }
 }

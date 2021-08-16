@@ -1,15 +1,11 @@
-import { Tooltip, Typography } from '@material-ui/core/'
+import { Grid, Tooltip, Typography } from '@material-ui/core/'
 import { makeStyles } from '@material-ui/core/styles'
 import { Info } from '@material-ui/icons'
 import type { ReactElement } from 'react'
-import { RowBetween } from './Row'
 
 interface TitleProps {
   label: string
-}
-
-interface TooltipTitleProps extends TitleProps {
-  tooltip: string
+  tooltip?: string
 }
 
 const useStyles = makeStyles({
@@ -18,29 +14,27 @@ const useStyles = makeStyles({
   },
 })
 
-export function Title({ label }: TitleProps): ReactElement {
+export function Title({ label, tooltip }: TitleProps): ReactElement {
   const classes = useStyles()
 
-  return (
-    <Typography className={classes.title} color="textSecondary" gutterBottom>
-      {label}
-    </Typography>
-  )
-}
-
-export function TooltipTitle({ label, tooltip }: TooltipTitleProps): ReactElement {
-  const classes = useStyles()
+  if (!tooltip) {
+    return (
+      <Typography className={classes.title} color="textSecondary" gutterBottom>
+        {label}
+      </Typography>
+    )
+  }
 
   // span is needed as Tooltip expects a non-functional element!
   return (
     <Tooltip title={tooltip}>
       <span>
-        <RowBetween>
+        <Grid container direction="row" justify="space-between">
           <Typography className={classes.title} color="textSecondary" gutterBottom>
             {label}
           </Typography>
           <Info />
-        </RowBetween>
+        </Grid>
       </span>
     </Tooltip>
   )
