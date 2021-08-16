@@ -26,7 +26,7 @@ export type ThresholdValues = {
   depth: ThresholdValue
 }
 
-const GENERIC_ERROR = 'There may be issues with your Node or connection.'
+const GENERIC_ERROR = 'There may be issues with your Bee node or connection.'
 
 const THRESHOLDS: Thresholds = {
   connectedPeers: [
@@ -37,12 +37,12 @@ const THRESHOLDS: Thresholds = {
     },
     {
       minimumValue: 1,
-      explanation: `Your Node is connected to peers, but this number should ideally be above ${OPTIMAL_CONNECTED_PEERS}. If you have only started your Node, this number may increase quickly.`,
+      explanation: `Your Bee node is connected to peers, but this number should ideally be above ${OPTIMAL_CONNECTED_PEERS}. If you have only started your Bee node, this number may increase quickly.`,
       score: 1,
     },
     {
       minimumValue: 0,
-      explanation: 'Your Node has not connected to any peers. ' + GENERIC_ERROR,
+      explanation: 'Your Bee node has not connected to any peers. ' + GENERIC_ERROR,
       score: 0,
     },
   ],
@@ -50,32 +50,36 @@ const THRESHOLDS: Thresholds = {
     {
       minimumValue: OPTIMAL_POPULATION,
       explanation:
-        'Perfect! Your Node seems to have a realistic value for the network size, which means everything is working well on your end.',
+        'Perfect! Your Bee node seems to have a realistic value for the network size, which means everything is working well on your end.',
       score: 2,
     },
     {
       minimumValue: 1,
-      explanation: `Population is usually above ${OPTIMAL_POPULATION.toLocaleString()}. If the number does not increase within a few hours, there may be issues with your Node.`,
+      explanation: `Population is usually above ${OPTIMAL_POPULATION.toLocaleString()}. If the number does not increase within a few hours, there may be issues with your Bee node.`,
       score: 1,
     },
     {
       minimumValue: 0,
-      explanation: 'Your Node has no information on the network population. ' + GENERIC_ERROR,
+      explanation: 'Your Bee node has no information on the network population. ' + GENERIC_ERROR,
       score: 0,
     },
   ],
   depth: [
     {
       minimumValue: OPTIMAL_DEPTH,
-      explanation: 'Perfect! Your Node has the highest available depth.',
+      explanation: 'Perfect! Your Bee node has the highest available depth.',
       score: 2,
     },
     {
       minimumValue: 1,
-      explanation: `Your Node is supposed to reach a depth of ${OPTIMAL_DEPTH} eventually. Stagnation or decrease in this number may indicate problems with your Node.`,
+      explanation: `Your Bee node is supposed to reach a depth of ${OPTIMAL_DEPTH} eventually. Stagnation or decrease in this number may indicate problems with your Bee node.`,
       score: 1,
     },
-    { minimumValue: 0, explanation: 'Your Node has not started building its topology yet. ' + GENERIC_ERROR, score: 0 },
+    {
+      minimumValue: 0,
+      explanation: 'Your Bee node has not started building its topology yet. ' + GENERIC_ERROR,
+      score: 0,
+    },
   ],
 }
 
