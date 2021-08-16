@@ -11,7 +11,7 @@ export enum Platforms {
 
 export enum SupportedPlatforms {
   macOS = Platforms.macOS,
-  Linux = Platforms.Windows,
+  Linux = Platforms.Linux,
 }
 
 interface ContextInterface {
