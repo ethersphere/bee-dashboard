@@ -3,9 +3,7 @@ import { Typography } from '@material-ui/core/'
 
 type Props = StatusTopologyHook
 
-export default function PeerConnection({ isLoading, isOk, topology }: Props): ReactElement | null {
-  if (isLoading) return null
-
+export default function PeerConnection({ isOk, topology }: Props): ReactElement | null {
   const peers = (
     <div style={{ display: 'flex', marginTop: '15px' }}>
       <div style={{ marginRight: '30px' }}>

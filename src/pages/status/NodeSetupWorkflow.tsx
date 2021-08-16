@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState, useContext } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Typography, Paper, Button, Step, StepLabel, StepContent, Stepper, StepButton } from '@material-ui/core/'
 import { CheckCircle, Error, Sync, ExpandLessSharp, ExpandMoreSharp, Autorenew } from '@material-ui/icons/'
@@ -9,7 +9,7 @@ import VersionCheck from './SetupSteps/VersionCheck'
 import EthereumConnectionCheck from './SetupSteps/EthereumConnectionCheck'
 import ChequebookDeployFund from './SetupSteps/ChequebookDeployFund'
 import PeerConnection from './SetupSteps/PeerConnection'
-import { StatusChequebookHook } from '../../hooks/status'
+import { Context } from '../../providers/Bee'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -30,66 +30,74 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Step {
   label: string
   isOk: boolean
-  isLoading: boolean
   component: ReactElement
 }
 
-interface Props {
-  nodeVersion: StatusNodeVersionHook
-  ethereumConnection: StatusEthereumConnectionHook
-  debugApiConnection: StatusHookCommon
-  apiConnection: StatusHookCommon
-  topology: StatusTopologyHook
-  chequebook: StatusChequebookHook
-}
+// interface Props {
+//   // nodeVersion: StatusNodeVersionHook
+//   // ethereumConnection: StatusEthereumConnectionHook
+//   // debugApiConnection: StatusHookCommon
+//   // apiConnection: StatusHookCommon
+//   // topology: StatusTopologyHook
+//   // chequebook: StatusChequebookHook
+// }
 
-export default function NodeSetupWorkflow({
-  nodeVersion,
-  ethereumConnection,
-  debugApiConnection,
-  apiConnection,
-  topology,
-  chequebook,
-}: Props): ReactElement {
+export default function NodeSetupWorkflow(): ReactElement {
   const classes = useStyles()
   const [activeStep, setActiveStep] = useState(-1)
+
+  const {
+    status,
+    isLoading,
+    latestUserVersion,
+    latestPublishedVersion,
+    isLatestBeeVersion,
+    latestBeeVersionUrl,
+    topology,
+    nodeAddresses,
+    chequebookAddress,
+  } = useContext(Context)
 
   const steps: Step[] = [
     {
       label: 'Connected to Node DebugAPI',
-      isOk: debugApiConnection.isOk,
-      isLoading: debugApiConnection.isLoading,
-      component: <DebugConnectionCheck {...debugApiConnection} />,
+      isOk: status.debugApiConnection,
+      component: <DebugConnectionCheck isOk={status.debugApiConnection} />,
     },
     {
       label: 'Running latest Bee version',
-      isOk: nodeVersion.isOk,
-      isLoading: nodeVersion.isLoading,
-      component: <VersionCheck {...nodeVersion} />,
+      isOk: status.version,
+      component: (
+        <VersionCheck
+          isOk={status.version}
+          isLatestBeeVersion={isLatestBeeVersion}
+          userVersion={latestUserVersion}
+          latestVersion={latestPublishedVersion}
+          latestUrl={latestBeeVersionUrl}
+        />
+      ),
     },
     {
-      label: 'Connected to Ethereum Blockchain',
-      isOk: ethereumConnection.isOk,
-      isLoading: ethereumConnection.isLoading,
-      component: <EthereumConnectionCheck {...ethereumConnection} />,
+      label: 'Connected to xDai Blockchain',
+      isOk: status.blockchainConnection,
+      component: <EthereumConnectionCheck isOk={status.blockchainConnection} nodeAddresses={nodeAddresses} />,
     },
     {
       label: 'Deployed and Funded Chequebook',
-      isOk: chequebook.isOk,
-      isLoading: chequebook.isLoading,
-      component: <ChequebookDeployFund ethereumAddress={ethereumConnection.nodeAddresses?.ethereum} {...chequebook} />,
+      isOk: status.chequebook,
+      component: (
+        <ChequebookDeployFund chequebookAddress={chequebookAddress?.chequebookAddress} isOk={status.chequebook} />
+      ),
     },
     {
       label: 'Connected to Node API',
-      isOk: apiConnection.isOk,
-      isLoading: apiConnection.isLoading,
-      component: <NodeConnectionCheck {...apiConnection} />,
+      isOk: status.apiConnection,
+      component: <NodeConnectionCheck isOk={status.apiConnection} />,
     },
     {
       label: 'Connected to Peers',
-      isOk: topology.isOk,
-      isLoading: topology.isLoading,
-      component: <PeerConnection {...topology} />,
+      isOk: status.topology,
+      component: <PeerConnection isOk={status.topology} topology={topology} />,
     },
   ]
 
@@ -98,7 +106,7 @@ export default function NodeSetupWorkflow({
     if (activeStep >= 0 && activeStep < steps.length) return
 
     // If any step is not fully loaded yet return
-    if (!steps.every(step => !step.isLoading)) return
+    if (!isLoading) return
 
     // Select first step that is not OK
     // This is deliberately a for loop (and not forEach) so that we can terminate the useEffect from within the cycle
@@ -131,10 +139,9 @@ export default function NodeSetupWorkflow({
         </span>
       </Typography>
       <Stepper nonLinear activeStep={activeStep} orientation="vertical">
-        {steps.map(({ label, isOk, component, isLoading }, index) => (
+        {steps.map(({ label, isOk, component }, index) => (
           <Step key={label}>
             <StepLabel
-              disabled={isLoading}
               onClick={() => setActiveStep(index === activeStep ? steps.length : index)}
               StepIconComponent={() => {
                 if (isLoading) return <Autorenew style={{ height: '25px', cursor: 'pointer' }} />

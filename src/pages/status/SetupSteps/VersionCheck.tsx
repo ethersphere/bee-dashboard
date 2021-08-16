@@ -4,15 +4,7 @@ import CodeBlockTabs from '../../../components/CodeBlockTabs'
 
 type Props = StatusNodeVersionHook
 
-export default function VersionCheck({
-  isLoading,
-  isOk,
-  userVersion,
-  latestVersion,
-  latestUrl,
-}: Props): ReactElement | null {
-  if (isLoading) return null
-
+export default function VersionCheck({ isOk, userVersion, latestVersion, latestUrl }: Props): ReactElement | null {
   const version = (
     <div style={{ display: 'flex' }}>
       <div style={{ marginRight: '30px' }}>

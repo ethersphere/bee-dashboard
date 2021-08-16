@@ -9,6 +9,8 @@ import { Activity, FileText, DollarSign, Share2, Settings, Layers } from 'react-
 import SwarmLogoOrange from '../assets/swarm-logo-orange.svg'
 import { Health } from '@ethersphere/bee-js'
 
+import LastUpdate from './LastUpdate'
+
 const drawerWidth = 240
 
 const navBarItems = [
@@ -85,6 +87,7 @@ interface Props extends RouteComponentProps {
   themeMode: string
   health: boolean
   nodeHealth: Health | null
+  lastUpdate: number | null
 }
 
 export default function SideBar(props: Props): ReactElement {
@@ -167,6 +170,9 @@ export default function SideBar(props: Props): ReactElement {
               <span>Debug API</span>
             </div>
           </ListItem>
+          <div style={{ width: '100%', textAlign: 'center' }}>
+            <LastUpdate date={props.lastUpdate} />
+          </div>
         </div>
       </Drawer>
     </div>

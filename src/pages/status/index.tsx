@@ -1,18 +1,10 @@
-import { ReactElement } from 'react'
-import { Container, CircularProgress } from '@material-ui/core'
+import { ReactElement, useContext } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 
 import NodeSetupWorkflow from './NodeSetupWorkflow'
 import StatusCard from './StatusCard'
 import EthereumAddressCard from '../../components/EthereumAddressCard'
-import {
-  useStatusEthereumConnection,
-  useStatusNodeVersion,
-  useStatusDebugConnection,
-  useStatusConnection,
-  useStatusTopology,
-  useStatusChequebook,
-} from '../../hooks/status'
+import { Context } from '../../providers/Bee'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -27,50 +19,30 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function Status(): ReactElement {
   const classes = useStyles()
 
-  const nodeVersion = useStatusNodeVersion()
-  const ethereumConnection = useStatusEthereumConnection()
-  const debugApiConnection = useStatusDebugConnection()
-  const apiConnection = useStatusConnection()
-  const topology = useStatusTopology()
-  const chequebook = useStatusChequebook()
-
-  const checks = [nodeVersion, ethereumConnection, debugApiConnection, apiConnection, topology, chequebook]
-
-  // If any check data are still loading
-  if (!checks.every(c => !c.isLoading)) {
-    return (
-      <Container style={{ textAlign: 'center', padding: '50px' }}>
-        <CircularProgress />
-      </Container>
-    )
-  }
+  const {
+    status,
+    latestUserVersion,
+    isLatestBeeVersion,
+    latestBeeVersionUrl,
+    topology,
+    nodeAddresses,
+    chequebookAddress,
+  } = useContext(Context)
 
   return (
     <div className={classes.root}>
       <StatusCard
-        userBeeVersion={nodeVersion.userVersion}
-        isLatestBeeVersion={nodeVersion.isLatestBeeVersion}
-        isOk={checks.every(c => c.isOk)}
-        nodeTopology={topology.topology}
-        latestUrl={nodeVersion.latestUrl}
-        nodeAddresses={ethereumConnection.nodeAddresses}
+        userBeeVersion={latestUserVersion}
+        isLatestBeeVersion={isLatestBeeVersion}
+        isOk={status.all}
+        nodeTopology={topology}
+        latestUrl={latestBeeVersionUrl}
+        nodeAddresses={nodeAddresses}
       />
-      {ethereumConnection.nodeAddresses && chequebook.chequebookAddress && (
-        <EthereumAddressCard
-          nodeAddresses={ethereumConnection.nodeAddresses}
-          isLoadingNodeAddresses={ethereumConnection.isLoading}
-          chequebookAddress={chequebook.chequebookAddress}
-          isLoadingChequebookAddress={chequebook.isLoading}
-        />
+      {nodeAddresses && chequebookAddress && (
+        <EthereumAddressCard nodeAddresses={nodeAddresses} chequebookAddress={chequebookAddress} />
       )}
-      <NodeSetupWorkflow
-        nodeVersion={nodeVersion}
-        ethereumConnection={ethereumConnection}
-        debugApiConnection={debugApiConnection}
-        apiConnection={apiConnection}
-        topology={topology}
-        chequebook={chequebook}
-      />
+      <NodeSetupWorkflow />
     </div>
   )
 }

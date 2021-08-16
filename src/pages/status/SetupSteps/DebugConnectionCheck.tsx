@@ -9,9 +9,7 @@ import { debugApiHost } from '../../../constants'
 
 type Props = StatusHookCommon
 
-export default function NodeConnectionCheck({ isLoading, isOk }: Props): ReactElement | null {
-  if (isLoading) return null
-
+export default function NodeConnectionCheck({ isOk }: Props): ReactElement | null {
   const changeDebugApiUrl = (
     <div style={{ display: 'flex', marginTop: '25px', marginBottom: '25px' }}>
       <span style={{ marginRight: '15px' }}>
