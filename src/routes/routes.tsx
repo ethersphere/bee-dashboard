@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react'
-import { Switch } from 'react-router-dom'
+import { Redirect, Route, Switch } from 'react-router-dom'
 
 import AppRoute from './AppRoute'
 
@@ -22,6 +22,9 @@ const BaseRouter = (): ReactElement => (
     <AppRoute exact path="/accounting/" layout={Dashboard} component={Accounting} />
     <AppRoute exact path="/settings/" layout={Dashboard} component={Settings} />
     <AppRoute exact path="/stamps/" layout={Dashboard} component={Stamps} />
+    <Route path="*">
+      <Redirect to="/" />
+    </Route>
   </Switch>
 )
 
