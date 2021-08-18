@@ -102,6 +102,7 @@ function getStatus(
   topology: Topology | null,
   chequebookAddress: ChequebookAddressResponse | null,
   chequebookBalance: ChequebookBalance | null,
+  error: Error | null,
 ): Status {
   const status = {
     version: Boolean(
@@ -120,7 +121,7 @@ function getStatus(
       chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0),
   }
 
-  return { ...status, all: Object.values(status).every(v => v) }
+  return { ...status, all: !error && Object.values(status).every(v => v) }
 }
 
 export function Provider({ children }: Props): ReactElement {
@@ -216,6 +217,7 @@ export function Provider({ children }: Props): ReactElement {
           topology,
           chequebookAddress,
           chequebookBalance,
+          error,
         ),
         latestUserVersion,
         latestUserVersionExact,

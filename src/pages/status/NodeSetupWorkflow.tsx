@@ -33,15 +33,6 @@ interface Step {
   component: ReactElement
 }
 
-// interface Props {
-//   // nodeVersion: StatusNodeVersionHook
-//   // ethereumConnection: StatusEthereumConnectionHook
-//   // debugApiConnection: StatusHookCommon
-//   // apiConnection: StatusHookCommon
-//   // topology: StatusTopologyHook
-//   // chequebook: StatusChequebookHook
-// }
-
 export default function NodeSetupWorkflow(): ReactElement {
   const classes = useStyles()
   const [activeStep, setActiveStep] = useState(-1)
