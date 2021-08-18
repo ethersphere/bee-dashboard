@@ -1,9 +1,9 @@
 import type { ChequebookBalance, Balance, Settlements } from '../types'
-import { createContext, ReactChild, ReactElement, useEffect, useState } from 'react'
-import { beeApi, beeDebugApi } from '../services/bee'
+import { createContext, ReactChild, ReactElement, useEffect, useState, useContext } from 'react'
 import { Token } from '../models/Token'
 import semver from 'semver'
 import { engines } from '../../package.json'
+import { Context as SettingsContext } from './Settings'
 
 import type {
   NodeAddresses,
@@ -125,6 +125,7 @@ function getStatus(
 }
 
 export function Provider({ children }: Props): ReactElement {
+  const { beeApi, beeDebugApi } = useContext(SettingsContext)
   const [apiHealth, setApiHealth] = useState<boolean>(false)
   const [debugApiHealth, setDebugApiHealth] = useState<Health | null>(null)
   const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses | null>(null)
@@ -147,31 +148,60 @@ export function Provider({ children }: Props): ReactElement {
   const latestUserVersion = semver.coerce(debugApiHealth?.version)?.version
   const latestUserVersionExact = debugApiHealth?.version
 
+  useEffect(() => {
+    setIsLoading(true)
+
+    setApiHealth(false)
+
+    refresh()
+  }, [beeApi])
+
+  useEffect(() => {
+    setIsLoading(true)
+
+    setDebugApiHealth(null)
+    setNodeAddresses(null)
+    setNodeTopology(null)
+    setPeers(null)
+    setChequebookAddress(null)
+    setChequebookBalance(null)
+    setPeerBalances(null)
+    setPeerCheques(null)
+    setSettlements(null)
+
+    refresh()
+  }, [beeDebugApi])
+
   const refresh = async () => {
     // Don't want to refresh when already refreshing
     if (isRefreshing) return
 
+    // Not a valid bee api
+    if (!beeApi || !beeDebugApi) return
+
     try {
       setIsRefreshing(true)
+      setError(null)
 
-      setApiHealth(await beeApi.status.health())
-      setDebugApiHealth(await beeDebugApi.status.nodeHealth())
-      setNodeAddresses(await beeDebugApi.connectivity.addresses())
-      setNodeTopology(await beeDebugApi.connectivity.topology())
-      setChequebookAddress(await beeDebugApi.chequebook.address())
-      setPeers(await beeDebugApi.connectivity.listPeers())
+      setApiHealth(await beeApi.isConnected())
 
-      const { totalBalance, availableBalance } = await beeDebugApi.chequebook.balance()
+      setDebugApiHealth(await beeDebugApi.getHealth())
+      setNodeAddresses(await beeDebugApi.getNodeAddresses())
+      setNodeTopology(await beeDebugApi.getTopology())
+      setPeers(await beeDebugApi.getPeers())
+      setChequebookAddress(await beeDebugApi.getChequebookAddress())
+
+      const { totalBalance, availableBalance } = await beeDebugApi.getChequebookBalance()
       setChequebookBalance({
         totalBalance: new Token(totalBalance),
         availableBalance: new Token(availableBalance),
       })
 
-      const { balances } = await beeDebugApi.balance.balances()
+      const { balances } = await beeDebugApi.getAllBalances()
       setPeerBalances(balances.map(({ peer, balance }) => ({ peer, balance: new Token(balance) })))
 
-      setPeerCheques(await beeDebugApi.chequebook.getLastCheques())
-      const { totalReceived, settlements, totalSent } = await beeDebugApi.settlements.getSettlements()
+      setPeerCheques(await beeDebugApi.getLastCheques())
+      const { totalReceived, settlements, totalSent } = await beeDebugApi.getAllSettlements()
       setSettlements({
         totalReceived: new Token(totalReceived),
         totalSent: new Token(totalSent),

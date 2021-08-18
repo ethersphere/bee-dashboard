@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react'
+import { ReactElement, useState, useContext } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import {
   Table,
@@ -14,7 +14,7 @@ import {
 } from '@material-ui/core'
 import { Autorenew } from '@material-ui/icons'
 
-import { beeDebugApi } from '../../services/bee'
+import { Context as SettingsContext } from '../../providers/Settings'
 import type { Peer } from '@ethersphere/bee-js'
 
 const useStyles = makeStyles({
@@ -29,13 +29,14 @@ interface Props {
 
 function PeerTable(props: Props): ReactElement {
   const classes = useStyles()
+  const { beeDebugApi } = useContext(SettingsContext)
 
   const [peerLatency, setPeerLatency] = useState([{ peerId: '', rtt: '', loading: false }])
 
   const PingPeer = (peerId: string) => {
     setPeerLatency([...peerLatency, { peerId: peerId, rtt: '', loading: true }])
-    beeDebugApi.connectivity
-      .ping(peerId)
+    beeDebugApi
+      ?.pingPeer(peerId)
       .then(res => {
         setPeerLatency([...peerLatency, { peerId: peerId, rtt: res.rtt, loading: false }])
       })

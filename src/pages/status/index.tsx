@@ -4,7 +4,7 @@ import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import NodeSetupWorkflow from './NodeSetupWorkflow'
 import StatusCard from './StatusCard'
 import EthereumAddressCard from '../../components/EthereumAddressCard'
-import { Context } from '../../providers/Bee'
+import { Context as BeeContext } from '../../providers/Bee'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -27,7 +27,7 @@ export default function Status(): ReactElement {
     topology,
     nodeAddresses,
     chequebookAddress,
-  } = useContext(Context)
+  } = useContext(BeeContext)
 
   return (
     <div className={classes.root}>

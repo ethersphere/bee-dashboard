@@ -1,12 +1,12 @@
 import { ReactElement, useContext } from 'react'
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles'
-import { Container } from '@material-ui/core'
 
 import AccountCard from '../accounting/AccountCard'
 import BalancesTable from './BalancesTable'
 import EthereumAddressCard from '../../components/EthereumAddressCard'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
-import { Context } from '../../providers/Bee'
+import { Context as BeeContext } from '../../providers/Bee'
+import { Context as SettingsContext } from '../../providers/Settings'
 import { useAccounting } from '../../hooks/accounting'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -22,9 +22,12 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function Accounting(): ReactElement {
   const classes = useStyles()
 
-  const { status, nodeAddresses, chequebookAddress, chequebookBalance, settlements } = useContext(Context)
+  const { status, nodeAddresses, chequebookAddress, chequebookBalance, settlements, peerBalances } = useContext(
+    BeeContext,
+  )
+  const { beeDebugApi } = useContext(SettingsContext)
 
-  const { accounting, isLoadingUncashed, error } = useAccounting()
+  const { accounting, isLoadingUncashed } = useAccounting(beeDebugApi, settlements, peerBalances)
 
   if (!status.all) return <TroubleshootConnectionCard />
 
@@ -37,12 +40,7 @@ export default function Accounting(): ReactElement {
         totalreceived={settlements?.totalReceived}
       />
       <EthereumAddressCard nodeAddresses={nodeAddresses} chequebookAddress={chequebookAddress} />
-      {error && (
-        <Container style={{ textAlign: 'center', padding: '50px' }}>
-          Error loading accounting details: {error.message}
-        </Container>
-      )}
-      {!error && <BalancesTable accounting={accounting} isLoadingUncashed={isLoadingUncashed} />}
+      <BalancesTable accounting={accounting} isLoadingUncashed={isLoadingUncashed} />
     </div>
   )
 }
