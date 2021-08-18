@@ -1,19 +1,12 @@
-import type { ReactElement } from 'react'
+import { ReactElement, useContext } from 'react'
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles'
-import { Container, CircularProgress } from '@material-ui/core'
+import { Container } from '@material-ui/core'
 
 import AccountCard from '../accounting/AccountCard'
 import BalancesTable from './BalancesTable'
 import EthereumAddressCard from '../../components/EthereumAddressCard'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
-
-import {
-  useApiNodeAddresses,
-  useApiChequebookAddress,
-  useApiChequebookBalance,
-  useApiHealth,
-  useDebugApiHealth,
-} from '../../hooks/apiHooks'
+import { Context } from '../../providers/Bee'
 import { useAccounting } from '../../hooks/accounting'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -29,38 +22,21 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function Accounting(): ReactElement {
   const classes = useStyles()
 
-  const { chequebookAddress, isLoadingChequebookAddress } = useApiChequebookAddress()
-  const { chequebookBalance, isLoadingChequebookBalance } = useApiChequebookBalance()
-  const { nodeAddresses, isLoadingNodeAddresses } = useApiNodeAddresses()
-  const { health, isLoadingHealth } = useApiHealth()
-  const { nodeHealth, isLoadingNodeHealth } = useDebugApiHealth()
-  const { isLoading, totalsent, totalreceived, accounting, isLoadingUncashed, error } = useAccounting()
+  const { status, nodeAddresses, chequebookAddress, chequebookBalance, settlements } = useContext(Context)
 
-  if (isLoadingHealth || isLoadingNodeHealth) {
-    return (
-      <Container style={{ textAlign: 'center', padding: '50px' }}>
-        <CircularProgress />
-      </Container>
-    )
-  }
+  const { accounting, isLoadingUncashed, error } = useAccounting()
 
-  if (nodeHealth?.status !== 'ok' || !health) return <TroubleshootConnectionCard />
+  if (!status.all) return <TroubleshootConnectionCard />
 
   return (
     <div className={classes.root}>
       <AccountCard
         chequebookAddress={chequebookAddress}
-        isLoading={isLoadingChequebookAddress || isLoading || isLoadingChequebookBalance}
         chequebookBalance={chequebookBalance}
-        totalsent={totalsent}
-        totalreceived={totalreceived}
+        totalsent={settlements?.totalSent}
+        totalreceived={settlements?.totalReceived}
       />
-      <EthereumAddressCard
-        nodeAddresses={nodeAddresses}
-        isLoadingNodeAddresses={isLoadingNodeAddresses}
-        chequebookAddress={chequebookAddress}
-        isLoadingChequebookAddress={isLoadingChequebookAddress}
-      />
+      <EthereumAddressCard nodeAddresses={nodeAddresses} chequebookAddress={chequebookAddress} />
       {error && (
         <Container style={{ textAlign: 'center', padding: '50px' }}>
           Error loading accounting details: {error.message}

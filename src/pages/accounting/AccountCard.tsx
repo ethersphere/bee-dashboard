@@ -2,7 +2,6 @@ import { ReactElement } from 'react'
 
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { Card, CardContent, Typography, Theme } from '@material-ui/core/'
-import { Skeleton } from '@material-ui/lab'
 import WithdrawModal from '../../containers/WithdrawModal'
 import DepositModal from '../../containers/DepositModal'
 
@@ -45,12 +44,11 @@ interface ChequebookBalance {
 interface Props {
   chequebookAddress: ChequebookAddressResponse | null
   chequebookBalance: ChequebookBalance | null
-  totalsent: Token
-  totalreceived: Token
-  isLoading: boolean
+  totalsent?: Token
+  totalreceived?: Token
 }
 
-function AccountCard({ totalreceived, totalsent, chequebookBalance, isLoading }: Props): ReactElement {
+function AccountCard({ totalreceived, totalsent, chequebookBalance }: Props): ReactElement {
   const classes = useStyles()
 
   return (
@@ -66,37 +64,28 @@ function AccountCard({ totalreceived, totalsent, chequebookBalance, isLoading }:
       </div>
 
       <Card className={classes.root}>
-        {!isLoading && (
-          <CardContent className={classes.gridContainer}>
-            <div>
-              <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                Total Balance
-              </Typography>
-              <Typography variant="h5">{chequebookBalance?.totalBalance.toFixedDecimal()} BZZ</Typography>
-            </div>
-            <div>
-              <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                Available Uncommitted Balance
-              </Typography>
-              <Typography variant="h5">{chequebookBalance?.availableBalance.toFixedDecimal()} BZZ</Typography>
-            </div>
-            <div>
-              <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                Total Sent / Received
-              </Typography>
-              <Typography variant="h5">
-                {totalsent.toFixedDecimal()} / {totalreceived.toFixedDecimal()} BZZ
-              </Typography>
-            </div>
-          </CardContent>
-        )}
-        {isLoading && (
-          <div className={classes.gridContainer}>
-            <Skeleton width={180} height={110} animation="wave" />
-            <Skeleton width={180} height={110} animation="wave" />
-            <Skeleton width={180} height={110} animation="wave" />
+        <CardContent className={classes.gridContainer}>
+          <div>
+            <Typography component="h2" variant="h6" color="primary" gutterBottom>
+              Total Balance
+            </Typography>
+            <Typography variant="h5">{chequebookBalance?.totalBalance.toFixedDecimal()} BZZ</Typography>
           </div>
-        )}
+          <div>
+            <Typography component="h2" variant="h6" color="primary" gutterBottom>
+              Available Uncommitted Balance
+            </Typography>
+            <Typography variant="h5">{chequebookBalance?.availableBalance.toFixedDecimal()} BZZ</Typography>
+          </div>
+          <div>
+            <Typography component="h2" variant="h6" color="primary" gutterBottom>
+              Total Sent / Received
+            </Typography>
+            <Typography variant="h5">
+              {totalsent?.toFixedDecimal()} / {totalreceived?.toFixedDecimal()} BZZ
+            </Typography>
+          </div>
+        </CardContent>
       </Card>
     </div>
   )

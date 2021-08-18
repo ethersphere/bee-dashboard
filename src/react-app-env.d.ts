@@ -6,7 +6,6 @@ interface LatestBeeRelease {
 }
 
 interface StatusHookCommon {
-  isLoading: boolean
   isOk: boolean
 }
 

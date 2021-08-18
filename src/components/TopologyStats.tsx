@@ -5,9 +5,7 @@ import { pickThreshold, ThresholdValues } from '../utils/threshold'
 import StatCard from './StatCard'
 
 interface RootProps {
-  isLoading: boolean
   topology: Topology | null
-  error: Error | null // FIXME: should display error
 }
 
 interface Props extends RootProps {
@@ -29,26 +27,25 @@ const TopologyStats = (props: RootProps): ReactElement => {
   )
 }
 
-const Indicator = ({ isLoading, thresholds }: Props): ReactElement => {
+const Indicator = ({ thresholds }: Props): ReactElement => {
   const maximumTotalScore = Object.values(thresholds).reduce((sum, item) => sum + item.maximumScore, 0)
   const actualTotalScore = Object.values(thresholds).reduce((sum, item) => sum + item.score, 0)
   const percentageText = Math.round((actualTotalScore / maximumTotalScore) * 100) + '%'
 
   return (
     <div style={{ marginBottom: '20px' }}>
-      <StatCard label="Overall Health Indicator" statistic={percentageText} loading={isLoading} />
+      <StatCard label="Overall Health Indicator" statistic={percentageText} />
     </div>
   )
 }
 
-const Metrics = ({ isLoading, topology, thresholds }: Props): ReactElement => (
+const Metrics = ({ topology, thresholds }: Props): ReactElement => (
   <Grid style={{ marginBottom: '20px', flexGrow: 1 }}>
     <Grid container spacing={3}>
       <Grid key={1} item xs={12} sm={12} md={6} lg={4} xl={4}>
         <StatCard
           label="Connected Peers"
           statistic={topology?.connected.toString()}
-          loading={isLoading}
           tooltip={thresholds.connectedPeers.explanation}
         />
       </Grid>
@@ -56,17 +53,11 @@ const Metrics = ({ isLoading, topology, thresholds }: Props): ReactElement => (
         <StatCard
           label="Population"
           statistic={topology?.population.toString()}
-          loading={isLoading}
           tooltip={thresholds.population.explanation}
         />
       </Grid>
       <Grid key={3} item xs={12} sm={12} md={6} lg={4} xl={4}>
-        <StatCard
-          label="Depth"
-          statistic={topology?.depth.toString()}
-          loading={isLoading}
-          tooltip={thresholds.depth.explanation}
-        />
+        <StatCard label="Depth" statistic={topology?.depth.toString()} tooltip={thresholds.depth.explanation} />
       </Grid>
     </Grid>
   </Grid>

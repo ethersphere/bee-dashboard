@@ -8,9 +8,7 @@ import { apiHost } from '../../../constants'
 
 type Props = StatusHookCommon
 
-export default function NodeConnectionCheck({ isLoading, isOk }: Props): ReactElement | null {
-  if (isLoading) return null
-
+export default function NodeConnectionCheck({ isOk }: Props): ReactElement | null {
   return (
     <div>
       <div style={{ display: 'flex', marginBottom: '25px' }}>

@@ -10,7 +10,6 @@ import {
   Button,
   Paper,
   Tooltip,
-  Container,
   CircularProgress,
 } from '@material-ui/core'
 import { Autorenew } from '@material-ui/icons'
@@ -26,8 +25,6 @@ const useStyles = makeStyles({
 
 interface Props {
   peers: Peer[] | null
-  isLoading: boolean
-  error: Error | null
 }
 
 function PeerTable(props: Props): ReactElement {
@@ -47,22 +44,6 @@ function PeerTable(props: Props): ReactElement {
       })
   }
 
-  if (props.isLoading) {
-    return (
-      <Container style={{ textAlign: 'center', padding: '50px' }}>
-        <CircularProgress />
-      </Container>
-    )
-  }
-
-  if (props.error || props.peers === null) {
-    return (
-      <Container style={{ textAlign: 'center', padding: '50px' }}>
-        <p>Failed to load peers</p>
-      </Container>
-    )
-  }
-
   return (
     <div>
       <TableContainer component={Paper}>
@@ -75,7 +56,7 @@ function PeerTable(props: Props): ReactElement {
             </TableRow>
           </TableHead>
           <TableBody>
-            {props.peers.map((peer: Peer, idx: number) => (
+            {props.peers?.map((peer: Peer, idx: number) => (
               <TableRow key={peer.address}>
                 <TableCell component="th" scope="row">
                   {idx + 1}
