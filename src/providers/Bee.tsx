@@ -183,34 +183,98 @@ export function Provider({ children }: Props): ReactElement {
       setIsRefreshing(true)
       setError(null)
 
-      setApiHealth(await beeApi.isConnected())
+      // Wrap the chequebook balance call to return BZZ values as Token object
+      const chequeBalanceWrapper = async () => {
+        const { totalBalance, availableBalance } = await beeDebugApi.getChequebookBalance()
 
-      setDebugApiHealth(await beeDebugApi.getHealth())
-      setNodeAddresses(await beeDebugApi.getNodeAddresses())
-      setNodeTopology(await beeDebugApi.getTopology())
-      setPeers(await beeDebugApi.getPeers())
-      setChequebookAddress(await beeDebugApi.getChequebookAddress())
+        return {
+          totalBalance: new Token(totalBalance),
+          availableBalance: new Token(availableBalance),
+        }
+      }
 
-      const { totalBalance, availableBalance } = await beeDebugApi.getChequebookBalance()
-      setChequebookBalance({
-        totalBalance: new Token(totalBalance),
-        availableBalance: new Token(availableBalance),
-      })
+      // Wrap the balances call to return BZZ values as Token object
+      const peerBalanceWrapper = async () => {
+        const { balances } = await beeDebugApi.getAllBalances()
 
-      const { balances } = await beeDebugApi.getAllBalances()
-      setPeerBalances(balances.map(({ peer, balance }) => ({ peer, balance: new Token(balance) })))
+        return balances.map(({ peer, balance }) => ({ peer, balance: new Token(balance) }))
+      }
 
-      setPeerCheques(await beeDebugApi.getLastCheques())
-      const { totalReceived, settlements, totalSent } = await beeDebugApi.getAllSettlements()
-      setSettlements({
-        totalReceived: new Token(totalReceived),
-        totalSent: new Token(totalSent),
-        settlements: settlements.map(({ peer, received, sent }) => ({
-          peer,
-          received: new Token(received),
-          sent: new Token(sent),
-        })),
-      })
+      // Wrap the settlements call to return BZZ values as Token object
+      const settlementsWrapper = async () => {
+        const { totalReceived, settlements, totalSent } = await beeDebugApi.getAllSettlements()
+
+        return {
+          totalReceived: new Token(totalReceived),
+          totalSent: new Token(totalSent),
+          settlements: settlements.map(({ peer, received, sent }) => ({
+            peer,
+            received: new Token(received),
+            sent: new Token(sent),
+          })),
+        }
+      }
+
+      const promises = [
+        // API health
+        beeApi
+          .isConnected()
+          .then(setApiHealth)
+          .catch(() => setApiHealth(false)),
+
+        // Debug API health
+        beeDebugApi
+          .getHealth()
+          .then(setDebugApiHealth)
+          .catch(() => setDebugApiHealth(null)),
+
+        // Node Addresses
+        beeDebugApi
+          .getNodeAddresses()
+          .then(setNodeAddresses)
+          .catch(() => setNodeAddresses(null)),
+
+        // Network Topology
+        beeDebugApi
+          .getTopology()
+          .then(setNodeTopology)
+          .catch(() => setNodeTopology(null)),
+
+        // Peers
+        beeDebugApi
+          .getPeers()
+          .then(setPeers)
+          .catch(() => setPeers(null)),
+
+        // Chequebook address
+        beeDebugApi
+          .getChequebookAddress()
+          .then(setChequebookAddress)
+          .catch(() => setChequebookAddress(null)),
+
+        // Cheques
+        beeDebugApi
+          .getLastCheques()
+          .then(setPeerCheques)
+          .catch(() => setPeerCheques(null)),
+
+        // Chequebook balance
+        chequeBalanceWrapper()
+          .then(setChequebookBalance)
+          .catch(() => setChequebookBalance(null)),
+
+        // Peer balances
+        peerBalanceWrapper()
+          .then(setPeerBalances)
+          .catch(() => setPeerBalances(null)),
+
+        // Settlements
+        settlementsWrapper()
+          .then(setSettlements)
+          .catch(() => setSettlements(null)),
+      ]
+
+      await Promise.allSettled(promises)
     } catch (e) {
       setError(e)
     } finally {
