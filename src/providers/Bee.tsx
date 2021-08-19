@@ -177,7 +177,11 @@ export function Provider({ children }: Props): ReactElement {
     if (isRefreshing) return
 
     // Not a valid bee api
-    if (!beeApi || !beeDebugApi) return
+    if (!beeApi || !beeDebugApi) {
+      setIsLoading(false)
+
+      return
+    }
 
     try {
       setIsRefreshing(true)

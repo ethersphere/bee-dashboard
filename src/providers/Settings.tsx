@@ -30,15 +30,22 @@ interface Props {
 export function Provider({ children }: Props): ReactElement {
   const [apiUrl, setApiUrl] = useState<string>(initialValues.apiUrl)
   const [apiDebugUrl, setDebugApiUrl] = useState<string>(initialValues.apiDebugUrl)
-  const [beeApi, setBeeApi] = useState<Bee | null>(new Bee(apiUrl))
-  const [beeDebugApi, setBeeDebugApi] = useState<BeeDebug | null>(new BeeDebug(apiDebugUrl))
+  const [beeApi, setBeeApi] = useState<Bee | null>(null)
+  const [beeDebugApi, setBeeDebugApi] = useState<BeeDebug | null>(null)
 
   useEffect(() => {
-    setBeeApi(new Bee(apiUrl))
-    setBeeDebugApi(new BeeDebug(apiDebugUrl))
-
-    sessionStorage.setItem('api_host', apiUrl)
-    sessionStorage.setItem('debug_api_host', apiDebugUrl)
+    try {
+      setBeeApi(new Bee(apiUrl))
+      sessionStorage.setItem('api_host', apiUrl)
+    } catch (e) {
+      setBeeApi(null)
+    }
+    try {
+      setBeeDebugApi(new BeeDebug(apiDebugUrl))
+      sessionStorage.setItem('debug_api_host', apiDebugUrl)
+    } catch (e) {
+      setBeeDebugApi(null)
+    }
   }, [apiUrl, apiDebugUrl])
 
   return (
