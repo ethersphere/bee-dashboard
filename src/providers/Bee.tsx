@@ -211,13 +211,12 @@ export function Provider({ children }: Props): ReactElement {
           sent: new Token(sent),
         })),
       })
-
-      setLastUpdate(Date.now())
     } catch (e) {
       setError(e)
     } finally {
       setIsLoading(false)
       setIsRefreshing(false)
+      setLastUpdate(Date.now())
     }
   }
 
@@ -234,7 +233,7 @@ export function Provider({ children }: Props): ReactElement {
 
       return () => clearInterval(interval)
     }
-  }, [frequency])
+  }, [frequency, beeDebugApi, beeApi])
 
   return (
     <Context.Provider
