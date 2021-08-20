@@ -10,7 +10,7 @@ export default function Settings(): ReactElement {
   const submit = () => {
     if (host !== apiUrl) setApiUrl(host)
 
-    if (debugHost !== apiDebugUrl) setDebugApiUrl(apiDebugUrl)
+    if (debugHost !== apiDebugUrl) setDebugApiUrl(debugHost)
   }
 
   const touched = host !== apiUrl || debugHost !== apiDebugUrl
@@ -59,7 +59,7 @@ export default function Settings(): ReactElement {
         </Paper>
         {touched ? (
           <div style={{ marginTop: '20px' }}>
-            <Button variant="outlined" color="primary" onClick={() => submit()}>
+            <Button variant="outlined" color="primary" onClick={submit}>
               Save
             </Button>
           </div>

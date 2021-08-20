@@ -40,13 +40,16 @@ export function Provider({ children }: Props): ReactElement {
     } catch (e) {
       setBeeApi(null)
     }
+  }, [apiUrl])
+
+  useEffect(() => {
     try {
       setBeeDebugApi(new BeeDebug(apiDebugUrl))
       sessionStorage.setItem('debug_api_host', apiDebugUrl)
     } catch (e) {
       setBeeDebugApi(null)
     }
-  }, [apiUrl, apiDebugUrl])
+  }, [apiDebugUrl])
 
   return (
     <Context.Provider value={{ apiUrl, apiDebugUrl, beeApi, beeDebugApi, setApiUrl, setDebugApiUrl }}>
