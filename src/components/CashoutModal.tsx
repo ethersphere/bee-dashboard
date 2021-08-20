@@ -6,8 +6,8 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
-import { beeDebugApi } from '../services/bee'
+import { ReactElement, useState, useContext } from 'react'
+import { Context as SettingsContext } from '../providers/Settings'
 import EthereumAddress from './EthereumAddress'
 
 interface Props {
@@ -19,6 +19,7 @@ export default function CheckoutModal({ peerId, uncashedAmount }: Props): ReactE
   const [open, setOpen] = useState<boolean>(false)
   const [loadingCashout, setLoadingCashout] = useState<boolean>(false)
   const { enqueueSnackbar } = useSnackbar()
+  const { beeDebugApi } = useContext(SettingsContext)
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -29,10 +30,12 @@ export default function CheckoutModal({ peerId, uncashedAmount }: Props): ReactE
   }
 
   const handleCashout = () => {
+    if (!beeDebugApi) return
+
     if (peerId) {
       setLoadingCashout(true)
-      beeDebugApi.chequebook
-        .peerCashout(peerId)
+      beeDebugApi
+        .cashoutLastCheque(peerId)
         .then(res => {
           setOpen(false)
           enqueueSnackbar(

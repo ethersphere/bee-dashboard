@@ -9,7 +9,7 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import BigNumber from 'bignumber.js'
 import { FormikHelpers, Form, Field, Formik } from 'formik'
 import { TextField } from 'formik-material-ui'
-import { beeApi } from '../../services/bee'
+import { Context as SettingsContext } from '../../providers/Settings'
 import { Context } from '../../providers/Stamps'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { useSnackbar } from 'notistack'
@@ -54,6 +54,7 @@ export default function FormDialog({ label }: Props): ReactElement {
   const classes = useStyles()
   const [open, setOpen] = React.useState(false)
   const { refresh } = useContext(Context)
+  const { beeApi } = useContext(SettingsContext)
   const handleClickOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
   const { enqueueSnackbar } = useSnackbar()
@@ -66,10 +67,12 @@ export default function FormDialog({ label }: Props): ReactElement {
           // This is really just a typeguard, the validation pretty much guarantees these will have the right values
           if (!values.depth || !values.amount) return
 
+          if (!beeApi) return
+
           const amount = BigInt(values.amount)
           const depth = Number.parseInt(values.depth)
           const options = values.label ? { label: values.label } : undefined
-          await beeApi.stamps.buyPostageStamp(amount, depth, options)
+          await beeApi.createPostageBatch(amount.toString(), depth, options)
           actions.resetForm()
           await refresh()
           handleClose()

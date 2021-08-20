@@ -1,16 +1,11 @@
-import { LastCashoutActionResponse } from '@ethersphere/bee-js'
+import { LastCashoutActionResponse, BeeDebug } from '@ethersphere/bee-js'
 import { useEffect, useState } from 'react'
 import { Token } from '../models/Token'
-import { beeDebugApi } from '../services/bee'
 import { makeRetriablePromise, unwrapPromiseSettlements } from '../utils'
-import { Balance, Settlement, useApiPeerBalances, useApiSettlements } from './apiHooks'
+import { Balance, Settlements, Settlement } from '../types'
 
 interface UseAccountingHook {
-  isLoading: boolean
   isLoadingUncashed: boolean
-  error: Error | null
-  totalsent: Token
-  totalreceived: Token
   accounting: Accounting[] | null
 }
 
@@ -77,39 +72,34 @@ function mergeAccounting(
   )
 }
 
-export const useAccounting = (): UseAccountingHook => {
-  const settlements = useApiSettlements()
-  const balances = useApiPeerBalances()
-
+export const useAccounting = (
+  beeDebugApi: BeeDebug | null,
+  settlements: Settlements | null,
+  balances: Balance[] | null,
+): UseAccountingHook => {
   const [isLoadingUncashed, setIsloadingUncashed] = useState<boolean>(false)
   const [uncashedAmounts, setUncashedAmounts] = useState<LastCashoutActionResponse[] | undefined>(undefined)
 
-  const error = balances.error || settlements.error
-
   useEffect(() => {
     // We don't have any settlements loaded yet or we are already loading/have loaded the uncashed amounts
-    if (isLoadingUncashed || !settlements.settlements || uncashedAmounts || error) return
+    if (isLoadingUncashed || !beeDebugApi || !settlements || uncashedAmounts) return
 
     setIsloadingUncashed(true)
-    const promises = settlements.settlements.settlements
+    const promises = settlements.settlements
       .filter(({ received }) => received.toBigNumber.gt('0'))
-      .map(({ peer }) => makeRetriablePromise(() => beeDebugApi.chequebook.getPeerLastCashout(peer)))
+      .map(({ peer }) => makeRetriablePromise(() => beeDebugApi.getLastCashoutAction(peer)))
 
     Promise.allSettled(promises).then(settlements => {
       const results = unwrapPromiseSettlements(settlements)
       setUncashedAmounts(results.fulfilled)
       setIsloadingUncashed(false)
     })
-  }, [settlements, isLoadingUncashed, uncashedAmounts, error])
+  }, [settlements, isLoadingUncashed, uncashedAmounts])
 
-  const accounting = mergeAccounting(balances.peerBalances, settlements.settlements?.settlements, uncashedAmounts)
+  const accounting = mergeAccounting(balances, settlements?.settlements, uncashedAmounts)
 
   return {
-    isLoading: settlements.isLoadingSettlements || balances.isLoadingPeerBalances,
     isLoadingUncashed,
-    error,
     accounting,
-    totalsent: settlements.settlements?.totalSent || new Token('0'),
-    totalreceived: settlements.settlements?.totalReceived || new Token('0'),
   }
 }
