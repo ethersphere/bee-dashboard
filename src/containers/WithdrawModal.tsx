@@ -1,7 +1,7 @@
 import { ReactElement, useContext } from 'react'
 import { Context as SettingsContext } from '../providers/Settings'
 
-import WDModal from '../components/WDModal'
+import WDModal from '../components/WithdrawDepositModal'
 import { BigNumber } from 'bignumber.js'
 
 export default function WithdrawModal(): ReactElement {
