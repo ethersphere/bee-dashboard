@@ -16,8 +16,8 @@ const initialValues: ContextInterface = {
     sessionStorage.getItem('debug_api_host') || process.env.REACT_APP_BEE_DEBUG_HOST || 'http://localhost:1635',
   beeApi: null,
   beeDebugApi: null,
-  setApiUrl: (url: string) => {}, // eslint-disable-line
-  setDebugApiUrl: (url: string) => {}, // eslint-disable-line
+  setApiUrl: () => {}, // eslint-disable-line
+  setDebugApiUrl: () => {}, // eslint-disable-line
 }
 
 export const Context = createContext<ContextInterface>(initialValues)
