@@ -33,8 +33,7 @@ const Dashboard = (props: Props): ReactElement => {
 
   const [themeMode, toggleThemeMode] = useState('light')
 
-  // FIXME: handle errrors and loading
-  const { isLoading, lastUpdate, apiHealth, debugApiHealth } = useContext(Context)
+  const { isLoading, apiHealth, debugApiHealth } = useContext(Context)
 
   useEffect(() => {
     const theme = localStorage.getItem('theme')
@@ -57,13 +56,7 @@ const Dashboard = (props: Props): ReactElement => {
 
   return (
     <div>
-      <SideBar
-        {...props}
-        themeMode={themeMode}
-        health={apiHealth}
-        nodeHealth={debugApiHealth}
-        lastUpdate={lastUpdate}
-      />
+      <SideBar {...props} themeMode={themeMode} health={apiHealth} nodeHealth={debugApiHealth} />
       <NavBar themeMode={themeMode} />
       <ErrorBoundary>
         <main className={classes.content}>
