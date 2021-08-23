@@ -95,7 +95,6 @@ interface Props {
 }
 
 function getStatus(
-  latestBeeRelease: LatestBeeRelease | null,
   debugApiHealth: Health | null,
   nodeAddresses: NodeAddresses | null,
   apiHealth: boolean,
@@ -307,7 +306,6 @@ export function Provider({ children }: Props): ReactElement {
     <Context.Provider
       value={{
         status: getStatus(
-          latestBeeRelease,
           debugApiHealth,
           nodeAddresses,
           apiHealth,
