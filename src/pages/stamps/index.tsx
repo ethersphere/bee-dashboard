@@ -5,7 +5,6 @@ import { Container, CircularProgress } from '@material-ui/core'
 import StampsTable from './StampsTable'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import CreatePostageStampModal from './CreatePostageStampModal'
-import LastUpdate from '../../components/LastUpdate'
 
 import { Context } from '../../providers/Stamps'
 import { Context as BeeContext } from '../../providers/Bee'
@@ -33,7 +32,7 @@ export default function Accounting(): ReactElement {
   const classes = useStyles()
 
   const beeContext = useContext(BeeContext)
-  const { stamps, isLoading, error, lastUpdate, start, stop } = useContext(Context)
+  const { stamps, isLoading, error, start, stop } = useContext(Context)
   useEffect(() => {
     start()
 
@@ -61,7 +60,6 @@ export default function Accounting(): ReactElement {
         <>
           <div className={classes.actions}>
             <CreatePostageStampModal />
-            <LastUpdate date={lastUpdate} />
             <div style={{ height: '5px' }}>{isLoading && <CircularProgress />}</div>
           </div>
           <StampsTable postageStamps={stamps} />
