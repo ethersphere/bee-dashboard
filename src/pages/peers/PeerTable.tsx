@@ -47,14 +47,14 @@ function PeerTable(props: Props): ReactElement {
   const [peerLatency, setPeerLatency] = useState<Record<string, PeerLatency>>({})
 
   const pingPeer = (peerId: string) => {
-    setPeerLatency({ ...peerLatency, [peerId]: { rtt: '', loading: true } })
+    setPeerLatency(prevPeerLatency => ({ ...prevPeerLatency, [peerId]: { rtt: '', loading: true } }))
     beeDebugApi
       ?.pingPeer(peerId)
       .then(res => {
-        setPeerLatency({ ...peerLatency, [peerId]: { rtt: res.rtt, loading: false } })
+        setPeerLatency(prevPeerLatency => ({ ...prevPeerLatency, [peerId]: { rtt: res.rtt, loading: false } }))
       })
       .catch(() => {
-        setPeerLatency({ ...peerLatency, [peerId]: { rtt: 'error', loading: false } })
+        setPeerLatency(prevPeerLatency => ({ ...prevPeerLatency, [peerId]: { rtt: 'error', loading: false } }))
       })
   }
 
