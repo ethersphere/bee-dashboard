@@ -1,7 +1,7 @@
 import { ReactElement, useEffect, useState, useContext } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Typography, Paper, Button, Step, StepLabel, StepContent, Stepper, StepButton } from '@material-ui/core/'
-import { CheckCircle, Error, Sync, ExpandLessSharp, ExpandMoreSharp, Autorenew } from '@material-ui/icons/'
+import { CheckCircle, Error, ExpandLessSharp, ExpandMoreSharp, Autorenew } from '@material-ui/icons/'
 
 import DebugConnectionCheck from './SetupSteps/DebugConnectionCheck'
 import NodeConnectionCheck from './SetupSteps/NodeConnectionCheck'
@@ -122,12 +122,6 @@ export default function NodeSetupWorkflow(): ReactElement {
     <Paper className={classes.root}>
       <Typography variant="h5" gutterBottom>
         Node Setup
-        <span style={{ marginLeft: '25px' }}>
-          <Button variant="outlined" size="small" onClick={() => window.location.reload()}>
-            <Sync />
-            <span style={{ marginLeft: '7px' }}>Refresh Checks</span>
-          </Button>
-        </span>
       </Typography>
       <Stepper nonLinear activeStep={activeStep} orientation="vertical">
         {steps.map(({ label, isOk, component }, index) => (
