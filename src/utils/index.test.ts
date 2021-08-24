@@ -53,7 +53,7 @@ describe('utils', () => {
     wrongValues.forEach(v => {
       test(`testing ${v}`, () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        expect(() => makeBigNumber((v as unknown) as any)).toThrow()
+        expect(() => makeBigNumber(v as unknown as any)).toThrow()
       })
     })
   })
