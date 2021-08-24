@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.6.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.5.0...v0.6.0) (2021-08-24)
+
+
+### Features
+
+* add retry to accounting ([#166](https://www.github.com/ethersphere/bee-dashboard/issues/166)) ([a62243f](https://www.github.com/ethersphere/bee-dashboard/commit/a62243fe5c45b7dd9be6e92f82ebdf0b64bd8f0d))
+* add tooltips and health indicator to peers ([#169](https://www.github.com/ethersphere/bee-dashboard/issues/169)) ([480f6dc](https://www.github.com/ethersphere/bee-dashboard/commit/480f6dc7f9c58a4aae87e0dea7082a4bd3dc900b))
+* bee provider caching the state of the app and refreshing periodically ([#172](https://www.github.com/ethersphere/bee-dashboard/issues/172)) ([2624cf0](https://www.github.com/ethersphere/bee-dashboard/commit/2624cf04c939e87f025c1f4ff417808073742dab))
+* changing API urls does not need the app refresh ([#173](https://www.github.com/ethersphere/bee-dashboard/issues/173)) ([d6d03bf](https://www.github.com/ethersphere/bee-dashboard/commit/d6d03bf7c6d2705de22f43825b85b32c2f0181fb))
+* remove the last update component ([#179](https://www.github.com/ethersphere/bee-dashboard/issues/179)) ([56df3a2](https://www.github.com/ethersphere/bee-dashboard/commit/56df3a2561c3c00237b5d107eb054403af3012f8))
+* synchronized platform tabs ([#165](https://www.github.com/ethersphere/bee-dashboard/issues/165)) ([ec42eaf](https://www.github.com/ethersphere/bee-dashboard/commit/ec42eafc2b768ba06649f628c733e8d3440fdcaf))
+
+
+### Bug Fixes
+
+* enum index for supported platforms ([#170](https://www.github.com/ethersphere/bee-dashboard/issues/170)) ([dcec6e0](https://www.github.com/ethersphere/bee-dashboard/commit/dcec6e01887465c74a68feede52b476791bbefa7))
+* remove nested ternary operator and simplify ping peer functionality ([#181](https://www.github.com/ethersphere/bee-dashboard/issues/181)) ([2b120e4](https://www.github.com/ethersphere/bee-dashboard/commit/2b120e44ca5e01451cc43e362195c04587836a03))
+
 ## [0.5.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.4.0...v0.5.0) (2021-08-09)
 
 
