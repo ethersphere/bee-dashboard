@@ -4,19 +4,18 @@ import { Link, RouteComponentProps } from 'react-router-dom'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItemText, ListItemIcon, ListItem, Divider, List, Drawer, Link as MUILink } from '@material-ui/core'
 import { OpenInNewSharp } from '@material-ui/icons'
-import { Activity, FileText, DollarSign, Share2, Settings, Layers } from 'react-feather'
+import { Home, FileText, DollarSign, Share2, Settings, Layers } from 'react-feather'
 
 import SwarmLogoOrange from '../assets/swarm-logo-orange.svg'
-import { Health } from '@ethersphere/bee-js'
 
 const drawerWidth = 240
 
 const navBarItems = [
   {
-    label: 'Status',
-    id: 'status',
+    label: 'Info',
+    id: 'info',
     path: '/',
-    icon: Activity,
+    icon: Home,
   },
   {
     label: 'Files',
@@ -83,8 +82,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props extends RouteComponentProps {
   themeMode: string
-  health: boolean
-  nodeHealth: Health | null
+  isOk: boolean
 }
 
 export default function SideBar(props: Props): ReactElement {
@@ -139,11 +137,11 @@ export default function SideBar(props: Props): ReactElement {
           </MUILink>
         </List>
         <div style={{ position: 'fixed', bottom: 0, width: 'inherit', padding: '10px' }}>
-          <ListItem>
-            <div style={{ marginRight: '30px' }}>
-              <div
+          <Link to="/status" style={{ marginRight: '30px', color: 'inherit', textDecoration: 'none' }}>
+            <ListItem>
+              <span
                 style={{
-                  backgroundColor: props.health ? '#32c48d' : '#c9201f',
+                  backgroundColor: props.isOk ? '#32c48d' : '#c9201f',
                   marginRight: '7px',
                   height: '10px',
                   width: '10px',
@@ -151,22 +149,9 @@ export default function SideBar(props: Props): ReactElement {
                   display: 'inline-block',
                 }}
               />
-              <span>API</span>
-            </div>
-            <div>
-              <div
-                style={{
-                  backgroundColor: props.nodeHealth?.status === 'ok' ? '#32c48d' : '#c9201f',
-                  marginRight: '7px',
-                  height: '10px',
-                  width: '10px',
-                  borderRadius: '50%',
-                  display: 'inline-block',
-                }}
-              />
-              <span>Debug API</span>
-            </div>
-          </ListItem>
+              <span>Node {props.isOk ? 'OK' : 'Error'}</span>
+            </ListItem>
+          </Link>
         </div>
       </Drawer>
     </div>

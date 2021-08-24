@@ -7,6 +7,7 @@ import AppRoute from './AppRoute'
 import Dashboard from '../layout/Dashboard'
 
 // pages
+import Info from '../pages/info'
 import Status from '../pages/status'
 import Files from '../pages/files'
 import Peers from '../pages/peers'
@@ -16,12 +17,13 @@ import Stamps from '../pages/stamps'
 
 const BaseRouter = (): ReactElement => (
   <Switch>
-    <AppRoute exact path="/" layout={Dashboard} component={Status} />
+    <AppRoute exact path="/" layout={Dashboard} component={Info} />
     <AppRoute exact path="/files/" layout={Dashboard} component={Files} />
     <AppRoute exact path="/peers/" layout={Dashboard} component={Peers} />
     <AppRoute exact path="/accounting/" layout={Dashboard} component={Accounting} />
     <AppRoute exact path="/settings/" layout={Dashboard} component={Settings} />
     <AppRoute exact path="/stamps/" layout={Dashboard} component={Stamps} />
+    <AppRoute exact path="/status" layout={Dashboard} component={Status} />
   </Switch>
 )
 

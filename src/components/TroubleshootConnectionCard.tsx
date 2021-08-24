@@ -26,7 +26,7 @@ export default function TroubleshootConnectionCard(): ReactElement {
         </Typography>
         <div style={{ marginBottom: '20px', textAlign: 'center' }}>
           <strong>
-            <Link to="/">Click to run status checks</Link> on your nodes connection or check out the{' '}
+            <Link to="/status">Click to run status checks</Link> on your nodes connection or check out the{' '}
             <a href={process.env.REACT_APP_BEE_DOCS_HOST} target="_blank" rel="noreferrer">
               Swarm Bee Docs
             </a>
