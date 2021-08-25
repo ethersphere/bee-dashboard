@@ -33,7 +33,7 @@ const Dashboard = (props: Props): ReactElement => {
 
   const [themeMode, toggleThemeMode] = useState('light')
 
-  const { isLoading, apiHealth, debugApiHealth } = useContext(Context)
+  const { isLoading, status } = useContext(Context)
 
   useEffect(() => {
     const theme = localStorage.getItem('theme')
@@ -56,7 +56,7 @@ const Dashboard = (props: Props): ReactElement => {
 
   return (
     <div>
-      <SideBar {...props} themeMode={themeMode} health={apiHealth} nodeHealth={debugApiHealth} />
+      <SideBar {...props} themeMode={themeMode} isOk={status.all} />
       <NavBar themeMode={themeMode} />
       <ErrorBoundary>
         <main className={classes.content}>

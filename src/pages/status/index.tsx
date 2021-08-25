@@ -1,48 +1,152 @@
-import { ReactElement, useContext } from 'react'
+import { ReactElement, useState, useContext } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
+import { Typography, Paper, Button, Step, StepLabel, StepContent, Stepper, StepButton } from '@material-ui/core/'
+import { CheckCircle, Error, ExpandLessSharp, ExpandMoreSharp, Autorenew } from '@material-ui/icons/'
 
-import NodeSetupWorkflow from './NodeSetupWorkflow'
-import StatusCard from './StatusCard'
-import EthereumAddressCard from '../../components/EthereumAddressCard'
-import { Context as BeeContext } from '../../providers/Bee'
+import DebugConnectionCheck from './SetupSteps/DebugConnectionCheck'
+import NodeConnectionCheck from './SetupSteps/NodeConnectionCheck'
+import VersionCheck from './SetupSteps/VersionCheck'
+import EthereumConnectionCheck from './SetupSteps/EthereumConnectionCheck'
+import ChequebookDeployFund from './SetupSteps/ChequebookDeployFund'
+import PeerConnection from './SetupSteps/PeerConnection'
+import { Context } from '../../providers/Bee'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
+      padding: theme.spacing(2),
       width: '100%',
-      display: 'grid',
-      rowGap: theme.spacing(3),
+    },
+    button: {
+      marginTop: theme.spacing(1),
+      marginRight: theme.spacing(1),
+    },
+    actionsContainer: {
+      margin: theme.spacing(2),
     },
   }),
 )
 
-export default function Status(): ReactElement {
+interface Step {
+  label: string
+  isOk: boolean
+  component: ReactElement
+}
+
+export default function NodeSetupWorkflow(): ReactElement {
   const classes = useStyles()
+  const [activeStep, setActiveStep] = useState(-1)
 
   const {
     status,
+    isLoading,
     latestUserVersion,
+    latestPublishedVersion,
     isLatestBeeVersion,
     latestBeeVersionUrl,
     topology,
     nodeAddresses,
     chequebookAddress,
-  } = useContext(BeeContext)
+  } = useContext(Context)
+
+  const steps: Step[] = [
+    {
+      label: 'Connected to Node DebugAPI',
+      isOk: status.debugApiConnection,
+      component: <DebugConnectionCheck isOk={status.debugApiConnection} />,
+    },
+    {
+      label: 'Running latest Bee version',
+      isOk: status.version,
+      component: (
+        <VersionCheck
+          isOk={status.version}
+          isLatestBeeVersion={isLatestBeeVersion}
+          userVersion={latestUserVersion}
+          latestVersion={latestPublishedVersion}
+          latestUrl={latestBeeVersionUrl}
+        />
+      ),
+    },
+    {
+      label: 'Connected to xDai Blockchain',
+      isOk: status.blockchainConnection,
+      component: <EthereumConnectionCheck isOk={status.blockchainConnection} nodeAddresses={nodeAddresses} />,
+    },
+    {
+      label: 'Deployed and Funded Chequebook',
+      isOk: status.chequebook,
+      component: (
+        <ChequebookDeployFund chequebookAddress={chequebookAddress?.chequebookAddress} isOk={status.chequebook} />
+      ),
+    },
+    {
+      label: 'Connected to Node API',
+      isOk: status.apiConnection,
+      component: <NodeConnectionCheck isOk={status.apiConnection} />,
+    },
+    {
+      label: 'Connected to Peers',
+      isOk: status.topology,
+      component: <PeerConnection isOk={status.topology} topology={topology} />,
+    },
+  ]
+
+  const handleNext = () => {
+    setActiveStep(prevActiveStep => prevActiveStep + 1)
+  }
+
+  const handleBack = () => {
+    setActiveStep(prevActiveStep => prevActiveStep - 1)
+  }
 
   return (
-    <div className={classes.root}>
-      <StatusCard
-        userBeeVersion={latestUserVersion}
-        isLatestBeeVersion={isLatestBeeVersion}
-        isOk={status.all}
-        nodeTopology={topology}
-        latestUrl={latestBeeVersionUrl}
-        nodeAddresses={nodeAddresses}
-      />
-      {nodeAddresses && chequebookAddress && (
-        <EthereumAddressCard nodeAddresses={nodeAddresses} chequebookAddress={chequebookAddress} />
-      )}
-      <NodeSetupWorkflow />
-    </div>
+    <Paper className={classes.root}>
+      <Typography variant="h5" gutterBottom>
+        Node Setup
+      </Typography>
+      <Stepper nonLinear activeStep={activeStep} orientation="vertical">
+        {steps.map(({ label, isOk, component }, index) => (
+          <Step key={label}>
+            <StepLabel
+              onClick={() => setActiveStep(index === activeStep ? steps.length : index)}
+              StepIconComponent={() => {
+                if (isLoading) return <Autorenew style={{ height: '25px', cursor: 'pointer' }} />
+
+                if (isOk) return <CheckCircle style={{ color: '#32c48d', height: '25px', cursor: 'pointer' }} />
+
+                return <Error style={{ color: '#c9201f', height: '25px', cursor: 'pointer' }} />
+              }}
+            >
+              <StepButton
+                disabled={isLoading}
+                onClick={() => setActiveStep(index === activeStep ? steps.length : index)}
+                style={{ justifyContent: 'space-between' }}
+              >
+                <div style={{ display: 'flex' }}>
+                  <div style={{ marginTop: '5px' }}>{label}</div>
+                  <div style={{ marginLeft: '12px' }}>
+                    {index === activeStep ? <ExpandLessSharp /> : <ExpandMoreSharp />}
+                  </div>
+                </div>
+              </StepButton>
+            </StepLabel>
+            <StepContent>
+              <Typography component="div">{component}</Typography>
+              <div className={classes.actionsContainer}>
+                <div>
+                  <Button disabled={activeStep === 0} onClick={handleBack} className={classes.button}>
+                    Back
+                  </Button>
+                  <Button variant="contained" color="primary" onClick={handleNext} className={classes.button}>
+                    {index < steps.length - 1 ? 'Next' : 'Finish'}
+                  </Button>
+                </div>
+              </div>
+            </StepContent>
+          </Step>
+        ))}
+      </Stepper>
+    </Paper>
   )
 }
