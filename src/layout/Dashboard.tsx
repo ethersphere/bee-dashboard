@@ -10,8 +10,6 @@ import NavBar from '../components/NavBar'
 
 import { Context } from '../providers/Bee'
 
-import { RouteComponentProps } from 'react-router'
-
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     content: {
@@ -24,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-interface Props extends RouteComponentProps {
+interface Props {
   children?: ReactElement
 }
 
@@ -56,7 +54,7 @@ const Dashboard = (props: Props): ReactElement => {
 
   return (
     <div>
-      <SideBar {...props} themeMode={themeMode} isOk={status.all} />
+      <SideBar themeMode={themeMode} isOk={status.all} />
       <NavBar themeMode={themeMode} />
       <ErrorBoundary>
         <main className={classes.content}>

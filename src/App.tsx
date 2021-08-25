@@ -7,6 +7,7 @@ import CssBaseline from '@material-ui/core/CssBaseline'
 import { SnackbarProvider } from 'notistack'
 
 import BaseRouter from './routes/routes'
+import Dashboard from './layout/Dashboard'
 import { lightTheme, darkTheme } from './theme'
 import { Provider as StampsProvider } from './providers/Stamps'
 import { Provider as PlatformProvider } from './providers/Platform'
@@ -43,12 +44,14 @@ const App = (): ReactElement => {
             <StampsProvider>
               <PlatformProvider>
                 <SnackbarProvider>
-                  <>
-                    <CssBaseline />
-                    <Router>
-                      <BaseRouter />
-                    </Router>
-                  </>
+                  <Router>
+                    <>
+                      <CssBaseline />
+                      <Dashboard>
+                        <BaseRouter />
+                      </Dashboard>
+                    </>
+                  </Router>
                 </SnackbarProvider>
               </PlatformProvider>
             </StampsProvider>
