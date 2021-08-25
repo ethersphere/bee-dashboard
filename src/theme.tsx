@@ -55,7 +55,7 @@ const propsOverrides = {
   },
 }
 
-export const lightTheme = createMuiTheme({
+export const theme = createMuiTheme({
   palette: {
     type: 'light',
     background: {
@@ -75,28 +75,5 @@ export const lightTheme = createMuiTheme({
   },
 })
 
-export const darkTheme = createMuiTheme({
-  palette: {
-    type: 'dark',
-    background: {
-      default: '#0d1117',
-      paper: '#161b22',
-    },
-    primary: {
-      light: orange.A200,
-      main: '#dd7700',
-      dark: orange[800],
-    },
-    secondary: {
-      main: '#1f2937',
-    },
-  },
-  typography: {
-    fontFamily: ['Work Sans', 'Montserrat', 'Nunito', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'].join(','),
-  },
-})
-
-darkTheme.overrides = componentsOverrides(darkTheme)
-darkTheme.props = propsOverrides
-lightTheme.overrides = componentsOverrides(lightTheme)
-lightTheme.props = propsOverrides
+theme.overrides = componentsOverrides(theme)
+theme.props = propsOverrides
