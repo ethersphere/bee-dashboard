@@ -10,6 +10,6 @@ declare module 'react-identicons' {
     getColor?: () => string
   }
 
-  const Identicon = (props: Props): JSXElementConstructor => ReactNode
+  const Identicon = (props: Props): JSXElementConstructor => ReactNode //eslint-disable-line @typescript-eslint/no-unused-vars
   export default Identicon
 }
