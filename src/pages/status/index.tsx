@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState, useContext } from 'react'
+import { ReactElement, useState, useContext } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Typography, Paper, Button, Step, StepLabel, StepContent, Stepper, StepButton } from '@material-ui/core/'
 import { CheckCircle, Error, ExpandLessSharp, ExpandMoreSharp, Autorenew } from '@material-ui/icons/'
@@ -91,24 +91,6 @@ export default function NodeSetupWorkflow(): ReactElement {
       component: <PeerConnection isOk={status.topology} topology={topology} />,
     },
   ]
-
-  useEffect(() => {
-    // If the user already changed the active step we don't want to overwrite it
-    if (activeStep >= 0 && activeStep < steps.length) return
-
-    // If any step is not fully loaded yet return
-    if (!isLoading) return
-
-    // Select first step that is not OK
-    // This is deliberately a for loop (and not forEach) so that we can terminate the useEffect from within the cycle
-    for (let i = 0; i < steps.length; ++i) {
-      if (!steps[i].isOk) {
-        setActiveStep(i)
-
-        return
-      }
-    }
-  }, [steps])
 
   const handleNext = () => {
     setActiveStep(prevActiveStep => prevActiveStep + 1)
