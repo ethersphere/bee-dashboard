@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Link, RouteComponentProps } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItemText, ListItemIcon, ListItem, Divider, List, Drawer, Link as MUILink } from '@material-ui/core'
@@ -80,13 +80,14 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-interface Props extends RouteComponentProps {
+interface Props {
   themeMode: string
   isOk: boolean
 }
 
 export default function SideBar(props: Props): ReactElement {
   const classes = useStyles()
+  const location = useLocation()
 
   return (
     <div className={classes.root}>
@@ -113,15 +114,15 @@ export default function SideBar(props: Props): ReactElement {
             <Link to={item.path} key={item.id} style={{ color: 'inherit', textDecoration: 'none' }}>
               <ListItem
                 button
-                selected={props.location.pathname === item.path}
-                className={props.location.pathname === item.path ? classes.activeSideBarItem : ''}
+                selected={location.pathname === item.path}
+                className={location.pathname === item.path ? classes.activeSideBarItem : ''}
               >
-                <ListItemIcon className={props.location.pathname === item.path ? classes.activeSideBar : ''}>
+                <ListItemIcon className={location.pathname === item.path ? classes.activeSideBar : ''}>
                   <item.icon style={{ height: '20px' }} />
                 </ListItemIcon>
                 <ListItemText
                   primary={item.label}
-                  className={props.location.pathname === item.path ? classes.activeSideBar : ''}
+                  className={location.pathname === item.path ? classes.activeSideBar : ''}
                 />
               </ListItem>
             </Link>
