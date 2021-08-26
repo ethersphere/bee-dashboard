@@ -1,23 +1,29 @@
-import type { ReactElement } from 'react'
+import { ReactElement, useContext } from 'react'
 import { Typography, Accordion, AccordionSummary, AccordionDetails } from '@material-ui/core/'
 import MuiAlert from '@material-ui/lab/Alert'
 import { ExpandMoreSharp } from '@material-ui/icons/'
 
 import ConnectToHost from '../../../components/ConnectToHost'
 import CodeBlockTabs from '../../../components/CodeBlockTabs'
-import { debugApiHost } from '../../../constants'
+import { Context as SettingsContext } from '../../../providers/Settings'
 
 type Props = StatusHookCommon
 
-export default function NodeConnectionCheck({ isLoading, isOk }: Props): ReactElement | null {
-  if (isLoading) return null
+export default function NodeConnectionCheck({ isOk }: Props): ReactElement | null {
+  const { setDebugApiUrl, apiDebugUrl } = useContext(SettingsContext)
 
   const changeDebugApiUrl = (
     <div style={{ display: 'flex', marginTop: '25px', marginBottom: '25px' }}>
       <span style={{ marginRight: '15px' }}>
-        Debug API (<Typography variant="button">{debugApiHost}</Typography>)
+        Debug API (<Typography variant="button">{apiDebugUrl}</Typography>)
       </span>
-      <ConnectToHost hostName={'debug_api_host'} defaultHost={debugApiHost} />
+      <ConnectToHost
+        setHost={(host: string) => {
+          console.log(host) // eslint-disable-line
+          setDebugApiUrl(host)
+        }}
+        defaultHost={apiDebugUrl}
+      />
     </div>
   )
 
@@ -31,7 +37,7 @@ export default function NodeConnectionCheck({ isLoading, isOk }: Props): ReactEl
 
       <div>
         <Typography component="div" variant="body2" gutterBottom style={{ margin: '15px' }}>
-          We cannot connect to your nodes debug API at <Typography variant="button">{debugApiHost}</Typography>. Please
+          We cannot connect to your nodes debug API at <Typography variant="button">{apiDebugUrl}</Typography>. Please
           check the following to troubleshoot your issue.
           <Accordion style={{ marginTop: '20px' }}>
             <AccordionSummary expandIcon={<ExpandMoreSharp />} aria-controls="panel1a-content" id="panel1a-header">

@@ -1,13 +1,15 @@
-import { useState, useEffect, ReactElement } from 'react'
+import { useState, useEffect, useContext, ReactElement } from 'react'
 import ErrorBoundary from '../components/ErrorBoundary'
 import AlertVersion from '../components/AlertVersion'
+import { Container, CircularProgress } from '@material-ui/core'
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 
 import SideBar from '../components/SideBar'
 import NavBar from '../components/NavBar'
 
-import { useApiHealth, useDebugApiHealth } from '../hooks/apiHooks'
+import { Context } from '../providers/Bee'
+
 import { RouteComponentProps } from 'react-router'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -31,9 +33,7 @@ const Dashboard = (props: Props): ReactElement => {
 
   const [themeMode, toggleThemeMode] = useState('light')
 
-  // FIXME: handle errrors and loading
-  const { health } = useApiHealth()
-  const { nodeHealth } = useDebugApiHealth()
+  const { isLoading, apiHealth, debugApiHealth } = useContext(Context)
 
   useEffect(() => {
     const theme = localStorage.getItem('theme')
@@ -56,12 +56,18 @@ const Dashboard = (props: Props): ReactElement => {
 
   return (
     <div>
-      <SideBar {...props} themeMode={themeMode} health={health} nodeHealth={nodeHealth} />
+      <SideBar {...props} themeMode={themeMode} health={apiHealth} nodeHealth={debugApiHealth} />
       <NavBar themeMode={themeMode} />
       <ErrorBoundary>
         <main className={classes.content}>
           <AlertVersion />
-          {props.children}
+          {isLoading ? (
+            <Container style={{ textAlign: 'center', padding: '50px' }}>
+              <CircularProgress />
+            </Container>
+          ) : (
+            props.children
+          )}
         </main>
       </ErrorBoundary>
     </div>

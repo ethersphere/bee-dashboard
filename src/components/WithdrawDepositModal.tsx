@@ -21,7 +21,7 @@ interface Props {
   action: (amount: bigint) => Promise<string>
 }
 
-export default function WithdrawModal({
+export default function WithdrawDepositModal({
   successMessage,
   errorMessage,
   dialogMessage,

@@ -1,10 +1,10 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useContext } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Alert, AlertTitle } from '@material-ui/lab'
 import Collapse from '@material-ui/core/Collapse'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
-import { useStatusNodeVersion } from '../hooks/status'
+import { Context } from '../providers/Bee'
 import { SUPPORTED_BEE_VERSION_EXACT } from '@ethersphere/bee-js'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -18,12 +18,12 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function VersionAlert(): ReactElement | null {
   const classes = useStyles()
-  const { isLoading, userVersion } = useStatusNodeVersion()
+  const { isLoading, latestUserVersionExact } = useContext(Context)
   const [open, setOpen] = useState<boolean>(true)
 
-  const isExactlySupportedBeeVersion = SUPPORTED_BEE_VERSION_EXACT === userVersion
+  const isExactlySupportedBeeVersion = SUPPORTED_BEE_VERSION_EXACT === latestUserVersionExact
 
-  if (isLoading || !userVersion) return null
+  if (isLoading || !latestUserVersionExact) return null
 
   return (
     <Collapse in={!isExactlySupportedBeeVersion && open}>
@@ -44,9 +44,9 @@ export default function VersionAlert(): ReactElement | null {
           }
         >
           <AlertTitle>Warning</AlertTitle>
-          Your Bee node version (<code>{userVersion}</code>) does not exactly match the Bee version we tested the Bee
-          Dashboard against (<code>{SUPPORTED_BEE_VERSION_EXACT}</code>). Please note that some functionality may not
-          work properly.
+          Your Bee node version (<code>{latestUserVersionExact}</code>) does not exactly match the Bee version we tested
+          the Bee Dashboard against (<code>{SUPPORTED_BEE_VERSION_EXACT}</code>). Please note that some functionality
+          may not work properly.
         </Alert>
       </div>
     </Collapse>

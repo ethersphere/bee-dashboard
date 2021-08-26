@@ -1,8 +1,8 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useContext } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Paper, InputBase, IconButton, FormHelperText } from '@material-ui/core'
 import { Search } from '@material-ui/icons'
-import { apiHost } from '../../constants'
+import { Context as SettingsContext } from '../../providers/Settings'
 import { Utils } from '@ethersphere/bee-js'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function Files(): ReactElement {
   const classes = useStyles()
+  const { apiUrl } = useContext(SettingsContext)
 
   const [referenceInput, setReferenceInput] = useState('')
   const [referenceError, setReferenceError] = useState<Error | null>(null)
@@ -50,7 +51,7 @@ export default function Files(): ReactElement {
           onChange={handleReferenceChange}
         />
         <IconButton
-          href={`${apiHost}/bzz/${referenceInput}`}
+          href={`${apiUrl}/bzz/${referenceInput}`}
           target="_blank"
           disabled={referenceError !== null || !referenceInput}
           className={classes.iconButton}

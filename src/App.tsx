@@ -10,6 +10,8 @@ import BaseRouter from './routes/routes'
 import { lightTheme, darkTheme } from './theme'
 import { Provider as StampsProvider } from './providers/Stamps'
 import { Provider as PlatformProvider } from './providers/Platform'
+import { Provider as BeeProvider } from './providers/Bee'
+import { Provider as SettingsProvider } from './providers/Settings'
 
 const App = (): ReactElement => {
   const [themeMode, toggleThemeMode] = useState('light')
@@ -36,18 +38,22 @@ const App = (): ReactElement => {
   return (
     <div className="App">
       <ThemeProvider theme={themeMode === 'light' ? lightTheme : darkTheme}>
-        <StampsProvider>
-          <PlatformProvider>
-            <SnackbarProvider>
-              <>
-                <CssBaseline />
-                <Router>
-                  <BaseRouter />
-                </Router>
-              </>
-            </SnackbarProvider>
-          </PlatformProvider>
-        </StampsProvider>
+        <SettingsProvider>
+          <BeeProvider>
+            <StampsProvider>
+              <PlatformProvider>
+                <SnackbarProvider>
+                  <>
+                    <CssBaseline />
+                    <Router>
+                      <BaseRouter />
+                    </Router>
+                  </>
+                </SnackbarProvider>
+              </PlatformProvider>
+            </StampsProvider>
+          </BeeProvider>
+        </SettingsProvider>
       </ThemeProvider>
     </div>
   )

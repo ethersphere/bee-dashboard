@@ -4,9 +4,7 @@ import EthereumAddress from '../../../components/EthereumAddress'
 
 type Props = StatusEthereumConnectionHook
 
-export default function EthereumConnectionCheck({ isLoading, isOk, nodeAddresses }: Props): ReactElement | null {
-  if (isLoading) return null
-
+export default function EthereumConnectionCheck({ isOk, nodeAddresses }: Props): ReactElement | null {
   if (isOk) {
     return (
       <div>

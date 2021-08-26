@@ -1,32 +1,21 @@
-import { Container, CircularProgress } from '@material-ui/core/'
 import PeerTable from './PeerTable'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 
-import { useApiNodeTopology, useApiNodePeers, useDebugApiHealth } from '../../hooks/apiHooks'
+import { Context } from '../../providers/Bee'
 import TopologyStats from '../../components/TopologyStats'
-import { ReactElement } from 'react'
+import { ReactElement, useContext } from 'react'
 
 export default function Peers(): ReactElement {
-  const topology = useApiNodeTopology()
-  const debugHealth = useDebugApiHealth()
-  const peers = useApiNodePeers()
+  const { topology, peers, status } = useContext(Context)
 
-  if (debugHealth.isLoadingNodeHealth) {
-    return (
-      <Container style={{ textAlign: 'center', padding: '50px' }}>
-        <CircularProgress />
-      </Container>
-    )
-  }
-
-  if (debugHealth.error) {
+  if (!status.all) {
     return <TroubleshootConnectionCard />
   }
 
   return (
     <>
-      <TopologyStats {...topology} />
-      <PeerTable {...peers} />
+      <TopologyStats topology={topology} />
+      <PeerTable peers={peers} />
     </>
   )
 }

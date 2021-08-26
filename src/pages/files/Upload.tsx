@@ -8,7 +8,7 @@ import UploadSizeAlert from '../../components/AlertUploadSize'
 import ClipboardCopy from '../../components/ClipboardCopy'
 import PeerDetailDrawer from '../../components/PeerDetail'
 import { Context, EnrichedPostageBatch } from '../../providers/Stamps'
-import { beeApi } from '../../services/bee'
+import { Context as SettingsContext } from '../../providers/Settings'
 import CreatePostageStamp from '../stamps/CreatePostageStampModal'
 import SelectStamp from './SelectStamp'
 
@@ -23,6 +23,7 @@ export default function Files(): ReactElement {
   const [selectedStamp, setSelectedStamp] = useState<EnrichedPostageBatch | null>(null)
 
   const { isLoading, error, stamps } = useContext(Context)
+  const { beeApi } = useContext(SettingsContext)
   const { enqueueSnackbar } = useSnackbar()
 
   // Choose a postage stamp that has the lowest usage
@@ -40,8 +41,11 @@ export default function Files(): ReactElement {
 
   const uploadFile = () => {
     if (file === null || selectedStamp === null) return
+
+    if (!beeApi) return
+
     setIsUploadingFile(true)
-    beeApi.files
+    beeApi
       .uploadFile(selectedStamp.batchID, file)
       .then(hash => {
         window.setTimeout(() => {

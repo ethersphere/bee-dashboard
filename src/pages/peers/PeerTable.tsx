@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react'
+import { ReactElement, useState, useContext } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import {
   Table,
@@ -10,12 +10,11 @@ import {
   Button,
   Paper,
   Tooltip,
-  Container,
   CircularProgress,
 } from '@material-ui/core'
 import { Autorenew } from '@material-ui/icons'
 
-import { beeDebugApi } from '../../services/bee'
+import { Context as SettingsContext } from '../../providers/Settings'
 import type { Peer } from '@ethersphere/bee-js'
 
 const useStyles = makeStyles({
@@ -26,47 +25,43 @@ const useStyles = makeStyles({
 
 interface Props {
   peers: Peer[] | null
-  isLoading: boolean
-  error: Error | null
+}
+
+interface PeerLatency {
+  rtt: string
+  loading: boolean
+}
+
+function getPingState(peerLatency: Record<string, PeerLatency>, peer: Peer): ReactElement {
+  if (peerLatency[peer.address]?.loading) return <CircularProgress size={20} />
+
+  if (peerLatency[peer.address]?.rtt) return <span>{peerLatency[peer.address]?.rtt}</span>
+
+  return <Autorenew />
 }
 
 function PeerTable(props: Props): ReactElement {
   const classes = useStyles()
+  const { beeDebugApi } = useContext(SettingsContext)
 
-  const [peerLatency, setPeerLatency] = useState([{ peerId: '', rtt: '', loading: false }])
+  const [peerLatency, setPeerLatency] = useState<Record<string, PeerLatency>>({})
 
-  const PingPeer = (peerId: string) => {
-    setPeerLatency([...peerLatency, { peerId: peerId, rtt: '', loading: true }])
-    beeDebugApi.connectivity
-      .ping(peerId)
+  const pingPeer = (peerId: string) => {
+    setPeerLatency(prevPeerLatency => ({ ...prevPeerLatency, [peerId]: { rtt: '', loading: true } }))
+    beeDebugApi
+      ?.pingPeer(peerId)
       .then(res => {
-        setPeerLatency([...peerLatency, { peerId: peerId, rtt: res.rtt, loading: false }])
+        setPeerLatency(prevPeerLatency => ({ ...prevPeerLatency, [peerId]: { rtt: res.rtt, loading: false } }))
       })
       .catch(() => {
-        setPeerLatency([...peerLatency, { peerId: peerId, rtt: 'error', loading: false }])
+        setPeerLatency(prevPeerLatency => ({ ...prevPeerLatency, [peerId]: { rtt: 'error', loading: false } }))
       })
-  }
-
-  if (props.isLoading) {
-    return (
-      <Container style={{ textAlign: 'center', padding: '50px' }}>
-        <CircularProgress />
-      </Container>
-    )
-  }
-
-  if (props.error || props.peers === null) {
-    return (
-      <Container style={{ textAlign: 'center', padding: '50px' }}>
-        <p>Failed to load peers</p>
-      </Container>
-    )
   }
 
   return (
     <div>
       <TableContainer component={Paper}>
-        <Table className={classes.table} aria-label="simple table">
+        <Table className={classes.table}>
           <TableHead>
             <TableRow>
               <TableCell>Index</TableCell>
@@ -75,7 +70,7 @@ function PeerTable(props: Props): ReactElement {
             </TableRow>
           </TableHead>
           <TableBody>
-            {props.peers.map((peer: Peer, idx: number) => (
+            {props.peers?.map((peer: Peer, idx: number) => (
               <TableRow key={peer.address}>
                 <TableCell component="th" scope="row">
                   {idx + 1}
@@ -83,21 +78,8 @@ function PeerTable(props: Props): ReactElement {
                 <TableCell>{peer.address}</TableCell>
                 <TableCell align="right">
                   <Tooltip title="Ping node">
-                    <Button color="primary" onClick={() => PingPeer(peer.address)}>
-                      {
-                        // FIXME: this should be broken up
-                        /* eslint-disable no-nested-ternary */
-                        peerLatency.find(item => item.peerId === peer.address) ? (
-                          peerLatency.filter(item => item.peerId === peer.address)[0].loading ? (
-                            <CircularProgress size={20} />
-                          ) : (
-                            peerLatency.filter(item => item.peerId === peer.address)[0].rtt
-                          )
-                        ) : (
-                          <Autorenew />
-                        )
-                        /* eslint-enable no-nested-ternary */
-                      }
+                    <Button color="primary" onClick={() => pingPeer(peer.address)}>
+                      {getPingState(peerLatency, peer)}
                     </Button>
                   </Tooltip>
                 </TableCell>

@@ -1,28 +1,28 @@
-import React, { ReactElement } from 'react'
+import { ReactElement, useContext } from 'react'
 import { Typography, Accordion, AccordionSummary, AccordionDetails } from '@material-ui/core/'
 import { ExpandMoreSharp } from '@material-ui/icons/'
 
 import ConnectToHost from '../../../components/ConnectToHost'
 import CodeBlockTabs from '../../../components/CodeBlockTabs'
-import { apiHost } from '../../../constants'
+import { Context as SettingsContext } from '../../../providers/Settings'
 
 type Props = StatusHookCommon
 
-export default function NodeConnectionCheck({ isLoading, isOk }: Props): ReactElement | null {
-  if (isLoading) return null
+export default function NodeConnectionCheck({ isOk }: Props): ReactElement | null {
+  const { setApiUrl, apiUrl } = useContext(SettingsContext)
 
   return (
     <div>
       <div style={{ display: 'flex', marginBottom: '25px' }}>
         <span style={{ marginRight: '15px' }}>
-          Node API (<Typography variant="button">{apiHost}</Typography>)
+          Node API (<Typography variant="button">{apiUrl}</Typography>)
         </span>
-        <ConnectToHost hostName="api_host" defaultHost={apiHost} />
+        <ConnectToHost setHost={setApiUrl} defaultHost={apiUrl} />
       </div>
       <div>
         {!isOk && (
           <Typography component="div" variant="body2" gutterBottom style={{ margin: '15px' }}>
-            We cannot connect to your nodes API at <Typography variant="button">{apiHost}</Typography>. Please check the
+            We cannot connect to your nodes API at <Typography variant="button">{apiUrl}</Typography>. Please check the
             following to troubleshoot your issue.
             <Accordion style={{ marginTop: '20px' }}>
               <AccordionSummary expandIcon={<ExpandMoreSharp />} aria-controls="panel1a-content" id="panel1a-header">
