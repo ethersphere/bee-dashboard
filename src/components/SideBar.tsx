@@ -81,7 +81,6 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 interface Props {
-  themeMode: string
   isOk: boolean
 }
 
@@ -104,7 +103,7 @@ export default function SideBar(props: Props): ReactElement {
             <img
               alt="swarm"
               className={classes.logo}
-              src={props.themeMode === 'light' ? SwarmLogoOrange : SwarmLogoOrange}
+              src={SwarmLogoOrange}
               style={{ maxHeight: '30px', alignItems: 'center' }}
             />
           </Link>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, ReactElement } from 'react'
+import { useContext, ReactElement } from 'react'
 import ErrorBoundary from '../components/ErrorBoundary'
 import AlertVersion from '../components/AlertVersion'
 import { Container, CircularProgress } from '@material-ui/core'
@@ -6,7 +6,6 @@ import { Container, CircularProgress } from '@material-ui/core'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 
 import SideBar from '../components/SideBar'
-import NavBar from '../components/NavBar'
 
 import { Context } from '../providers/Bee'
 
@@ -29,33 +28,11 @@ interface Props {
 const Dashboard = (props: Props): ReactElement => {
   const classes = useStyles()
 
-  const [themeMode, toggleThemeMode] = useState('light')
-
   const { isLoading, status } = useContext(Context)
-
-  useEffect(() => {
-    const theme = localStorage.getItem('theme')
-
-    if (theme) {
-      toggleThemeMode(String(localStorage.getItem('theme')))
-    } else if (window?.matchMedia('(prefers-color-scheme: dark)')?.matches) {
-      toggleThemeMode('dark')
-    }
-
-    window?.matchMedia('(prefers-color-scheme: dark)')?.addEventListener('change', e => {
-      toggleThemeMode(e?.matches ? 'dark' : 'light')
-    })
-
-    return () =>
-      window?.matchMedia('(prefers-color-scheme: dark)')?.removeEventListener('change', e => {
-        toggleThemeMode(e?.matches ? 'dark' : 'light')
-      })
-  }, [])
 
   return (
     <div>
-      <SideBar themeMode={themeMode} isOk={status.all} />
-      <NavBar themeMode={themeMode} />
+      <SideBar isOk={status.all} />
       <ErrorBoundary>
         <main className={classes.content}>
           <AlertVersion />
