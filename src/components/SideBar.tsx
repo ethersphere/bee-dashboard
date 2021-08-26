@@ -7,44 +7,36 @@ import { OpenInNewSharp } from '@material-ui/icons'
 import { Home, FileText, DollarSign, Share2, Settings, Layers } from 'react-feather'
 import { ROUTES } from '../routes'
 
-import SwarmLogoOrange from '../assets/swarm-logo-orange.svg'
-
-const drawerWidth = 240
+import Logo from '../assets/logo.svg'
 
 const navBarItems = [
   {
     label: 'Info',
-    id: 'info',
     path: ROUTES.INFO,
     icon: Home,
   },
   {
     label: 'Files',
-    id: 'files',
     path: ROUTES.FILES,
     icon: FileText,
   },
   {
     label: 'Stamps',
-    id: 'stamps',
     path: ROUTES.STAMPS,
     icon: Layers,
   },
   {
     label: 'Accounting',
-    id: 'accounting',
     path: ROUTES.ACCOUNTING,
     icon: DollarSign,
   },
   {
     label: 'Peers',
-    id: 'peers',
     path: ROUTES.PEERS,
     icon: Share2,
   },
   {
     label: 'Settings',
-    id: 'settings',
     path: ROUTES.SETTINGS,
     icon: Settings,
   },
@@ -54,21 +46,13 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       display: 'flex',
-    },
-    appBar: {
-      width: `calc(100% - ${drawerWidth}px)`,
-      marginLeft: drawerWidth,
+      flexDirection: 'column',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+      alignContent: 'space-between',
     },
     logo: {
-      padding: 1,
-      marginTop: 20,
-    },
-    drawer: {
-      width: drawerWidth,
-      flexShrink: 0,
-    },
-    drawerPaper: {
-      width: drawerWidth,
+      margin: 64,
     },
     activeSideBar: {
       color: '#dd7700',
@@ -90,35 +74,23 @@ export default function SideBar(props: Props): ReactElement {
   const location = useLocation()
 
   return (
-    <div className={classes.root}>
-      <Drawer
-        className={classes.drawer}
-        variant="permanent"
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-        anchor="left"
-      >
-        <div className={classes.toolbar} style={{ textAlign: 'left', marginLeft: 20 }}>
+    <Drawer variant="permanent">
+      <div className={classes.root}>
+        <div className={classes.logo}>
           <Link to={ROUTES.INFO}>
-            <img
-              alt="swarm"
-              className={classes.logo}
-              src={SwarmLogoOrange}
-              style={{ maxHeight: '30px', alignItems: 'center' }}
-            />
+            <img alt="swarm" src={Logo} />
           </Link>
         </div>
         <List>
           {navBarItems.map(item => (
-            <Link to={item.path} key={item.id} style={{ color: 'inherit', textDecoration: 'none' }}>
+            <Link to={item.path} key={item.path} style={{ color: '#9f9f9f', textDecoration: 'none' }}>
               <ListItem
                 button
                 selected={location.pathname === item.path}
                 className={location.pathname === item.path ? classes.activeSideBarItem : ''}
               >
                 <ListItemIcon className={location.pathname === item.path ? classes.activeSideBar : ''}>
-                  <item.icon style={{ height: '20px' }} />
+                  <item.icon style={{ height: '20px', color: '#9f9f9f' }} />
                 </ListItemIcon>
                 <ListItemText
                   primary={item.label}
@@ -154,7 +126,7 @@ export default function SideBar(props: Props): ReactElement {
             </ListItem>
           </Link>
         </div>
-      </Drawer>
-    </div>
+      </div>
+    </Drawer>
   )
 }

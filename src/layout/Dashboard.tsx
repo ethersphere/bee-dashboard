@@ -12,7 +12,7 @@ import { Context } from '../providers/Bee'
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     content: {
-      marginLeft: '240px',
+      marginLeft: 300,
       flexGrow: 1,
       backgroundColor: theme.palette.background.default,
       padding: theme.spacing(3),
