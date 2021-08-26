@@ -5,6 +5,7 @@ import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItemText, ListItemIcon, ListItem, Divider, List, Drawer, Link as MUILink } from '@material-ui/core'
 import { OpenInNewSharp } from '@material-ui/icons'
 import { Home, FileText, DollarSign, Share2, Settings, Layers } from 'react-feather'
+import { ROUTES } from '../routes'
 
 import SwarmLogoOrange from '../assets/swarm-logo-orange.svg'
 
@@ -14,37 +15,37 @@ const navBarItems = [
   {
     label: 'Info',
     id: 'info',
-    path: '/',
+    path: ROUTES.INFO,
     icon: Home,
   },
   {
     label: 'Files',
     id: 'files',
-    path: '/files/',
+    path: ROUTES.FILES,
     icon: FileText,
   },
   {
     label: 'Stamps',
     id: 'stamps',
-    path: '/stamps/',
+    path: ROUTES.STAMPS,
     icon: Layers,
   },
   {
     label: 'Accounting',
     id: 'accounting',
-    path: '/accounting/',
+    path: ROUTES.ACCOUNTING,
     icon: DollarSign,
   },
   {
     label: 'Peers',
     id: 'peers',
-    path: '/peers/',
+    path: ROUTES.PEERS,
     icon: Share2,
   },
   {
     label: 'Settings',
     id: 'settings',
-    path: '/settings/',
+    path: ROUTES.SETTINGS,
     icon: Settings,
   },
 ]
@@ -99,7 +100,7 @@ export default function SideBar(props: Props): ReactElement {
         anchor="left"
       >
         <div className={classes.toolbar} style={{ textAlign: 'left', marginLeft: 20 }}>
-          <Link to="/">
+          <Link to={ROUTES.INFO}>
             <img
               alt="swarm"
               className={classes.logo}
@@ -137,7 +138,7 @@ export default function SideBar(props: Props): ReactElement {
           </MUILink>
         </List>
         <div style={{ position: 'fixed', bottom: 0, width: 'inherit', padding: '10px' }}>
-          <Link to="/status" style={{ marginRight: '30px', color: 'inherit', textDecoration: 'none' }}>
+          <Link to={ROUTES.STATUS} style={{ marginRight: '30px', color: 'inherit', textDecoration: 'none' }}>
             <ListItem>
               <span
                 style={{

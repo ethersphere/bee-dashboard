@@ -5,6 +5,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { Card, CardContent, Typography, Chip, Button } from '@material-ui/core/'
 import { ArrowRight, ArrowDropUp } from '@material-ui/icons/'
 import { NodeAddresses, Topology } from '@ethersphere/bee-js'
+import { ROUTES } from '../../routes'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -48,7 +49,7 @@ function StatusCard({
             <span style={{ marginRight: '20px' }}>Discovered Nodes: {nodeTopology?.population}</span>
             <span style={{ marginRight: '20px' }}>
               <span>Connected Peers: </span>
-              <Link to="/peers/">{nodeTopology?.connected}</Link>
+              <Link to={ROUTES.PEERS}>{nodeTopology?.connected}</Link>
             </span>
           </div>
           <div>

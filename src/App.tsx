@@ -6,7 +6,7 @@ import { ThemeProvider } from '@material-ui/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { SnackbarProvider } from 'notistack'
 
-import BaseRouter from './routes/routes'
+import BaseRouter from './routes'
 import Dashboard from './layout/Dashboard'
 import { theme } from './theme'
 import { Provider as StampsProvider } from './providers/Stamps'
