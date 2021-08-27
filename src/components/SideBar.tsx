@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, JSXElementConstructor } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
@@ -57,10 +57,6 @@ const useStyles = makeStyles((theme: Theme) =>
     activeSideBar: {
       color: '#dd7700',
     },
-    activeSideBarItem: {
-      borderLeft: '4px solid #dd7700',
-      backgroundColor: 'inherit !important',
-    },
     toolbar: theme.mixins.toolbar,
   }),
 )
@@ -69,9 +65,28 @@ interface Props {
   isOk: boolean
 }
 
-export default function SideBar(props: Props): ReactElement {
+interface PropsRow {
+  icon: ReactElement
+  path: string
+  label: string
+}
+
+function Row({ icon, path, label }: PropsRow): ReactElement {
   const classes = useStyles()
   const location = useLocation()
+
+  return (
+    <Link to={path} key={path} style={{ color: '#9f9f9f', textDecoration: 'none' }}>
+      <ListItem button selected={location.pathname === path} disableRipple>
+        <ListItemIcon className={location.pathname === path ? classes.activeSideBar : ''}>{icon}</ListItemIcon>
+        <ListItemText primary={label} />
+      </ListItem>
+    </Link>
+  )
+}
+
+export default function SideBar(props: Props): ReactElement {
+  const classes = useStyles()
 
   return (
     <Drawer variant="permanent">
@@ -82,22 +97,13 @@ export default function SideBar(props: Props): ReactElement {
           </Link>
         </div>
         <List>
-          {navBarItems.map(item => (
-            <Link to={item.path} key={item.path} style={{ color: '#9f9f9f', textDecoration: 'none' }}>
-              <ListItem
-                button
-                selected={location.pathname === item.path}
-                className={location.pathname === item.path ? classes.activeSideBarItem : ''}
-              >
-                <ListItemIcon className={location.pathname === item.path ? classes.activeSideBar : ''}>
-                  <item.icon style={{ height: '20px', color: '#9f9f9f' }} />
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.label}
-                  className={location.pathname === item.path ? classes.activeSideBar : ''}
-                />
-              </ListItem>
-            </Link>
+          {navBarItems.map(p => (
+            <Row
+              key={p.path}
+              icon={<p.icon style={{ height: '36px', color: '#9f9f9f' }} />}
+              path={p.path}
+              label={p.label}
+            />
           ))}
         </List>
         <Divider />
