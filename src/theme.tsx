@@ -45,30 +45,6 @@ const componentsOverrides = (theme: Theme) => ({
       },
     },
   },
-  MuiListItem: {
-    root: {
-      borderLeft: '4px solid rgba(0,0,0,0)',
-      '&$selected, &$selected:hover': {
-        borderLeft: '4px solid #dd7700',
-        backgroundColor: '#2c2c2c',
-        color: '#f9f9f9',
-      },
-    },
-    button: {
-      paddingLeft: 32,
-      paddingRight: 32,
-      '&:hover': {
-        backgroundColor: '#2c2c2c',
-        color: '#f9f9f9',
-
-        // https://github.com/mui-org/material-ui/issues/22543
-        '@media (hover: none)': {
-          backgroundColor: '#2c2c2c',
-          color: '#f9f9f9',
-        },
-      },
-    },
-  },
   MuiTabs: {
     root: {
       borderBottom: 'none',

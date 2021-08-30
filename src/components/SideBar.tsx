@@ -2,9 +2,9 @@ import type { ReactElement } from 'react'
 import { Link } from 'react-router-dom'
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
-import { ListItemText, ListItem, Divider, List, Drawer, Link as MUILink } from '@material-ui/core'
 import { OpenInNewSharp } from '@material-ui/icons'
-import { Home, FileText, DollarSign, Share2, Settings, Layers } from 'react-feather'
+import { Divider, List, Drawer, Link as MUILink } from '@material-ui/core'
+import { Home, FileText, DollarSign, Share2, Settings, Layers, BookOpen } from 'react-feather'
 import { ROUTES } from '../routes'
 import SideBarItem from './SideBarItem'
 
@@ -51,14 +51,30 @@ const useStyles = makeStyles((theme: Theme) =>
       flexWrap: 'wrap',
       justifyContent: 'space-between',
       alignContent: 'space-between',
+      minHeight: '100vh',
+      paddingBottom: theme.spacing(4),
     },
     logo: {
-      margin: 64,
+      margin: theme.spacing(8),
     },
-    activeSideBar: {
-      color: '#dd7700',
+    icon: {
+      height: theme.spacing(4),
     },
-    toolbar: theme.mixins.toolbar,
+    iconSmall: {
+      height: theme.spacing(2),
+    },
+    link: {
+      color: '#9f9f9f',
+      textDecoration: 'none',
+      '&:hover': {
+        textDecoration: 'none',
+
+        // https://github.com/mui-org/material-ui/issues/22543
+        '@media (hover: none)': {
+          textDecoration: 'none',
+        },
+      },
+    },
   }),
 )
 
@@ -77,44 +93,46 @@ export default function SideBar(props: Props): ReactElement {
             <img alt="swarm" src={Logo} />
           </Link>
         </div>
-        <List>
-          {navBarItems.map(p => (
-            <Link to={p.path} key={p.path} style={{ color: '#9f9f9f', textDecoration: 'none' }}>
+        <div>
+          <List>
+            {navBarItems.map(p => (
+              <Link to={p.path} key={p.path} className={classes.link}>
+                <SideBarItem
+                  key={p.path}
+                  iconStart={<p.icon className={classes.icon} />}
+                  path={p.path}
+                  label={p.label}
+                />
+              </Link>
+            ))}
+          </List>
+          <Divider style={{ backgroundColor: '#2c2c2c', marginLeft: 32, marginRight: 32 }} />
+          <List>
+            <MUILink href={process.env.REACT_APP_BEE_DOCS_HOST} target="_blank" className={classes.link}>
               <SideBarItem
-                key={p.path}
-                icon={<p.icon style={{ height: '36px', color: '#9f9f9f' }} />}
-                path={p.path}
-                label={p.label}
+                iconStart={<BookOpen className={classes.icon} />}
+                iconEnd={<OpenInNewSharp className={classes.iconSmall} />}
+                label={<span>Docs</span>}
               />
-            </Link>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          <MUILink href={process.env.REACT_APP_BEE_DOCS_HOST} target="_blank" style={{ textDecoration: 'none' }}>
-            <ListItem button>
-              <ListItemText primary={'Docs'} />
-              <OpenInNewSharp fontSize="small" />
-            </ListItem>
-          </MUILink>
-        </List>
-        <div style={{ position: 'fixed', bottom: 0, width: 'inherit', padding: '10px' }}>
-          <Link to={ROUTES.STATUS} style={{ marginRight: '30px', color: 'inherit', textDecoration: 'none' }}>
-            <ListItem>
+            </MUILink>
+          </List>
+        </div>
+        <Link to={ROUTES.STATUS} className={classes.link}>
+          <SideBarItem
+            iconStart={
               <span
                 style={{
                   backgroundColor: props.isOk ? '#32c48d' : '#c9201f',
-                  marginRight: '7px',
-                  height: '10px',
-                  width: '10px',
+                  height: '14px',
+                  width: '14px',
                   borderRadius: '50%',
                   display: 'inline-block',
                 }}
               />
-              <span>Node {props.isOk ? 'OK' : 'Error'}</span>
-            </ListItem>
-          </Link>
-        </div>
+            }
+            label={`Node ${props.isOk ? 'OK' : 'Error'}`}
+          />
+        </Link>
       </div>
     </Drawer>
   )
