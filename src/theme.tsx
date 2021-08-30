@@ -55,6 +55,8 @@ const componentsOverrides = (theme: Theme) => ({
       },
     },
     button: {
+      paddingLeft: 32,
+      paddingRight: 32,
       '&:hover': {
         backgroundColor: '#2c2c2c',
         color: '#f9f9f9',
