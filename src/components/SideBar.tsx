@@ -47,7 +47,7 @@ const navBarItems = [
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      flexWrap: 'wrap',
+      flexWrap: 'nowrap',
       minHeight: '100vh',
       paddingTop: theme.spacing(8),
       paddingBottom: theme.spacing(8),
@@ -88,12 +88,12 @@ export default function SideBar(): ReactElement {
   return (
     <Drawer variant="permanent">
       <Grid container direction="column" justifyContent="space-between" className={classes.root}>
-        <div className={classes.logo}>
+        <Grid className={classes.logo}>
           <Link to={ROUTES.INFO}>
             <img alt="swarm" src={Logo} />
           </Link>
-        </div>
-        <div>
+        </Grid>
+        <Grid>
           <List>
             {navBarItems.map(p => (
               <Link to={p.path} key={p.path} className={classes.link}>
@@ -116,10 +116,12 @@ export default function SideBar(): ReactElement {
               />
             </MUILink>
           </List>
-        </div>
-        <Link to={ROUTES.STATUS} className={classes.link}>
-          <SideBarStatus path={ROUTES.STATUS} />
-        </Link>
+        </Grid>
+        <Grid>
+          <Link to={ROUTES.STATUS} className={classes.link}>
+            <SideBarStatus path={ROUTES.STATUS} />
+          </Link>
+        </Grid>
       </Grid>
     </Drawer>
   )
