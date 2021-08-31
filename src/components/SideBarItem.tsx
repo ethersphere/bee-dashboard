@@ -6,6 +6,8 @@ import { ListItemText, ListItemIcon, ListItem } from '@material-ui/core'
 
 const StyledListItem = withStyles((theme: Theme) => ({
   root: {
+    paddingLeft: theme.spacing(4),
+    paddingRight: theme.spacing(4),
     borderLeft: '4px solid rgba(0,0,0,0)',
     '&.Mui-selected, &.Mui-selected:hover': {
       borderLeft: `4px solid ${theme.palette.primary.main}`,
@@ -14,8 +16,6 @@ const StyledListItem = withStyles((theme: Theme) => ({
     },
   },
   button: {
-    paddingLeft: 32,
-    paddingRight: 32,
     '&:hover': {
       backgroundColor: '#2c2c2c',
       color: '#f9f9f9',

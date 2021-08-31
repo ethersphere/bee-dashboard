@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
     root: {
       height: theme.spacing(4),
-      paddingLeft: theme.spacing(4),
+      paddingLeft: theme.spacing(1),
       paddingRight: theme.spacing(4),
       fontSize: '14px',
       borderLeft: '0px solid rgba(0,0,0,0)',
