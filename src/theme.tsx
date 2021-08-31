@@ -9,6 +9,12 @@ declare module '@material-ui/core/styles/createPalette' {
 
 // Overwriting default components styles
 const componentsOverrides = (theme: Theme) => ({
+  MuiDrawer: {
+    paper: {
+      width: 300,
+      backgroundColor: '#212121',
+    },
+  },
   MuiTab: {
     root: {
       backgroundColor: 'transparent',

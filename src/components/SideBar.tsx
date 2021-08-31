@@ -1,50 +1,44 @@
-import { ReactElement } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import type { ReactElement } from 'react'
+import { Link } from 'react-router-dom'
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
-import { ListItemText, ListItemIcon, ListItem, Divider, List, Drawer, Link as MUILink } from '@material-ui/core'
 import { OpenInNewSharp } from '@material-ui/icons'
-import { Home, FileText, DollarSign, Share2, Settings, Layers } from 'react-feather'
+import { Divider, List, Drawer, Grid, Link as MUILink } from '@material-ui/core'
+import { Home, FileText, DollarSign, Share2, Settings, Layers, BookOpen } from 'react-feather'
 import { ROUTES } from '../routes'
+import SideBarItem from './SideBarItem'
+import SideBarStatus from './SideBarStatus'
 
-import SwarmLogoOrange from '../assets/swarm-logo-orange.svg'
-
-const drawerWidth = 240
+import Logo from '../assets/logo.svg'
 
 const navBarItems = [
   {
     label: 'Info',
-    id: 'info',
     path: ROUTES.INFO,
     icon: Home,
   },
   {
     label: 'Files',
-    id: 'files',
     path: ROUTES.FILES,
     icon: FileText,
   },
   {
     label: 'Stamps',
-    id: 'stamps',
     path: ROUTES.STAMPS,
     icon: Layers,
   },
   {
     label: 'Accounting',
-    id: 'accounting',
     path: ROUTES.ACCOUNTING,
     icon: DollarSign,
   },
   {
     label: 'Peers',
-    id: 'peers',
     path: ROUTES.PEERS,
     icon: Share2,
   },
   {
     label: 'Settings',
-    id: 'settings',
     path: ROUTES.SETTINGS,
     icon: Settings,
   },
@@ -53,108 +47,82 @@ const navBarItems = [
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      display: 'flex',
-    },
-    appBar: {
-      width: `calc(100% - ${drawerWidth}px)`,
-      marginLeft: drawerWidth,
+      flexWrap: 'nowrap',
+      minHeight: '100vh',
+      paddingTop: theme.spacing(8),
+      paddingBottom: theme.spacing(8),
     },
     logo: {
-      padding: 1,
-      marginTop: 20,
+      marginLeft: theme.spacing(8),
+      marginRight: theme.spacing(8),
     },
-    drawer: {
-      width: drawerWidth,
-      flexShrink: 0,
+    icon: {
+      height: theme.spacing(4),
     },
-    drawerPaper: {
-      width: drawerWidth,
+    iconSmall: {
+      height: theme.spacing(2),
     },
-    activeSideBar: {
-      color: '#dd7700',
+    divider: {
+      backgroundColor: '#2c2c2c',
+      marginLeft: theme.spacing(4),
+      marginRight: theme.spacing(4),
     },
-    activeSideBarItem: {
-      borderLeft: '4px solid #dd7700',
-      backgroundColor: 'inherit !important',
+    link: {
+      color: '#9f9f9f',
+      textDecoration: 'none',
+      '&:hover': {
+        textDecoration: 'none',
+
+        // https://github.com/mui-org/material-ui/issues/22543
+        '@media (hover: none)': {
+          textDecoration: 'none',
+        },
+      },
     },
-    toolbar: theme.mixins.toolbar,
   }),
 )
 
-interface Props {
-  isOk: boolean
-}
-
-export default function SideBar(props: Props): ReactElement {
+export default function SideBar(): ReactElement {
   const classes = useStyles()
-  const location = useLocation()
 
   return (
-    <div className={classes.root}>
-      <Drawer
-        className={classes.drawer}
-        variant="permanent"
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-        anchor="left"
-      >
-        <div className={classes.toolbar} style={{ textAlign: 'left', marginLeft: 20 }}>
+    <Drawer variant="permanent">
+      <Grid container direction="column" justifyContent="space-between" className={classes.root}>
+        <Grid className={classes.logo}>
           <Link to={ROUTES.INFO}>
-            <img
-              alt="swarm"
-              className={classes.logo}
-              src={SwarmLogoOrange}
-              style={{ maxHeight: '30px', alignItems: 'center' }}
-            />
+            <img alt="swarm" src={Logo} />
           </Link>
-        </div>
-        <List>
-          {navBarItems.map(item => (
-            <Link to={item.path} key={item.id} style={{ color: 'inherit', textDecoration: 'none' }}>
-              <ListItem
-                button
-                selected={location.pathname === item.path}
-                className={location.pathname === item.path ? classes.activeSideBarItem : ''}
-              >
-                <ListItemIcon className={location.pathname === item.path ? classes.activeSideBar : ''}>
-                  <item.icon style={{ height: '20px' }} />
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.label}
-                  className={location.pathname === item.path ? classes.activeSideBar : ''}
+        </Grid>
+        <Grid>
+          <List>
+            {navBarItems.map(p => (
+              <Link to={p.path} key={p.path} className={classes.link}>
+                <SideBarItem
+                  key={p.path}
+                  iconStart={<p.icon className={classes.icon} />}
+                  path={p.path}
+                  label={p.label}
                 />
-              </ListItem>
-            </Link>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          <MUILink href={process.env.REACT_APP_BEE_DOCS_HOST} target="_blank" style={{ textDecoration: 'none' }}>
-            <ListItem button>
-              <ListItemText primary={'Docs'} />
-              <OpenInNewSharp fontSize="small" />
-            </ListItem>
-          </MUILink>
-        </List>
-        <div style={{ position: 'fixed', bottom: 0, width: 'inherit', padding: '10px' }}>
-          <Link to={ROUTES.STATUS} style={{ marginRight: '30px', color: 'inherit', textDecoration: 'none' }}>
-            <ListItem>
-              <span
-                style={{
-                  backgroundColor: props.isOk ? '#32c48d' : '#c9201f',
-                  marginRight: '7px',
-                  height: '10px',
-                  width: '10px',
-                  borderRadius: '50%',
-                  display: 'inline-block',
-                }}
+              </Link>
+            ))}
+          </List>
+          <Divider className={classes.divider} />
+          <List>
+            <MUILink href={process.env.REACT_APP_BEE_DOCS_HOST} target="_blank" className={classes.link}>
+              <SideBarItem
+                iconStart={<BookOpen className={classes.icon} />}
+                iconEnd={<OpenInNewSharp className={classes.iconSmall} />}
+                label={<span>Docs</span>}
               />
-              <span>Node {props.isOk ? 'OK' : 'Error'}</span>
-            </ListItem>
+            </MUILink>
+          </List>
+        </Grid>
+        <Grid>
+          <Link to={ROUTES.STATUS} className={classes.link}>
+            <SideBarStatus path={ROUTES.STATUS} />
           </Link>
-        </div>
-      </Drawer>
-    </div>
+        </Grid>
+      </Grid>
+    </Drawer>
   )
 }

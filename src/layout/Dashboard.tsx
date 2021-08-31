@@ -12,7 +12,7 @@ import { Context } from '../providers/Bee'
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     content: {
-      marginLeft: '240px',
+      marginLeft: 300,
       flexGrow: 1,
       backgroundColor: theme.palette.background.default,
       padding: theme.spacing(3),
@@ -28,11 +28,11 @@ interface Props {
 const Dashboard = (props: Props): ReactElement => {
   const classes = useStyles()
 
-  const { isLoading, status } = useContext(Context)
+  const { isLoading } = useContext(Context)
 
   return (
     <div>
-      <SideBar isOk={status.all} />
+      <SideBar />
       <ErrorBoundary>
         <main className={classes.content}>
           <AlertVersion />
