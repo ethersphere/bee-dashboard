@@ -3,7 +3,7 @@ import { useLocation, matchPath } from 'react-router-dom'
 import { ArrowRight } from 'react-feather'
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
-import { ListItemText, ListItemIcon, ListItem } from '@material-ui/core'
+import { ListItemText, ListItemIcon, ListItem, Typography } from '@material-ui/core'
 import { Context } from '../providers/Bee'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -19,25 +19,28 @@ const useStyles = makeStyles((theme: Theme) =>
       height: theme.spacing(4),
       paddingLeft: theme.spacing(1),
       paddingRight: theme.spacing(4),
-      fontSize: '14px',
+      color: '#f9f9f9',
       borderLeft: '0px solid rgba(0,0,0,0)',
       '&.Mui-selected, &.Mui-selected:hover': {
         borderLeft: `0px solid ${theme.palette.primary.main}`,
         backgroundColor: '#2c2c2c',
-        color: '#f9f9f9',
       },
+    },
+    rootError: {
+      backgroundColor: 'rgba(255, 58, 82, 0.25)',
     },
     button: {
       '&:hover': {
         backgroundColor: '#2c2c2c',
-        color: '#f9f9f9',
 
         // https://github.com/mui-org/material-ui/issues/22543
         '@media (hover: none)': {
           backgroundColor: '#2c2c2c',
-          color: '#f9f9f9',
         },
       },
+    },
+    smallerText: {
+      fontSize: '0.9rem',
     },
   }),
 )
@@ -53,7 +56,12 @@ export default function SideBarItem({ path }: Props): ReactElement {
   const isSelected = Boolean(matchPath(location.pathname, { path, exact: true }))
 
   return (
-    <ListItem button classes={{ root: classes.root, button: classes.button }} selected={isSelected} disableRipple>
+    <ListItem
+      button
+      classes={{ root: `${classes.root} ${status.all ? '' : classes.rootError}`, button: classes.button }}
+      selected={isSelected}
+      disableRipple
+    >
       <ListItemIcon>
         <span
           style={{
@@ -66,7 +74,9 @@ export default function SideBarItem({ path }: Props): ReactElement {
           }}
         />
       </ListItemIcon>
-      <ListItemText primary={`Node ${status.all ? 'OK' : 'Error'}`} />
+      <ListItemText
+        primary={<Typography className={classes.smallerText}>{`Node ${status.all ? 'OK' : 'Error'}`}</Typography>}
+      />
       <ListItemIcon className={classes.icon}>
         {status.all ? null : <ArrowRight className={classes.iconSmall} />}
       </ListItemIcon>
