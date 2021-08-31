@@ -7,6 +7,11 @@
 
 * removed dark theme and theme switching ([#190](https://www.github.com/ethersphere/bee-dashboard/issues/190)) ([d1720e2](https://www.github.com/ethersphere/bee-dashboard/commit/d1720e243c4415d75763a229250fa20e3664290e))
 * separate info and status page ([#183](https://www.github.com/ethersphere/bee-dashboard/issues/183)) ([02a7bff](https://www.github.com/ethersphere/bee-dashboard/commit/02a7bff733b7fac70c6a36f94e6ba1425854a0af))
+* styling of the sidebar ([#194](https://github.com/ethersphere/bee-dashboard/pull/194))
+
+
+### Bug Fixes
+* bee 1.1.0 version reporting workaround ([#197](https://github.com/ethersphere/bee-dashboard/issues/197))
 
 ## [0.6.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.5.0...v0.6.0) (2021-08-24)
 
