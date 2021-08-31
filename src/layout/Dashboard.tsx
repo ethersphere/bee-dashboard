@@ -28,11 +28,11 @@ interface Props {
 const Dashboard = (props: Props): ReactElement => {
   const classes = useStyles()
 
-  const { isLoading, status } = useContext(Context)
+  const { isLoading } = useContext(Context)
 
   return (
     <div>
-      <SideBar isOk={status.all} />
+      <SideBar />
       <ErrorBoundary>
         <main className={classes.content}>
           <AlertVersion />

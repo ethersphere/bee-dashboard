@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom'
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { OpenInNewSharp } from '@material-ui/icons'
-import { Divider, List, Drawer, Link as MUILink } from '@material-ui/core'
+import { Divider, List, Drawer, Grid, Link as MUILink } from '@material-ui/core'
 import { Home, FileText, DollarSign, Share2, Settings, Layers, BookOpen } from 'react-feather'
 import { ROUTES } from '../routes'
 import SideBarItem from './SideBarItem'
+import SideBarStatus from './SideBarStatus'
 
 import Logo from '../assets/logo.svg'
 
@@ -46,22 +47,25 @@ const navBarItems = [
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      display: 'flex',
-      flexDirection: 'column',
       flexWrap: 'wrap',
-      justifyContent: 'space-between',
-      alignContent: 'space-between',
       minHeight: '100vh',
-      paddingBottom: theme.spacing(4),
+      paddingTop: theme.spacing(8),
+      paddingBottom: theme.spacing(8),
     },
     logo: {
-      margin: theme.spacing(8),
+      marginLeft: theme.spacing(8),
+      marginRight: theme.spacing(8),
     },
     icon: {
       height: theme.spacing(4),
     },
     iconSmall: {
       height: theme.spacing(2),
+    },
+    divider: {
+      backgroundColor: '#2c2c2c',
+      marginLeft: theme.spacing(4),
+      marginRight: theme.spacing(4),
     },
     link: {
       color: '#9f9f9f',
@@ -78,16 +82,12 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-interface Props {
-  isOk: boolean
-}
-
-export default function SideBar(props: Props): ReactElement {
+export default function SideBar(): ReactElement {
   const classes = useStyles()
 
   return (
     <Drawer variant="permanent">
-      <div className={classes.root}>
+      <Grid container direction="column" justifyContent="space-between" className={classes.root}>
         <div className={classes.logo}>
           <Link to={ROUTES.INFO}>
             <img alt="swarm" src={Logo} />
@@ -106,7 +106,7 @@ export default function SideBar(props: Props): ReactElement {
               </Link>
             ))}
           </List>
-          <Divider style={{ backgroundColor: '#2c2c2c', marginLeft: 32, marginRight: 32 }} />
+          <Divider className={classes.divider} />
           <List>
             <MUILink href={process.env.REACT_APP_BEE_DOCS_HOST} target="_blank" className={classes.link}>
               <SideBarItem
@@ -118,22 +118,9 @@ export default function SideBar(props: Props): ReactElement {
           </List>
         </div>
         <Link to={ROUTES.STATUS} className={classes.link}>
-          <SideBarItem
-            iconStart={
-              <span
-                style={{
-                  backgroundColor: props.isOk ? '#32c48d' : '#c9201f',
-                  height: '14px',
-                  width: '14px',
-                  borderRadius: '50%',
-                  display: 'inline-block',
-                }}
-              />
-            }
-            label={`Node ${props.isOk ? 'OK' : 'Error'}`}
-          />
+          <SideBarStatus path={ROUTES.STATUS} />
         </Link>
-      </div>
+      </Grid>
     </Drawer>
   )
 }

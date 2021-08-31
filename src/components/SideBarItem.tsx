@@ -4,11 +4,11 @@ import { useLocation, matchPath } from 'react-router-dom'
 import { createStyles, Theme, makeStyles, withStyles } from '@material-ui/core/styles'
 import { ListItemText, ListItemIcon, ListItem } from '@material-ui/core'
 
-const StyledListItem = withStyles({
+const StyledListItem = withStyles((theme: Theme) => ({
   root: {
     borderLeft: '4px solid rgba(0,0,0,0)',
     '&.Mui-selected, &.Mui-selected:hover': {
-      borderLeft: '4px solid #dd7700',
+      borderLeft: `4px solid ${theme.palette.primary.main}`,
       backgroundColor: '#2c2c2c',
       color: '#f9f9f9',
     },
@@ -27,7 +27,7 @@ const StyledListItem = withStyles({
       },
     },
   },
-})(ListItem)
+}))(ListItem)
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -35,9 +35,8 @@ const useStyles = makeStyles((theme: Theme) =>
       color: 'inherit',
     },
     activeIcon: {
-      color: '#dd7700',
+      color: theme.palette.primary.main,
     },
-    toolbar: theme.mixins.toolbar,
   }),
 )
 
