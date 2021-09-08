@@ -40,25 +40,23 @@ const Indicator = ({ thresholds }: Props): ReactElement => {
 }
 
 const Metrics = ({ topology, thresholds }: Props): ReactElement => (
-  <Grid style={{ marginBottom: '20px', flexGrow: 1 }}>
-    <Grid container spacing={3}>
-      <Grid key={1} item xs={12} sm={12} md={6} lg={4} xl={4}>
-        <StatCard
-          label="Connected Peers"
-          statistic={topology?.connected.toString()}
-          tooltip={thresholds.connectedPeers.explanation}
-        />
-      </Grid>
-      <Grid key={2} item xs={12} sm={12} md={6} lg={4} xl={4}>
-        <StatCard
-          label="Population"
-          statistic={topology?.population.toString()}
-          tooltip={thresholds.population.explanation}
-        />
-      </Grid>
-      <Grid key={3} item xs={12} sm={12} md={6} lg={4} xl={4}>
-        <StatCard label="Depth" statistic={topology?.depth.toString()} tooltip={thresholds.depth.explanation} />
-      </Grid>
+  <Grid container spacing={3} style={{ marginBottom: '20px' }}>
+    <Grid key={1} item xs={12} sm={12} md={6} lg={4} xl={4}>
+      <StatCard
+        label="Connected Peers"
+        statistic={topology?.connected.toString()}
+        tooltip={thresholds.connectedPeers.explanation}
+      />
+    </Grid>
+    <Grid key={2} item xs={12} sm={12} md={6} lg={4} xl={4}>
+      <StatCard
+        label="Population"
+        statistic={topology?.population.toString()}
+        tooltip={thresholds.population.explanation}
+      />
+    </Grid>
+    <Grid key={3} item xs={12} sm={12} md={6} lg={4} xl={4}>
+      <StatCard label="Depth" statistic={topology?.depth.toString()} tooltip={thresholds.depth.explanation} />
     </Grid>
   </Grid>
 )

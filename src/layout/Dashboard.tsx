@@ -12,11 +12,8 @@ import { Context } from '../providers/Bee'
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     content: {
-      marginLeft: 300,
-      flexGrow: 1,
       backgroundColor: theme.palette.background.default,
-      padding: theme.spacing(3),
-      paddingBottom: '65px',
+      minHeight: '100vh',
     },
   }),
 )
@@ -31,20 +28,22 @@ const Dashboard = (props: Props): ReactElement => {
   const { isLoading } = useContext(Context)
 
   return (
-    <div>
+    <div style={{ display: 'flex' }}>
       <SideBar />
-      <ErrorBoundary>
-        <main className={classes.content}>
-          <AlertVersion />
-          {isLoading ? (
-            <Container style={{ textAlign: 'center', padding: '50px' }}>
-              <CircularProgress />
-            </Container>
-          ) : (
-            props.children
-          )}
-        </main>
-      </ErrorBoundary>
+      <Container className={classes.content}>
+        <ErrorBoundary>
+          <>
+            <AlertVersion />
+            {isLoading ? (
+              <div style={{ textAlign: 'center', width: '100%' }}>
+                <CircularProgress />
+              </div>
+            ) : (
+              props.children
+            )}
+          </>
+        </ErrorBoundary>
+      </Container>
     </div>
   )
 }

@@ -9,11 +9,13 @@ declare module '@material-ui/core/styles/createPalette' {
 
 // Overwriting default components styles
 const componentsOverrides = (theme: Theme) => ({
-  MuiDrawer: {
-    paper: {
-      width: 300,
-      backgroundColor: '#212121',
-    },
+  MuiContainer: {
+    root: { padding: theme.spacing(8) },
+    maxWidthXs: { padding: theme.spacing(8) },
+    maxWidthSm: { padding: theme.spacing(8) },
+    maxWidthMd: { padding: theme.spacing(8) },
+    maxWidthLg: { padding: theme.spacing(8) },
+    maxWidthXl: { padding: theme.spacing(8) },
   },
   MuiTab: {
     root: {
@@ -78,6 +80,10 @@ export const theme = createMuiTheme({
   },
   typography: {
     fontFamily: ['Work Sans', 'Montserrat', 'Nunito', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'].join(','),
+    h1: {
+      fontSize: '1.3rem',
+      fontWeight: 500,
+    },
   },
 })
 

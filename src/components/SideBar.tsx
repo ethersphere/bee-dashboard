@@ -44,6 +44,8 @@ const navBarItems = [
   },
 ]
 
+const drawerWidth = 300
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -51,6 +53,14 @@ const useStyles = makeStyles((theme: Theme) =>
       minHeight: '100vh',
       paddingTop: theme.spacing(8),
       paddingBottom: theme.spacing(8),
+    },
+    drawer: {
+      width: drawerWidth,
+      flexShrink: 0,
+    },
+    drawerPaper: {
+      width: drawerWidth,
+      backgroundColor: '#212121',
     },
     logo: {
       marginLeft: theme.spacing(8),
@@ -86,7 +96,7 @@ export default function SideBar(): ReactElement {
   const classes = useStyles()
 
   return (
-    <Drawer variant="permanent">
+    <Drawer className={classes.drawer} variant="permanent" anchor="left" classes={{ paper: classes.drawerPaper }}>
       <Grid container direction="column" justifyContent="space-between" className={classes.root}>
         <Grid className={classes.logo}>
           <Link to={ROUTES.INFO}>
