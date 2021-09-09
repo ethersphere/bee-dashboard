@@ -1,5 +1,5 @@
-import React, { ReactElement, useState, useContext } from 'react'
-import { Paper, Container, TextField, Typography, Button } from '@material-ui/core'
+import { ReactElement, useState, useContext } from 'react'
+import { Paper, TextField, Typography, Button } from '@material-ui/core'
 import { Context as SettingsContext } from '../../providers/Settings'
 
 export default function Settings(): ReactElement {

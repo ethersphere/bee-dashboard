@@ -17,6 +17,48 @@ const componentsOverrides = (theme: Theme) => ({
     maxWidthLg: { padding: theme.spacing(8) },
     maxWidthXl: { padding: theme.spacing(8) },
   },
+  MuiButton: {
+    textSizeLarge: {
+      padding: theme.spacing(2),
+    },
+    containedSizeLarge: {
+      padding: theme.spacing(2),
+      boxShadow: 'none',
+      '&:hover': {
+        backgroundColor: theme.palette.primary.main,
+        color: 'white',
+        boxShadow: 'none',
+        // https://github.com/mui-org/material-ui/issues/22543
+        '@media (hover: none)': {
+          backgroundColor: theme.palette.primary.main,
+          color: 'white',
+          boxShadow: 'none',
+        },
+      },
+    },
+    contained: {
+      backgroundColor: 'white',
+      boxShadow: 'none',
+      '&:hover': {
+        backgroundColor: theme.palette.primary.main,
+        color: 'white',
+        // https://github.com/mui-org/material-ui/issues/22543
+        '@media (hover: none)': {
+          backgroundColor: theme.palette.primary.main,
+          color: 'white',
+          boxShadow: 'none',
+        },
+      },
+      '&:focus': {
+        backgroundColor: theme.palette.primary.main,
+        color: 'white',
+      },
+      '&:active': {
+        backgroundColor: theme.palette.primary.main,
+        color: 'white',
+      },
+    },
+  },
   MuiTab: {
     root: {
       backgroundColor: 'transparent',
@@ -67,7 +109,7 @@ export const theme = createMuiTheme({
   palette: {
     type: 'light',
     background: {
-      default: '#fafafa',
+      default: '#efefef',
     },
     primary: {
       light: orange.A200,

@@ -2,8 +2,9 @@ import type { ReactElement } from 'react'
 import { Link } from 'react-router-dom'
 
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import { Container, Grid, Typography, Link as MuiLink } from '@material-ui/core/'
+import { Button, Grid, Typography, Link as MuiLink } from '@material-ui/core/'
 import { ROUTES } from '../routes'
+import { Activity } from 'react-feather'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -13,6 +14,9 @@ const useStyles = makeStyles((theme: Theme) =>
     content: {
       maxWidth: 500,
       marginBottom: theme.spacing(2),
+    },
+    icon: {
+      height: '1rem',
     },
   }),
 )
@@ -34,15 +38,23 @@ export default function TroubleshootConnectionCard(): ReactElement {
             Swarm Bee Docs
           </MuiLink>{' '}
           or ask for support on the{' '}
-          <a href={process.env.REACT_APP_BEE_DISCORD_HOST} target="_blank" rel="noreferrer">
+          <MuiLink href={process.env.REACT_APP_BEE_DISCORD_HOST} target="_blank" rel="noreferrer">
             Ethereum Swarm Discord
-          </a>
+          </MuiLink>
           .
         </Typography>
       </Grid>
       <Grid item className={classes.content}>
         <Typography align="center">
-          <Link to={ROUTES.STATUS}>Check node status</Link>
+          <Button
+            component={Link}
+            variant="contained"
+            size="large"
+            startIcon={<Activity className={classes.icon} />}
+            to={ROUTES.STATUS}
+          >
+            Check node status
+          </Button>
         </Typography>
       </Grid>
     </Grid>
