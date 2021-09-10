@@ -24,6 +24,7 @@ const componentsOverrides = (theme: Theme) => ({
     containedSizeLarge: {
       padding: theme.spacing(2),
       boxShadow: 'none',
+      borderRadius: 0,
       '&:hover': {
         backgroundColor: theme.palette.primary.main,
         color: 'white',
@@ -101,6 +102,9 @@ const componentsOverrides = (theme: Theme) => ({
 
 const propsOverrides = {
   MuiTab: {
+    disableRipple: true,
+  },
+  MuiButtonBase: {
     disableRipple: true,
   },
 }
