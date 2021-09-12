@@ -13,7 +13,10 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     content: {
       maxWidth: 500,
-      marginBottom: theme.spacing(2),
+      marginBottom: theme.spacing(4),
+      '&:last-child': {
+        marginBottom: 0,
+      },
     },
     icon: {
       height: '1rem',
