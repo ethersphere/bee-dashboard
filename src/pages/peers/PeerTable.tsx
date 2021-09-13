@@ -59,36 +59,34 @@ function PeerTable(props: Props): ReactElement {
   }
 
   return (
-    <div>
-      <TableContainer component={Paper}>
-        <Table className={classes.table}>
-          <TableHead>
-            <TableRow>
-              <TableCell>Index</TableCell>
-              <TableCell>Peer Id</TableCell>
-              <TableCell align="right">Actions</TableCell>
+    <TableContainer component={Paper}>
+      <Table className={classes.table}>
+        <TableHead>
+          <TableRow>
+            <TableCell>Index</TableCell>
+            <TableCell>Peer Id</TableCell>
+            <TableCell align="right">Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {props.peers?.map((peer: Peer, idx: number) => (
+            <TableRow key={peer.address}>
+              <TableCell component="th" scope="row">
+                {idx + 1}
+              </TableCell>
+              <TableCell>{peer.address}</TableCell>
+              <TableCell align="right">
+                <Tooltip title="Ping node">
+                  <Button color="primary" onClick={() => pingPeer(peer.address)}>
+                    {getPingState(peerLatency, peer)}
+                  </Button>
+                </Tooltip>
+              </TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {props.peers?.map((peer: Peer, idx: number) => (
-              <TableRow key={peer.address}>
-                <TableCell component="th" scope="row">
-                  {idx + 1}
-                </TableCell>
-                <TableCell>{peer.address}</TableCell>
-                <TableCell align="right">
-                  <Tooltip title="Ping node">
-                    <Button color="primary" onClick={() => pingPeer(peer.address)}>
-                      {getPingState(peerLatency, peer)}
-                    </Button>
-                  </Tooltip>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   )
 }
 

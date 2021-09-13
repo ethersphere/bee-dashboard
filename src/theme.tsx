@@ -9,10 +9,55 @@ declare module '@material-ui/core/styles/createPalette' {
 
 // Overwriting default components styles
 const componentsOverrides = (theme: Theme) => ({
-  MuiDrawer: {
-    paper: {
-      width: 300,
-      backgroundColor: '#212121',
+  MuiContainer: {
+    root: { padding: theme.spacing(8) },
+    maxWidthXs: { padding: theme.spacing(8) },
+    maxWidthSm: { padding: theme.spacing(8) },
+    maxWidthMd: { padding: theme.spacing(8) },
+    maxWidthLg: { padding: theme.spacing(8) },
+    maxWidthXl: { padding: theme.spacing(8) },
+  },
+  MuiButton: {
+    textSizeLarge: {
+      padding: theme.spacing(2),
+    },
+    containedSizeLarge: {
+      padding: theme.spacing(2),
+      boxShadow: 'none',
+      borderRadius: 0,
+      '&:hover': {
+        backgroundColor: theme.palette.primary.main,
+        color: 'white',
+        boxShadow: 'none',
+        // https://github.com/mui-org/material-ui/issues/22543
+        '@media (hover: none)': {
+          backgroundColor: theme.palette.primary.main,
+          color: 'white',
+          boxShadow: 'none',
+        },
+      },
+    },
+    contained: {
+      backgroundColor: 'white',
+      boxShadow: 'none',
+      '&:hover': {
+        backgroundColor: theme.palette.primary.main,
+        color: 'white',
+        // https://github.com/mui-org/material-ui/issues/22543
+        '@media (hover: none)': {
+          backgroundColor: theme.palette.primary.main,
+          color: 'white',
+          boxShadow: 'none',
+        },
+      },
+      '&:focus': {
+        backgroundColor: theme.palette.primary.main,
+        color: 'white',
+      },
+      '&:active': {
+        backgroundColor: theme.palette.primary.main,
+        color: 'white',
+      },
     },
   },
   MuiTab: {
@@ -59,13 +104,16 @@ const propsOverrides = {
   MuiTab: {
     disableRipple: true,
   },
+  MuiButtonBase: {
+    disableRipple: true,
+  },
 }
 
 export const theme = createMuiTheme({
   palette: {
     type: 'light',
     background: {
-      default: '#fafafa',
+      default: '#efefef',
     },
     primary: {
       light: orange.A200,
@@ -78,6 +126,10 @@ export const theme = createMuiTheme({
   },
   typography: {
     fontFamily: ['Work Sans', 'Montserrat', 'Nunito', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'].join(','),
+    h1: {
+      fontSize: '1.3rem',
+      fontWeight: 500,
+    },
   },
 })
 
