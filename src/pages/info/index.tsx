@@ -5,6 +5,8 @@ import StatusCard from './StatusCard'
 import EthereumAddressCard from '../../components/EthereumAddressCard'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { Context as BeeContext } from '../../providers/Bee'
+import ExpandableList from '../../components/ExpandableList'
+import ExpandableListItem from '../../components/ExpandableListItem'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,21 +31,27 @@ export default function Status(): ReactElement {
     chequebookAddress,
   } = useContext(BeeContext)
 
-  if (!status.all) return <TroubleshootConnectionCard />
+  // if (!status.all) return <TroubleshootConnectionCard />
 
   return (
     <div className={classes.root}>
-      <StatusCard
-        userBeeVersion={latestUserVersion}
-        isLatestBeeVersion={isLatestBeeVersion}
-        isOk={status.all}
-        nodeTopology={topology}
-        latestUrl={latestBeeVersionUrl}
-        nodeAddresses={nodeAddresses}
-      />
-      {nodeAddresses && chequebookAddress && (
-        <EthereumAddressCard nodeAddresses={nodeAddresses} chequebookAddress={chequebookAddress} />
-      )}
+      <ExpandableList label="Bee nodes" defaultOpen>
+        <ExpandableListItem>Discovered nodes</ExpandableListItem>
+        <ExpandableListItem>Connected peers</ExpandableListItem>
+        <ExpandableListItem>Agent</ExpandableListItem>
+        <ExpandableListItem>Public key</ExpandableListItem>
+        <ExpandableListItem>PSS public key</ExpandableListItem>
+        <ExpandableListItem>Overlay address (Peer ID)</ExpandableListItem>
+
+        <ExpandableList label="Underlay addresses">
+          <ExpandableListItem>0x024208501...5135125</ExpandableListItem>
+          <ExpandableListItem>0x350151519...5215121</ExpandableListItem>
+        </ExpandableList>
+      </ExpandableList>
+      <ExpandableList label="Blockchain" defaultOpen>
+        <ExpandableListItem>Ethereum address</ExpandableListItem>
+        <ExpandableListItem>Chequebook contract address</ExpandableListItem>
+      </ExpandableList>
     </div>
   )
 }
