@@ -24,10 +24,15 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   children?: ReactNode
+  label: string
+  value: string
+  variant?: 'default' | 'key' | 'input'
 }
 
-export default function ExpandableListItem({ children }: Props): ReactElement | null {
+export default function ExpandableListItem({ children, variant }: Props): ReactElement | null {
   const classes = useStyles()
+
+  if (variant === 'key') return <ListItem className={classes.header}>{children}</ListItem>
 
   return <ListItem className={classes.header}>{children}</ListItem>
 }

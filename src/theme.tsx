@@ -130,6 +130,14 @@ export const theme = createMuiTheme({
       fontSize: '1.3rem',
       fontWeight: 500,
     },
+    h2: {
+      fontSize: '1rem',
+      fontWeight: 500,
+    },
+    h3: {
+      fontSize: '0.8rem',
+      fontWeight: 500,
+    },
   },
 })
 

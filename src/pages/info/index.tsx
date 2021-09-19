@@ -43,7 +43,7 @@ export default function Status(): ReactElement {
         <ExpandableListItem>PSS public key</ExpandableListItem>
         <ExpandableListItem>Overlay address (Peer ID)</ExpandableListItem>
 
-        <ExpandableList label="Underlay addresses">
+        <ExpandableList level={1} label="Underlay addresses">
           <ExpandableListItem>0x024208501...5135125</ExpandableListItem>
           <ExpandableListItem>0x350151519...5215121</ExpandableListItem>
         </ExpandableList>
