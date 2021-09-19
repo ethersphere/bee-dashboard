@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   children?: ReactNode
-  label: string
+  label: ReactNode
   level?: 0 | 1 | 2
   defaultOpen?: boolean
 }

@@ -36,21 +36,20 @@ export default function Status(): ReactElement {
   return (
     <div className={classes.root}>
       <ExpandableList label="Bee nodes" defaultOpen>
-        <ExpandableListItem>Discovered nodes</ExpandableListItem>
-        <ExpandableListItem>Connected peers</ExpandableListItem>
-        <ExpandableListItem>Agent</ExpandableListItem>
-        <ExpandableListItem>Public key</ExpandableListItem>
-        <ExpandableListItem>PSS public key</ExpandableListItem>
-        <ExpandableListItem>Overlay address (Peer ID)</ExpandableListItem>
+        <ExpandableListItem label="Connected peers" value={topology?.connected} />
+        <ExpandableListItem label="Agent" />
+        <ExpandableListItem label="Public key" />
+        <ExpandableListItem label="PSS public key" />
+        <ExpandableListItem label="Overlay address (Peer ID)" />
 
         <ExpandableList level={1} label="Underlay addresses">
-          <ExpandableListItem>0x024208501...5135125</ExpandableListItem>
-          <ExpandableListItem>0x350151519...5215121</ExpandableListItem>
+          <ExpandableListItem label="0x024208501...5135125" />
+          <ExpandableListItem label="0x350151519...5215121" />
         </ExpandableList>
       </ExpandableList>
       <ExpandableList label="Blockchain" defaultOpen>
-        <ExpandableListItem>Ethereum address</ExpandableListItem>
-        <ExpandableListItem>Chequebook contract address</ExpandableListItem>
+        <ExpandableListItem label="Ethereum address" />
+        <ExpandableListItem label="Chequebook contract address" />
       </ExpandableList>
     </div>
   )
