@@ -22,9 +22,8 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function Accounting(): ReactElement {
   const classes = useStyles()
 
-  const { status, nodeAddresses, chequebookAddress, chequebookBalance, settlements, peerBalances } = useContext(
-    BeeContext,
-  )
+  const { status, nodeAddresses, chequebookAddress, chequebookBalance, settlements, peerBalances } =
+    useContext(BeeContext)
   const { beeDebugApi } = useContext(SettingsContext)
 
   const { accounting, isLoadingUncashed } = useAccounting(beeDebugApi, settlements, peerBalances)

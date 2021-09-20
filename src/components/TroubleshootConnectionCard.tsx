@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { makeStyles } from '@material-ui/core/styles'
 import { Card, CardContent, Typography } from '@material-ui/core/'
+import { ROUTES } from '../routes'
 
 const useStyles = makeStyles({
   root: {
@@ -26,7 +27,7 @@ export default function TroubleshootConnectionCard(): ReactElement {
         </Typography>
         <div style={{ marginBottom: '20px', textAlign: 'center' }}>
           <strong>
-            <Link to="/">Click to run status checks</Link> on your nodes connection or check out the{' '}
+            <Link to={ROUTES.STATUS}>Click to run status checks</Link> on your nodes connection or check out the{' '}
             <a href={process.env.REACT_APP_BEE_DOCS_HOST} target="_blank" rel="noreferrer">
               Swarm Bee Docs
             </a>

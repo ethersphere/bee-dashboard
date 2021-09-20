@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, ReactElement } from 'react'
+import { useContext, ReactElement } from 'react'
 import ErrorBoundary from '../components/ErrorBoundary'
 import AlertVersion from '../components/AlertVersion'
 import { Container, CircularProgress } from '@material-ui/core'
@@ -6,16 +6,13 @@ import { Container, CircularProgress } from '@material-ui/core'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 
 import SideBar from '../components/SideBar'
-import NavBar from '../components/NavBar'
 
 import { Context } from '../providers/Bee'
-
-import { RouteComponentProps } from 'react-router'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     content: {
-      marginLeft: '240px',
+      marginLeft: 300,
       flexGrow: 1,
       backgroundColor: theme.palette.background.default,
       padding: theme.spacing(3),
@@ -24,40 +21,18 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-interface Props extends RouteComponentProps {
+interface Props {
   children?: ReactElement
 }
 
 const Dashboard = (props: Props): ReactElement => {
   const classes = useStyles()
 
-  const [themeMode, toggleThemeMode] = useState('light')
-
-  const { isLoading, apiHealth, debugApiHealth } = useContext(Context)
-
-  useEffect(() => {
-    const theme = localStorage.getItem('theme')
-
-    if (theme) {
-      toggleThemeMode(String(localStorage.getItem('theme')))
-    } else if (window?.matchMedia('(prefers-color-scheme: dark)')?.matches) {
-      toggleThemeMode('dark')
-    }
-
-    window?.matchMedia('(prefers-color-scheme: dark)')?.addEventListener('change', e => {
-      toggleThemeMode(e?.matches ? 'dark' : 'light')
-    })
-
-    return () =>
-      window?.matchMedia('(prefers-color-scheme: dark)')?.removeEventListener('change', e => {
-        toggleThemeMode(e?.matches ? 'dark' : 'light')
-      })
-  }, [])
+  const { isLoading } = useContext(Context)
 
   return (
     <div>
-      <SideBar {...props} themeMode={themeMode} health={apiHealth} nodeHealth={debugApiHealth} />
-      <NavBar themeMode={themeMode} />
+      <SideBar />
       <ErrorBoundary>
         <main className={classes.content}>
           <AlertVersion />
