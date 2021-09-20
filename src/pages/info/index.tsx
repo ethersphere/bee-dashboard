@@ -1,5 +1,6 @@
 import { ReactElement, useContext } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
+import { Chip, Button } from '@material-ui/core'
 
 import StatusCard from './StatusCard'
 import EthereumAddressCard from '../../components/EthereumAddressCard'
@@ -37,7 +38,24 @@ export default function Status(): ReactElement {
     <div className={classes.root}>
       <ExpandableList label="Bee nodes" defaultOpen>
         <ExpandableListItem label="Connected peers" value={topology?.connected} />
-        <ExpandableListItem label="Agent" />
+        <ExpandableListItem
+          label="Agent"
+          value={
+            <div>
+              <a href="https://github.com/ethersphere/bee" rel="noreferrer" target="_blank">
+                Bee
+              </a>{' '}
+              <span>{latestUserVersion || '-'}</span>
+              {isLatestBeeVersion ? (
+                <Chip style={{ marginLeft: '7px', color: '#2145a0' }} size="small" label="latest" />
+              ) : (
+                <Button size="small" variant="outlined" href={latestBeeVersionUrl}>
+                  update
+                </Button>
+              )}
+            </div>
+          }
+        />
         <ExpandableListItem label="Public key" />
         <ExpandableListItem label="PSS public key" />
         <ExpandableListItem label="Overlay address (Peer ID)" />
