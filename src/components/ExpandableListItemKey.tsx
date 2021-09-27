@@ -14,9 +14,13 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.background.paper,
       marginBottom: theme.spacing(0.25),
     },
+    headerOpen: {
+      borderLeft: `${theme.spacing(0.25)}px solid ${theme.palette.primary.main}`,
+    },
     copyValue: {
       cursor: 'pointer',
       padding: theme.spacing(1),
+      borderRadius: 0,
       '&:hover': {
         backgroundColor: '#fcf2e8',
         color: theme.palette.primary.main,
@@ -36,7 +40,7 @@ export default function ExpandableListItemKey({ label, value }: Props): ReactEle
   const toggleOpen = () => setOpen(!open)
 
   return (
-    <ListItem className={classes.header}>
+    <ListItem className={`${classes.header} ${open ? classes.headerOpen : ''}`}>
       <Grid container direction="column" justifyContent="space-between" alignItems="stretch">
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="body1" style={{ overflowWrap: 'break-word' }}>
@@ -53,7 +57,7 @@ export default function ExpandableListItemKey({ label, value }: Props): ReactEle
                   </Tooltip>
                 </span>
               )}
-              <IconButton size="small">
+              <IconButton size="small" className={classes.copyValue}>
                 {open ? <Minus onClick={toggleOpen} strokeWidth={1} /> : <Eye onClick={toggleOpen} strokeWidth={1} />}
               </IconButton>
             </div>
