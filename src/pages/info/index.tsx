@@ -2,12 +2,11 @@ import { ReactElement, useContext } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Chip, Button } from '@material-ui/core'
 
-import StatusCard from './StatusCard'
-import EthereumAddressCard from '../../components/EthereumAddressCard'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { Context as BeeContext } from '../../providers/Bee'
 import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItem from '../../components/ExpandableListItem'
+import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,7 +31,7 @@ export default function Status(): ReactElement {
     chequebookAddress,
   } = useContext(BeeContext)
 
-  // if (!status.all) return <TroubleshootConnectionCard />
+  if (!status.all) return <TroubleshootConnectionCard />
 
   return (
     <div className={classes.root}>
@@ -56,18 +55,19 @@ export default function Status(): ReactElement {
             </div>
           }
         />
-        <ExpandableListItem label="Public key" />
-        <ExpandableListItem label="PSS public key" />
-        <ExpandableListItem label="Overlay address (Peer ID)" />
+        <ExpandableListItemKey label="Public key" value={nodeAddresses?.publicKey || ''} />
+        <ExpandableListItemKey label="PSS public key" value={nodeAddresses?.pssPublicKey || ''} />
+        <ExpandableListItemKey label="Overlay address (Peer ID)" value={nodeAddresses?.overlay || ''} />
 
         <ExpandableList level={1} label="Underlay addresses">
-          <ExpandableListItem label="0x024208501...5135125" />
-          <ExpandableListItem label="0x350151519...5215121" />
+          {nodeAddresses?.underlay.map(addr => (
+            <ExpandableListItem key={addr} value={addr} />
+          ))}
         </ExpandableList>
       </ExpandableList>
       <ExpandableList label="Blockchain" defaultOpen>
-        <ExpandableListItem label="Ethereum address" />
-        <ExpandableListItem label="Chequebook contract address" />
+        <ExpandableListItemKey label="Ethereum address" value={nodeAddresses?.ethereum || ''} />
+        <ExpandableListItemKey label="Chequebook contract address" value={chequebookAddress?.chequebookAddress || ''} />
       </ExpandableList>
     </div>
   )

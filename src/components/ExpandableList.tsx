@@ -1,14 +1,7 @@
-import { ReactElement, ReactNode, useState, useContext } from 'react'
+import { ReactElement, ReactNode, useState } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
-import { Alert, AlertTitle } from '@material-ui/lab'
-import Collapse from '@material-ui/core/Collapse'
-import { Paper, Typography } from '@material-ui/core'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import ListItemText from '@material-ui/core/ListItemText'
-import ExpandLess from '@material-ui/icons/ExpandLess'
-import ExpandMore from '@material-ui/icons/ExpandMore'
+import { Collapse, ListItem, ListItemText, Typography } from '@material-ui/core'
+import { ExpandLess, ExpandMore } from '@material-ui/icons'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
