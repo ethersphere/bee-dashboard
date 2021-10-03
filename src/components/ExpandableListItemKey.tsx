@@ -57,7 +57,11 @@ const split = (s: string): string[] => {
 export default function ExpandableListItemKey({ label, value }: Props): ReactElement | null {
   const classes = useStyles()
   const [open, setOpen] = useState(false)
+  const [copied, setCopied] = useState(false)
   const toggleOpen = () => setOpen(!open)
+
+  const tooltipClickHandler = () => setCopied(true)
+  const tooltipCloseHandler = () => setCopied(false)
 
   const splitValues = split(value)
   const hasPrefix = isPrefixedHexString(value)
@@ -71,11 +75,11 @@ export default function ExpandableListItemKey({ label, value }: Props): ReactEle
             <div>
               {!open && (
                 <span className={classes.copyValue}>
-                  <Tooltip title="Copy" placement="top" arrow>
+                  <Tooltip title={copied ? 'Copied' : 'Copy'} placement="top" arrow onClose={tooltipCloseHandler}>
                     <CopyToClipboard text={value}>
-                      <span>{`${hasPrefix ? `${splitValues[0]} ${splitValues[1]}` : splitValues[0]}[…]${
-                        splitValues[splitValues.length - 1]
-                      }`}</span>
+                      <span onClick={tooltipClickHandler}>{`${
+                        hasPrefix ? `${splitValues[0]} ${splitValues[1]}` : splitValues[0]
+                      }[…]${splitValues[splitValues.length - 1]}`}</span>
                     </CopyToClipboard>
                   </Tooltip>
                 </span>
@@ -88,10 +92,10 @@ export default function ExpandableListItemKey({ label, value }: Props): ReactEle
         </Grid>
         <Collapse in={open} timeout="auto" unmountOnExit>
           <div className={classes.content}>
-            <Tooltip title="Copy" placement="top" arrow>
+            <Tooltip title={copied ? 'Copied' : 'Copy'} placement="top" arrow onClose={tooltipCloseHandler}>
               <CopyToClipboard text={value}>
                 {/* This has to be wrapped in two spans otherwise either the tooltip or the highlighting does not work*/}
-                <span>
+                <span onClick={tooltipClickHandler}>
                   <span className={classes.copyValue}>
                     {splitValues.map((s, i) => (
                       <Typography variant="body2" key={i} className={classes.keyMargin} component="span">
