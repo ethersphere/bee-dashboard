@@ -7,12 +7,11 @@ import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      width: '100%',
-    },
     header: {
       backgroundColor: theme.palette.background.paper,
       marginBottom: theme.spacing(0.25),
+      borderLeft: `${theme.spacing(0.25)}px solid rgba(0,0,0,0)`,
+      wordBreak: 'break-word',
     },
     headerOpen: {
       borderLeft: `${theme.spacing(0.25)}px solid ${theme.palette.primary.main}`,
@@ -34,25 +33,42 @@ interface Props {
   value: string
 }
 
+const lengthWithoutPrefix = (s: string) => s.replace(/^0x/i, '').length
+
+function isPrefixedHexString(s: unknown): boolean {
+  return typeof s === 'string' && /^0x[0-9a-f]+$/i.test(s)
+}
+
+const split = (s: string): string[] => {
+  const nonPrefixLength = lengthWithoutPrefix(s)
+
+  if (nonPrefixLength % 6 === 0) return s.match(/(0x|.{6})/gi) || []
+
+  return s.match(/(0x|.{1,8})/gi) || []
+}
+
 export default function ExpandableListItemKey({ label, value }: Props): ReactElement | null {
   const classes = useStyles()
   const [open, setOpen] = useState(false)
   const toggleOpen = () => setOpen(!open)
 
+  const splitValues = split(value)
+  const hasPrefix = isPrefixedHexString(value)
+
   return (
     <ListItem className={`${classes.header} ${open ? classes.headerOpen : ''}`}>
       <Grid container direction="column" justifyContent="space-between" alignItems="stretch">
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
-          <Typography variant="body1" style={{ overflowWrap: 'break-word' }}>
-            {label}
-          </Typography>
+          {label && <Typography variant="body1">{label}</Typography>}
           <Typography variant="body2">
             <div>
               {!open && (
                 <span className={classes.copyValue}>
                   <Tooltip title="Copy" placement="top">
                     <CopyToClipboard text={value}>
-                      <span>{`${value.substr(0, 8)}[...]${value.substr(value.length - 8, 8)}`}</span>
+                      <span>{`${hasPrefix ? `${splitValues[0]} ${splitValues[1]}` : splitValues[0]}[…]${
+                        splitValues[splitValues.length - 1]
+                      }`}</span>
                     </CopyToClipboard>
                   </Tooltip>
                 </span>
@@ -64,27 +80,21 @@ export default function ExpandableListItemKey({ label, value }: Props): ReactEle
           </Typography>
         </Grid>
         <Collapse in={open} timeout="auto" unmountOnExit>
-          <Tooltip title="Copy" placement="top">
-            <CopyToClipboard text={value}>
-              <span className={classes.copyValue}>
-                <Grid
-                  container
-                  direction="row"
-                  justifyContent="flex-start"
-                  alignItems="flex-start"
-                  style={{ marginTop: 8, marginBottom: 8 }}
-                  className={classes.copyValue}
-                >
-                  {typeof value === 'string' &&
-                    value.match(/.{1,8}/g)?.map((s, i) => (
-                      <Grid item key={i} style={{ marginRight: 8 }}>
-                        <Typography variant="body2">{s}</Typography>
-                      </Grid>
+          <div style={{ marginTop: 16, marginBottom: 16 }}>
+            <Tooltip title="Copy" placement="top">
+              <CopyToClipboard text={value}>
+                <span>
+                  <span className={classes.copyValue}>
+                    {splitValues.map((s, i) => (
+                      <Typography variant="body2" key={i} style={{ marginRight: 8 }} component="span">
+                        {s}
+                      </Typography>
                     ))}
-                </Grid>
-              </span>
-            </CopyToClipboard>
-          </Tooltip>
+                  </span>
+                </span>
+              </CopyToClipboard>
+            </Tooltip>
+          </div>
         </Collapse>
       </Grid>
     </ListItem>
