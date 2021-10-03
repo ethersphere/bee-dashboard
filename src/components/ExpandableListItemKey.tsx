@@ -71,7 +71,7 @@ export default function ExpandableListItemKey({ label, value }: Props): ReactEle
             <div>
               {!open && (
                 <span className={classes.copyValue}>
-                  <Tooltip title="Copy" placement="top">
+                  <Tooltip title="Copy" placement="top" arrow>
                     <CopyToClipboard text={value}>
                       <span>{`${hasPrefix ? `${splitValues[0]} ${splitValues[1]}` : splitValues[0]}[…]${
                         splitValues[splitValues.length - 1]
@@ -88,7 +88,7 @@ export default function ExpandableListItemKey({ label, value }: Props): ReactEle
         </Grid>
         <Collapse in={open} timeout="auto" unmountOnExit>
           <div className={classes.content}>
-            <Tooltip title="Copy" placement="top">
+            <Tooltip title="Copy" placement="top" arrow>
               <CopyToClipboard text={value}>
                 {/* This has to be wrapped in two spans otherwise either the tooltip or the highlighting does not work*/}
                 <span>
