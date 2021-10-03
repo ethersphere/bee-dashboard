@@ -7,6 +7,7 @@ import { Context as BeeContext } from '../../providers/Bee'
 import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
+import TopologyStats from '../../components/TopologyStats'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -35,8 +36,7 @@ export default function Status(): ReactElement {
 
   return (
     <div className={classes.root}>
-      <ExpandableList label="Bee nodes" defaultOpen>
-        <ExpandableListItem label="Connected peers" value={topology?.connected} />
+      <ExpandableList label="Bee Node" defaultOpen>
         <ExpandableListItem
           label="Agent"
           value={
@@ -69,6 +69,7 @@ export default function Status(): ReactElement {
         <ExpandableListItemKey label="Ethereum address" value={nodeAddresses?.ethereum || ''} />
         <ExpandableListItemKey label="Chequebook contract address" value={chequebookAddress?.chequebookAddress || ''} />
       </ExpandableList>
+      <TopologyStats topology={topology} />
     </div>
   )
 }

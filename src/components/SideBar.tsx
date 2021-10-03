@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { OpenInNewSharp } from '@material-ui/icons'
 import { Divider, List, Drawer, Grid, Link as MUILink } from '@material-ui/core'
-import { Home, FileText, DollarSign, Share2, Settings, Layers, BookOpen } from 'react-feather'
+import { Home, FileText, DollarSign, Settings, Layers, BookOpen } from 'react-feather'
 import { ROUTES } from '../routes'
 import SideBarItem from './SideBarItem'
 import SideBarStatus from './SideBarStatus'
@@ -31,11 +31,6 @@ const navBarItems = [
     label: 'Accounting',
     path: ROUTES.ACCOUNTING,
     icon: DollarSign,
-  },
-  {
-    label: 'Peers',
-    path: ROUTES.PEERS,
-    icon: Share2,
   },
   {
     label: 'Settings',
