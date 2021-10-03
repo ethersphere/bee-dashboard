@@ -22,9 +22,21 @@ const TopologyStats = (props: RootProps): ReactElement => {
   return (
     <ExpandableList label="Connectivity" defaultOpen>
       <Indicator {...props} thresholds={thresholds} />
-      <ExpandableListItem label="Connected Peers" value={props.topology?.connected.toString()} />
-      <ExpandableListItem label="Pupulation" value={props.topology?.population.toString()} />
-      <ExpandableListItem label="Depth" value={props.topology?.depth.toString()} />
+      <ExpandableListItem
+        label="Connected Peers"
+        value={props.topology?.connected.toString()}
+        tooltip={thresholds.connectedPeers.explanation}
+      />
+      <ExpandableListItem
+        label="Pupulation"
+        value={props.topology?.population.toString()}
+        tooltip={thresholds.population.explanation}
+      />
+      <ExpandableListItem
+        label="Depth"
+        value={props.topology?.depth.toString()}
+        tooltip={thresholds.depth.explanation}
+      />
     </ExpandableList>
   )
 }
@@ -36,27 +48,5 @@ const Indicator = ({ thresholds }: Props): ReactElement => {
 
   return <ExpandableListItem label="Overall Health Indicator" value={percentageText} />
 }
-
-// const Metrics = ({ topology, thresholds }: Props): ReactElement => (
-//   <Grid container spacing={3} style={{ marginBottom: '20px' }}>
-//     <Grid key={1} item xs={12} sm={12} md={6} lg={4} xl={4}>
-//       <StatCard
-//         label="Connected Peers"
-//         statistic={topology?.connected.toString()}
-//         tooltip={thresholds.connectedPeers.explanation}
-//       />
-//     </Grid>
-//     <Grid key={2} item xs={12} sm={12} md={6} lg={4} xl={4}>
-//       <StatCard
-//         label="Population"
-//         statistic={topology?.population.toString()}
-//         tooltip={thresholds.population.explanation}
-//       />
-//     </Grid>
-//     <Grid key={3} item xs={12} sm={12} md={6} lg={4} xl={4}>
-//       <StatCard label="Depth" statistic={topology?.depth.toString()} tooltip={thresholds.depth.explanation} />
-//     </Grid>
-//   </Grid>
-// )
 
 export default TopologyStats
