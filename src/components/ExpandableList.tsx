@@ -9,6 +9,10 @@ const useStyles = makeStyles((theme: Theme) =>
       width: '100%',
       padding: 0,
       margin: 0,
+      marginTop: theme.spacing(4),
+      '&:first-child': {
+        marginTop: 0,
+      },
     },
     rootLevel1: { marginTop: theme.spacing(1) },
     rootLevel2: { marginTop: theme.spacing(0.5) },

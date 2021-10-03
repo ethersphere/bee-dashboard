@@ -1,5 +1,4 @@
 import { ReactElement, useContext } from 'react'
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Chip, Button } from '@material-ui/core'
 
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
@@ -9,19 +8,7 @@ import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import TopologyStats from '../../components/TopologyStats'
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: '100%',
-      display: 'grid',
-      rowGap: theme.spacing(3),
-    },
-  }),
-)
-
 export default function Status(): ReactElement {
-  const classes = useStyles()
-
   const {
     status,
     latestUserVersion,
@@ -35,7 +22,7 @@ export default function Status(): ReactElement {
   if (!status.all) return <TroubleshootConnectionCard />
 
   return (
-    <div className={classes.root}>
+    <div>
       <ExpandableList label="Bee Node" defaultOpen>
         <ExpandableListItem
           label="Agent"
