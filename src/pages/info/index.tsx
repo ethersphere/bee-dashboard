@@ -44,7 +44,7 @@ export default function Status(): ReactElement {
               <a href="https://github.com/ethersphere/bee" rel="noreferrer" target="_blank">
                 Bee
               </a>{' '}
-              <span>{latestUserVersion || '-'}</span>
+              <span>{latestUserVersion || '-'}</span>{' '}
               {isLatestBeeVersion ? (
                 <Chip style={{ marginLeft: '7px', color: '#2145a0' }} size="small" label="latest" />
               ) : (
