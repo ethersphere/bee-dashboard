@@ -1,8 +1,19 @@
 import { ReactElement, useState, useContext } from 'react'
-import { Paper, TextField, Typography, Button } from '@material-ui/core'
+import { makeStyles, createStyles, Theme } from '@material-ui/core/styles'
+import { TextField, Typography, Button } from '@material-ui/core'
 import { Context as SettingsContext } from '../../providers/Settings'
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    item: {
+      margin: 0,
+      marginTop: theme.spacing(4),
+    },
+  }),
+)
+
 export default function Settings(): ReactElement {
+  const classes = useStyles()
   const { apiUrl, apiDebugUrl, setApiUrl, setDebugApiUrl } = useContext(SettingsContext)
   const [host, setHost] = useState(apiUrl)
   const [debugHost, setDebugHost] = useState(apiDebugUrl)
@@ -20,49 +31,39 @@ export default function Settings(): ReactElement {
       <Typography variant="h4" gutterBottom>
         Settings
       </Typography>
-      <Paper>
-        <TextField
-          label="API Endpoint"
-          style={{ margin: 0 }}
-          placeholder="ex: 127.0.0.0.1:1633"
-          helperText="Enter node host override / port"
-          fullWidth
-          defaultValue={apiUrl}
-          margin="normal"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          onChange={e => {
-            setHost(e.target.value)
-          }}
-          variant="filled"
-        />
-      </Paper>
-      <Paper style={{ marginTop: '20px' }}>
-        <TextField
-          label="Debug API Endpoint"
-          style={{ margin: 0 }}
-          placeholder="ex: 127.0.0.0.1:1635"
-          helperText="Enter node debug host override / port"
-          fullWidth
-          defaultValue={apiDebugUrl}
-          onChange={e => {
-            setDebugHost(e.target.value)
-          }}
-          margin="normal"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          variant="filled"
-        />
-      </Paper>
-      {touched ? (
-        <div style={{ marginTop: '20px' }}>
-          <Button variant="outlined" color="primary" onClick={submit}>
-            Save
-          </Button>
-        </div>
-      ) : null}
+      <TextField
+        label="API Endpoint"
+        className={classes.item}
+        placeholder="ex: 127.0.0.0.1:1633"
+        fullWidth
+        defaultValue={apiUrl}
+        margin="normal"
+        InputLabelProps={{
+          shrink: true,
+        }}
+        onChange={e => {
+          setHost(e.target.value)
+        }}
+      />
+      <TextField
+        label="Debug API Endpoint"
+        className={classes.item}
+        placeholder="ex: 127.0.0.0.1:1635"
+        fullWidth
+        defaultValue={apiDebugUrl}
+        onChange={e => {
+          setDebugHost(e.target.value)
+        }}
+        margin="normal"
+        InputLabelProps={{
+          shrink: true,
+        }}
+      />
+      {touched && (
+        <Button variant="outlined" color="primary" className={classes.item} onClick={submit}>
+          Save
+        </Button>
+      )}
     </>
   )
 }
