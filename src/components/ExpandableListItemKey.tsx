@@ -25,6 +25,13 @@ const useStyles = makeStyles((theme: Theme) =>
         color: theme.palette.primary.main,
       },
     },
+    content: {
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
+    },
+    keyMargin: {
+      marginRight: theme.spacing(1),
+    },
   }),
 )
 
@@ -80,13 +87,14 @@ export default function ExpandableListItemKey({ label, value }: Props): ReactEle
           </Typography>
         </Grid>
         <Collapse in={open} timeout="auto" unmountOnExit>
-          <div style={{ marginTop: 16, marginBottom: 16 }}>
+          <div className={classes.content}>
             <Tooltip title="Copy" placement="top">
               <CopyToClipboard text={value}>
+                {/* This has to be wrapped in two spans otherwise either the tooltip or the highlighting does not work*/}
                 <span>
                   <span className={classes.copyValue}>
                     {splitValues.map((s, i) => (
-                      <Typography variant="body2" key={i} style={{ marginRight: 8 }} component="span">
+                      <Typography variant="body2" key={i} className={classes.keyMargin} component="span">
                         {s}
                       </Typography>
                     ))}
