@@ -1,7 +1,6 @@
 import { ReactElement, useContext } from 'react'
 
 import BalancesTable from './BalancesTable'
-import EthereumAddressCard from '../../components/EthereumAddressCard'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
