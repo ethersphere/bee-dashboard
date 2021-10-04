@@ -50,7 +50,7 @@ export default function Files(): ReactElement {
       .then(hash => {
         window.setTimeout(() => {
           setFile(null)
-          setUploadReference(hash)
+          setUploadReference(hash.reference)
           setDropzoneKey(dropzoneKey + 1)
         }, 0)
       })
