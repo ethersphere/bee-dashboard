@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper } from '@material-ui/core'
+import { Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Typography, Paper } from '@material-ui/core'
 
 import ClipboardCopy from '../../components/ClipboardCopy'
 import CashoutModal from '../../components/CashoutModal'
@@ -26,15 +26,25 @@ function BalancesTable({ accounting, isLoadingUncashed }: Props): ReactElement |
   const classes = useStyles()
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} elevation={0} square>
       <Table className={classes.table} size="small" aria-label="Balances Table">
         <TableHead>
           <TableRow>
-            <TableCell>Peer</TableCell>
-            <TableCell align="right">Outstanding Balance</TableCell>
-            <TableCell align="right">Settlements Sent / Received</TableCell>
-            <TableCell align="right">Total</TableCell>
-            <TableCell align="right">Uncashed Amount</TableCell>
+            <TableCell>
+              <Typography variant="body1">Peer</Typography>
+            </TableCell>
+            <TableCell align="right">
+              <Typography variant="body1">Outstanding Balance</Typography>
+            </TableCell>
+            <TableCell align="right">
+              <Typography variant="body1">Settlements Sent / Received</Typography>
+            </TableCell>
+            <TableCell align="right">
+              <Typography variant="body1">Total</Typography>
+            </TableCell>
+            <TableCell align="right">
+              <Typography variant="body1">Uncashed Amount</Typography>
+            </TableCell>
             <TableCell />
           </TableRow>
         </TableHead>

@@ -36,8 +36,9 @@ export default function WithdrawDepositModal({
   const [amountError, setAmountError] = useState<Error | null>(null)
   const { enqueueSnackbar } = useSnackbar()
 
-  const handleClickOpen = () => {
+  const handleClickOpen = (e: React.MouseEvent<HTMLButtonElement>) => {
     setOpen(true)
+    e.stopPropagation()
   }
 
   const handleClose = () => {
@@ -74,7 +75,7 @@ export default function WithdrawDepositModal({
 
   return (
     <div>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+      <Button color="primary" size="small" onClick={handleClickOpen}>
         {label}
       </Button>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">

@@ -1,27 +1,18 @@
 import { ReactElement, useContext } from 'react'
-import { Theme, createStyles, makeStyles } from '@material-ui/core/styles'
 
-import AccountCard from '../accounting/AccountCard'
 import BalancesTable from './BalancesTable'
 import EthereumAddressCard from '../../components/EthereumAddressCard'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { useAccounting } from '../../hooks/accounting'
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: '100%',
-      display: 'grid',
-      rowGap: theme.spacing(3),
-    },
-  }),
-)
+import ExpandableList from '../../components/ExpandableList'
+import ExpandableListItem from '../../components/ExpandableListItem'
+import ExpandableListItemKey from '../../components/ExpandableListItemKey'
+import WithdrawModal from '../../containers/WithdrawModal'
+import DepositModal from '../../containers/DepositModal'
 
 export default function Accounting(): ReactElement {
-  const classes = useStyles()
-
   const { status, nodeAddresses, chequebookAddress, chequebookBalance, settlements, peerBalances } =
     useContext(BeeContext)
   const { beeDebugApi } = useContext(SettingsContext)
@@ -31,15 +22,38 @@ export default function Accounting(): ReactElement {
   if (!status.all) return <TroubleshootConnectionCard />
 
   return (
-    <div className={classes.root}>
-      <AccountCard
-        chequebookAddress={chequebookAddress}
-        chequebookBalance={chequebookBalance}
-        totalsent={settlements?.totalSent}
-        totalreceived={settlements?.totalReceived}
-      />
-      <EthereumAddressCard nodeAddresses={nodeAddresses} chequebookAddress={chequebookAddress} />
-      <BalancesTable accounting={accounting} isLoadingUncashed={isLoadingUncashed} />
+    <div>
+      <ExpandableList
+        label="Chequebook"
+        defaultOpen
+        actions={
+          <div style={{ display: 'flex' }}>
+            <WithdrawModal />
+            <DepositModal />
+          </div>
+        }
+      >
+        <ExpandableListItem label="Total Balance" value={`${chequebookBalance?.totalBalance.toFixedDecimal()} BZZ`} />
+        <ExpandableListItem
+          label="Available Uncommitted Balance"
+          value={`${chequebookBalance?.availableBalance.toFixedDecimal()} BZZ`}
+        />
+        <ExpandableListItem
+          label="Total Cheques Amount Sent"
+          value={`${settlements?.totalSent.toFixedDecimal()} BZZ`}
+        />
+        <ExpandableListItem
+          label="Total Cheques Amount Received"
+          value={`${settlements?.totalReceived.toFixedDecimal()} BZZ`}
+        />
+      </ExpandableList>
+      <ExpandableList label="Blockchain" defaultOpen>
+        <ExpandableListItemKey label="Ethereum address" value={nodeAddresses?.ethereum || ''} />
+        <ExpandableListItemKey label="Chequebook contract address" value={chequebookAddress?.chequebookAddress || ''} />
+      </ExpandableList>
+      <ExpandableList label="Peers" defaultOpen>
+        <BalancesTable accounting={accounting} isLoadingUncashed={isLoadingUncashed} />
+      </ExpandableList>
     </div>
   )
 }

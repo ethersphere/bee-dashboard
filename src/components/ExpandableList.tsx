@@ -28,11 +28,12 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   children?: ReactNode
   label: ReactNode
+  actions?: ReactNode
   level?: 0 | 1 | 2
   defaultOpen?: boolean
 }
 
-export default function ExpandableList({ children, label, level, defaultOpen }: Props): ReactElement | null {
+export default function ExpandableList({ children, label, level, defaultOpen, actions }: Props): ReactElement | null {
   const classes = useStyles()
   const [open, setOpen] = useState<boolean>(Boolean(defaultOpen))
 
@@ -55,7 +56,10 @@ export default function ExpandableList({ children, label, level, defaultOpen }: 
     <div className={`${classes.root} ${rootLevelClass}`}>
       <ListItem button onClick={handleClick} className={classes.header}>
         <ListItemText primary={<Typography variant={typographyVariant}>{label}</Typography>} />
-        {open ? <ExpandLess /> : <ExpandMore />}
+        <div style={{ display: 'flex' }}>
+          {actions}
+          {open ? <ExpandLess /> : <ExpandMore />}
+        </div>
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <div className={classes.content}>{children}</div>
