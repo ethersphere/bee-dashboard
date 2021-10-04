@@ -22,20 +22,7 @@ export default function Accounting(): ReactElement {
 
   return (
     <div>
-      <ExpandableList
-        label="Chequebook"
-        defaultOpen
-        actions={
-          <div style={{ display: 'flex' }}>
-            <div style={{ marginRight: 16 }}>
-              <WithdrawModal />
-            </div>
-            <div style={{ marginRight: 16 }}>
-              <DepositModal />
-            </div>
-          </div>
-        }
-      >
+      <ExpandableList label="Chequebook" defaultOpen>
         <ExpandableListItem label="Total Balance" value={`${chequebookBalance?.totalBalance.toFixedDecimal()} BZZ`} />
         <ExpandableListItem
           label="Available Uncommitted Balance"
@@ -49,6 +36,14 @@ export default function Accounting(): ReactElement {
           label="Total Cheques Amount Received"
           value={`${settlements?.totalReceived.toFixedDecimal()} BZZ`}
         />
+        <div style={{ display: 'flex', marginTop: 4 }}>
+          <div style={{ marginRight: 4 }}>
+            <WithdrawModal />
+          </div>
+          <div style={{ marginRight: 4 }}>
+            <DepositModal />
+          </div>
+        </div>
       </ExpandableList>
       <ExpandableList label="Blockchain" defaultOpen>
         <ExpandableListItemKey label="Ethereum address" value={nodeAddresses?.ethereum || ''} />

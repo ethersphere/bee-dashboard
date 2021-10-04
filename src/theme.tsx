@@ -18,13 +18,13 @@ const componentsOverrides = (theme: Theme) => ({
     maxWidthXl: { padding: theme.spacing(8) },
   },
   MuiButton: {
-    textSizeLarge: {
-      padding: theme.spacing(2),
-    },
+    label: { margin: theme.spacing(2) },
+    startIcon: { marginLeft: theme.spacing(1) },
+    endIcon: { marginRight: theme.spacing(1) },
     containedSizeLarge: {
-      padding: theme.spacing(2),
-      boxShadow: 'none',
+      padding: 0,
       borderRadius: 0,
+      boxShadow: 'none',
       '&:hover': {
         backgroundColor: theme.palette.primary.main,
         color: 'white',
@@ -40,9 +40,12 @@ const componentsOverrides = (theme: Theme) => ({
     contained: {
       backgroundColor: 'white',
       boxShadow: 'none',
+      padding: 0,
+      borderRadius: 0,
       '&:hover': {
         backgroundColor: theme.palette.primary.main,
         color: 'white',
+        boxShadow: 'none',
         // https://github.com/mui-org/material-ui/issues/22543
         '@media (hover: none)': {
           backgroundColor: theme.palette.primary.main,
@@ -116,7 +119,7 @@ export const theme = createMuiTheme({
       default: '#efefef',
     },
     primary: {
-      light: orange.A200,
+      light: '#fcf2e8',
       main: '#dd7700',
       dark: orange[800],
     },
