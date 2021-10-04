@@ -36,7 +36,7 @@ export default function Files(): ReactElement {
   const handleReferenceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setReferenceInput(e.target.value)
 
-    if (Utils.Hex.isHexString(e.target.value, 64) || Utils.Hex.isHexString(e.target.value, 128)) setReferenceError(null)
+    if (Utils.isHexString(e.target.value, 64) || Utils.isHexString(e.target.value, 128)) setReferenceError(null)
     else setReferenceError(new Error('Incorrect format of swarm hash'))
   }
 
