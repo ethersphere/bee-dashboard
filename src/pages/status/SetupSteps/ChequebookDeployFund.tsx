@@ -16,10 +16,10 @@ const ChequebookDeployFund = ({ chequebookAddress, isOk }: Props): ReactElement 
           <div>
             <span>
               Your chequebook is either not deployed or funded. To run the node you will need xDAI and xBZZ on the xDai
-              network. You may need to aquire BZZ through (e.g. <a href="https://bzz.exchange/">bzz.exchange</a>) and
-              bridge it to the xDai network through the <a href="https://omni.xdaichain.com/bridge">omni bridge</a>. To
-              pay the transaction fees, you will also need xDAI token. You can purchase DAI on the network and bridge it
-              to xDai network through the <a href="https://bridge.xdaichain.com/">xDai Bridge</a>. See the{' '}
+              network. You may need to aquire BZZ (e.g. <a href="https://bzz.exchange/">bzz.exchange</a>) and bridge it
+              to the xDai network through the <a href="https://omni.xdaichain.com/bridge">omni bridge</a>. To pay the
+              transaction fees, you will also need xDAI token. You can purchase DAI on the network and bridge it to xDai
+              network through the <a href="https://bridge.xdaichain.com/">xDai Bridge</a>. See the{' '}
               <a href="https://www.xdaichain.com/#xdai-stable-chain">official xDai website</a> for more information.
             </span>
           </div>
