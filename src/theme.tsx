@@ -130,6 +130,19 @@ export const theme = createMuiTheme({
       fontSize: '1.3rem',
       fontWeight: 500,
     },
+    h2: {
+      fontSize: '1rem',
+      fontWeight: 500,
+    },
+    h3: {
+      fontSize: '0.8rem',
+      fontWeight: 500,
+    },
+    body2: {
+      fontFamily: '"IBM Plex Mono", monospace',
+      fontWeight: 500,
+      fontSize: '1rem',
+    },
   },
 })
 
