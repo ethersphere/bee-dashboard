@@ -56,7 +56,7 @@ export default function ExpandableList({ children, label, level, defaultOpen, ac
     <div className={`${classes.root} ${rootLevelClass}`}>
       <ListItem button onClick={handleClick} className={classes.header}>
         <ListItemText primary={<Typography variant={typographyVariant}>{label}</Typography>} />
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', position: 'absolute', right: 16 }}>
           {actions}
           {open ? <ExpandLess /> : <ExpandMore />}
         </div>

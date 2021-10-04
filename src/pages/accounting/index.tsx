@@ -28,8 +28,12 @@ export default function Accounting(): ReactElement {
         defaultOpen
         actions={
           <div style={{ display: 'flex' }}>
-            <WithdrawModal />
-            <DepositModal />
+            <div style={{ marginRight: 16 }}>
+              <WithdrawModal />
+            </div>
+            <div style={{ marginRight: 16 }}>
+              <DepositModal />
+            </div>
           </div>
         }
       >
