@@ -68,7 +68,7 @@ function mergeAccounting(
     accounting[peer].uncashedAmount = new Token(uncashedAmount)
   })
 
-  // Return sorted by the uncashed amount first and them by the peer id
+  // Return sorted by the uncashed amount first and then by the peer id
   return Object.values(accounting).sort((a, b) => {
     const diff = b.uncashedAmount.toBigNumber.minus(a.uncashedAmount.toBigNumber).toNumber()
 
