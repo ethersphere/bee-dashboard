@@ -6,6 +6,7 @@ import { Balance, Settlements, Settlement } from '../types'
 
 interface UseAccountingHook {
   isLoadingUncashed: boolean
+  totalUncashed: Token
   accounting: Accounting[] | null
 }
 
@@ -60,16 +61,21 @@ function mergeAccounting(
       }),
   )
 
-  // If there are no cheques (and hence last cashout actions), we don't need to sort and can return values right away
-  if (!uncashedAmounts) return Object.values(accounting)
+  // If there are no cheques (and hence last cashout actions)
+  if (!uncashedAmounts) return Object.values(accounting).sort((a, b) => (a.peer < b.peer ? -1 : 1))
 
   uncashedAmounts?.forEach(({ peer, uncashedAmount }) => {
     accounting[peer].uncashedAmount = new Token(uncashedAmount)
   })
 
-  return Object.values(accounting).sort((a, b) =>
-    b.uncashedAmount.toBigNumber.minus(a.uncashedAmount.toBigNumber).toNumber(),
-  )
+  // Return sorted by the uncashed amount first and them by the peer id
+  return Object.values(accounting).sort((a, b) => {
+    const diff = b.uncashedAmount.toBigNumber.minus(a.uncashedAmount.toBigNumber).toNumber()
+
+    if (diff !== 0) return diff
+
+    return a.peer < b.peer ? -1 : 1
+  })
 }
 
 export const useAccounting = (
@@ -98,8 +104,14 @@ export const useAccounting = (
 
   const accounting = mergeAccounting(balances, settlements?.settlements, uncashedAmounts)
 
+  let totalUncashed: Token = new Token('0')
+  accounting?.forEach(
+    ({ uncashedAmount }) => (totalUncashed = new Token(totalUncashed.toBigNumber.plus(uncashedAmount.toBigNumber))),
+  )
+
   return {
     isLoadingUncashed,
+    totalUncashed,
     accounting,
   }
 }

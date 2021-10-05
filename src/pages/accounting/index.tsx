@@ -16,7 +16,7 @@ export default function Accounting(): ReactElement {
     useContext(BeeContext)
   const { beeDebugApi } = useContext(SettingsContext)
 
-  const { accounting, isLoadingUncashed } = useAccounting(beeDebugApi, settlements, peerBalances)
+  const { accounting, totalUncashed, isLoadingUncashed } = useAccounting(beeDebugApi, settlements, peerBalances)
 
   if (!status.all) return <TroubleshootConnectionCard />
 
@@ -49,7 +49,7 @@ export default function Accounting(): ReactElement {
         <ExpandableListItemKey label="Ethereum address" value={nodeAddresses?.ethereum || ''} />
         <ExpandableListItemKey label="Chequebook contract address" value={chequebookAddress?.chequebookAddress || ''} />
       </ExpandableList>
-      <PeerBalances accounting={accounting} isLoadingUncashed={isLoadingUncashed} />
+      <PeerBalances accounting={accounting} isLoadingUncashed={isLoadingUncashed} totalUncashed={totalUncashed} />
     </div>
   )
 }
