@@ -19,8 +19,11 @@ const useStyles = makeStyles((theme: Theme) =>
     header: {
       backgroundColor: theme.palette.background.paper,
     },
-    content: {
+    contentLevel0: {
       marginTop: theme.spacing(1),
+    },
+    contentLevel12: {
+      marginTop: theme.spacing(0.25),
     },
   }),
 )
@@ -43,13 +46,16 @@ export default function ExpandableList({ children, label, level, defaultOpen, ac
 
   let rootLevelClass = ''
   let typographyVariant: 'h1' | 'h2' | 'h3' = 'h1'
+  let contentLevelClass = classes.contentLevel0
 
   if (level === 1) {
     rootLevelClass = classes.rootLevel1
     typographyVariant = 'h2'
+    contentLevelClass = classes.contentLevel12
   } else if (level === 2) {
     rootLevelClass = classes.rootLevel2
     typographyVariant = 'h3'
+    contentLevelClass = classes.contentLevel12
   }
 
   return (
@@ -62,7 +68,7 @@ export default function ExpandableList({ children, label, level, defaultOpen, ac
         </div>
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
-        <div className={classes.content}>{children}</div>
+        <div className={contentLevelClass}>{children}</div>
       </Collapse>
     </div>
   )

@@ -1,6 +1,6 @@
 import { ReactElement, useContext } from 'react'
 
-import BalancesTable from './BalancesTable'
+import PeerBalances from './PeerBalances'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
@@ -49,9 +49,7 @@ export default function Accounting(): ReactElement {
         <ExpandableListItemKey label="Ethereum address" value={nodeAddresses?.ethereum || ''} />
         <ExpandableListItemKey label="Chequebook contract address" value={chequebookAddress?.chequebookAddress || ''} />
       </ExpandableList>
-      <ExpandableList label="Peers" defaultOpen>
-        <BalancesTable accounting={accounting} isLoadingUncashed={isLoadingUncashed} />
-      </ExpandableList>
+      <PeerBalances accounting={accounting} isLoadingUncashed={isLoadingUncashed} />
     </div>
   )
 }
