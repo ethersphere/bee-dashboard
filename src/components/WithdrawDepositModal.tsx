@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, ReactNode, useState } from 'react'
 import Button from '@material-ui/core/Button'
 import Input from '@material-ui/core/Input'
 import Dialog from '@material-ui/core/Dialog'
@@ -19,6 +19,7 @@ interface Props {
   max?: BigNumber
   min?: BigNumber
   action: (amount: bigint) => Promise<string>
+  icon?: ReactNode
 }
 
 export default function WithdrawDepositModal({
@@ -29,6 +30,7 @@ export default function WithdrawDepositModal({
   max,
   label,
   action,
+  icon,
 }: Props): ReactElement {
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState('')
@@ -36,8 +38,9 @@ export default function WithdrawDepositModal({
   const [amountError, setAmountError] = useState<Error | null>(null)
   const { enqueueSnackbar } = useSnackbar()
 
-  const handleClickOpen = () => {
+  const handleClickOpen = (e: React.MouseEvent<HTMLButtonElement>) => {
     setOpen(true)
+    e.stopPropagation()
   }
 
   const handleClose = () => {
@@ -74,7 +77,7 @@ export default function WithdrawDepositModal({
 
   return (
     <div>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+      <Button variant="contained" onClick={handleClickOpen} startIcon={icon}>
         {label}
       </Button>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">

@@ -7,6 +7,7 @@ import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState, useContext } from 'react'
+import { Zap } from 'react-feather'
 import { Context as SettingsContext } from '../providers/Settings'
 import EthereumAddress from './EthereumAddress'
 
@@ -59,8 +60,8 @@ export default function CheckoutModal({ peerId, uncashedAmount }: Props): ReactE
 
   return (
     <div>
-      <Button variant="contained" color="primary" onClick={handleClickOpen} style={{ marginLeft: '7px' }}>
-        Cashout
+      <Button variant="contained" onClick={handleClickOpen} startIcon={<Zap size="1rem" />}>
+        Cash out peer {peerId.substr(0, 8)}[…]
       </Button>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Cashout Cheque</DialogTitle>

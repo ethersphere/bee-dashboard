@@ -19,8 +19,14 @@ const useStyles = makeStyles((theme: Theme) =>
     header: {
       backgroundColor: theme.palette.background.paper,
     },
-    content: {
+    contentLevel0: {
       marginTop: theme.spacing(1),
+    },
+    contentLevel12: {
+      marginTop: theme.spacing(0.25),
+    },
+    infoText: {
+      color: '#c9c9c9',
     },
   }),
 )
@@ -28,11 +34,12 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   children?: ReactNode
   label: ReactNode
+  info?: ReactNode
   level?: 0 | 1 | 2
   defaultOpen?: boolean
 }
 
-export default function ExpandableList({ children, label, level, defaultOpen }: Props): ReactElement | null {
+export default function ExpandableList({ children, label, level, defaultOpen, info }: Props): ReactElement | null {
   const classes = useStyles()
   const [open, setOpen] = useState<boolean>(Boolean(defaultOpen))
 
@@ -42,23 +49,33 @@ export default function ExpandableList({ children, label, level, defaultOpen }: 
 
   let rootLevelClass = ''
   let typographyVariant: 'h1' | 'h2' | 'h3' = 'h1'
+  let contentLevelClass = classes.contentLevel0
 
   if (level === 1) {
     rootLevelClass = classes.rootLevel1
     typographyVariant = 'h2'
+    contentLevelClass = classes.contentLevel12
   } else if (level === 2) {
     rootLevelClass = classes.rootLevel2
     typographyVariant = 'h3'
+    contentLevelClass = classes.contentLevel12
   }
 
   return (
     <div className={`${classes.root} ${rootLevelClass}`}>
       <ListItem button onClick={handleClick} className={classes.header}>
         <ListItemText primary={<Typography variant={typographyVariant}>{label}</Typography>} />
-        {open ? <ExpandLess /> : <ExpandMore />}
+        <div style={{ display: 'flex' }}>
+          {!open && (
+            <Typography variant="body2" className={classes.infoText}>
+              {info}
+            </Typography>
+          )}
+          {open ? <ExpandLess /> : <ExpandMore />}
+        </div>
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
-        <div className={classes.content}>{children}</div>
+        <div className={contentLevelClass}>{children}</div>
       </Collapse>
     </div>
   )
