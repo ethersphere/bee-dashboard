@@ -2,6 +2,7 @@ import type { ReactElement } from 'react'
 
 import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItem from '../../components/ExpandableListItem'
+import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 
 import CashoutModal from '../../components/CashoutModal'
@@ -37,10 +38,12 @@ export default function PeerBalances({ accounting, isLoadingUncashed, totalUncas
           <ExpandableListItem label="Total" value={`${total.toFixedDecimal()} BZZ`} />
           <ExpandableListItem
             label="Uncashed Amount"
-            value={isLoadingUncashed ? 'loading...' : `${uncashedAmount.toFixedDecimal()} BZZ`}
+            value={isLoadingUncashed ? 'loading…' : `${uncashedAmount.toFixedDecimal()} BZZ`}
           />
           {uncashedAmount.toBigNumber.isGreaterThan('0') && (
-            <CashoutModal uncashedAmount={uncashedAmount.toFixedDecimal()} peerId={peer} />
+            <ExpandableListItemActions>
+              <CashoutModal uncashedAmount={uncashedAmount.toFixedDecimal()} peerId={peer} />
+            </ExpandableListItemActions>
           )}
         </ExpandableList>
       ))}
