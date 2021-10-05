@@ -1,13 +1,22 @@
-import type { ReactElement } from 'react'
+import { ReactElement, useContext } from 'react'
 import ExpandableList from '../../../components/ExpandableList'
 import ExpandableListItem from '../../../components/ExpandableListItem'
 import ExpandableListItemNote from '../../../components/ExpandableListItemNote'
+import StatusIcon from '../../../components/StatusIcon'
+import { Context } from '../../../providers/Bee'
 
-type Props = StatusTopologyHook
+export default function PeerConnection(): ReactElement | null {
+  const { status, isLoading, topology } = useContext(Context)
+  const isOk = status.topology
 
-export default function PeerConnection({ isOk, topology }: Props): ReactElement | null {
   return (
-    <ExpandableList label={'Connection To Peers'}>
+    <ExpandableList
+      label={
+        <>
+          <StatusIcon isOk={isOk} isLoading={isLoading} /> Connection to Peers
+        </>
+      }
+    >
       <ExpandableListItemNote>
         {isOk ? 'You are connected to peers!' : 'Your node is not connected to any peers'}
       </ExpandableListItemNote>

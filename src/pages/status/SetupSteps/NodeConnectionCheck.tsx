@@ -7,14 +7,22 @@ import { Context as SettingsContext } from '../../../providers/Settings'
 import ExpandableList from '../../../components/ExpandableList'
 import ExpandableListItem from '../../../components/ExpandableListItem'
 import ExpandableListItemNote from '../../../components/ExpandableListItemNote'
+import StatusIcon from '../../../components/StatusIcon'
+import { Context } from '../../../providers/Bee'
 
-type Props = StatusHookCommon
-
-export default function NodeConnectionCheck({ isOk }: Props): ReactElement | null {
+export default function NodeConnectionCheck(): ReactElement | null {
   const { setApiUrl, apiUrl } = useContext(SettingsContext)
+  const { status, isLoading } = useContext(Context)
+  const isOk = status.apiConnection
 
   return (
-    <ExpandableList label="Connection to Bee API">
+    <ExpandableList
+      label={
+        <>
+          <StatusIcon isOk={isOk} isLoading={isLoading} /> Connection to Bee API
+        </>
+      }
+    >
       <ExpandableListItemNote>
         {isOk
           ? 'The connection to the Bee nodes API has been successful'

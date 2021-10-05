@@ -5,6 +5,7 @@ import { ArrowRight } from 'react-feather'
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItemText, ListItemIcon, ListItem, Typography } from '@material-ui/core'
 import { Context } from '../providers/Bee'
+import StatusIcon from './StatusIcon'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -50,7 +51,7 @@ interface Props {
 }
 
 export default function SideBarItem({ path }: Props): ReactElement {
-  const { status } = useContext(Context)
+  const { status, isLoading } = useContext(Context)
   const classes = useStyles()
   const location = useLocation()
   const isSelected = Boolean(matchPath(location.pathname, { path, exact: true }))
@@ -62,17 +63,8 @@ export default function SideBarItem({ path }: Props): ReactElement {
       selected={isSelected}
       disableRipple
     >
-      <ListItemIcon>
-        <span
-          style={{
-            backgroundColor: status.all ? '#1de600' : '#ff3a52',
-            height: '14px',
-            width: '14px',
-            borderRadius: '50%',
-            display: 'inline-block',
-            marginLeft: 30,
-          }}
-        />
+      <ListItemIcon style={{ marginLeft: '30px' }}>
+        <StatusIcon isOk={status.all} isLoading={isLoading} />
       </ListItemIcon>
       <ListItemText
         primary={<Typography className={classes.smallerText}>{`Node ${status.all ? 'OK' : 'Error'}`}</Typography>}

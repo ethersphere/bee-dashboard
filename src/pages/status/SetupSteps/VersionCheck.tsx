@@ -1,21 +1,30 @@
-import type { ReactElement } from 'react'
+import { ReactElement, useContext } from 'react'
 import CodeBlockTabs from '../../../components/CodeBlockTabs'
 import ExpandableList from '../../../components/ExpandableList'
 import ExpandableListItem from '../../../components/ExpandableListItem'
 import ExpandableListItemNote from '../../../components/ExpandableListItemNote'
+import StatusIcon from '../../../components/StatusIcon'
+import { Context } from '../../../providers/Bee'
 
-type Props = StatusNodeVersionHook
+export default function VersionCheck(): ReactElement | null {
+  const { status, isLoading, latestUserVersion, latestPublishedVersion, latestBeeVersionUrl } = useContext(Context)
+  const isOk = status.version
 
-export default function VersionCheck({ isOk, userVersion, latestVersion, latestUrl }: Props): ReactElement | null {
   return (
-    <ExpandableList label={'Bee Version'}>
+    <ExpandableList
+      label={
+        <>
+          <StatusIcon isOk={isOk} isLoading={isLoading} /> Bee Version
+        </>
+      }
+    >
       <ExpandableListItemNote>
         {isOk ? (
           'You are running the latest version of Bee.'
         ) : (
           <>
             Your Bee version is out of date. Please update to the{' '}
-            <a href={latestUrl} rel="noreferrer" target="_blank">
+            <a href={latestBeeVersionUrl} rel="noreferrer" target="_blank">
               latest
             </a>{' '}
             before continuing. Rerun the installation script below to upgrade. For more information please see the{' '}
@@ -25,14 +34,14 @@ export default function VersionCheck({ isOk, userVersion, latestVersion, latestU
             .
             <CodeBlockTabs
               showLineNumbers
-              linux={`bee version\nwget https://github.com/ethersphere/bee/releases/download/${latestVersion}/bee_${latestVersion}_amd64.deb\nsudo dpkg -i bee_${latestVersion}_amd64.deb`}
+              linux={`bee version\nwget https://github.com/ethersphere/bee/releases/download/${latestPublishedVersion}/bee_${latestPublishedVersion}_amd64.deb\nsudo dpkg -i bee_${latestPublishedVersion}_amd64.deb`}
               mac={`bee version\nbrew tap ethersphere/tap\nbrew install swarm-bee\nbrew services start swarm-bee`}
             />
           </>
         )}
       </ExpandableListItemNote>
-      <ExpandableListItem label="Your Version" value={userVersion || '-'} />
-      <ExpandableListItem label="Latest Version" value={latestVersion || '-'} />
+      <ExpandableListItem label="Your Version" value={latestUserVersion || '-'} />
+      <ExpandableListItem label="Latest Version" value={latestPublishedVersion || '-'} />
     </ExpandableList>
   )
 }

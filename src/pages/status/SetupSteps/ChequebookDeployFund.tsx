@@ -1,17 +1,25 @@
+import { useContext } from 'react'
 import DepositModal from '../../../containers/DepositModal'
 import type { ReactElement } from 'react'
 import ExpandableList from '../../../components/ExpandableList'
 import ExpandableListItemKey from '../../../components/ExpandableListItemKey'
 import ExpandableListItemActions from '../../../components/ExpandableListItemActions'
 import ExpandableListItemNote from '../../../components/ExpandableListItemNote'
+import StatusIcon from '../../../components/StatusIcon'
+import { Context } from '../../../providers/Bee'
 
-interface Props extends StatusHookCommon {
-  chequebookAddress?: string
-}
+const ChequebookDeployFund = (): ReactElement | null => {
+  const { status, isLoading, chequebookAddress } = useContext(Context)
+  const isOk = status.chequebook
 
-const ChequebookDeployFund = ({ chequebookAddress, isOk }: Props): ReactElement | null => {
   return (
-    <ExpandableList label={'Chequebook Deployment & Funding'}>
+    <ExpandableList
+      label={
+        <>
+          <StatusIcon isOk={isOk} isLoading={isLoading} /> Chequebook Deployment & Funding
+        </>
+      }
+    >
       <ExpandableListItemNote>
         {isOk ? (
           'Your chequebook is deployed and funded'
@@ -28,7 +36,7 @@ const ChequebookDeployFund = ({ chequebookAddress, isOk }: Props): ReactElement 
       </ExpandableListItemNote>
       {chequebookAddress && (
         <>
-          <ExpandableListItemKey label="Chequebook Address" value={chequebookAddress} />
+          <ExpandableListItemKey label="Chequebook Address" value={chequebookAddress.chequebookAddress} />
           <ExpandableListItemActions>
             <DepositModal />
           </ExpandableListItemActions>

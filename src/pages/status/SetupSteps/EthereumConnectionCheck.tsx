@@ -1,13 +1,22 @@
-import type { ReactElement } from 'react'
+import { ReactElement, useContext } from 'react'
 import ExpandableList from '../../../components/ExpandableList'
 import ExpandableListItemKey from '../../../components/ExpandableListItemKey'
 import ExpandableListItemNote from '../../../components/ExpandableListItemNote'
+import StatusIcon from '../../../components/StatusIcon'
+import { Context } from '../../../providers/Bee'
 
-type Props = StatusEthereumConnectionHook
+export default function EthereumConnectionCheck(): ReactElement | null {
+  const { status, isLoading, nodeAddresses } = useContext(Context)
+  const isOk = status.blockchainConnection
 
-export default function EthereumConnectionCheck({ isOk, nodeAddresses }: Props): ReactElement | null {
   return (
-    <ExpandableList label={'Connection to Blockchain'}>
+    <ExpandableList
+      label={
+        <>
+          <StatusIcon isOk={isOk} isLoading={isLoading} /> Connection to Blockchain
+        </>
+      }
+    >
       <ExpandableListItemNote>
         {isOk ? (
           'Your node is connected to the xDai blockchain'
