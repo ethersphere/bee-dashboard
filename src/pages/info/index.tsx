@@ -56,7 +56,9 @@ export default function Status(): ReactElement {
         <ExpandableListItemKey label="Ethereum address" value={nodeAddresses?.ethereum || ''} />
         <ExpandableListItemKey label="Chequebook contract address" value={chequebookAddress?.chequebookAddress || ''} />
       </ExpandableList>
-      <TopologyStats topology={topology} />
+      <ExpandableList label="Connectivity" defaultOpen>
+        <TopologyStats topology={topology} />
+      </ExpandableList>
     </div>
   )
 }

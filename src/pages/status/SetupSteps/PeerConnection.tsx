@@ -2,6 +2,7 @@ import { ReactElement, useContext } from 'react'
 import ExpandableList from '../../../components/ExpandableList'
 import ExpandableListItem from '../../../components/ExpandableListItem'
 import ExpandableListItemNote from '../../../components/ExpandableListItemNote'
+import TopologyStats from '../../../components/TopologyStats'
 import StatusIcon from '../../../components/StatusIcon'
 import { Context } from '../../../providers/Bee'
 
@@ -18,10 +19,12 @@ export default function PeerConnection(): ReactElement | null {
       }
     >
       <ExpandableListItemNote>
-        {isOk ? 'You are connected to peers!' : 'Your node is not connected to any peers'}
+        {isOk
+          ? 'You are connected to other Bee nodes'
+          : 'Your node is not connected to any peers. Please wait a bit if you just started the node, otherwise review your configuration file.'}
       </ExpandableListItemNote>
-      <ExpandableListItem label="Connected Peers" value={topology?.connected ? topology.connected : '-'} />
-      <ExpandableListItem label="Discovered Peers" value={topology?.population ? topology.population : '-'} />
+
+      <TopologyStats topology={topology} />
     </ExpandableList>
   )
 }
