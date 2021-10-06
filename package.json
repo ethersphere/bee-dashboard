@@ -85,7 +85,8 @@
     "electron": "electron .",
     "dist:win": "npm run build && electron-builder build --windows --x64 --publish never",
     "dist:macos": "npm run build && electron-builder build --macos --x64 --publish never",
-    "dist:linux": "npm run build && electron-builder build --linux --x64 --publish never"
+    "dist:linux": "npm run build && electron-builder build --linux --x64 --publish never",
+    "dist:all": "npm run build && electron-builder build --windows --x64 --publish never && electron-builder build --macos --x64 --publish never && electron-builder build --linux --x64 --publish never"
   },
   "build": {
     "productName": "bee-dashboard",
@@ -93,6 +94,9 @@
     "artifactName": "${productName}-${version}.${ext}",
     "linux": {
       "executableName": "bee-dashboard"
+    },
+    "directories": {
+      "buildResources": "public"
     }
   },
   "files": [
