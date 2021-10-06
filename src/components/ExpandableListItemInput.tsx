@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect } from 'react'
+import { ReactElement, useState } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Collapse from '@material-ui/core/Collapse'
 import { ListItem, Typography, Grid, IconButton, InputBase, Button } from '@material-ui/core'
@@ -47,11 +47,6 @@ export default function ExpandableListItemKey({ label, value, onConfirm }: Props
   const [open, setOpen] = useState(false)
   const [inputValue, setInputValue] = useState(value)
   const toggleOpen = () => setOpen(!open)
-
-  useEffect(
-    () => console.log(inputValue), // eslint-disable-line
-    [inputValue],
-  )
 
   return (
     <>
