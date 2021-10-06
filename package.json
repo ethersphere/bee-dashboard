@@ -89,9 +89,9 @@
     "dist:all": "npm run build && electron-builder build --windows --x64 --publish never && electron-builder build --macos --x64 --publish never && electron-builder build --linux --x64 --publish never"
   },
   "build": {
-    "productName": "bee-dashboard",
+    "productName": "Bee Dashboard",
     "executableName": "bee-dashboard",
-    "artifactName": "${productName}-${version}.${ext}",
+    "artifactName": "bee-dashboard-${version}.${ext}",
     "linux": {
       "executableName": "bee-dashboard"
     },

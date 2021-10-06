@@ -1,5 +1,7 @@
 const { app, BrowserWindow } = require('electron')
 
+app.setName('Bee Dashboard')
+
 function createWindow() {
   // Start hidden, maximize, then show to avoid flickering
   const browserWindow = new BrowserWindow({
