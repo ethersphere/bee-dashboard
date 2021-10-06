@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 interface Props {
-  label?: string
+  label?: ReactNode
   value?: ReactNode
   tooltip?: string
 }

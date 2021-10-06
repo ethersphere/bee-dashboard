@@ -12,7 +12,7 @@ export default function DepositModal(): ReactElement {
     <WithdrawDepositModal
       successMessage="Successful deposit."
       errorMessage="Error with depositing"
-      dialogMessage="Specify the amount of BZZ you would like to withdraw from your node."
+      dialogMessage="Specify the amount of BZZ you would like to deposit to your node."
       label="Deposit"
       icon={<Download size="1rem" />}
       min={new BigNumber(0)}

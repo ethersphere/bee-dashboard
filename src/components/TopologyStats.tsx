@@ -1,7 +1,6 @@
 import type { Topology } from '@ethersphere/bee-js'
 import type { ReactElement } from 'react'
 import { pickThreshold, ThresholdValues } from '../utils/threshold'
-import ExpandableList from './ExpandableList'
 import ExpandableListItem from './ExpandableListItem'
 
 interface Props {
@@ -20,7 +19,7 @@ const TopologyStats = (props: Props): ReactElement => {
   const percentageText = Math.round((actualTotalScore / maximumTotalScore) * 100) + '%'
 
   return (
-    <ExpandableList label="Connectivity" defaultOpen>
+    <>
       <ExpandableListItem label="Overall Health Indicator" value={percentageText} />
       <ExpandableListItem
         label="Connected Peers"
@@ -37,7 +36,7 @@ const TopologyStats = (props: Props): ReactElement => {
         value={props.topology?.depth.toString()}
         tooltip={thresholds.depth.explanation}
       />
-    </ExpandableList>
+    </>
   )
 }
 

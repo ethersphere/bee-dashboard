@@ -1,34 +1,42 @@
-import type { ReactElement } from 'react'
-import { Typography } from '@material-ui/core/'
-import EthereumAddress from '../../../components/EthereumAddress'
+import { ReactElement, useContext } from 'react'
+import ExpandableList from '../../../components/ExpandableList'
+import ExpandableListItemKey from '../../../components/ExpandableListItemKey'
+import ExpandableListItemNote from '../../../components/ExpandableListItemNote'
+import StatusIcon from '../../../components/StatusIcon'
+import { Context } from '../../../providers/Bee'
 
-type Props = StatusEthereumConnectionHook
-
-export default function EthereumConnectionCheck({ isOk, nodeAddresses }: Props): ReactElement | null {
-  if (isOk) {
-    return (
-      <div>
-        <Typography variant="subtitle1" gutterBottom>
-          Node Address
-        </Typography>
-        <EthereumAddress address={nodeAddresses?.ethereum} />
-      </div>
-    )
-  }
+export default function EthereumConnectionCheck(): ReactElement | null {
+  const { status, isLoading, nodeAddresses } = useContext(Context)
+  const isOk = status.blockchainConnection
 
   return (
-    <p>
-      Your Bee node must have access to the xDai blockchain, so that it can interact and deploy your chequebook
-      contract. You can run{' '}
-      <a href="https://www.xdaichain.com/" rel="noreferrer" target="_blank">
-        your own xDai node
-      </a>
-      , or use a provider instead - we recommend{' '}
-      <a href="https://getblock.io/" rel="noreferrer" target="_blank">
-        Getblock
-      </a>
-      . By default, Bee expects a local node at http://localhost:8545. To use a provider instead, simply change the{' '}
-      <strong>swap-endpoint</strong> in your configuration file.
-    </p>
+    <ExpandableList
+      label={
+        <>
+          <StatusIcon isOk={isOk} isLoading={isLoading} /> Connection to Blockchain
+        </>
+      }
+    >
+      <ExpandableListItemNote>
+        {isOk ? (
+          'Your node is connected to the xDai blockchain'
+        ) : (
+          <>
+            Your Bee node must have access to the xDai blockchain, so that it can interact and deploy your chequebook
+            contract. You can run{' '}
+            <a href="https://www.xdaichain.com/" rel="noreferrer" target="_blank">
+              your own xDai node
+            </a>
+            , or use a provider instead - we recommend{' '}
+            <a href="https://getblock.io/" rel="noreferrer" target="_blank">
+              Getblock
+            </a>
+            . By default, Bee expects a local node at http://localhost:8545. To use a provider instead, simply change
+            the <strong>swap-endpoint</strong> in your configuration file.
+          </>
+        )}
+      </ExpandableListItemNote>
+      {nodeAddresses?.ethereum && <ExpandableListItemKey label="Ethereum Address" value={nodeAddresses?.ethereum} />}
+    </ExpandableList>
   )
 }

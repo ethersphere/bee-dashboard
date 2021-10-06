@@ -61,6 +61,9 @@ const componentsOverrides = (theme: Theme) => ({
         backgroundColor: theme.palette.primary.main,
         color: 'white',
       },
+      '&:disabled': {
+        backgroundColor: 'white',
+      },
     },
   },
   MuiTab: {
