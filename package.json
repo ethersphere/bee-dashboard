@@ -92,6 +92,7 @@
     "productName": "Bee Dashboard",
     "executableName": "bee-dashboard",
     "artifactName": "bee-dashboard-${version}.${ext}",
+    "copyright": "(C) 2021 Swarm Foundation",
     "linux": {
       "executableName": "bee-dashboard"
     },

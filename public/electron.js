@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { app, BrowserWindow } = require('electron')
 
 app.setName('Bee Dashboard')
