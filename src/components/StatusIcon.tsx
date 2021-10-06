@@ -9,15 +9,17 @@ interface Props {
 }
 
 export default function StatusIcon({ isOk, size, className, isLoading }: Props): ReactElement {
-  if (isLoading) return <CircularProgress size={size || '1rem'} className={className} />
+  const s = size || '1rem'
+
+  if (isLoading) return <CircularProgress size={s} className={className} />
 
   return (
     <span
       className={className}
       style={{
         backgroundColor: isOk ? '#1de600' : '#ff3a52',
-        height: size || '1rem',
-        width: size || '1rem',
+        height: s,
+        width: s,
         borderRadius: '50%',
         display: 'inline-block',
       }}
