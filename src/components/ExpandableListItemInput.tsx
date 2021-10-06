@@ -1,9 +1,8 @@
 import { ReactElement, useState, useEffect } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Collapse from '@material-ui/core/Collapse'
-import { ListItem, Typography, Grid, IconButton, Tooltip, InputBase, Button } from '@material-ui/core'
+import { ListItem, Typography, Grid, IconButton, InputBase, Button } from '@material-ui/core'
 import { Edit, Minus, RotateCcw, Check } from 'react-feather'
-import { CopyToClipboard } from 'react-copy-to-clipboard'
 
 import ExpandableListItemActions from './ExpandableListItemActions'
 

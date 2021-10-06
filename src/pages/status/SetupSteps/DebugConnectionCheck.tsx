@@ -1,8 +1,6 @@
 import { ReactElement, useContext } from 'react'
-import { Typography } from '@material-ui/core/'
 import MuiAlert from '@material-ui/lab/Alert'
 
-import ConnectToHost from '../../../components/ConnectToHost'
 import CodeBlockTabs from '../../../components/CodeBlockTabs'
 import ExpandableList from '../../../components/ExpandableList'
 import ExpandableListItem from '../../../components/ExpandableListItem'

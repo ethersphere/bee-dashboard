@@ -1,7 +1,5 @@
 import { ReactElement, useContext } from 'react'
-import { Typography } from '@material-ui/core/'
 
-import ConnectToHost from '../../../components/ConnectToHost'
 import CodeBlockTabs from '../../../components/CodeBlockTabs'
 import { Context as SettingsContext } from '../../../providers/Settings'
 import ExpandableList from '../../../components/ExpandableList'

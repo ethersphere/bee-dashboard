@@ -1,6 +1,5 @@
 import { ReactElement, useContext } from 'react'
 import ExpandableList from '../../../components/ExpandableList'
-import ExpandableListItem from '../../../components/ExpandableListItem'
 import ExpandableListItemNote from '../../../components/ExpandableListItemNote'
 import TopologyStats from '../../../components/TopologyStats'
 import StatusIcon from '../../../components/StatusIcon'
