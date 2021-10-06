@@ -7,6 +7,7 @@ import { Context as SettingsContext } from '../../../providers/Settings'
 import ExpandableList from '../../../components/ExpandableList'
 import ExpandableListItem from '../../../components/ExpandableListItem'
 import ExpandableListItemNote from '../../../components/ExpandableListItemNote'
+import ExpandableListItemInput from '../../../components/ExpandableListItemInput'
 import StatusIcon from '../../../components/StatusIcon'
 import { Context } from '../../../providers/Bee'
 
@@ -28,14 +29,7 @@ export default function NodeConnectionCheck(): ReactElement | null {
           ? 'The connection to the Bee nodes API has been successful'
           : 'Could not connect to your Bee nodes API. Please check the troubleshoot below on how you may resolve it.'}
       </ExpandableListItemNote>
-      <ExpandableListItem
-        value={
-          <>
-            Node API (<Typography variant="button">{apiUrl}</Typography>)
-            <ConnectToHost setHost={setApiUrl} defaultHost={apiUrl} />
-          </>
-        }
-      />
+      <ExpandableListItemInput label="Bee API" value={apiUrl} onConfirm={setApiUrl} />
       {!isOk && (
         <ExpandableList level={1} label="Troubleshoot">
           <ExpandableListItem

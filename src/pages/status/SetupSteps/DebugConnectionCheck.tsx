@@ -6,6 +6,7 @@ import ConnectToHost from '../../../components/ConnectToHost'
 import CodeBlockTabs from '../../../components/CodeBlockTabs'
 import ExpandableList from '../../../components/ExpandableList'
 import ExpandableListItem from '../../../components/ExpandableListItem'
+import ExpandableListItemInput from '../../../components/ExpandableListItemInput'
 import ExpandableListItemNote from '../../../components/ExpandableListItemNote'
 import StatusIcon from '../../../components/StatusIcon'
 import { Context as SettingsContext } from '../../../providers/Settings'
@@ -29,20 +30,7 @@ export default function NodeConnectionCheck(): ReactElement | null {
           ? 'The connection to the Bee nodes deug API has been successful'
           : 'We cannot connect to your nodes debug API. Please check the following to troubleshoot your issue.'}
       </ExpandableListItemNote>
-      <ExpandableListItem
-        value={
-          <>
-            Debug API (<Typography variant="button">{apiDebugUrl}</Typography>)
-            <ConnectToHost
-              setHost={(host: string) => {
-                console.log(host) // eslint-disable-line
-                setDebugApiUrl(host)
-              }}
-              defaultHost={apiDebugUrl}
-            />
-          </>
-        }
-      />
+      <ExpandableListItemInput label="Bee Debug API" value={apiDebugUrl} onConfirm={setDebugApiUrl} />
 
       {!isOk && (
         <ExpandableList level={1} label="Troubleshoot">
