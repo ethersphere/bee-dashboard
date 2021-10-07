@@ -14,7 +14,7 @@ function StampsTable({ postageStamps }: Props): ReactElement | null {
   return (
     <ExpandableList label="Postage Stamps" defaultOpen>
       {postageStamps.map(({ batchID, usageText }) => (
-        <ExpandableList key={batchID} label={`${batchID.substr(0, 8)}[…]`} level={1} info={`${usageText} (used)`}>
+        <ExpandableList key={batchID} label={`${batchID.substr(0, 8)}[…]`} level={1} info={`${usageText} used`}>
           <ExpandableListItemKey label="Batch ID" value={batchID} />
           <ExpandableListItem label="Usage" value={usageText} />
         </ExpandableList>
