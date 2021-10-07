@@ -6,6 +6,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     action: {
       marginTop: theme.spacing(0.75),
+      marginBottom: theme.spacing(1),
       marginRight: theme.spacing(1),
     },
   }),

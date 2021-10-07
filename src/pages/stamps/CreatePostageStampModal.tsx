@@ -111,7 +111,7 @@ export default function FormDialog({ label }: Props): ReactElement {
     >
       {({ submitForm, isValid, isSubmitting, values }) => (
         <Form>
-          <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+          <Button variant="contained" onClick={handleClickOpen}>
             {label || 'Buy Postage Stamp'}
             {isSubmitting && <CircularProgress size={24} className={classes.buttonProgress} />}
           </Button>
@@ -138,12 +138,11 @@ export default function FormDialog({ label }: Props): ReactElement {
               <Field component={TextField} name="label" label="Label" fullWidth className={classes.field} />
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleClose} color="primary">
+              <Button onClick={handleClose} variant="contained">
                 Cancel
               </Button>
               <div className={classes.wrapper}>
                 <Button
-                  color="primary"
                   disabled={isSubmitting || !isValid || !values.amount || !values.depth}
                   type="submit"
                   variant="contained"
