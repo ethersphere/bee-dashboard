@@ -1,6 +1,4 @@
 import type { ReactElement } from 'react'
-import ClipboardCopy from '../../components/ClipboardCopy'
-import PeerDetailDrawer from '../../components/PeerDetail'
 import { EnrichedPostageBatch } from '../../providers/Stamps'
 import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItem from '../../components/ExpandableListItem'

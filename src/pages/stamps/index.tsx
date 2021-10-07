@@ -1,5 +1,5 @@
 import { ReactElement, useContext, useEffect } from 'react'
-import { Theme, createStyles, makeStyles } from '@material-ui/core/styles'
+import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { Container, CircularProgress } from '@material-ui/core'
 
 import StampsTable from './StampsTable'
@@ -7,7 +7,7 @@ import CreatePostageStampModal from './CreatePostageStampModal'
 
 import { Context } from '../../providers/Stamps'
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       width: '100%',
