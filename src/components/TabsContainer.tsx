@@ -1,9 +1,6 @@
 import React, { ReactElement, ReactNode } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import Tabs from '@material-ui/core/Tabs'
-import Tab from '@material-ui/core/Tab'
-import Typography from '@material-ui/core/Typography'
-import Box from '@material-ui/core/Box'
+import { Tab, Tabs } from '@material-ui/core'
 
 interface TabPanelProps {
   children?: ReactNode
@@ -16,11 +13,7 @@ function TabPanel(props: TabPanelProps) {
 
   return (
     <div role="tabpanel" hidden={value !== index} {...other}>
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {value === index && children}
     </div>
   )
 }
@@ -55,16 +48,18 @@ export default function SimpleTabs({ values, index, indexChanged }: Props): Reac
 
   return (
     <div className={classes.root}>
-      <Tabs value={v} onChange={handleChange}>
+      <Tabs value={v} onChange={handleChange} variant="fullWidth">
         {values.map(({ label }, idx) => (
           <Tab key={idx} label={label} />
         ))}
       </Tabs>
-      {values.map(({ component }, idx) => (
-        <TabPanel key={idx} value={v} index={idx}>
-          {component}
-        </TabPanel>
-      ))}
+      <div style={{ marginTop: 16 }}>
+        {values.map(({ component }, idx) => (
+          <TabPanel key={idx} value={v} index={idx}>
+            {component}
+          </TabPanel>
+        ))}
+      </div>
     </div>
   )
 }

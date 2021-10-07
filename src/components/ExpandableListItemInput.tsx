@@ -1,10 +1,11 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, ChangeEvent, useState } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Collapse from '@material-ui/core/Collapse'
 import { ListItem, Typography, Grid, IconButton, InputBase, Button } from '@material-ui/core'
 import { Edit, Minus, RotateCcw, Check } from 'react-feather'
 
 import ExpandableListItemActions from './ExpandableListItemActions'
+import ExpandableListItemNote from './ExpandableListItemNote'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,15 +39,34 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   label: string
-  value: string
+  value?: string
+  helperText?: string
+  expandedOnly?: boolean
+  confirmLabel?: string
+  confirmLabelDisabled?: boolean
+  onChange?: (value: string) => void
   onConfirm: (value: string) => void
 }
 
-export default function ExpandableListItemKey({ label, value, onConfirm }: Props): ReactElement | null {
+export default function ExpandableListItemKey({
+  label,
+  value,
+  onConfirm,
+  onChange,
+  confirmLabel,
+  confirmLabelDisabled,
+  expandedOnly,
+  helperText,
+}: Props): ReactElement | null {
   const classes = useStyles()
-  const [open, setOpen] = useState(false)
-  const [inputValue, setInputValue] = useState(value)
+  const [open, setOpen] = useState(Boolean(expandedOnly))
+  const [inputValue, setInputValue] = useState<string>(value || '')
   const toggleOpen = () => setOpen(!open)
+  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setInputValue(e.target.value)
+
+    if (onChange) onChange(e.target.value)
+  }
 
   return (
     <>
@@ -57,44 +77,41 @@ export default function ExpandableListItemKey({ label, value, onConfirm }: Props
             <Typography variant="body2">
               <div>
                 {!open && value}
-                <IconButton size="small" className={classes.copyValue}>
-                  {open ? (
-                    <Minus onClick={toggleOpen} strokeWidth={1} />
-                  ) : (
-                    <Edit onClick={toggleOpen} strokeWidth={1} />
-                  )}
-                </IconButton>
+                {!expandedOnly && (
+                  <IconButton size="small" className={classes.copyValue}>
+                    {open ? (
+                      <Minus onClick={toggleOpen} strokeWidth={1} />
+                    ) : (
+                      <Edit onClick={toggleOpen} strokeWidth={1} />
+                    )}
+                  </IconButton>
+                )}
               </div>
             </Typography>
           </Grid>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <InputBase
-              value={inputValue}
-              onChange={e => setInputValue(e.target.value)}
-              fullWidth
-              className={classes.content}
-              autoFocus
-            />
+            <InputBase value={inputValue} onChange={handleChange} fullWidth className={classes.content} autoFocus />
           </Collapse>
         </Grid>
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
+        {helperText && <ExpandableListItemNote>{helperText}</ExpandableListItemNote>}
         <ExpandableListItemActions>
           <Button
             variant="contained"
-            disabled={inputValue === value}
+            disabled={inputValue === value || Boolean(confirmLabelDisabled)}
             startIcon={<Check size="1rem" />}
             onClick={() => onConfirm(inputValue)}
           >
-            Save
+            {confirmLabel || 'Save'}
           </Button>
           <Button
             variant="contained"
             disabled={inputValue === value}
             startIcon={<RotateCcw size="1rem" />}
-            onClick={() => setInputValue(value)}
+            onClick={() => setInputValue(value || '')}
           >
-            Cancel
+            Clear
           </Button>
         </ExpandableListItemActions>
       </Collapse>

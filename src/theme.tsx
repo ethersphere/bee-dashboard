@@ -68,32 +68,21 @@ const componentsOverrides = (theme: Theme) => ({
   },
   MuiTab: {
     root: {
-      backgroundColor: 'transparent',
-      fontWeight: theme.typography.fontWeightRegular,
-      marginRight: theme.spacing(4),
-      fontFamily: [
-        '-apple-system',
-        'BlinkMacSystemFont',
-        '"Segoe UI"',
-        'Roboto',
-        '"Helvetica Neue"',
-        'Arial',
-        'sans-serif',
-        '"Apple Color Emoji"',
-        '"Segoe UI Emoji"',
-        '"Segoe UI Symbol"',
-      ].join(','),
+      backgroundColor: theme.palette.background.paper,
       '&:hover': {
-        color: theme.palette.secondary,
+        color: theme.palette.secondary.main,
         opacity: 1,
       },
       '&$selected': {
-        color: theme.palette.secondary,
+        color: theme.palette.secondary.main,
         fontWeight: theme.typography.fontWeightMedium,
       },
       '&:focus': {
-        color: theme.palette.secondary,
+        color: theme.palette.secondary.main,
       },
+    },
+    textColorInherit: {
+      opacity: 0.5,
     },
   },
   MuiTabs: {
@@ -101,7 +90,7 @@ const componentsOverrides = (theme: Theme) => ({
       borderBottom: 'none',
     },
     indicator: {
-      backgroundColor: theme.palette.primary.main,
+      backgroundColor: 'transparent',
     },
   },
 })
