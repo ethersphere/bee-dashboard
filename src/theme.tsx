@@ -70,15 +70,12 @@ const componentsOverrides = (theme: Theme) => ({
     root: {
       backgroundColor: theme.palette.background.paper,
       '&:hover': {
-        color: theme.palette.secondary.main,
+        backgroundColor: '#fcf2e8',
+        color: theme.palette.primary.main,
         opacity: 1,
       },
       '&$selected': {
-        color: theme.palette.secondary.main,
         fontWeight: theme.typography.fontWeightMedium,
-      },
-      '&:focus': {
-        color: theme.palette.secondary.main,
       },
     },
     textColorInherit: {
