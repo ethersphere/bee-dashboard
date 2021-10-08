@@ -1,9 +1,5 @@
-import Button from '@material-ui/core/Button'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
 import React, { ReactElement } from 'react'
-import PeerDetailDrawer from '../../components/PeerDetail'
+import { Button, ListItemIcon, Typography, Menu, MenuItem } from '@material-ui/core'
 import { EnrichedPostageBatch } from '../../providers/Stamps'
 
 interface Props {
@@ -25,10 +21,10 @@ export default function SimpleMenu({ stamps, selectedStamp, setSelected }: Props
 
   return (
     <div>
-      <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+      <Button variant="contained" aria-haspopup="true" onClick={handleClick}>
         Change
       </Button>
-      <Menu id="simple-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
+      <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
         {stamps.map(stamp => (
           <MenuItem
             key={stamp.batchID}
@@ -39,7 +35,7 @@ export default function SimpleMenu({ stamps, selectedStamp, setSelected }: Props
             selected={stamp.batchID === selectedStamp?.batchID}
           >
             <ListItemIcon>{stamp.usageText}</ListItemIcon>
-            <PeerDetailDrawer peerId={stamp.batchID} />
+            <Typography variant="body2">{stamp.batchID.substr(0, 8)}[…]</Typography>
           </MenuItem>
         ))}
       </Menu>
