@@ -1,4 +1,5 @@
 import { Button, CircularProgress, Container } from '@material-ui/core'
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Chip from '@material-ui/core/Chip'
 import { DropzoneArea } from 'material-ui-dropzone'
@@ -17,9 +18,17 @@ import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import ExpandableListItemNote from '../../components/ExpandableListItemNote'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    content: { marginTop: theme.spacing(2) },
+    loadingProgress: { textAlign: 'center', padding: '50px' },
+  }),
+)
+
 const MAX_FILE_SIZE = 1_000_000_000 // 1 gigabyte
 
 export default function Files(): ReactElement {
+  const classes = useStyles()
   const [dropzoneKey, setDropzoneKey] = useState(0)
   const [file, setFile] = useState<File | null>(null)
   const [uploadReference, setUploadReference] = useState('')
@@ -58,9 +67,7 @@ export default function Files(): ReactElement {
       .uploadFile(selectedStamp.batchID, file)
       .then(hash => setUploadReference(hash.reference))
       .catch(e => enqueueSnackbar(`Error uploading: ${e.message}`, { variant: 'error' }))
-      .finally(() => {
-        setIsUploadingFile(false)
-      })
+      .finally(() => setIsUploadingFile(false))
   }
 
   const uploadNew = () => {
@@ -72,88 +79,89 @@ export default function Files(): ReactElement {
   }
 
   const handleChange = (files?: File[]) => {
+    setUploadReference('')
+
     if (files) {
       setFile(files[0])
     }
-    setUploadReference('')
   }
 
   return (
-    <div>
+    <>
       <DropzoneArea
         key={'dropzone-' + dropzoneKey}
         onChange={handleChange}
         filesLimit={1}
         maxFileSize={MAX_FILE_SIZE}
       />
-      {file && (
-        <div style={{ marginTop: '15px' }}>
-          {!isUploadingFile && !uploadReference && (
-            <>
-              <ExpandableListItemNote>
-                To upload this file to your node, you need a postage stamp. You can buy a new batch specifically for
-                this file and provide the desired depth and amount or you can use an existing batch (providing it’s
-                sufficient for this file).
-              </ExpandableListItemNote>
-              {selectedStamp && (
-                <ExpandableListItem
-                  label={
-                    <>
-                      Upload with Postage Stamp{' '}
-                      <Chip
-                        avatar={<Avatar>{selectedStamp.usageText}</Avatar>}
-                        label={<PeerDetailDrawer peerId={selectedStamp.batchID} characterLength={6} />}
-                        deleteIcon={<ClipboardCopy value={selectedStamp.batchID} />}
-                        onDelete={() => {} /* eslint-disable-line*/}
-                        variant="outlined"
-                      />
-                    </>
-                  }
-                  value={<SelectStamp stamps={stamps} selectedStamp={selectedStamp} setSelected={setSelectedStamp} />}
-                />
-              )}
-              {!selectedStamp && (
-                <ExpandableListItemActions>
-                  <CreatePostageStamp />
-                </ExpandableListItemActions>
-              )}
-            </>
-          )}
-          {!uploadReference && (
-            <>
-              {' '}
-              {selectedStamp && (
-                <ExpandableListItemActions>
-                  <Button
-                    variant="contained"
-                    disabled={!file && isUploadingFile && !selectedStamp}
-                    onClick={() => uploadFile()}
-                    startIcon={<Check size="1rem" />}
-                  >
-                    Upload
-                  </Button>
-                  {isUploadingFile && (
-                    <Container style={{ textAlign: 'center', padding: '50px' }}>
-                      <CircularProgress />
-                    </Container>
-                  )}
-                </ExpandableListItemActions>
-              )}
-              {<UploadSizeAlert file={file} />}
-            </>
-          )}
-          {uploadReference && (
-            <>
-              <ExpandableListItemKey label="Swarm Reference" value={uploadReference} />
+      <div className={classes.content}>
+        {/* We have file and can upload display stamp selection */}
+        {file && !isUploadingFile && !uploadReference && (
+          <>
+            <ExpandableListItemNote>
+              To upload this file to your node, you need a postage stamp. You can buy a new batch specifically for this
+              file and provide the desired depth and amount or you can use an existing batch (providing it’s sufficient
+              for this file).
+            </ExpandableListItemNote>
+            {selectedStamp && (
+              <ExpandableListItem
+                label={
+                  <>
+                    Upload with Postage Stamp{' '}
+                    <Chip
+                      avatar={<Avatar>{selectedStamp.usageText}</Avatar>}
+                      label={<PeerDetailDrawer peerId={selectedStamp.batchID} characterLength={6} />}
+                      deleteIcon={<ClipboardCopy value={selectedStamp.batchID} />}
+                      onDelete={() => {} /* eslint-disable-line*/}
+                      variant="outlined"
+                    />
+                  </>
+                }
+                value={<SelectStamp stamps={stamps} selectedStamp={selectedStamp} setSelected={setSelectedStamp} />}
+              />
+            )}
+            {!selectedStamp && (
               <ExpandableListItemActions>
-                <Button variant="contained" onClick={uploadNew} startIcon={<RotateCcw size="1rem" />}>
-                  Upload New File
-                </Button>
+                <CreatePostageStamp />
               </ExpandableListItemActions>
-            </>
-          )}
-        </div>
-      )}
-    </div>
+            )}
+          </>
+        )}
+
+        {/* We have file and can upload display upload button */}
+        {file && !uploadReference && (
+          <>
+            <ExpandableListItemActions>
+              <Button
+                variant="contained"
+                disabled={!file && isUploadingFile && !selectedStamp}
+                onClick={() => uploadFile()}
+                startIcon={<Check size="1rem" />}
+              >
+                Upload
+              </Button>
+              {isUploadingFile && (
+                <Container className={classes.loadingProgress}>
+                  <CircularProgress />
+                </Container>
+              )}
+            </ExpandableListItemActions>
+            <UploadSizeAlert file={file} />
+          </>
+        )}
+
+        {/* File has already been uploaded */}
+        {uploadReference && (
+          <>
+            <ExpandableListItemKey label="Swarm Reference" value={uploadReference} />
+            <ExpandableListItemActions>
+              <Button variant="contained" onClick={uploadNew} startIcon={<RotateCcw size="1rem" />}>
+                Upload New File
+              </Button>
+            </ExpandableListItemActions>
+          </>
+        )}
+      </div>
+    </>
   )
 }
