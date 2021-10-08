@@ -1,5 +1,5 @@
 import React, { ReactElement, ReactNode } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Tab, Tabs } from '@material-ui/core'
 
 interface TabPanelProps {
@@ -18,11 +18,16 @@ function TabPanel(props: TabPanelProps) {
   )
 }
 
-const useStyles = makeStyles(() => ({
-  root: {
-    flexGrow: 1,
-  },
-}))
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      flexGrow: 1,
+    },
+    content: {
+      marginTop: theme.spacing(2),
+    },
+  }),
+)
 
 interface TabsValues {
   component: ReactNode
@@ -53,7 +58,7 @@ export default function SimpleTabs({ values, index, indexChanged }: Props): Reac
           <Tab key={idx} label={label} />
         ))}
       </Tabs>
-      <div style={{ marginTop: 16 }}>
+      <div className={classes.content}>
         {values.map(({ component }, idx) => (
           <TabPanel key={idx} value={v} index={idx}>
             {component}
