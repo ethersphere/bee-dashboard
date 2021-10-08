@@ -96,9 +96,8 @@ export default function Files(): ReactElement {
         {file && !isUploadingFile && !uploadReference && (
           <>
             <ExpandableListItemNote>
-              To upload this file to your node, you need a postage stamp. You can buy a new batch specifically for this
-              file and provide the desired depth and amount or you can use an existing batch (providing it’s sufficient
-              for this file).
+              To upload this file to your node, you need a postage stamp. You can buy a new one or you can use an
+              existing stamp (providing it’s sufficient for this file).
             </ExpandableListItemNote>
             {selectedStamp && (
               <ExpandableListItem
