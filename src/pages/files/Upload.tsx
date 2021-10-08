@@ -1,14 +1,11 @@
-import { Button, CircularProgress, Container } from '@material-ui/core'
+import { Button, CircularProgress, Container, Avatar, Chip, Typography } from '@material-ui/core'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
-import Avatar from '@material-ui/core/Avatar'
-import Chip from '@material-ui/core/Chip'
 import { DropzoneArea } from 'material-ui-dropzone'
 import { useSnackbar } from 'notistack'
 import { RotateCcw, Check } from 'react-feather'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import UploadSizeAlert from '../../components/AlertUploadSize'
 import ClipboardCopy from '../../components/ClipboardCopy'
-import PeerDetailDrawer from '../../components/PeerDetail'
 import { Context, EnrichedPostageBatch } from '../../providers/Stamps'
 import { Context as SettingsContext } from '../../providers/Settings'
 import CreatePostageStamp from '../stamps/CreatePostageStampModal'
@@ -110,7 +107,7 @@ export default function Files(): ReactElement {
                     Upload with Postage Stamp{' '}
                     <Chip
                       avatar={<Avatar>{selectedStamp.usageText}</Avatar>}
-                      label={<PeerDetailDrawer peerId={selectedStamp.batchID} characterLength={6} />}
+                      label={<Typography variant="body2">{selectedStamp.batchID.substr(0, 8)}[…]</Typography>}
                       deleteIcon={<ClipboardCopy value={selectedStamp.batchID} />}
                       onDelete={() => {} /* eslint-disable-line*/}
                       variant="outlined"
