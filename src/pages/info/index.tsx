@@ -1,5 +1,5 @@
 import { ReactElement, useContext } from 'react'
-import { Chip, Button } from '@material-ui/core'
+import { Button } from '@material-ui/core'
 
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { Context as BeeContext } from '../../providers/Bee'
