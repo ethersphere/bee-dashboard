@@ -3,6 +3,7 @@ import Avatar from '@material-ui/core/Avatar'
 import Chip from '@material-ui/core/Chip'
 import { DropzoneArea } from 'material-ui-dropzone'
 import { useSnackbar } from 'notistack'
+import { RotateCcw, Check } from 'react-feather'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import UploadSizeAlert from '../../components/AlertUploadSize'
 import ClipboardCopy from '../../components/ClipboardCopy'
@@ -74,6 +75,7 @@ export default function Files(): ReactElement {
     if (files) {
       setFile(files[0])
     }
+    setUploadReference('')
   }
 
   return (
@@ -126,6 +128,7 @@ export default function Files(): ReactElement {
                     variant="contained"
                     disabled={!file && isUploadingFile && !selectedStamp}
                     onClick={() => uploadFile()}
+                    startIcon={<Check size="1rem" />}
                   >
                     Upload
                   </Button>
@@ -143,7 +146,7 @@ export default function Files(): ReactElement {
             <>
               <ExpandableListItemKey label="Swarm Reference" value={uploadReference} />
               <ExpandableListItemActions>
-                <Button variant="contained" onClick={uploadNew}>
+                <Button variant="contained" onClick={uploadNew} startIcon={<RotateCcw size="1rem" />}>
                   Upload New File
                 </Button>
               </ExpandableListItemActions>
