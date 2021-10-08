@@ -33,10 +33,12 @@ const useStyles = makeStyles((theme: Theme) =>
     button: {
       '&:hover': {
         backgroundColor: '#2c2c2c',
+        color: 'white',
 
         // https://github.com/mui-org/material-ui/issues/22543
         '@media (hover: none)': {
           backgroundColor: '#2c2c2c',
+          color: 'white',
         },
       },
     },
