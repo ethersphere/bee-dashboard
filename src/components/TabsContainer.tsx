@@ -26,7 +26,7 @@ const useStyles = makeStyles(() => ({
 
 interface TabsValues {
   component: ReactNode
-  label: string
+  label: ReactNode
 }
 
 interface Props {

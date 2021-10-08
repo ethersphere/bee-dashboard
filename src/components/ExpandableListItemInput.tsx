@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   label: string
   value?: string
+
   helperText?: string
   expandedOnly?: boolean
   confirmLabel?: string
@@ -73,7 +74,11 @@ export default function ExpandableListItemKey({
       <ListItem className={`${classes.header} ${open ? classes.headerOpen : ''}`}>
         <Grid container direction="column" justifyContent="space-between" alignItems="stretch">
           <Grid container direction="row" justifyContent="space-between" alignItems="center">
-            {label && <Typography variant="body1">{label}</Typography>}
+            {label && (
+              <Typography variant="body1" style={{ cursor: 'default', userSelect: 'none' }}>
+                {label}
+              </Typography>
+            )}
             <Typography variant="body2">
               <div>
                 {!open && value}
