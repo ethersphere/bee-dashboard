@@ -120,7 +120,11 @@ export default function ExpandableListItemKey({
         <ExpandableListItemActions>
           <Button
             variant="contained"
-            disabled={inputValue === value || Boolean(confirmLabelDisabled)}
+            disabled={
+              inputValue === value ||
+              Boolean(confirmLabelDisabled) || // Disable if external validation is provided
+              (inputValue === '' && value === undefined) // Disable if no initial value was not provided and the field is empty. The undefined check is improtant so that it is possible to submit with empty input in other cases
+            }
             startIcon={<Check size="1rem" />}
             onClick={() => onConfirm(inputValue)}
           >
