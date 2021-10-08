@@ -9,6 +9,19 @@ declare module '@material-ui/core/styles/createPalette' {
 
 // Overwriting default components styles
 const componentsOverrides = (theme: Theme) => ({
+  MuiListItem: {
+    button: {
+      '&:hover': {
+        backgroundColor: '#fcf2e8',
+        color: theme.palette.primary.main,
+        // https://github.com/mui-org/material-ui/issues/22543
+        '@media (hover: none)': {
+          backgroundColor: '#fcf2e8',
+          color: theme.palette.primary.main,
+        },
+      },
+    },
+  },
   MuiContainer: {
     root: { padding: theme.spacing(8) },
     maxWidthXs: { padding: theme.spacing(8) },
