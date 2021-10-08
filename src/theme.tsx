@@ -18,11 +18,67 @@ const componentsOverrides = (theme: Theme) => ({
     maxWidthXl: { padding: theme.spacing(8) },
   },
   MuiButton: {
-    label: { margin: theme.spacing(2) },
     startIcon: { marginLeft: theme.spacing(1) },
     endIcon: { marginRight: theme.spacing(1) },
+    outlined: {
+      border: 'none',
+      borderRadius: theme.spacing(10),
+      color: theme.palette.primary.main,
+      backgroundColor: '#fcf2e8',
+    },
+    outlinedSizeSmall: {
+      padding: theme.spacing(1),
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2),
+      boxShadow: 'none',
+      '&:hover': {
+        backgroundColor: theme.palette.primary.main,
+        color: 'white',
+        boxShadow: 'none',
+        // https://github.com/mui-org/material-ui/issues/22543
+        '@media (hover: none)': {
+          backgroundColor: theme.palette.primary.main,
+          color: 'white',
+          boxShadow: 'none',
+        },
+      },
+    },
+    outlinedSizeLarge: {
+      padding: theme.spacing(4),
+      borderRadius: 0,
+      boxShadow: 'none',
+      '&:hover': {
+        backgroundColor: theme.palette.primary.main,
+        color: 'white',
+        boxShadow: 'none',
+        // https://github.com/mui-org/material-ui/issues/22543
+        '@media (hover: none)': {
+          backgroundColor: theme.palette.primary.main,
+          color: 'white',
+          boxShadow: 'none',
+        },
+      },
+    },
     containedSizeLarge: {
-      padding: 0,
+      padding: theme.spacing(4),
+      borderRadius: 0,
+      boxShadow: 'none',
+      '&:hover': {
+        backgroundColor: theme.palette.primary.main,
+        color: 'white',
+        boxShadow: 'none',
+        // https://github.com/mui-org/material-ui/issues/22543
+        '@media (hover: none)': {
+          backgroundColor: theme.palette.primary.main,
+          color: 'white',
+          boxShadow: 'none',
+        },
+      },
+    },
+    containedSizeSmall: {
+      padding: theme.spacing(1),
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2),
       borderRadius: 0,
       boxShadow: 'none',
       '&:hover': {
@@ -38,9 +94,9 @@ const componentsOverrides = (theme: Theme) => ({
       },
     },
     contained: {
+      padding: theme.spacing(2),
       backgroundColor: 'white',
       boxShadow: 'none',
-      padding: 0,
       borderRadius: 0,
       '&:hover': {
         backgroundColor: theme.palette.primary.main,
