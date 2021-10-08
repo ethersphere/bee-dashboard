@@ -34,13 +34,21 @@ const useStyles = makeStyles((theme: Theme) =>
     keyMargin: {
       marginRight: theme.spacing(1),
     },
+    unselectableLabel: {
+      cursor: 'default',
+      userSelect: 'none',
+      // Many browsers don't support yet the general user-select css property
+      WebkitUserSelect: 'none',
+      MozUserSelect: 'none',
+      msUserSelect: 'none',
+    },
   }),
 )
 
 interface Props {
   label: string
   value?: string
-
+  placeholder?: string
   helperText?: string
   expandedOnly?: boolean
   confirmLabel?: string
@@ -58,6 +66,7 @@ export default function ExpandableListItemKey({
   confirmLabelDisabled,
   expandedOnly,
   helperText,
+  placeholder,
 }: Props): ReactElement | null {
   const classes = useStyles()
   const [open, setOpen] = useState(Boolean(expandedOnly))
@@ -75,7 +84,7 @@ export default function ExpandableListItemKey({
         <Grid container direction="column" justifyContent="space-between" alignItems="stretch">
           <Grid container direction="row" justifyContent="space-between" alignItems="center">
             {label && (
-              <Typography variant="body1" style={{ cursor: 'default', userSelect: 'none' }}>
+              <Typography variant="body1" className={classes.unselectableLabel}>
                 {label}
               </Typography>
             )}
@@ -95,7 +104,14 @@ export default function ExpandableListItemKey({
             </Typography>
           </Grid>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <InputBase value={inputValue} onChange={handleChange} fullWidth className={classes.content} autoFocus />
+            <InputBase
+              value={inputValue}
+              placeholder={placeholder}
+              onChange={handleChange}
+              fullWidth
+              className={classes.content}
+              autoFocus
+            />
           </Collapse>
         </Grid>
       </ListItem>
