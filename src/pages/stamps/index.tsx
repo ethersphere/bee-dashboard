@@ -5,7 +5,9 @@ import { Container, CircularProgress } from '@material-ui/core'
 import StampsTable from './StampsTable'
 import CreatePostageStampModal from './CreatePostageStampModal'
 
-import { Context } from '../../providers/Stamps'
+import { Context as StampsContext } from '../../providers/Stamps'
+import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
+import { Context as BeeContext } from '../../providers/Bee'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -25,7 +27,11 @@ const useStyles = makeStyles(() =>
 
 export default function Accounting(): ReactElement {
   const classes = useStyles()
-  const { stamps, isLoading, error, start, stop } = useContext(Context)
+  const { stamps, isLoading, error, start, stop } = useContext(StampsContext)
+  const { status } = useContext(BeeContext)
+
+  if (!status.all) return <TroubleshootConnectionCard />
+
   useEffect(() => {
     start()
 
