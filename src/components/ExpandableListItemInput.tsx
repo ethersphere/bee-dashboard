@@ -107,11 +107,11 @@ export default function ExpandableListItemKey({
           </Button>
           <Button
             variant="contained"
-            disabled={inputValue === value}
+            disabled={inputValue === value || inputValue === ''}
             startIcon={<RotateCcw size="1rem" />}
             onClick={() => setInputValue(value || '')}
           >
-            Clear
+            Cancel
           </Button>
         </ExpandableListItemActions>
       </Collapse>

@@ -25,10 +25,10 @@ export default function SimpleMenu({ stamps, selectedStamp, setSelected }: Props
 
   return (
     <div>
-      <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+      <Button variant="contained" aria-haspopup="true" onClick={handleClick}>
         Change
       </Button>
-      <Menu id="simple-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
+      <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
         {stamps.map(stamp => (
           <MenuItem
             key={stamp.batchID}

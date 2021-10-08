@@ -11,6 +11,10 @@ import { Context, EnrichedPostageBatch } from '../../providers/Stamps'
 import { Context as SettingsContext } from '../../providers/Settings'
 import CreatePostageStamp from '../stamps/CreatePostageStampModal'
 import SelectStamp from './SelectStamp'
+import ExpandableListItem from '../../components/ExpandableListItem'
+import ExpandableListItemKey from '../../components/ExpandableListItemKey'
+import ExpandableListItemNote from '../../components/ExpandableListItemNote'
+import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 
 const MAX_FILE_SIZE = 1_000_000_000 // 1 gigabyte
 
@@ -22,9 +26,13 @@ export default function Files(): ReactElement {
 
   const [selectedStamp, setSelectedStamp] = useState<EnrichedPostageBatch | null>(null)
 
-  const { isLoading, error, stamps } = useContext(Context)
+  const { isLoading, error, stamps, refresh } = useContext(Context)
   const { beeApi } = useContext(SettingsContext)
   const { enqueueSnackbar } = useSnackbar()
+
+  useEffect(() => {
+    refresh()
+  }, [])
 
   // Choose a postage stamp that has the lowest usage
   useEffect(() => {
@@ -47,17 +55,19 @@ export default function Files(): ReactElement {
     setIsUploadingFile(true)
     beeApi
       .uploadFile(selectedStamp.batchID, file)
-      .then(hash => {
-        window.setTimeout(() => {
-          setFile(null)
-          setUploadReference(hash.reference)
-          setDropzoneKey(dropzoneKey + 1)
-        }, 0)
-      })
+      .then(hash => setUploadReference(hash.reference))
       .catch(e => enqueueSnackbar(`Error uploading: ${e.message}`, { variant: 'error' }))
       .finally(() => {
         setIsUploadingFile(false)
       })
+  }
+
+  const uploadNew = () => {
+    setTimeout(() => {
+      setFile(null)
+      setDropzoneKey(dropzoneKey + 1)
+      setUploadReference('')
+    }, 0)
   }
 
   const handleChange = (files?: File[]) => {
@@ -68,47 +78,79 @@ export default function Files(): ReactElement {
 
   return (
     <div>
-      <div>
-        <DropzoneArea
-          key={'dropzone-' + dropzoneKey}
-          onChange={handleChange}
-          filesLimit={1}
-          maxFileSize={MAX_FILE_SIZE}
-        />
+      <DropzoneArea
+        key={'dropzone-' + dropzoneKey}
+        onChange={handleChange}
+        filesLimit={1}
+        maxFileSize={MAX_FILE_SIZE}
+      />
+      {file && (
         <div style={{ marginTop: '15px' }}>
-          {selectedStamp && (
-            <div style={{ display: 'flex' }}>
-              <small>
-                with Postage Stamp{' '}
-                <Chip
-                  avatar={<Avatar>{selectedStamp.usageText}</Avatar>}
-                  label={<PeerDetailDrawer peerId={selectedStamp.batchID} characterLength={6} />}
-                  deleteIcon={<ClipboardCopy value={selectedStamp.batchID} />}
-                  onDelete={() => {} /* eslint-disable-line*/}
-                  variant="outlined"
+          {!isUploadingFile && !uploadReference && (
+            <>
+              <ExpandableListItemNote>
+                To upload this file to your node, you need a postage stamp. You can buy a new batch specifically for
+                this file and provide the desired depth and amount or you can use an existing batch (providing it’s
+                sufficient for this file).
+              </ExpandableListItemNote>
+              {selectedStamp && (
+                <ExpandableListItem
+                  label={
+                    <>
+                      Upload with Postage Stamp{' '}
+                      <Chip
+                        avatar={<Avatar>{selectedStamp.usageText}</Avatar>}
+                        label={<PeerDetailDrawer peerId={selectedStamp.batchID} characterLength={6} />}
+                        deleteIcon={<ClipboardCopy value={selectedStamp.batchID} />}
+                        onDelete={() => {} /* eslint-disable-line*/}
+                        variant="outlined"
+                      />
+                    </>
+                  }
+                  value={<SelectStamp stamps={stamps} selectedStamp={selectedStamp} setSelected={setSelectedStamp} />}
                 />
-              </small>
-              <SelectStamp stamps={stamps} selectedStamp={selectedStamp} setSelected={setSelectedStamp} />
-            </div>
+              )}
+              {!selectedStamp && (
+                <ExpandableListItemActions>
+                  <CreatePostageStamp />
+                </ExpandableListItemActions>
+              )}
+            </>
           )}
-          {!selectedStamp && <CreatePostageStamp />}
-          <Button disabled={!file && isUploadingFile && !selectedStamp} onClick={() => uploadFile()}>
-            Upload
-          </Button>
-          {file && <UploadSizeAlert file={file} />}
-          {isUploadingFile && (
-            <Container style={{ textAlign: 'center', padding: '50px' }}>
-              <CircularProgress />
-            </Container>
+          {!uploadReference && (
+            <>
+              {' '}
+              {selectedStamp && (
+                <ExpandableListItemActions>
+                  <Button
+                    variant="contained"
+                    disabled={!file && isUploadingFile && !selectedStamp}
+                    onClick={() => uploadFile()}
+                  >
+                    Upload
+                  </Button>
+                  {isUploadingFile && (
+                    <Container style={{ textAlign: 'center', padding: '50px' }}>
+                      <CircularProgress />
+                    </Container>
+                  )}
+                </ExpandableListItemActions>
+              )}
+              {<UploadSizeAlert file={file} />}
+            </>
           )}
           {uploadReference && (
-            <div style={{ marginBottom: '15px', display: 'flex' }}>
-              <span>{uploadReference}</span>
-              <ClipboardCopy value={uploadReference} />
-            </div>
+            <>
+              <ExpandableListItemKey label="Swarm Reference" value={uploadReference} />
+              <ExpandableListItemActions>
+                <Button variant="contained" onClick={uploadNew}>
+                  Upload New File
+                </Button>
+              </ExpandableListItemActions>
+            </>
           )}
         </div>
-      </div>
+      )}
     </div>
   )
 }
