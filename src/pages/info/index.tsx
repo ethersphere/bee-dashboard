@@ -1,5 +1,5 @@
 import { ReactElement, useContext } from 'react'
-import { Chip, Button } from '@material-ui/core'
+import { Button } from '@material-ui/core'
 
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { Context as BeeContext } from '../../providers/Bee'
@@ -30,15 +30,11 @@ export default function Status(): ReactElement {
             <div>
               <a href="https://github.com/ethersphere/bee" rel="noreferrer" target="_blank">
                 Bee
-              </a>{' '}
-              <span>{latestUserVersion || '-'}</span>{' '}
-              {isLatestBeeVersion ? (
-                <Chip style={{ marginLeft: '7px', color: '#2145a0' }} size="small" label="latest" />
-              ) : (
-                <Button size="small" variant="outlined" href={latestBeeVersionUrl}>
-                  update
-                </Button>
-              )}
+              </a>
+              {` ${latestUserVersion || '-'} `}
+              <Button size="small" variant="outlined" href={latestBeeVersionUrl} target="_blank">
+                {isLatestBeeVersion ? 'latest' : 'update'}
+              </Button>
             </div>
           }
         />
