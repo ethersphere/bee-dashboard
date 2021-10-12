@@ -21,12 +21,12 @@ export enum ROUTES {
 
 const BaseRouter = (): ReactElement => (
   <Switch>
-    <Route exact path={ROUTES.INFO} component={Info} />
     <Route exact path={ROUTES.FILES} component={Files} />
     <Route exact path={ROUTES.ACCOUNTING} component={Accounting} />
     <Route exact path={ROUTES.SETTINGS} component={Settings} />
     <Route exact path={ROUTES.STAMPS} component={Stamps} />
     <Route exact path={ROUTES.STATUS} component={Status} />
+    <Route path={ROUTES.INFO} component={Info} />
   </Switch>
 )
 
