@@ -52,7 +52,6 @@ export default function TroubleshootConnectionCard(): ReactElement {
           <Button
             component={Link}
             variant="contained"
-            size="large"
             startIcon={<Activity className={classes.icon} />}
             to={ROUTES.STATUS}
           >
