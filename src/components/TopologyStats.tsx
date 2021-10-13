@@ -27,7 +27,7 @@ const TopologyStats = (props: Props): ReactElement => {
         tooltip={thresholds.connectedPeers.explanation}
       />
       <ExpandableListItem
-        label="Pupulation"
+        label="Population"
         value={props.topology?.population.toString()}
         tooltip={thresholds.population.explanation}
       />
