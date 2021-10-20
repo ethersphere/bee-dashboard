@@ -2,18 +2,18 @@
 
 ## [0.8.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.7.0...v0.8.0) (2021-10-20)
 
+In this version we are adding support for the bee release 1.2.0. The app also went through a graphical redesign. More to come soon!
+
 
 ### Features
-
-* files page updated to latest design  ([#218](https://www.github.com/ethersphere/bee-dashboard/issues/218)) ([93af7f3](https://www.github.com/ethersphere/bee-dashboard/commit/93af7f35a371d54864c068be6e1d8a70092afe28))
-* info page redesign ([#207](https://www.github.com/ethersphere/bee-dashboard/issues/207)) ([57f5a73](https://www.github.com/ethersphere/bee-dashboard/commit/57f5a73f3a8d957bf967c51612dc09c802bb68dc))
-* status page redesign ([#214](https://www.github.com/ethersphere/bee-dashboard/issues/214)) ([b666cd2](https://www.github.com/ethersphere/bee-dashboard/commit/b666cd2657cf1003651c44b6b4fa5bdcf11e895f))
-* troubleshooting component ([#204](https://www.github.com/ethersphere/bee-dashboard/issues/204)) ([c4c1573](https://www.github.com/ethersphere/bee-dashboard/commit/c4c1573263868b6dc8a863124e4aee824dceadbb))
-* update design of the accounting page ([#209](https://www.github.com/ethersphere/bee-dashboard/issues/209)) ([ecbc116](https://www.github.com/ethersphere/bee-dashboard/commit/ecbc1164756de912d14ce44aa9b2c155dded6dac))
-* updated readme to new bee version and UI examples with new design ([#230](https://www.github.com/ethersphere/bee-dashboard/issues/230)) ([6050548](https://www.github.com/ethersphere/bee-dashboard/commit/605054895d7d2784471f9c511effa4eb897f72ec))
-* updated the postage stamps page design ([#217](https://www.github.com/ethersphere/bee-dashboard/issues/217)) ([f241b2f](https://www.github.com/ethersphere/bee-dashboard/commit/f241b2fc5f6ec0741e275498ebef5a18ce710b81))
-* updated the settings page design ([#215](https://www.github.com/ethersphere/bee-dashboard/issues/215)) ([32e5ea9](https://www.github.com/ethersphere/bee-dashboard/commit/32e5ea9e56fdf957b758ec714bb6a4fe1903082a))
-* updated the settings page to be a bit more consistent with the rest of the design ([#208](https://www.github.com/ethersphere/bee-dashboard/issues/208)) ([b69e368](https://www.github.com/ethersphere/bee-dashboard/commit/b69e368f69b7735f5dfc8c0c702c437d1d23286a))
+* support for bee 1.2.0
+* update files page design ([#218](https://www.github.com/ethersphere/bee-dashboard/issues/218)) ([93af7f3](https://www.github.com/ethersphere/bee-dashboard/commit/93af7f35a371d54864c068be6e1d8a70092afe28))
+* update info page design ([#207](https://www.github.com/ethersphere/bee-dashboard/issues/207)) ([57f5a73](https://www.github.com/ethersphere/bee-dashboard/commit/57f5a73f3a8d957bf967c51612dc09c802bb68dc))
+* update status page design ([#214](https://www.github.com/ethersphere/bee-dashboard/issues/214)) ([b666cd2](https://www.github.com/ethersphere/bee-dashboard/commit/b666cd2657cf1003651c44b6b4fa5bdcf11e895f))
+* update troubleshooting component design ([#204](https://www.github.com/ethersphere/bee-dashboard/issues/204)) ([c4c1573](https://www.github.com/ethersphere/bee-dashboard/commit/c4c1573263868b6dc8a863124e4aee824dceadbb))
+* update accounting page design ([#209](https://www.github.com/ethersphere/bee-dashboard/issues/209)) ([ecbc116](https://www.github.com/ethersphere/bee-dashboard/commit/ecbc1164756de912d14ce44aa9b2c155dded6dac))
+* update postage stamps page design ([#217](https://www.github.com/ethersphere/bee-dashboard/issues/217)) ([f241b2f](https://www.github.com/ethersphere/bee-dashboard/commit/f241b2fc5f6ec0741e275498ebef5a18ce710b81))
+* update settings page design ([#215](https://www.github.com/ethersphere/bee-dashboard/issues/215)) ([32e5ea9](https://www.github.com/ethersphere/bee-dashboard/commit/32e5ea9e56fdf957b758ec714bb6a4fe1903082a))
 
 
 ### Bug Fixes
@@ -25,6 +25,7 @@
 * unknown routes should point to info page ([#227](https://www.github.com/ethersphere/bee-dashboard/issues/227)) ([f11bbd5](https://www.github.com/ethersphere/bee-dashboard/commit/f11bbd5008a78ef7d5c73fc2758ee4e2dafae01e))
 * used label in postage stamp list ([#220](https://www.github.com/ethersphere/bee-dashboard/issues/220)) ([0326568](https://www.github.com/ethersphere/bee-dashboard/commit/03265687ad630b0100da3134518b680327af1636))
 * wording in chequebook setup ([#211](https://www.github.com/ethersphere/bee-dashboard/issues/211)) ([e7188f4](https://www.github.com/ethersphere/bee-dashboard/commit/e7188f4a35c85204eef6a01ae6f1e679d076180c))
+
 
 ## [0.7.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.6.0...v0.7.0) (2021-08-31)
 
