@@ -6,25 +6,28 @@
 ![](https://img.shields.io/badge/npm-%3E%3D6.0.0-orange.svg?style=flat-square)
 ![](https://img.shields.io/badge/Node.js-%3E%3D10.0.0-orange.svg?style=flat-square)
 
-> An app which helps users to setup their Bee node and do actions like cash out cheques, upload and download files or manage your postage stamps.
+> An app which helps users to setup their Bee node and do actions like cash out cheques, upload and download files or
+> manage your postage stamps.
 
-**Warning: This project is in alpha state. There might (and most probably will) be changes in the future to its API and working. Also, no guarantees can be made about its stability, efficiency, and security at this stage.**
+**Warning: This project is in alpha state. There might (and most probably will) be changes in the future to its API and
+working. Also, no guarantees can be made about its stability, efficiency, and security at this stage.**
 
-This project is intended to be used with **Bee version 1.1.0**. Using it with older or newer Bee versions is not recommended and may not work. Stay up to date by joining the [official Discord](https://discord.gg/GU22h2utj6) and by keeping an eye on the [releases tab](https://github.com/ethersphere/bee-dashboard/releases).
+This project is intended to be used with the latest released version of Bee. Using it with older Bee versions is not
+recommended and may not work. Stay up to date by joining the [official Discord](https://discord.gg/GU22h2utj6) and by
+keeping an eye on the [releases tab](https://github.com/ethersphere/bee-dashboard/releases).
 
-![Status page](/ui_samples/status.png)
+![Status page](/ui_samples/info.png)
 
-| Node Setup | Browse & Upload Files | Accounting | Peers | Settings |
-|-------|---------|-------|----------|------|
-| ![Setup](/ui_samples/node_setup.png) | ![Files](/ui_samples/file_upload.png) | ![Accounting](/ui_samples/accounting.png) | ![Peers](/ui_samples/peers.png) | ![Settings](/ui_samples/settings.png) |
-
+| Node Setup                           | Upload Files                           | Download Content                           | Accounting                                | Postage Stamps                           |
+| ------------------------------------ | -------------------------------------- | ------------------------------------------ | ----------------------------------------- | ---------------------------------------- |
+| ![Setup](/ui_samples/node_setup.png) | ![Upload](/ui_samples/file_upload.png) | ![Download](/ui_samples/file_download.png) | ![Accounting](/ui_samples/accounting.png) | ![Peers](/ui_samples/postage_stamps.png) |
 
 ## Table of Contents
 
 - [Install](#install)
 - [Usage](#usage)
-    - [Terminal](#terminal)
-    - [Docker](#docker)
+  - [Terminal](#terminal)
+  - [Docker](#docker)
 - [Contribute](#contribute)
 - [Development](#development)
 - [Maintainers](#maintainers)
@@ -40,11 +43,15 @@ npm install -g @ethersphere/bee-dashboard
 
 ## Usage
 
-:warning: To successfully connect to the Bee node, you will need to enable the Debug API and CORS. You can do so by setting `cors-allowed-origins: ['*']` and `debug-api-enable: true` in the Bee config file and then restart the Bee node. To see where the config file is, consult the [official Bee documentation](https://docs.ethswarm.org/docs/working-with-bee/configuration#configuring-bee-installed-using-a-package-manager)
+:warning: To successfully connect to the Bee node, you will need to enable the Debug API and CORS. You can do so by
+setting `cors-allowed-origins: ['*']` and `debug-api-enable: true` in the Bee config file and then restart the Bee node.
+To see where the config file is, consult the
+[official Bee documentation](https://docs.ethswarm.org/docs/working-with-bee/configuration#configuring-bee-installed-using-a-package-manager)
 
 ### Terminal
 
 To start use:
+
 ```sh
 bee-dashboard
 ```
@@ -82,7 +89,8 @@ There are some ways you can make this module better:
 
 - Consult our [open issues](https://github.com/ethersphere/bee-dashboard/issues) and take on one of them
 - Help our tests reach 100% coverage!
-- Join us in our [Discord chat](https://discord.gg/wdghaQsGq5) in the #develop-on-swarm channel if you have questions or want to give feedback
+- Join us in our [Discord chat](https://discord.gg/wdghaQsGq5) in the #develop-on-swarm channel if you have questions or
+  want to give feedback
 
 ## Maintainers
 
