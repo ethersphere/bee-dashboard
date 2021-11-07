@@ -13,8 +13,9 @@ import WithdrawModal from '../../containers/WithdrawModal'
 import DepositModal from '../../containers/DepositModal'
 
 export default function Accounting(): ReactElement {
-  const { status, nodeAddresses, chequebookAddress, chequebookBalance, settlements, peerBalances } =
-    useContext(BeeContext)
+  const { status, nodeAddresses, chequebookAddress, chequebookBalance, settlements, peerBalances } = useContext(
+    BeeContext,
+  )
   const { beeDebugApi } = useContext(SettingsContext)
 
   const { accounting, totalUncashed, isLoadingUncashed } = useAccounting(beeDebugApi, settlements, peerBalances)

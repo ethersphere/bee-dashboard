@@ -42,7 +42,7 @@ describe('utils', () => {
       1,
       -1,
     ]
-    const wrongValues = [new Function()]
+    const wrongValues = [new Function()] // eslint-disable-line no-new-func
 
     correctValues.forEach(v => {
       test(`testing ${v}`, () => {
