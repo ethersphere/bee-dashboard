@@ -32,7 +32,6 @@
     "@types/react-router-dom": "5.1.7",
     "axios": "0.21.1",
     "bignumber.js": "9.0.1",
-    "feather-icons": "4.28.0",
     "formik": "2.2.8",
     "formik-material-ui": "3.0.1",
     "material-ui-dropzone": "3.5.0",
@@ -50,26 +49,36 @@
     "serve-handler": "6.1.3"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "5.12.0",
-    "@testing-library/react": "11.2.6",
-    "@testing-library/user-event": "13.1.5",
-    "@types/jest": "26.0.22",
-    "@types/node": "14.14.41",
-    "@types/qrcode.react": "1.0.1",
-    "@types/react": "17.0.3",
-    "@types/react-copy-to-clipboard": "5.0.0",
-    "@types/react-dom": "17.0.3",
-    "@types/react-syntax-highlighter": "13.5.0",
-    "@types/semver": "7.3.6",
-    "eslint": "7.32.0",
-    "eslint-config-prettier": "8.3.0",
-    "eslint-plugin-jest": "24.4.0",
-    "eslint-plugin-prettier": "3.4.1",
-    "eslint-plugin-react": "7.24.0",
-    "prettier": "2.3.2",
+    "@commitlint/config-conventional": "^14.1.0",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@types/jest": "^26.0.15",
+    "@types/qrcode.react": "^1.0.2",
+    "@types/react": "^17.0.0",
+    "@types/react-copy-to-clipboard": "^5.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@types/react-router-dom": "^5.1.7",
+    "@types/react-syntax-highlighter": "^13.5.2",
+    "@types/semver": "^7.3.9",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
+    "babel-eslint": "^10.1.0",
+    "depcheck": "^1.4.2",
+    "eslint": "^7.24.0",
+    "eslint-config-prettier": "^8.2.0",
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-plugin-flowtype": "^5.10.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-jest": "^24.3.5",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-react": "^7.23.2",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-testing-library": "^3.10.2",
+    "prettier": "^2.2.1",
     "react-scripts": "4.0.3",
-    "typescript": "4.2.4",
-    "web-vitals": "1.1.1"
+    "typescript": "4.1.2",
+    "web-vitals": "1.0.1"
   },
   "scripts": {
     "prepare": "npm run build",
@@ -77,6 +86,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "serve": "node ./serve.js",
+    "depcheck": "depcheck .",
     "lint": "eslint --fix \"src/**/*.ts\" \"src/**/*.tsx\" && prettier --write \"src/**/*.ts\" \"src/**/*.tsx\"",
     "lint:check": "eslint \"src/**/*.ts\" \"src/**/*.tsx\" && prettier --check \"src/**/*.ts\" \"src/**/*.tsx\""
   },
@@ -84,12 +94,6 @@
     "build",
     "serve.js"
   ],
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
   "browserslist": {
     "production": [
       ">0.2%",

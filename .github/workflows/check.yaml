@@ -47,6 +47,9 @@ jobs:
         env:
           CI: true
 
+      - name: Dependency check
+        run: npm run depcheck
+
       - name: Build
         run: npm run build
 
