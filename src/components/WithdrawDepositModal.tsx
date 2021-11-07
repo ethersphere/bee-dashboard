@@ -55,7 +55,7 @@ export default function WithdrawDepositModal({
       setOpen(false)
       enqueueSnackbar(`${successMessage} Transaction ${transactionHash}`, { variant: 'success' })
     } catch (e) {
-      enqueueSnackbar(`${errorMessage} Error: ${e.message}`, { variant: 'error' })
+      enqueueSnackbar(`${errorMessage} Error: ${(e as Error).message}`, { variant: 'error' })
     }
   }
 
@@ -71,7 +71,7 @@ export default function WithdrawDepositModal({
 
       if (max && t.toDecimal.isGreaterThan(max)) setAmountError(new Error(`Needs to be less than ${max}`))
     } catch (e) {
-      setAmountError(e)
+      setAmountError(e as Error)
     }
   }
 

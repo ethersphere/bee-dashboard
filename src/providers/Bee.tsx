@@ -279,7 +279,7 @@ export function Provider({ children }: Props): ReactElement {
 
       await Promise.allSettled(promises)
     } catch (e) {
-      setError(e)
+      setError(e as Error)
     } finally {
       setIsLoading(false)
       setIsRefreshing(false)

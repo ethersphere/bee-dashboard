@@ -77,7 +77,7 @@ export default function FormDialog({ label }: Props): ReactElement {
           await refresh()
           handleClose()
         } catch (e) {
-          enqueueSnackbar(`Error: ${e.message}`, { variant: 'error' })
+          enqueueSnackbar(`Error: ${(e as Error).message}`, { variant: 'error' })
           actions.setSubmitting(false)
         }
       }}
