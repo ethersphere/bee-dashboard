@@ -16,6 +16,10 @@ jobs:
       matrix:
         node-version: [14.x]
 
+    env:
+      REACT_APP_BEE_HOST: https://bee.simetka.cz
+      REACT_APP_BEE_DEBUG_HOST: https://debug.bee.simetka.cz
+
     steps:
       - uses: actions/checkout@v2
         with:
