@@ -68,7 +68,7 @@ export function Provider({ children }: Props): ReactElement {
       setStamps(stamps.map(enrichStamp))
       setLastUpdate(Date.now())
     } catch (e) {
-      setError(e)
+      setError(e as Error)
     } finally {
       setIsLoading(false)
     }
@@ -87,7 +87,7 @@ export function Provider({ children }: Props): ReactElement {
 
       return () => clearInterval(interval)
     }
-  }, [frequency])
+  }, [frequency]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Context.Provider value={{ stamps, error, isLoading, lastUpdate, start, stop, refresh }}>

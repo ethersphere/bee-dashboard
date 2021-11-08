@@ -100,7 +100,7 @@ export const useAccounting = (
       setUncashedAmounts(results.fulfilled)
       setIsloadingUncashed(false)
     })
-  }, [settlements, isLoadingUncashed, uncashedAmounts])
+  }, [settlements, isLoadingUncashed, uncashedAmounts, beeDebugApi])
 
   const accounting = mergeAccounting(balances, settlements?.settlements, uncashedAmounts)
 

@@ -153,7 +153,7 @@ export function Provider({ children }: Props): ReactElement {
     setApiHealth(false)
 
     refresh()
-  }, [beeApi])
+  }, [beeApi]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     setIsLoading(true)
@@ -169,7 +169,7 @@ export function Provider({ children }: Props): ReactElement {
     setSettlements(null)
 
     refresh()
-  }, [beeDebugApi])
+  }, [beeDebugApi]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const refresh = async () => {
     // Don't want to refresh when already refreshing
@@ -279,7 +279,7 @@ export function Provider({ children }: Props): ReactElement {
 
       await Promise.allSettled(promises)
     } catch (e) {
-      setError(e)
+      setError(e as Error)
     } finally {
       setIsLoading(false)
       setIsRefreshing(false)
@@ -300,7 +300,7 @@ export function Provider({ children }: Props): ReactElement {
 
       return () => clearInterval(interval)
     }
-  }, [frequency, beeDebugApi, beeApi])
+  }, [frequency, beeDebugApi, beeApi]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Context.Provider
