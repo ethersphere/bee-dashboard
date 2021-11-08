@@ -16,6 +16,10 @@ jobs:
       matrix:
         node-version: [14.x]
 
+    env:
+      REACT_APP_BEE_HOST: https://bee.simetka.cz
+      REACT_APP_BEE_DEBUG_HOST: https://debug.bee.simetka.cz
+
     steps:
       - uses: actions/checkout@v2
         with:
@@ -50,11 +54,16 @@ jobs:
       - name: Dependency check
         run: npm run depcheck
 
-      - name: Build
-        run: npm run build
-
       - name: Update supported Bee action
         uses: ethersphere/update-supported-bee-action@v1
         if: github.ref == 'refs/heads/master'
         with:
           token: ${{ secrets.REPO_GHA_PAT }}
+
+      - name: Build
+        run: npm run build
+
+      - name: Create preview
+        uses: ethersphere/beeload-action@v1
+        with:
+          preview: 'true'
