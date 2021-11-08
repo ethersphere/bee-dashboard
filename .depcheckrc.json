@@ -1,0 +1,3 @@
+{
+  "ignores": ["@types/jest", "@commitlint/config-conventional", "@types/react-router"]
+}

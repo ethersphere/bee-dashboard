@@ -39,7 +39,7 @@ export default function Files(): ReactElement {
 
   useEffect(() => {
     refresh()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Choose a postage stamp that has the lowest usage
   useEffect(() => {

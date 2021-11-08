@@ -30,13 +30,14 @@ export default function Accounting(): ReactElement {
   const { stamps, isLoading, error, start, stop } = useContext(StampsContext)
   const { status } = useContext(BeeContext)
 
-  if (!status.all) return <TroubleshootConnectionCard />
-
   useEffect(() => {
+    if (!status.all) return
     start()
 
     return () => stop()
-  }, [])
+  }, [status]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!status.all) return <TroubleshootConnectionCard />
 
   return (
     <div className={classes.root}>
