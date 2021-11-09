@@ -1,5 +1,5 @@
-import { createContext, ReactChild, ReactElement, useState, useEffect } from 'react'
 import { Bee, BeeDebug } from '@ethersphere/bee-js'
+import { createContext, ReactChild, ReactElement, useEffect, useState } from 'react'
 
 interface ContextInterface {
   apiUrl: string
@@ -25,9 +25,10 @@ export const Consumer = Context.Consumer
 
 interface Props {
   children: ReactChild
+  beeApiUrl?: string
 }
 
-export function Provider({ children }: Props): ReactElement {
+export function Provider({ children, beeApiUrl }: Props): ReactElement {
   const [apiUrl, setApiUrl] = useState<string>(initialValues.apiUrl)
   const [apiDebugUrl, setDebugApiUrl] = useState<string>(initialValues.apiDebugUrl)
   const [beeApi, setBeeApi] = useState<Bee | null>(null)
@@ -41,6 +42,10 @@ export function Provider({ children }: Props): ReactElement {
       setBeeApi(null)
     }
   }, [apiUrl])
+
+  useEffect(() => {
+    if (beeApiUrl) setApiUrl(beeApiUrl)
+  }, [beeApiUrl])
 
   useEffect(() => {
     try {
