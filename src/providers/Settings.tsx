@@ -1,5 +1,6 @@
 import { Bee, BeeDebug } from '@ethersphere/bee-js'
 import { createContext, ReactChild, ReactElement, useEffect, useState } from 'react'
+import { config } from '../config'
 
 interface ContextInterface {
   apiUrl: string
@@ -11,9 +12,8 @@ interface ContextInterface {
 }
 
 const initialValues: ContextInterface = {
-  apiUrl: sessionStorage.getItem('api_host') || process.env.REACT_APP_BEE_HOST || 'http://localhost:1633',
-  apiDebugUrl:
-    sessionStorage.getItem('debug_api_host') || process.env.REACT_APP_BEE_DEBUG_HOST || 'http://localhost:1635',
+  apiUrl: config.BEE_API_HOST,
+  apiDebugUrl: config.BEE_DEBUG_API_HOST,
   beeApi: null,
   beeDebugApi: null,
   setApiUrl: () => {}, // eslint-disable-line
@@ -44,6 +44,9 @@ export function Provider({ children, beeApiUrl }: Props): ReactElement {
   }, [apiUrl])
 
   useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log('bee-api-url2', beeApiUrl)
+
     if (beeApiUrl) setApiUrl(beeApiUrl)
   }, [beeApiUrl])
 
