@@ -14,13 +14,13 @@ import BaseRouter from './routes'
 import { theme } from './theme'
 
 interface Props {
-  beeUrl?: string
+  beeApiUrl?: string
 }
 
-const App = ({ beeUrl }: Props): ReactElement => (
+const App = ({ beeApiUrl }: Props): ReactElement => (
   <div className="App">
     <ThemeProvider theme={theme}>
-      <SettingsProvider beeApiUrl={beeUrl}>
+      <SettingsProvider beeApiUrl={beeApiUrl}>
         <BeeProvider>
           <StampsProvider>
             <FileProvider>
