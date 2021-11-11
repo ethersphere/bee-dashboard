@@ -1,19 +1,19 @@
-import { Button, CircularProgress, Container, Avatar, Chip, Typography } from '@material-ui/core'
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
+import { Avatar, Button, Chip, CircularProgress, Container, Typography } from '@material-ui/core'
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import { DropzoneArea } from 'material-ui-dropzone'
 import { useSnackbar } from 'notistack'
-import { RotateCcw, Check } from 'react-feather'
 import { ReactElement, useContext, useEffect, useState } from 'react'
+import { Check, RotateCcw } from 'react-feather'
 import UploadSizeAlert from '../../components/AlertUploadSize'
 import ClipboardCopy from '../../components/ClipboardCopy'
-import { Context, EnrichedPostageBatch } from '../../providers/Stamps'
-import { Context as SettingsContext } from '../../providers/Settings'
-import CreatePostageStamp from '../stamps/CreatePostageStampModal'
-import SelectStamp from './SelectStamp'
 import ExpandableListItem from '../../components/ExpandableListItem'
+import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import ExpandableListItemNote from '../../components/ExpandableListItemNote'
-import ExpandableListItemActions from '../../components/ExpandableListItemActions'
+import { Context as SettingsContext } from '../../providers/Settings'
+import { Context, EnrichedPostageBatch } from '../../providers/Stamps'
+import CreatePostageStamp from '../stamps/CreatePostageStampModal'
+import SelectStamp from './SelectStamp'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -27,9 +27,9 @@ const MAX_FILE_SIZE = 1_000_000_000 // 1 gigabyte
 export default function Files(): ReactElement {
   const classes = useStyles()
   const [dropzoneKey, setDropzoneKey] = useState(0)
-  const [file, setFile] = useState<File | null>(null)
+  const [files, setFiles] = useState<File[]>([])
   const [uploadReference, setUploadReference] = useState('')
-  const [isUploadingFile, setIsUploadingFile] = useState(false)
+  const [isUploading, setUploading] = useState(false)
 
   const [selectedStamp, setSelectedStamp] = useState<EnrichedPostageBatch | null>(null)
 
@@ -44,32 +44,28 @@ export default function Files(): ReactElement {
   // Choose a postage stamp that has the lowest usage
   useEffect(() => {
     if (!selectedStamp && stamps && stamps.length > 0) {
-      const stamp = stamps.reduce((prev, curr) => {
-        if (curr.usage < prev.usage) return curr
-
-        return prev
-      }, stamps[0])
+      const stamp = stamps.reduce((prev, curr) => (curr.usage < prev.usage ? curr : prev), stamps[0])
 
       setSelectedStamp(stamp)
     }
   }, [isLoading, error, stamps, selectedStamp])
 
-  const uploadFile = () => {
-    if (file === null || selectedStamp === null) return
+  const uploadFiles = () => {
+    if (!files.length || !selectedStamp) return
 
     if (!beeApi) return
 
-    setIsUploadingFile(true)
+    setUploading(true)
     beeApi
-      .uploadFile(selectedStamp.batchID, file)
+      .uploadFiles(selectedStamp.batchID, files)
       .then(hash => setUploadReference(hash.reference))
       .catch(e => enqueueSnackbar(`Error uploading: ${e.message}`, { variant: 'error' }))
-      .finally(() => setIsUploadingFile(false))
+      .finally(() => setUploading(false))
   }
 
   const uploadNew = () => {
     setTimeout(() => {
-      setFile(null)
+      setFiles([])
       setDropzoneKey(dropzoneKey + 1)
       setUploadReference('')
     }, 0)
@@ -79,7 +75,31 @@ export default function Files(): ReactElement {
     setUploadReference('')
 
     if (files) {
-      setFile(files[0])
+      setFiles(files)
+    }
+  }
+
+  const getDropzoneInputDomElement = () => document.querySelector('.MuiDropzoneArea-root input') as HTMLInputElement
+
+  const onUploadFolderClick = () => {
+    const element = getDropzoneInputDomElement()
+
+    if (element) {
+      element.setAttribute('directory', '')
+      element.setAttribute('webkitdirectory', '')
+      element.setAttribute('mozdirectory', '')
+      element.click()
+    }
+  }
+
+  const onUploadFileClick = () => {
+    const element = getDropzoneInputDomElement()
+
+    if (element) {
+      element.removeAttribute('directory')
+      element.removeAttribute('webkitdirectory')
+      element.removeAttribute('mozdirectory')
+      element.click()
     }
   }
 
@@ -88,16 +108,28 @@ export default function Files(): ReactElement {
       <DropzoneArea
         key={'dropzone-' + dropzoneKey}
         onChange={handleChange}
-        filesLimit={1}
+        filesLimit={1e9}
         maxFileSize={MAX_FILE_SIZE}
       />
+      <ExpandableListItemActions>
+        <Button variant="contained" onClick={() => onUploadFileClick()}>
+          Upload File
+        </Button>
+        <Button variant="contained" onClick={() => onUploadFolderClick()}>
+          Upload Folder
+        </Button>
+      </ExpandableListItemActions>
+      <Typography variant="body2">
+        You can click the buttons above or simply drag and drop to add a file or folder. To upload a website to Swarm,
+        make sure that your folder contains an “index.html” file.
+      </Typography>
       <div className={classes.content}>
         {/* We have file and can upload display stamp selection */}
-        {file && !isUploadingFile && !uploadReference && (
+        {files.length && !isUploading && !uploadReference && (
           <>
             <ExpandableListItemNote>
-              To upload this file to your node, you need a postage stamp. You can buy a new one or you can use an
-              existing stamp (providing it’s sufficient for this file).
+              To upload the files to your node, you need a postage stamp. You can buy a new one or you can use an
+              existing stamp (providing it’s sufficient for the files).
             </ExpandableListItemNote>
             {selectedStamp && (
               <ExpandableListItem
@@ -124,25 +156,25 @@ export default function Files(): ReactElement {
           </>
         )}
 
-        {/* We have file and can upload display upload button */}
-        {file && !uploadReference && (
+        {/* We have at least one file and can display upload button */}
+        {files.length && !uploadReference && (
           <>
             <ExpandableListItemActions>
               <Button
                 variant="contained"
-                disabled={!file && isUploadingFile && !selectedStamp}
-                onClick={() => uploadFile()}
+                disabled={!files.length && isUploading && !selectedStamp}
+                onClick={() => uploadFiles()}
                 startIcon={<Check size="1rem" />}
               >
                 Upload
               </Button>
-              {isUploadingFile && (
+              {isUploading && (
                 <Container className={classes.loadingProgress}>
                   <CircularProgress />
                 </Container>
               )}
             </ExpandableListItemActions>
-            <UploadSizeAlert file={file} />
+            <UploadSizeAlert files={files} />
           </>
         )}
 
