@@ -12,6 +12,7 @@ import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import ExpandableListItemNote from '../../components/ExpandableListItemNote'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context, EnrichedPostageBatch } from '../../providers/Stamps'
+import { detectIndexHtml, NameWithPath } from '../../utils/file'
 import CreatePostageStamp from '../stamps/CreatePostageStampModal'
 import SelectStamp from './SelectStamp'
 
@@ -55,9 +56,11 @@ export default function Files(): ReactElement {
 
     if (!beeApi) return
 
+    const indexDocument = detectIndexHtml(files as unknown as NameWithPath[]) || undefined
+
     setUploading(true)
     beeApi
-      .uploadFiles(selectedStamp.batchID, files)
+      .uploadFiles(selectedStamp.batchID, files, { indexDocument })
       .then(hash => setUploadReference(hash.reference))
       .catch(e => enqueueSnackbar(`Error uploading: ${e.message}`, { variant: 'error' }))
       .finally(() => setUploading(false))
