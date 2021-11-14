@@ -15,7 +15,7 @@
   "bin": {
     "bee-dashboard": "./serve.js"
   },
-  "main": "lib/src/App.js",
+  "main": "lib/index.js",
   "bugs": {
     "url": "https://github.com/ethersphere/bee-dashboard/issues/"
   },
@@ -53,6 +53,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",
+    "@babel/plugin-proposal-class-properties": "^7.16.0",
+    "@babel/plugin-transform-runtime": "^7.12.1",
     "@babel/preset-react": "^7.16.0",
     "@babel/preset-typescript": "^7.12.1",
     "@commitlint/config-conventional": "14.1.0",
@@ -71,7 +73,9 @@
     "@typescript-eslint/eslint-plugin": "4.33.0",
     "@typescript-eslint/parser": "4.33.0",
     "babel-eslint": "10.1.0",
-    "babel-loader": "^8.1.0",
+    "babel-loader": "8.1.0",
+    "babel-plugin-syntax-dynamic-import": "^6.18.0",
+    "babel-plugin-tsconfig-paths": "^1.0.2",
     "depcheck": "1.4.2",
     "eslint": "7.24.0",
     "eslint-config-prettier": "8.2.0",
@@ -84,20 +88,23 @@
     "eslint-plugin-react": "7.23.2",
     "eslint-plugin-react-hooks": "4.2.0",
     "eslint-plugin-testing-library": "3.10.2",
-    "file-loader": "^1.1.11",
+    "file-loader": "^6.2.0",
     "prettier": "2.4.1",
     "react-scripts": "4.0.3",
     "ts-node": "^10.4.0",
-    "ttf-loader": "^1.0.2",
     "typescript": "4.4.4",
     "web-vitals": "2.1.2",
     "webpack-cli": "^4.9.1"
+  },
+  "peerDependencies": {
+    "react": ">= 17.0.2",
+    "react-dom": ">= 17.0.2"
   },
   "scripts": {
     "prepare": "npm run build",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "build:component": "webpack",
+    "build:component": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' webpack --mode=production",
     "test": "react-scripts test",
     "serve": "node ./serve.js",
     "depcheck": "depcheck .",
