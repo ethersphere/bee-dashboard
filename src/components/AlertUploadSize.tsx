@@ -3,7 +3,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import { Alert, AlertTitle } from '@material-ui/lab'
 import { ReactElement } from 'react'
 
-const LIMIT = 100_000_000 // 100 megabytes
+const LIMIT = 100000000 // 100 megabytes
 
 interface Props {
   files: File[]
