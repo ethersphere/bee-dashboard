@@ -11,16 +11,23 @@ export default (): Configuration => {
     output: {
       path: Path.resolve(__dirname, 'lib'),
       filename: 'index.js',
+      library: 'beeDashboard',
       libraryTarget: 'umd',
-      library: 'BeeDashboard',
-      umdNamedDefine: true,
     },
     resolve: {
-      extensions: ['.ts', '.tsx', '.js'],
+      extensions: ['.css', '.png', '.svg', '.ttf', '.ts', '.tsx', '.js'],
     },
     devtool: 'source-map',
-    externals: ['react'],
+    externals: {
+      // Use external version of React
+      // react: 'root React1',
+      react: 'react',
+      'react-dom': 'react-dom',
+    },
     target: 'web',
+    optimization: {
+      minimize: false,
+    },
     module: {
       rules: [
         {
@@ -28,7 +35,7 @@ export default (): Configuration => {
           use: ['style-loader', 'css-loader'],
         },
         {
-          test: /\.(png|jp(e*)g|svg|gif)$/,
+          test: /\.(png|jp(e*)g|svg|gif|ttf)$/,
           use: ['file-loader'],
         },
         {
@@ -36,23 +43,17 @@ export default (): Configuration => {
           exclude: /node_modules/,
           use: {
             loader: 'babel-loader',
-            options: {
-              presets: ['@babel/typescript', '@babel/preset-env', '@babel/preset-react'],
-            },
           },
-        },
-        {
-          test: /\.ttf$/,
-          use: [
-            {
-              loader: 'ttf-loader',
-              options: {
-                name: './font/[hash].[ext]',
-              },
-            },
-          ],
         },
       ],
     },
+    // plugins: [
+    //   new ProvidePlugin({
+    //     React: 'React',
+    //     react: 'React',
+    //     'window.react': 'React',
+    //     'window.React': 'React',
+    //   }),
+    // ],
   }
 }
