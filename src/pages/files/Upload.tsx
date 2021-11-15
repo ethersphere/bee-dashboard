@@ -1,6 +1,5 @@
 import { Avatar, Button, Chip, CircularProgress, Container, Typography } from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import { DropzoneArea } from 'material-ui-dropzone'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { Check, RotateCcw } from 'react-feather'
@@ -15,6 +14,8 @@ import { Context, EnrichedPostageBatch } from '../../providers/Stamps'
 import { detectIndexHtml, NameWithPath } from '../../utils/file'
 import CreatePostageStamp from '../stamps/CreatePostageStampModal'
 import SelectStamp from './SelectStamp'
+import { UploadArea } from './UploadArea'
+import { UploadPreview } from './UploadPreview'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -74,58 +75,10 @@ export default function Files(): ReactElement {
     }, 0)
   }
 
-  const handleChange = (files?: File[]) => {
-    setUploadReference('')
-
-    if (files) {
-      setFiles(files)
-    }
-  }
-
-  const getDropzoneInputDomElement = () => document.querySelector('.MuiDropzoneArea-root input') as HTMLInputElement
-
-  const onUploadFolderClick = () => {
-    const element = getDropzoneInputDomElement()
-
-    if (element) {
-      element.setAttribute('directory', '')
-      element.setAttribute('webkitdirectory', '')
-      element.setAttribute('mozdirectory', '')
-      element.click()
-    }
-  }
-
-  const onUploadFileClick = () => {
-    const element = getDropzoneInputDomElement()
-
-    if (element) {
-      element.removeAttribute('directory')
-      element.removeAttribute('webkitdirectory')
-      element.removeAttribute('mozdirectory')
-      element.click()
-    }
-  }
-
   return (
     <>
-      <DropzoneArea
-        key={'dropzone-' + dropzoneKey}
-        onChange={handleChange}
-        filesLimit={1e9}
-        maxFileSize={MAX_FILE_SIZE}
-      />
-      <ExpandableListItemActions>
-        <Button variant="contained" onClick={() => onUploadFileClick()}>
-          Upload File
-        </Button>
-        <Button variant="contained" onClick={() => onUploadFolderClick()}>
-          Upload Folder
-        </Button>
-      </ExpandableListItemActions>
-      <Typography variant="body2">
-        You can click the buttons above or simply drag and drop to add a file or folder. To upload a website to Swarm,
-        make sure that your folder contains an “index.html” file.
-      </Typography>
+      {!files.length && <UploadArea maximumSizeInBytes={MAX_FILE_SIZE} setFiles={setFiles} />}
+      {files.length && <UploadPreview files={files} clearFiles={() => setFiles([])} />}
       <div className={classes.content}>
         {/* We have file and can upload display stamp selection */}
         {files.length && !isUploading && !uploadReference && (
