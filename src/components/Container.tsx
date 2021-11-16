@@ -4,7 +4,7 @@ import { ReactElement, ReactNode } from 'react'
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
-      padding: theme.spacing(1),
+      padding: theme.spacing(2),
       backgroundColor: theme.palette.background.paper,
       height: '100%',
     },
@@ -12,15 +12,21 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 interface Props {
-  children: ReactNode[]
+  children: ReactNode
   maxHeight?: string
+  textAlign?: 'left' | 'right' | 'center'
 }
 
 export default function Container(props: Props): ReactElement {
   const classes = useStyles()
 
+  const inlineStyles: Record<string, string> = {}
+
+  props.maxHeight && (inlineStyles.maxHeight = props.maxHeight)
+  props.textAlign && (inlineStyles.textAlign = props.textAlign)
+
   return (
-    <div className={classes.container} style={props.maxHeight ? { maxHeight: props.maxHeight } : undefined}>
+    <div className={classes.container} style={inlineStyles}>
       {props.children}
     </div>
   )

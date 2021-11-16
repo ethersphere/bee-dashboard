@@ -2,17 +2,17 @@ import { Avatar, Button, Chip, CircularProgress, Container, Typography } from '@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
-import { Check, RotateCcw } from 'react-feather'
+import { Check } from 'react-feather'
 import UploadSizeAlert from '../../components/AlertUploadSize'
 import ClipboardCopy from '../../components/ClipboardCopy'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
-import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import ExpandableListItemNote from '../../components/ExpandableListItemNote'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context, EnrichedPostageBatch } from '../../providers/Stamps'
 import { detectIndexHtml, NameWithPath } from '../../utils/file'
 import CreatePostageStamp from '../stamps/CreatePostageStampModal'
+import { PostUploadSummary } from './PostUploadSummary'
 import SelectStamp from './SelectStamp'
 import { UploadArea } from './UploadArea'
 import { UploadPreview } from './UploadPreview'
@@ -77,11 +77,14 @@ export default function Files(): ReactElement {
 
   return (
     <>
-      {!files.length && <UploadArea maximumSizeInBytes={MAX_FILE_SIZE} setFiles={setFiles} />}
-      {files.length && <UploadPreview files={files} clearFiles={() => setFiles([])} />}
+      {files.length ? (
+        <UploadPreview showCancel={!uploadReference} files={files} clearFiles={() => setFiles([])} />
+      ) : (
+        <UploadArea maximumSizeInBytes={MAX_FILE_SIZE} setFiles={setFiles} />
+      )}
       <div className={classes.content}>
         {/* We have file and can upload display stamp selection */}
-        {files.length && !isUploading && !uploadReference && (
+        {files.length && !isUploading && !uploadReference ? (
           <>
             <ExpandableListItemNote>
               To upload the files to your node, you need a postage stamp. You can buy a new one or you can use an
@@ -110,10 +113,10 @@ export default function Files(): ReactElement {
               </ExpandableListItemActions>
             )}
           </>
-        )}
+        ) : null}
 
         {/* We have at least one file and can display upload button */}
-        {files.length && !uploadReference && (
+        {files.length && !uploadReference ? (
           <>
             <ExpandableListItemActions>
               <Button
@@ -132,19 +135,10 @@ export default function Files(): ReactElement {
             </ExpandableListItemActions>
             <UploadSizeAlert files={files} />
           </>
-        )}
+        ) : null}
 
         {/* File has already been uploaded */}
-        {uploadReference && (
-          <>
-            <ExpandableListItemKey label="Swarm Reference" value={uploadReference} />
-            <ExpandableListItemActions>
-              <Button variant="contained" onClick={uploadNew} startIcon={<RotateCcw size="1rem" />}>
-                Upload New File
-              </Button>
-            </ExpandableListItemActions>
-          </>
-        )}
+        {uploadReference && <PostUploadSummary onUploadNewClick={uploadNew} uploadReference={uploadReference} />}
       </div>
     </>
   )
