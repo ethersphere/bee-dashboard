@@ -48,11 +48,11 @@ export function UploadPreview(props: Props): ReactElement {
   const getSize = () => {
     const bytes = props.files.reduce((total, item) => total + item.size, 0)
 
-    if (bytes > 1e8) {
-      return (bytes / 1e8).toFixed(2) + ' Mb'
+    if (bytes >= 1e6) {
+      return (bytes / 1e6).toFixed(2) + ' Mb'
     }
 
-    return (bytes / 1e4).toFixed(2) + ' Kb'
+    return (bytes / 1e3).toFixed(2) + ' Kb'
   }
 
   return (
