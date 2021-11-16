@@ -113,6 +113,7 @@ function getStatus(
     blockchainConnection: Boolean(nodeAddresses?.ethereum),
     debugApiConnection: Boolean(debugApiHealth?.status === 'ok'),
     apiConnection: apiHealth,
+    // FIXME: `REACT_APP_DEV_MODE` is a temporary workaround to be able to develop with only one node
     topology: Boolean(topology?.connected && topology?.connected > 0) || Boolean(process.env.REACT_APP_DEV_MODE),
     chequebook:
       Boolean(chequebookAddress?.chequebookAddress) &&
