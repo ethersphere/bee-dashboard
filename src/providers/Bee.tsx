@@ -113,7 +113,7 @@ function getStatus(
     blockchainConnection: Boolean(nodeAddresses?.ethereum),
     debugApiConnection: Boolean(debugApiHealth?.status === 'ok'),
     apiConnection: apiHealth,
-    topology: Boolean(topology?.connected && topology?.connected > 0),
+    topology: Boolean(topology?.connected && topology?.connected > 0) || Boolean(process.env.REACT_APP_DEV_MODE),
     chequebook:
       Boolean(chequebookAddress?.chequebookAddress) &&
       chequebookBalance !== null &&
