@@ -1,19 +1,18 @@
-import type { ChequebookBalance, Balance, Settlements } from '../types'
-import { createContext, ReactChild, ReactElement, useEffect, useState, useContext } from 'react'
-import { Token } from '../models/Token'
-import semver from 'semver'
-import { engines } from '../../package.json'
-import { Context as SettingsContext } from './Settings'
-
 import type {
-  NodeAddresses,
   ChequebookAddressResponse,
-  LastChequesResponse,
   Health,
+  LastChequesResponse,
+  NodeAddresses,
   Peer,
   Topology,
 } from '@ethersphere/bee-js'
+import { createContext, ReactChild, ReactElement, useContext, useEffect, useState } from 'react'
+import semver from 'semver'
+import { engines } from '../../package.json'
 import { useLatestBeeRelease } from '../hooks/apiHooks'
+import { Token } from '../models/Token'
+import type { Balance, ChequebookBalance, Settlements } from '../types'
+import { Context as SettingsContext } from './Settings'
 
 interface Status {
   all: boolean
@@ -116,9 +115,10 @@ function getStatus(
     // FIXME: `REACT_APP_DEV_MODE` is a temporary workaround to be able to develop with only one node
     topology: Boolean(topology?.connected && topology?.connected > 0) || Boolean(process.env.REACT_APP_DEV_MODE),
     chequebook:
-      Boolean(chequebookAddress?.chequebookAddress) &&
-      chequebookBalance !== null &&
-      chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0),
+      (Boolean(chequebookAddress?.chequebookAddress) &&
+        chequebookBalance !== null &&
+        chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0)) ||
+      Boolean(process.env.REACT_APP_DEV_MODE),
   }
 
   return { ...status, all: !error && Object.values(status).every(v => v) }
