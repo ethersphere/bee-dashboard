@@ -65,6 +65,9 @@ export default function ExpandableListItemKey({ label, value }: Props): ReactEle
 
   const splitValues = split(value)
   const hasPrefix = isPrefixedHexString(value)
+  const spanText = `${hasPrefix ? `${splitValues[0]} ${splitValues[1]}` : splitValues[0]}[…]${
+    splitValues[splitValues.length - 1]
+  }`
 
   return (
     <ListItem className={`${classes.header} ${open ? classes.headerOpen : ''}`}>
@@ -77,9 +80,7 @@ export default function ExpandableListItemKey({ label, value }: Props): ReactEle
                 <span className={classes.copyValue}>
                   <Tooltip title={copied ? 'Copied' : 'Copy'} placement="top" arrow onClose={tooltipCloseHandler}>
                     <CopyToClipboard text={value}>
-                      <span onClick={tooltipClickHandler}>{`${
-                        hasPrefix ? `${splitValues[0]} ${splitValues[1]}` : splitValues[0]
-                      }[…]${splitValues[splitValues.length - 1]}`}</span>
+                      <span onClick={tooltipClickHandler}>{value ? spanText : ''}</span>
                     </CopyToClipboard>
                   </Tooltip>
                 </span>
