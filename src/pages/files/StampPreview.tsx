@@ -24,7 +24,7 @@ export function StampPreview({ stamp }: Props): ReactElement {
       </PaperGridContainer>
       <VerticalSpacing px={2} />
       <PaperGridContainer>
-        <PostageStamp stamp={stamp} />
+        <PostageStamp stamp={stamp} shorten={true} />
       </PaperGridContainer>
       <VerticalSpacing px={32} />
     </>
