@@ -59,10 +59,12 @@ export function UploadActionBar({
           Cancel
         </Button>
       </ExpandableListItemActions>
-      <Typography variant="body2">
-        You need a postage stamp to upload. Please refer to the official Bee documentation to understand how postage
-        stamps work.
-      </Typography>
+      {showSelect ? (
+        <Typography variant="body2">
+          You need a postage stamp to upload. Please refer to the official Bee documentation to understand how postage
+          stamps work.
+        </Typography>
+      ) : null}
     </>
   )
 }

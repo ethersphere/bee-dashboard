@@ -75,6 +75,7 @@ export default function Files(): ReactElement {
       ) : (
         <UploadArea maximumSizeInBytes={MAX_FILE_SIZE} setFiles={setFiles} />
       )}
+      {stamp !== null && !uploadReference ? <StampPreview stamp={stamp} /> : null}
       {files.length && !uploadReference ? (
         <UploadActionBar
           canSelectStamp={stamps !== null && stamps.length > 0}
@@ -99,7 +100,6 @@ export default function Files(): ReactElement {
           onSelect={stamp => setStamp(stamp)}
         />
       ) : null}
-      {stamp !== null && !uploadReference ? <StampPreview stamp={stamp} /> : null}
     </>
   )
 }
