@@ -1,7 +1,8 @@
-import { Button, CircularProgress, Container } from '@material-ui/core'
+import { CircularProgress, Container } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { PlusSquare } from 'react-feather'
+import { SwarmButton } from '../../components/SwarmButton'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as StampsContext } from '../../providers/Stamps'
@@ -51,17 +52,11 @@ export default function Stamp(): ReactElement {
       {!error && (
         <>
           <div className={classes.actions}>
-            {isBuyingStamp ? (
-              <CreatePostageStampModal onClose={() => setBuyingStamp(false)} />
-            ) : (
-              <Button
-                onClick={() => setBuyingStamp(true)}
-                variant="contained"
-                startIcon={<PlusSquare size="1.25rem" color="#dd7700" />}
-              >
-                Buy New Postage Stamp
-              </Button>
-            )}
+            {isBuyingStamp ? <CreatePostageStampModal onClose={() => setBuyingStamp(false)} /> : null}
+
+            <SwarmButton onClick={() => setBuyingStamp(true)} iconType={PlusSquare}>
+              Buy New Postage Stamp
+            </SwarmButton>
             <div style={{ height: '5px' }}>{isLoading && <CircularProgress />}</div>
           </div>
           <StampsTable postageStamps={stamps} />
