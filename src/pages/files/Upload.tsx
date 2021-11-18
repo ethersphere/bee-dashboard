@@ -6,11 +6,11 @@ import { Context, EnrichedPostageBatch } from '../../providers/Stamps'
 import { detectIndexHtml, NameWithPath } from '../../utils/file'
 import { CreatePostageStampModal } from '../stamps/CreatePostageStampModal'
 import { SelectPostageStampModal } from '../stamps/SelectPostageStampModal'
+import { AssetPreview } from './AssetPreview'
 import { PostUploadSummary } from './PostUploadSummary'
 import { StampPreview } from './StampPreview'
 import { UploadActionBar } from './UploadActionBar'
 import { UploadArea } from './UploadArea'
-import { UploadPreview } from './UploadPreview'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -43,7 +43,8 @@ export default function Files(): ReactElement {
       return
     }
 
-    const indexDocument = detectIndexHtml(files as unknown as NameWithPath[]) || undefined
+    const indexDocument =
+      files.length === 1 ? files[0].name : detectIndexHtml(files as unknown as NameWithPath[]) || undefined
 
     beeApi
       .uploadFiles(stamp.batchID, files, { indexDocument })
@@ -67,7 +68,7 @@ export default function Files(): ReactElement {
   return (
     <>
       {files.length ? (
-        <UploadPreview files={files} />
+        <AssetPreview files={files} />
       ) : (
         <UploadArea maximumSizeInBytes={MAX_FILE_SIZE} setFiles={setFiles} />
       )}

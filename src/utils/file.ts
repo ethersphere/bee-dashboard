@@ -1,3 +1,5 @@
+import { FileData } from '@ethersphere/bee-js'
+
 const indexHtmls = ['index.html', 'index.htm']
 
 export type NameWithPath = { name: string; path: string }
@@ -38,4 +40,13 @@ export function getHumanReadableFileSize(bytes: number): string {
   }
 
   return bytes + ' bytes'
+}
+
+export function convertBeeFileToBrowserFile(file: FileData<ArrayBuffer>): Partial<File> {
+  return {
+    name: file.name,
+    size: file.data.byteLength,
+    type: file.contentType,
+    arrayBuffer: () => new Promise(resolve => resolve(file.data)),
+  }
 }

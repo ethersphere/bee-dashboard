@@ -5,6 +5,7 @@ import { FitImage } from '../../components/FitImage'
 import { PaperGridContainer } from '../../components/PaperGridContainer'
 import { VerticalSpacing } from '../../components/VerticalSpacing'
 import { detectIndexHtml, getHumanReadableFileSize, NameWithPath } from '../../utils/file'
+import { FileIcon } from './FileIcon'
 import { FolderIcon } from './FolderIcon'
 import { WebsiteIcon } from './WebsiteIcon'
 
@@ -12,7 +13,7 @@ interface Props {
   files: File[]
 }
 
-export function UploadPreview(props: Props): ReactElement {
+export function AssetPreview(props: Props): ReactElement {
   const [previewComponent, setPreviewComponent] = useState<ReactElement | undefined>(undefined)
   const [previewUri, setPreviewUri] = useState<string | undefined>(undefined)
 
@@ -26,8 +27,8 @@ export function UploadPreview(props: Props): ReactElement {
         })
         // single non-image
       } else {
-        setPreviewUri('https://picsum.photos/300')
-        setPreviewComponent(undefined)
+        setPreviewUri(undefined)
+        setPreviewComponent(<FileIcon />)
       }
       // collection
     } else if (detectIndexHtml(props.files as unknown as NameWithPath[])) {
