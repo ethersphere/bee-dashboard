@@ -1,9 +1,10 @@
-import { Button, Typography } from '@material-ui/core'
+import { Typography } from '@material-ui/core'
 import { ReactElement } from 'react'
-import { Bookmark, RotateCcw } from 'react-feather'
+import { RotateCcw } from 'react-feather'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import ExpandableListItemLink from '../../components/ExpandableListItemLink'
+import { SwarmButton } from '../../components/SwarmButton'
 
 interface Props {
   uploadReference: string
@@ -19,16 +20,9 @@ export function PostUploadSummary(props: Props): ReactElement {
         value={`https://gateway.ethswarm.org/access/${props.uploadReference}`}
       />
       <ExpandableListItemActions>
-        <Button
-          variant="contained"
-          onClick={() => props.onUploadNewClick()}
-          startIcon={<RotateCcw size="1rem" color="#dd7700" />}
-        >
+        <SwarmButton onClick={() => props.onUploadNewClick()} iconType={RotateCcw}>
           Back to Upload
-        </Button>
-        <Button variant="contained" startIcon={<Bookmark size="1rem" color="#dd7700" />}>
-          Connect With Identity
-        </Button>
+        </SwarmButton>
       </ExpandableListItemActions>
       <Typography>
         The Swarm Gateway is graciously provided by the Swarm Foundation. This service is under development and provided

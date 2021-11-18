@@ -1,8 +1,9 @@
 import { Button, Typography } from '@material-ui/core'
 import { Clear } from '@material-ui/icons'
 import { ReactElement } from 'react'
-import { ArrowDownLeft, Check, Layers, PlusSquare } from 'react-feather'
+import { Check, Layers, PlusSquare, RefreshCcw } from 'react-feather'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
+import { SwarmButton } from '../../components/SwarmButton'
 
 interface Props {
   canSelectStamp: boolean
@@ -32,28 +33,24 @@ export function UploadActionBar({
     <>
       <ExpandableListItemActions>
         {showBuy ? (
-          <Button onClick={() => onBuy()} variant="contained" startIcon={<PlusSquare size="1.25rem" color="#dd7700" />}>
+          <SwarmButton onClick={() => onBuy()} iconType={PlusSquare}>
             Buy New Postage Stamp
-          </Button>
+          </SwarmButton>
         ) : null}
         {showSelect ? (
-          <Button onClick={() => onSelect()} variant="contained" startIcon={<Layers size="1.25rem" color="#dd7700" />}>
+          <SwarmButton onClick={() => onSelect()} iconType={Layers}>
             Use Existing Postage Stamp
-          </Button>
+          </SwarmButton>
         ) : null}
         {showUpload ? (
-          <Button onClick={() => onUpload()} variant="contained" startIcon={<Check size="1.25rem" color="#dd7700" />}>
+          <SwarmButton onClick={() => onUpload()} iconType={Check}>
             Upload To Your Node
-          </Button>
+          </SwarmButton>
         ) : null}
         {showChange ? (
-          <Button
-            onClick={() => onClearStamp()}
-            variant="contained"
-            startIcon={<ArrowDownLeft size="1.25rem" color="#dd7700" />}
-          >
+          <SwarmButton onClick={() => onClearStamp()} iconType={RefreshCcw}>
             Change Postage Stamp
-          </Button>
+          </SwarmButton>
         ) : null}
         <Button onClick={() => onCancel()} variant="contained" startIcon={<Clear />}>
           Cancel

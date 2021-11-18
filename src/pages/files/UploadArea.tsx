@@ -1,7 +1,8 @@
-import { Button, createStyles, makeStyles, Theme, Typography } from '@material-ui/core'
+import { createStyles, makeStyles, Theme, Typography } from '@material-ui/core'
 import { DropzoneArea } from 'material-ui-dropzone'
 import { ReactElement } from 'react'
 import { FilePlus, FolderPlus } from 'react-feather'
+import { SwarmButton } from '../../components/SwarmButton'
 
 interface Props {
   setFiles: (files: File[]) => void
@@ -80,22 +81,12 @@ export function UploadArea(props: Props): ReactElement {
           maxFileSize={props.maximumSizeInBytes}
         />
         <div className={classes.buttonWrapper}>
-          <Button
-            className={classes.button}
-            variant="contained"
-            onClick={() => onUploadFileClick()}
-            startIcon={<FilePlus size="1.25rem" color="#dd7700" />}
-          >
+          <SwarmButton className={classes.button} onClick={() => onUploadFileClick()} iconType={FilePlus}>
             Add File
-          </Button>
-          <Button
-            className={classes.button}
-            variant="contained"
-            onClick={() => onUploadFolderClick()}
-            startIcon={<FolderPlus size="1.25rem" color="#dd7700" />}
-          >
+          </SwarmButton>
+          <SwarmButton className={classes.button} onClick={() => onUploadFolderClick()} iconType={FolderPlus}>
             Add Folder
-          </Button>
+          </SwarmButton>
         </div>
       </div>
       <Typography variant="body2">
