@@ -110,5 +110,5 @@ export function makeRetriablePromise<T>(fn: () => Promise<T>, maxRetries = 3, de
 export function extractSwarmHash(string: string): string | null {
   const matches = string.match(/[a-fA-F0-9]{64,128}/)
 
-  return (matches && matches.at(0)) || null
+  return (matches && matches[0]) || null
 }
