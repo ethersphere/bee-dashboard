@@ -14,12 +14,14 @@ interface Props {
 export function PostUploadSummary(props: Props): ReactElement {
   return (
     <>
-      <ExpandableListItemKey label="Swarm hash" value={props.uploadReference} />
-      <ExpandableListItemLink
-        label="Share on Swarm Gateway"
-        value={`https://gateway.ethswarm.org/access/${props.uploadReference}`}
-      />
       <Box mb={4}>
+        <ExpandableListItemKey label="Swarm hash" value={props.uploadReference} />
+        <ExpandableListItemLink
+          label="Share on Swarm Gateway"
+          value={`https://gateway.ethswarm.org/access/${props.uploadReference}`}
+        />
+      </Box>
+      <Box mb={2}>
         <ExpandableListItemActions>
           <SwarmButton onClick={() => props.onUploadNewClick()} iconType={CornerUpLeft}>
             Back to Upload
