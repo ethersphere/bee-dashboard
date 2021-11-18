@@ -15,13 +15,13 @@ const useStyles = makeStyles(() =>
       '&:hover': {
         '& svg': {
           stroke: '#fff',
-          transition: '0.2s',
+          transition: '0.1s',
         },
       },
       '&:focus': {
         '& svg': {
           stroke: '#fff',
-          transition: '0.2s',
+          transition: '0.1s',
         },
       },
     },
