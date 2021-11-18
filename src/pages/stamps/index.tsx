@@ -1,9 +1,11 @@
-import { CircularProgress, Container } from '@material-ui/core'
+import { Button, CircularProgress, Container } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
-import { ReactElement, useContext, useEffect } from 'react'
+import { ReactElement, useContext, useEffect, useState } from 'react'
+import { PlusSquare } from 'react-feather'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as StampsContext } from '../../providers/Stamps'
+import { CreatePostageStampModal } from './CreatePostageStampModal'
 import StampsTable from './StampsTable'
 
 const useStyles = makeStyles(() =>
@@ -22,8 +24,11 @@ const useStyles = makeStyles(() =>
   }),
 )
 
-export default function Accounting(): ReactElement {
+export default function Stamp(): ReactElement {
   const classes = useStyles()
+
+  const [isBuyingStamp, setBuyingStamp] = useState(false)
+
   const { stamps, isLoading, error, start, stop } = useContext(StampsContext)
   const { status } = useContext(BeeContext)
 
@@ -46,7 +51,17 @@ export default function Accounting(): ReactElement {
       {!error && (
         <>
           <div className={classes.actions}>
-            {/* <CreatePostageStampModal /> */}
+            {isBuyingStamp ? (
+              <CreatePostageStampModal onClose={() => setBuyingStamp(false)} />
+            ) : (
+              <Button
+                onClick={() => setBuyingStamp(true)}
+                variant="contained"
+                startIcon={<PlusSquare size="1.25rem" color="#dd7700" />}
+              >
+                Buy New Postage Stamp
+              </Button>
+            )}
             <div style={{ height: '5px' }}>{isLoading && <CircularProgress />}</div>
           </div>
           <StampsTable postageStamps={stamps} />
