@@ -26,12 +26,11 @@ export default function Files(): ReactElement {
   const [dropzoneKey, setDropzoneKey] = useState(0)
   const [files, setFiles] = useState<File[]>([])
   const [uploadReference, setUploadReference] = useState('')
-  const [isUploading, setUploading] = useState(false)
   const [isBuyingStamp, setBuyingStamp] = useState(false)
   const [isSelectingStamp, setSelectingStamp] = useState(false)
   const [stamp, setStamp] = useState<EnrichedPostageBatch | null>(null)
 
-  const { isLoading, error, stamps, refresh } = useContext(Context)
+  const { stamps, refresh } = useContext(Context)
   const { beeApi } = useContext(SettingsContext)
   const { enqueueSnackbar } = useSnackbar()
 
@@ -46,18 +45,15 @@ export default function Files(): ReactElement {
 
     const indexDocument = detectIndexHtml(files as unknown as NameWithPath[]) || undefined
 
-    setUploading(true)
     beeApi
       .uploadFiles(stamp.batchID, files, { indexDocument })
       .then(hash => setUploadReference(hash.reference))
       .catch(e => enqueueSnackbar(`Error uploading: ${e.message}`, { variant: 'error' }))
-      .finally(() => setUploading(false))
   }
 
   const reset = () => {
     setFiles([])
     setStamp(null)
-    setUploading(false)
   }
 
   const uploadNew = () => {
