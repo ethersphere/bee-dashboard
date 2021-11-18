@@ -15,17 +15,16 @@ interface Props {
   alt: string
   src: string | undefined
   maxHeight?: string
+  maxWidth?: string
 }
 
 export function FitImage(props: Props): ReactElement {
   const classes = useStyles()
 
-  return (
-    <img
-      className={classes.image}
-      alt={props.alt}
-      src={props.src}
-      style={props.maxHeight ? { maxHeight: props.maxHeight } : undefined}
-    />
-  )
+  const inlineStyles: Record<string, string> = {}
+
+  props.maxHeight && (inlineStyles.maxHeight = props.maxHeight)
+  props.maxWidth && (inlineStyles.maxWidth = props.maxWidth)
+
+  return <img className={classes.image} alt={props.alt} src={props.src} style={inlineStyles} />
 }

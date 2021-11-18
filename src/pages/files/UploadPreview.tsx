@@ -5,12 +5,15 @@ import { FitImage } from '../../components/FitImage'
 import { PaperGridContainer } from '../../components/PaperGridContainer'
 import { VerticalSpacing } from '../../components/VerticalSpacing'
 import { detectIndexHtml, getHumanReadableFileSize, NameWithPath } from '../../utils/file'
+import { FolderIcon } from './FolderIcon'
+import { WebsiteIcon } from './WebsiteIcon'
 
 interface Props {
   files: File[]
 }
 
 export function UploadPreview(props: Props): ReactElement {
+  const [previewComponent, setPreviewComponent] = useState<ReactElement | undefined>(undefined)
   const [previewUri, setPreviewUri] = useState<string | undefined>(undefined)
 
   useEffect(() => {
@@ -24,10 +27,15 @@ export function UploadPreview(props: Props): ReactElement {
         // single non-image
       } else {
         setPreviewUri('https://picsum.photos/300')
+        setPreviewComponent(undefined)
       }
       // collection
+    } else if (detectIndexHtml(props.files as unknown as NameWithPath[])) {
+      setPreviewUri(undefined)
+      setPreviewComponent(<WebsiteIcon />)
     } else {
-      setPreviewUri('https://picsum.photos/300')
+      setPreviewUri(undefined)
+      setPreviewComponent(<FolderIcon />)
     }
   }, [props.files])
 
@@ -63,16 +71,16 @@ export function UploadPreview(props: Props): ReactElement {
     <>
       <PaperGridContainer>
         <Grid container alignItems="stretch" direction="row">
-          <Grid item xs={4}>
-            <FitImage maxHeight="250px" alt="Upload Preview" src={previewUri} />
-          </Grid>
-          <Grid item xs={8}>
-            <Container maxHeight="250px">
-              <Typography>{getPrimaryText()}</Typography>
-              <Typography>Kind: {getKind()}</Typography>
-              <Typography>Size: {getSize()}</Typography>
-            </Container>
-          </Grid>
+          {previewComponent ? (
+            previewComponent
+          ) : (
+            <FitImage maxWidth="250px" maxHeight="175px" alt="Upload Preview" src={previewUri} />
+          )}
+          <Container>
+            <Typography>{getPrimaryText()}</Typography>
+            <Typography>Kind: {getKind()}</Typography>
+            <Typography>Size: {getSize()}</Typography>
+          </Container>
         </Grid>
       </PaperGridContainer>
       {isFolder() && (
