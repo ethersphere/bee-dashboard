@@ -5,7 +5,6 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
       padding: theme.spacing(2),
-      backgroundColor: theme.palette.background.paper,
       height: '100%',
     },
   }),

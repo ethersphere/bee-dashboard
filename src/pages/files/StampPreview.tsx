@@ -1,9 +1,10 @@
 import { Grid, Typography } from '@material-ui/core'
 import { ReactElement } from 'react'
-import { Capacity } from '../../components/Capacity'
 import Container from '../../components/Container'
+import { PaperGridContainer } from '../../components/PaperGridContainer'
 import { VerticalSpacing } from '../../components/VerticalSpacing'
 import { EnrichedPostageBatch } from '../../providers/Stamps'
+import { PostageStamp } from '../stamps/PostageStamp'
 
 interface Props {
   stamp: EnrichedPostageBatch
@@ -12,7 +13,7 @@ interface Props {
 export function StampPreview({ stamp }: Props): ReactElement {
   return (
     <>
-      <Grid container alignItems="stretch" direction="row">
+      <PaperGridContainer>
         <Grid item xs={12}>
           <Container>
             <Typography variant="subtitle2">
@@ -20,20 +21,12 @@ export function StampPreview({ stamp }: Props): ReactElement {
             </Typography>
           </Container>
         </Grid>
-      </Grid>
+      </PaperGridContainer>
       <VerticalSpacing px={2} />
-      <Grid container alignItems="stretch" direction="row">
-        <Grid item xs={6}>
-          <Container>
-            <Typography variant="subtitle2">{stamp.batchID}</Typography>
-          </Container>
-        </Grid>
-        <Grid item xs={6}>
-          <Container>
-            <Capacity usage={stamp.usage} />
-          </Container>
-        </Grid>
-      </Grid>
+      <PaperGridContainer>
+        <PostageStamp stamp={stamp} />
+      </PaperGridContainer>
+      <VerticalSpacing px={32} />
     </>
   )
 }
