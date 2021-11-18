@@ -1,6 +1,6 @@
 import { Typography } from '@material-ui/core'
 import { ReactElement } from 'react'
-import { RotateCcw } from 'react-feather'
+import { CornerUpLeft } from 'react-feather'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import ExpandableListItemLink from '../../components/ExpandableListItemLink'
@@ -20,7 +20,7 @@ export function PostUploadSummary(props: Props): ReactElement {
         value={`https://gateway.ethswarm.org/access/${props.uploadReference}`}
       />
       <ExpandableListItemActions>
-        <SwarmButton onClick={() => props.onUploadNewClick()} iconType={RotateCcw}>
+        <SwarmButton onClick={() => props.onUploadNewClick()} iconType={CornerUpLeft}>
           Back to Upload
         </SwarmButton>
       </ExpandableListItemActions>
