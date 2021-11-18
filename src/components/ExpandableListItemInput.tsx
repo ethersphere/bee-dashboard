@@ -1,9 +1,8 @@
-import { ReactElement, ChangeEvent, useState } from 'react'
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
+import { Button, Grid, IconButton, InputBase, ListItem, Typography } from '@material-ui/core'
 import Collapse from '@material-ui/core/Collapse'
-import { ListItem, Typography, Grid, IconButton, InputBase, Button } from '@material-ui/core'
-import { Edit, Minus, RotateCcw, Check } from 'react-feather'
-
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import { ChangeEvent, ReactElement, useState } from 'react'
+import { Check, Edit, Minus, RotateCcw } from 'react-feather'
 import ExpandableListItemActions from './ExpandableListItemActions'
 import ExpandableListItemNote from './ExpandableListItemNote'
 
@@ -55,6 +54,7 @@ interface Props {
   confirmLabelDisabled?: boolean
   onChange?: (value: string) => void
   onConfirm: (value: string) => void
+  mapperFn?: (value: string) => string
 }
 
 export default function ExpandableListItemKey({
@@ -67,12 +67,17 @@ export default function ExpandableListItemKey({
   expandedOnly,
   helperText,
   placeholder,
+  mapperFn,
 }: Props): ReactElement | null {
   const classes = useStyles()
   const [open, setOpen] = useState(Boolean(expandedOnly))
   const [inputValue, setInputValue] = useState<string>(value || '')
   const toggleOpen = () => setOpen(!open)
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    if (mapperFn) {
+      e.target.value = mapperFn(e.target.value)
+    }
+
     setInputValue(e.target.value)
 
     if (onChange) onChange(e.target.value)

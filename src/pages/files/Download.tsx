@@ -3,6 +3,7 @@ import { ReactElement, useContext, useState } from 'react'
 import ExpandableListItemInput from '../../components/ExpandableListItemInput'
 import { VerticalSpacing } from '../../components/VerticalSpacing'
 import { Context as SettingsContext } from '../../providers/Settings'
+import { extractSwarmHash } from '../../utils'
 import { convertBeeFileToBrowserFile } from '../../utils/file'
 import { AssetPreview } from './AssetPreview'
 import { DownloadActionBar } from './DownloadActionBar'
@@ -42,6 +43,20 @@ export default function Files(): ReactElement {
     )
   }
 
+  function recognizeSwarmHash(value: string) {
+    if (value.length < 64) {
+      return value
+    }
+
+    const hash = extractSwarmHash(value)
+
+    if (hash) {
+      return hash
+    }
+
+    return value
+  }
+
   return (
     <ExpandableListItemInput
       label="Swarm Hash"
@@ -52,6 +67,7 @@ export default function Files(): ReactElement {
       confirmLabelDisabled={Boolean(referenceError)}
       placeholder="e.g. 31fb0362b1a42536134c86bc58b97ac0244e5c6630beec3e27c2d1cecb38c605"
       expandedOnly
+      mapperFn={value => recognizeSwarmHash(value)}
     />
   )
 }
