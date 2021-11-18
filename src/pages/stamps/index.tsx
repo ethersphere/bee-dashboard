@@ -1,13 +1,10 @@
-import { ReactElement, useContext, useEffect } from 'react'
+import { CircularProgress, Container } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
-import { Container, CircularProgress } from '@material-ui/core'
-
-import StampsTable from './StampsTable'
-import CreatePostageStampModal from './CreatePostageStampModal'
-
-import { Context as StampsContext } from '../../providers/Stamps'
+import { ReactElement, useContext, useEffect } from 'react'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { Context as BeeContext } from '../../providers/Bee'
+import { Context as StampsContext } from '../../providers/Stamps'
+import StampsTable from './StampsTable'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -49,7 +46,7 @@ export default function Accounting(): ReactElement {
       {!error && (
         <>
           <div className={classes.actions}>
-            <CreatePostageStampModal />
+            {/* <CreatePostageStampModal /> */}
             <div style={{ height: '5px' }}>{isLoading && <CircularProgress />}</div>
           </div>
           <StampsTable postageStamps={stamps} />

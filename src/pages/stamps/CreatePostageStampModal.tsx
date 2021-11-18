@@ -47,16 +47,13 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 interface Props {
-  label?: string
+  onClose: () => void
 }
 
-export default function FormDialog({ label }: Props): ReactElement {
+export function CreatePostageStampModal({ onClose }: Props): ReactElement {
   const classes = useStyles()
-  const [open, setOpen] = React.useState(false)
   const { refresh } = useContext(Context)
   const { beeDebugApi } = useContext(SettingsContext)
-  const handleClickOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
   const { enqueueSnackbar } = useSnackbar()
 
   return (
@@ -75,7 +72,7 @@ export default function FormDialog({ label }: Props): ReactElement {
           await beeDebugApi.createPostageBatch(amount.toString(), depth, options)
           actions.resetForm()
           await refresh()
-          handleClose()
+          onClose()
         } catch (e) {
           enqueueSnackbar(`Error: ${(e as Error).message}`, { variant: 'error' })
           actions.setSubmitting(false)
@@ -111,20 +108,9 @@ export default function FormDialog({ label }: Props): ReactElement {
     >
       {({ submitForm, isValid, isSubmitting, values }) => (
         <Form>
-          <Button variant="contained" onClick={handleClickOpen}>
-            {label || 'Buy Postage Stamp'}
-            {isSubmitting && <CircularProgress size={24} className={classes.buttonProgress} />}
-          </Button>
-          <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-            <DialogTitle id="form-dialog-title">Purchase new postage stamp</DialogTitle>
+          <Dialog open={true} onClose={() => onClose()} aria-labelledby="form-dialog-title">
+            <DialogTitle id="form-dialog-title">Buy new postage stamp</DialogTitle>
             <DialogContent>
-              <DialogContentText>
-                Provide the depth, amount and optionally the label of the postage stamp. Please refer to the{' '}
-                <a href="https://docs.ethswarm.org/docs/access-the-swarm/keep-your-data-alive" target="blank">
-                  official bee docs
-                </a>{' '}
-                to understand these values.
-              </DialogContentText>
               <Field
                 component={TextField}
                 required
@@ -138,7 +124,7 @@ export default function FormDialog({ label }: Props): ReactElement {
               <Field component={TextField} name="label" label="Label" fullWidth className={classes.field} />
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleClose} variant="contained">
+              <Button onClick={() => onClose()} variant="contained">
                 Cancel
               </Button>
               <div className={classes.wrapper}>
@@ -153,6 +139,11 @@ export default function FormDialog({ label }: Props): ReactElement {
                 </Button>
               </div>
             </DialogActions>
+            <DialogContent>
+              <DialogContentText>
+                Please refer to the official Bee documentation to understand these values.
+              </DialogContentText>
+            </DialogContent>
           </Dialog>
         </Form>
       )}

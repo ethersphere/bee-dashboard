@@ -1,18 +1,17 @@
-import { Button, createStyles, Grid, makeStyles, Theme, Typography } from '@material-ui/core'
-import { Clear } from '@material-ui/icons'
+import { createStyles, Grid, makeStyles, Theme, Typography } from '@material-ui/core'
 import { ReactElement, useEffect, useState } from 'react'
 import Container from '../../components/Container'
 import { FitImage } from '../../components/FitImage'
+import { VerticalSpacing } from '../../components/VerticalSpacing'
+import { detectIndexHtml, getHumanReadableFileSize, NameWithPath } from '../../utils/file'
 
 interface Props {
   files: File[]
-  clearFiles: () => void
-  showCancel: boolean
 }
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    folderContent: { marginTop: theme.spacing(0.25), marginBottom: theme.spacing(6) }, // TODO use theme spacing
+    folderContent: { marginBottom: theme.spacing(4) },
   }),
 )
 
@@ -52,19 +51,19 @@ export function UploadPreview(props: Props): ReactElement {
       return props.files[0].type
     }
 
+    if (detectIndexHtml(props.files as unknown as NameWithPath[])) {
+      return 'Website'
+    }
+
     return 'Folder'
   }
 
-  const isFolder = () => getKind() === 'Folder'
+  const isFolder = () => ['Folder', 'Website'].includes(getKind())
 
   const getSize = () => {
     const bytes = props.files.reduce((total, item) => total + item.size, 0)
 
-    if (bytes >= 1e6) {
-      return (bytes / 1e6).toFixed(2) + ' MB'
-    }
-
-    return (bytes / 1e3).toFixed(2) + ' kB'
+    return getHumanReadableFileSize(bytes)
   }
 
   return (
@@ -84,23 +83,21 @@ export function UploadPreview(props: Props): ReactElement {
         </Grid>
       </Grid>
       {isFolder() && (
-        <Grid container alignItems="stretch" direction="row">
-          <Grid item xs={6} className={classes.folderContent}>
-            <Container>
-              <Typography variant="subtitle2">Folder content</Typography>
-            </Container>
+        <>
+          <VerticalSpacing px={2} />
+          <Grid container alignItems="stretch" direction="row">
+            <Grid item xs={6} className={classes.folderContent}>
+              <Container>
+                <Typography variant="subtitle2">Folder content</Typography>
+              </Container>
+            </Grid>
+            <Grid item xs={6} className={classes.folderContent}>
+              <Container textAlign="right">
+                <Typography variant="subtitle2">{props.files.length} items</Typography>
+              </Container>
+            </Grid>
           </Grid>
-          <Grid item xs={6} className={classes.folderContent}>
-            <Container textAlign="right">
-              <Typography variant="subtitle2">{props.files.length} items</Typography>
-            </Container>
-          </Grid>
-        </Grid>
-      )}
-      {props.showCancel && (
-        <Button variant="contained" onClick={() => props.clearFiles()} startIcon={<Clear />}>
-          Cancel
-        </Button>
+        </>
       )}
     </>
   )

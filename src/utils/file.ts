@@ -27,3 +27,15 @@ export function detectIndexHtml(files: NameWithPath[]): string | false {
 
   return false
 }
+
+export function getHumanReadableFileSize(bytes: number): string {
+  if (bytes >= 1e6) {
+    return (bytes / 1e6).toFixed(2) + ' MB'
+  }
+
+  if (bytes >= 1e3) {
+    return (bytes / 1e3).toFixed(2) + ' kB'
+  }
+
+  return bytes + ' bytes'
+}

@@ -1,6 +1,6 @@
-import { ReactElement, ReactNode } from 'react'
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Grid } from '@material-ui/core'
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import { ReactElement, ReactNode } from 'react'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -22,11 +22,13 @@ export default function ExpandableListItemActions({ children }: Props): ReactEle
   if (Array.isArray(children)) {
     return (
       <Grid container direction="row">
-        {children.map((a, i) => (
-          <Grid key={i} className={classes.action}>
-            {a}
-          </Grid>
-        ))}
+        {children
+          .filter(x => x)
+          .map((a, i) => (
+            <Grid key={i} className={classes.action}>
+              {a}
+            </Grid>
+          ))}
       </Grid>
     )
   }
