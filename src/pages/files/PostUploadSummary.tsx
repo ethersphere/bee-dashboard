@@ -1,4 +1,4 @@
-import { Typography } from '@material-ui/core'
+import { Box, Typography } from '@material-ui/core'
 import { ReactElement } from 'react'
 import { CornerUpLeft } from 'react-feather'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
@@ -19,11 +19,13 @@ export function PostUploadSummary(props: Props): ReactElement {
         label="Share on Swarm Gateway"
         value={`https://gateway.ethswarm.org/access/${props.uploadReference}`}
       />
-      <ExpandableListItemActions>
-        <SwarmButton onClick={() => props.onUploadNewClick()} iconType={CornerUpLeft}>
-          Back to Upload
-        </SwarmButton>
-      </ExpandableListItemActions>
+      <Box mb={4}>
+        <ExpandableListItemActions>
+          <SwarmButton onClick={() => props.onUploadNewClick()} iconType={CornerUpLeft}>
+            Back to Upload
+          </SwarmButton>
+        </ExpandableListItemActions>
+      </Box>
       <Typography>
         The Swarm Gateway is graciously provided by the Swarm Foundation. This service is under development and provided
         for testing purposes only. Learn more at{' '}
