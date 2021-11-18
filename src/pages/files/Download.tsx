@@ -63,7 +63,7 @@ export default function Files(): ReactElement {
       onConfirm={value => onSwarmIdentifier(value)}
       onChange={validateChange}
       helperText={referenceError}
-      confirmLabel={'Download'}
+      confirmLabel={'Search'}
       confirmLabelDisabled={Boolean(referenceError)}
       placeholder="e.g. 31fb0362b1a42536134c86bc58b97ac0244e5c6630beec3e27c2d1cecb38c605"
       expandedOnly

@@ -3,6 +3,7 @@ import { Clear } from '@material-ui/icons'
 import { ReactElement } from 'react'
 import { Download } from 'react-feather'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
+import { SwarmButton } from '../../components/SwarmButton'
 
 interface Props {
   onDownload: () => void
@@ -12,9 +13,9 @@ interface Props {
 export function DownloadActionBar({ onDownload, onCancel }: Props): ReactElement {
   return (
     <ExpandableListItemActions>
-      <Button onClick={() => onDownload()} variant="contained" startIcon={<Download />}>
+      <SwarmButton onClick={() => onDownload()} iconType={Download}>
         Download This File
-      </Button>
+      </SwarmButton>
       <Button onClick={() => onCancel()} variant="contained" startIcon={<Clear />}>
         Cancel
       </Button>
