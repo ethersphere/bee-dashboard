@@ -11,19 +11,19 @@ interface Props {
   onUploadNewClick: () => void
 }
 
-export function PostUploadSummary(props: Props): ReactElement {
+export function PostUploadSummary({ uploadReference, onUploadNewClick }: Props): ReactElement {
   return (
     <>
       <Box mb={4}>
-        <ExpandableListItemKey label="Swarm hash" value={props.uploadReference} />
+        <ExpandableListItemKey label="Swarm hash" value={uploadReference} />
         <ExpandableListItemLink
           label="Share on Swarm Gateway"
-          value={`https://gateway.ethswarm.org/access/${props.uploadReference}`}
+          value={`https://gateway.ethswarm.org/access/${uploadReference}`}
         />
       </Box>
       <Box mb={2}>
         <ExpandableListItemActions>
-          <SwarmButton onClick={() => props.onUploadNewClick()} iconType={CornerUpLeft}>
+          <SwarmButton onClick={onUploadNewClick} iconType={CornerUpLeft}>
             Back to Upload
           </SwarmButton>
         </ExpandableListItemActions>

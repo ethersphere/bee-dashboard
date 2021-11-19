@@ -81,10 +81,10 @@ export function UploadArea(props: Props): ReactElement {
           maxFileSize={props.maximumSizeInBytes}
         />
         <div className={classes.buttonWrapper}>
-          <SwarmButton className={classes.button} onClick={() => onUploadFileClick()} iconType={FilePlus}>
+          <SwarmButton className={classes.button} onClick={onUploadFileClick} iconType={FilePlus}>
             Add File
           </SwarmButton>
-          <SwarmButton className={classes.button} onClick={() => onUploadFolderClick()} iconType={FolderPlus}>
+          <SwarmButton className={classes.button} onClick={onUploadFolderClick} iconType={FolderPlus}>
             Add Folder
           </SwarmButton>
         </div>

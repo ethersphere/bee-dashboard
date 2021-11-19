@@ -39,7 +39,7 @@ export function SwarmButton({ children, onClick, iconType, className }: Props): 
   const classNames = className ? [className, classes.button].join(' ') : classes.button
 
   return (
-    <Button className={classNames} onClick={() => onClick()} variant="contained" startIcon={icon}>
+    <Button className={classNames} onClick={onClick} variant="contained" startIcon={icon}>
       {children}
     </Button>
   )

@@ -39,7 +39,7 @@ export default function Files(): ReactElement {
         <Box mb={4}>
           <AssetPreview files={[downloadedFile as File]} />
         </Box>
-        <DownloadActionBar onCancel={() => setDownloadedFile(null)} onDownload={() => onDownload()} />
+        <DownloadActionBar onCancel={() => setDownloadedFile(null)} onDownload={onDownload} />
       </>
     )
   }

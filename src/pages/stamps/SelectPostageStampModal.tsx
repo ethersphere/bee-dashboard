@@ -63,7 +63,7 @@ export function SelectPostageStampModal({ stamps, onSelect, onClose }: Props): R
   return (
     <Dialog
       open={true}
-      onClose={() => onClose()}
+      onClose={onClose}
       aria-labelledby="form-dialog-title"
       fullWidth
       PaperProps={{ className: classes.dialog }}
@@ -90,10 +90,10 @@ export function SelectPostageStampModal({ stamps, onSelect, onClose }: Props): R
       <Box mb={2}>
         <DialogContent>
           <ExpandableListItemActions>
-            <Button disabled={!selectedStamp} onClick={() => onFinish()} variant="contained" startIcon={<Check />}>
+            <Button disabled={!selectedStamp} onClick={onFinish} variant="contained" startIcon={<Check />}>
               Select
             </Button>
-            <Button onClick={() => onClose()} variant="contained" startIcon={<Clear />}>
+            <Button onClick={onClose} variant="contained" startIcon={<Clear />}>
               Cancel
             </Button>
           </ExpandableListItemActions>

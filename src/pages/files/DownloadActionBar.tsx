@@ -13,10 +13,10 @@ interface Props {
 export function DownloadActionBar({ onDownload, onCancel }: Props): ReactElement {
   return (
     <ExpandableListItemActions>
-      <SwarmButton onClick={() => onDownload()} iconType={Download}>
+      <SwarmButton onClick={onDownload} iconType={Download}>
         Download This File
       </SwarmButton>
-      <Button onClick={() => onCancel()} variant="contained" startIcon={<Clear />}>
+      <Button onClick={onCancel} variant="contained" startIcon={<Clear />}>
         Cancel
       </Button>
     </ExpandableListItemActions>

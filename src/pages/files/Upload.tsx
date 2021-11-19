@@ -77,10 +77,10 @@ export default function Files(): ReactElement {
         <UploadActionBar
           canSelectStamp={stamps !== null && stamps.length > 0}
           hasSelectedStamp={stamp !== null}
-          onCancel={() => reset()}
+          onCancel={reset}
           onBuy={() => setBuyingStamp(true)}
           onSelect={() => setSelectingStamp(true)}
-          onUpload={() => uploadFiles()}
+          onUpload={uploadFiles}
           onClearStamp={() => setStamp(null)}
         />
       ) : null}

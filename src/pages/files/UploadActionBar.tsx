@@ -33,26 +33,26 @@ export function UploadActionBar({
     <>
       <ExpandableListItemActions>
         {showBuy ? (
-          <SwarmButton onClick={() => onBuy()} iconType={PlusSquare}>
+          <SwarmButton onClick={onBuy} iconType={PlusSquare}>
             Buy New Postage Stamp
           </SwarmButton>
         ) : null}
         {showSelect ? (
-          <SwarmButton onClick={() => onSelect()} iconType={Layers}>
+          <SwarmButton onClick={onSelect} iconType={Layers}>
             Use Existing Postage Stamp
           </SwarmButton>
         ) : null}
         {showUpload ? (
-          <SwarmButton onClick={() => onUpload()} iconType={Check}>
+          <SwarmButton onClick={onUpload} iconType={Check}>
             Upload To Your Node
           </SwarmButton>
         ) : null}
         {showChange ? (
-          <SwarmButton onClick={() => onClearStamp()} iconType={RefreshCcw}>
+          <SwarmButton onClick={onClearStamp} iconType={RefreshCcw}>
             Change Postage Stamp
           </SwarmButton>
         ) : null}
-        <Button onClick={() => onCancel()} variant="contained" startIcon={<Clear />}>
+        <Button onClick={onCancel} variant="contained" startIcon={<Clear />}>
           Cancel
         </Button>
       </ExpandableListItemActions>

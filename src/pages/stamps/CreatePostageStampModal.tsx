@@ -108,7 +108,7 @@ export function CreatePostageStampModal({ onClose }: Props): ReactElement {
     >
       {({ submitForm, isValid, isSubmitting, values }) => (
         <Form>
-          <Dialog open={true} onClose={() => onClose()} aria-labelledby="form-dialog-title">
+          <Dialog open={true} onClose={onClose} aria-labelledby="form-dialog-title">
             <DialogTitle id="form-dialog-title">Buy new postage stamp</DialogTitle>
             <DialogContent>
               <Field
@@ -124,7 +124,7 @@ export function CreatePostageStampModal({ onClose }: Props): ReactElement {
               <Field component={TextField} name="label" label="Label" fullWidth className={classes.field} />
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => onClose()} variant="contained">
+              <Button onClick={onClose} variant="contained">
                 Cancel
               </Button>
               <div className={classes.wrapper}>
