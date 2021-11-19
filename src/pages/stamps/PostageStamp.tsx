@@ -16,7 +16,7 @@ export function PostageStamp({ stamp, shorten }: Props): ReactElement {
         <Typography variant="subtitle2">{shorten ? stamp.batchID.slice(0, 8) : stamp.batchID}</Typography>
       </Container>
       <Container>
-        <Capacity usage={stamp.usage} />
+        <Capacity width="100px" usage={stamp.usage} />
       </Container>
     </Grid>
   )
