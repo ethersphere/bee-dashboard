@@ -13,10 +13,10 @@
 **Warning: This project is in alpha state. There might (and most probably will) be changes in the future to its API and
 working. Also, no guarantees can be made about its stability, efficiency, and security at this stage.**
 
-This project is intended to be used with **Bee version
-<!-- SUPPORTED_BEE_START -->1.2.0-29eb9414<!-- SUPPORTED_BEE_END -->**. Using it with older or newer Bee versions is not
-recommended and may not work. Stay up to date by joining the [official Discord](https://discord.gg/GU22h2utj6) and by
-keeping an eye on the [releases tab](https://github.com/ethersphere/bee-dashboard/releases).
+This project is intended to be used with **Bee version <!-- SUPPORTED_BEE_START -->1.2.0-29eb9414<!-- SUPPORTED_BEE_END -->**.
+Using it with older or newer Bee versions is not recommended and may not work. Stay up to date by joining the
+[official Discord](https://discord.gg/GU22h2utj6) and by keeping an eye on the
+[releases tab](https://github.com/ethersphere/bee-dashboard/releases).
 
 ![Status page](/ui_samples/info.png)
 
@@ -85,9 +85,7 @@ npm start
 
 The Bee Dashboard runs in development mode on [http://localhost:3031/](http://localhost:3031/)
 
-> Setting `REACT_APP_DEV_MODE=1` environment variable loosens some checks. This makes it possible to develop Bee
-> Dashboard without having connected peers and chequebook properly set up, effectively supporting the dev mode of Bee
-> itself.
+> Setting `REACT_APP_DEV_MODE=1` environment variable loosens some checks. This makes it possible to develop Bee Dashboard without having connected peers and chequebook properly set up, effectively supporting the dev mode of Bee itself.
 
 ## Contribute
 
@@ -108,5 +106,6 @@ See what "Maintainer" means [here](https://github.com/ethersphere/repo-maintaine
 ## License
 
 [BSD-3-Clause](./LICENSE)
+
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fethersphere%2Fbee-dashboard.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fethersphere%2Fbee-dashboard?ref=badge_large)
