@@ -23,6 +23,7 @@ export default function ExpandableListItemActions({ children }: Props): ReactEle
     return (
       <Grid container direction="row">
         {children
+          // Exclude falsy values to allow conditional rendering
           .filter(x => x)
           .map((a, i) => (
             <Grid key={i} className={classes.action}>
