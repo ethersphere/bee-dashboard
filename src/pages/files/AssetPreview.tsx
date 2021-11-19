@@ -1,12 +1,12 @@
 import { Box, Grid, Typography } from '@material-ui/core'
+import { Web } from '@material-ui/icons'
 import { ReactElement, useEffect, useState } from 'react'
+import { File, Folder } from 'react-feather'
 import Container from '../../components/Container'
 import { FitImage } from '../../components/FitImage'
 import { PaperGridContainer } from '../../components/PaperGridContainer'
 import { detectIndexHtml, getHumanReadableFileSize, NameWithPath } from '../../utils/file'
-import { FileIcon } from './FileIcon'
-import { FolderIcon } from './FolderIcon'
-import { WebsiteIcon } from './WebsiteIcon'
+import { AssetIcon } from './AssetIcon'
 
 interface Props {
   files: File[]
@@ -27,15 +27,15 @@ export function AssetPreview(props: Props): ReactElement {
         // single non-image
       } else {
         setPreviewUri(undefined)
-        setPreviewComponent(<FileIcon />)
+        setPreviewComponent(<AssetIcon icon={<File />} />)
       }
       // collection
     } else if (detectIndexHtml(props.files as unknown as NameWithPath[])) {
       setPreviewUri(undefined)
-      setPreviewComponent(<WebsiteIcon />)
+      setPreviewComponent(<AssetIcon icon={<Web />} />)
     } else {
       setPreviewUri(undefined)
-      setPreviewComponent(<FolderIcon />)
+      setPreviewComponent(<AssetIcon icon={<Folder />} />)
     }
   }, [props.files])
 
@@ -84,14 +84,16 @@ export function AssetPreview(props: Props): ReactElement {
         </Grid>
       </PaperGridContainer>
       {isFolder() && (
-        <PaperGridContainer>
-          <Container>
-            <Typography variant="subtitle2">Folder content</Typography>
-          </Container>
-          <Container textAlign="right">
-            <Typography variant="subtitle2">{props.files.length} items</Typography>
-          </Container>
-        </PaperGridContainer>
+        <Box mt={0.25}>
+          <PaperGridContainer>
+            <Container>
+              <Typography variant="subtitle2">Folder content</Typography>
+            </Container>
+            <Container textAlign="right">
+              <Typography variant="subtitle2">{props.files.length} items</Typography>
+            </Container>
+          </PaperGridContainer>
+        </Box>
       )}
     </Box>
   )
