@@ -1,9 +1,8 @@
-import { Grid, Typography } from '@material-ui/core'
+import { Box, Grid, Typography } from '@material-ui/core'
 import { ReactElement, useEffect, useState } from 'react'
 import Container from '../../components/Container'
 import { FitImage } from '../../components/FitImage'
 import { PaperGridContainer } from '../../components/PaperGridContainer'
-import { VerticalSpacing } from '../../components/VerticalSpacing'
 import { detectIndexHtml, getHumanReadableFileSize, NameWithPath } from '../../utils/file'
 import { FileIcon } from './FileIcon'
 import { FolderIcon } from './FolderIcon'
@@ -69,7 +68,7 @@ export function AssetPreview(props: Props): ReactElement {
   }
 
   return (
-    <>
+    <Box mb={4}>
       <PaperGridContainer>
         <Grid container alignItems="stretch" direction="row">
           {previewComponent ? (
@@ -85,19 +84,15 @@ export function AssetPreview(props: Props): ReactElement {
         </Grid>
       </PaperGridContainer>
       {isFolder() && (
-        <>
-          <VerticalSpacing px={2} />
-          <PaperGridContainer>
-            <Container>
-              <Typography variant="subtitle2">Folder content</Typography>
-            </Container>
-            <Container textAlign="right">
-              <Typography variant="subtitle2">{props.files.length} items</Typography>
-            </Container>
-          </PaperGridContainer>
-        </>
+        <PaperGridContainer>
+          <Container>
+            <Typography variant="subtitle2">Folder content</Typography>
+          </Container>
+          <Container textAlign="right">
+            <Typography variant="subtitle2">{props.files.length} items</Typography>
+          </Container>
+        </PaperGridContainer>
       )}
-      <VerticalSpacing px={32} />
-    </>
+    </Box>
   )
 }

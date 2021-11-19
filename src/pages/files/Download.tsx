@@ -1,7 +1,7 @@
 import { Utils } from '@ethersphere/bee-js'
+import { Box } from '@material-ui/core'
 import { ReactElement, useContext, useState } from 'react'
 import ExpandableListItemInput from '../../components/ExpandableListItemInput'
-import { VerticalSpacing } from '../../components/VerticalSpacing'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { extractSwarmHash } from '../../utils'
 import { convertBeeFileToBrowserFile } from '../../utils/file'
@@ -36,8 +36,9 @@ export default function Files(): ReactElement {
   if (downloadedFile) {
     return (
       <>
-        <AssetPreview files={[downloadedFile as File]} />
-        <VerticalSpacing px={32} />
+        <Box mb={4}>
+          <AssetPreview files={[downloadedFile as File]} />
+        </Box>
         <DownloadActionBar onCancel={() => setDownloadedFile(null)} onDownload={() => onDownload()} />
       </>
     )
