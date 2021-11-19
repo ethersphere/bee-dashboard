@@ -21,8 +21,9 @@ export default function Container(props: Props): ReactElement {
 
   const inlineStyles: Record<string, string> = {}
 
-  props.maxHeight && (inlineStyles.maxHeight = props.maxHeight)
-  props.textAlign && (inlineStyles.textAlign = props.textAlign)
+  if (props.maxHeight) inlineStyles.maxHeight = props.maxHeight
+
+  if (props.textAlign) inlineStyles.textAlign = props.textAlign
 
   return (
     <div className={classes.container} style={inlineStyles}>
