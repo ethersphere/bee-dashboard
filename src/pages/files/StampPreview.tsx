@@ -1,7 +1,5 @@
-import { Box, Grid, Typography } from '@material-ui/core'
+import { Box, Typography } from '@material-ui/core'
 import { ReactElement } from 'react'
-import Container from '../../components/Container'
-import { PaperGridContainer } from '../../components/PaperGridContainer'
 import { EnrichedPostageBatch } from '../../providers/Stamps'
 import { PostageStamp } from '../stamps/PostageStamp'
 
@@ -12,20 +10,10 @@ interface Props {
 export function StampPreview({ stamp }: Props): ReactElement {
   return (
     <Box mb={4}>
-      <Box mb={0.25}>
-        <PaperGridContainer>
-          <Grid item xs={12}>
-            <Container>
-              <Typography variant="subtitle2">
-                You’re about to upload this file with the following postage stamp:
-              </Typography>
-            </Container>
-          </Grid>
-        </PaperGridContainer>
+      <Box mb={0.25} p={2} bgcolor="background.paper">
+        <Typography variant="subtitle2">Associated postage stamp:</Typography>
       </Box>
-      <PaperGridContainer>
-        <PostageStamp stamp={stamp} shorten={true} />
-      </PaperGridContainer>
+      <PostageStamp stamp={stamp} shorten={true} />
     </Box>
   )
 }

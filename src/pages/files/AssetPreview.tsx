@@ -2,9 +2,7 @@ import { Box, Grid, Typography } from '@material-ui/core'
 import { Web } from '@material-ui/icons'
 import { ReactElement, useEffect, useState } from 'react'
 import { File, Folder } from 'react-feather'
-import Container from '../../components/Container'
 import { FitImage } from '../../components/FitImage'
-import { PaperGridContainer } from '../../components/PaperGridContainer'
 import { detectIndexHtml, getHumanReadableFileSize, NameWithPath } from '../../utils/file'
 import { AssetIcon } from './AssetIcon'
 
@@ -69,30 +67,26 @@ export function AssetPreview(props: Props): ReactElement {
 
   return (
     <Box mb={4}>
-      <PaperGridContainer>
-        <Grid container alignItems="stretch" direction="row">
+      <Box bgcolor="background.paper">
+        <Grid container direction="row">
           {previewComponent ? (
             previewComponent
           ) : (
             <FitImage maxWidth="250px" maxHeight="175px" alt="Upload Preview" src={previewUri} />
           )}
-          <Container>
+          <Box p={2}>
             <Typography>{getPrimaryText()}</Typography>
             <Typography>Kind: {getKind()}</Typography>
             <Typography>Size: {getSize()}</Typography>
-          </Container>
+          </Box>
         </Grid>
-      </PaperGridContainer>
+      </Box>
       {isFolder() && (
-        <Box mt={0.25}>
-          <PaperGridContainer>
-            <Container>
-              <Typography variant="subtitle2">Folder content</Typography>
-            </Container>
-            <Container textAlign="right">
-              <Typography variant="subtitle2">{props.files.length} items</Typography>
-            </Container>
-          </PaperGridContainer>
+        <Box mt={0.25} p={2} bgcolor="background.paper">
+          <Grid container justifyContent="space-between" alignItems="center" direction="row">
+            <Typography variant="subtitle2">Folder content</Typography>
+            <Typography variant="subtitle2">{props.files.length} items</Typography>
+          </Grid>
         </Box>
       )}
     </Box>
