@@ -85,6 +85,8 @@ npm start
 
 The Bee Dashboard runs in development mode on [http://localhost:3031/](http://localhost:3031/)
 
+> Setting `REACT_APP_DEV_MODE=1` environment variable loosens some checks. This makes it possible to develop Bee Dashboard without having connected peers and chequebook properly set up, effectively supporting the dev mode of Bee itself.
+
 ## Contribute
 
 There are some ways you can make this module better:
