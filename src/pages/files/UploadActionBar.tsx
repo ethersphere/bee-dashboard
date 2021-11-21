@@ -13,6 +13,7 @@ interface Props {
   onSelect: () => void
   onCancel: () => void
   onClearStamp: () => void
+  isUploading: boolean
 }
 
 export function UploadActionBar({
@@ -23,6 +24,7 @@ export function UploadActionBar({
   onSelect,
   onCancel,
   onClearStamp,
+  isUploading,
 }: Props): ReactElement {
   const showBuy = !hasSelectedStamp
   const showSelect = canSelectStamp && !hasSelectedStamp
@@ -43,12 +45,12 @@ export function UploadActionBar({
           </SwarmButton>
         ) : null}
         {showUpload ? (
-          <SwarmButton onClick={onUpload} iconType={Check}>
+          <SwarmButton onClick={onUpload} iconType={Check} disabled={isUploading} loading={isUploading}>
             Upload To Your Node
           </SwarmButton>
         ) : null}
         {showChange ? (
-          <SwarmButton onClick={onClearStamp} iconType={RefreshCcw}>
+          <SwarmButton onClick={onClearStamp} iconType={RefreshCcw} disabled={isUploading}>
             Change Postage Stamp
           </SwarmButton>
         ) : null}

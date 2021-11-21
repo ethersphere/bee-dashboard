@@ -1,4 +1,4 @@
-import { Button, createStyles, makeStyles } from '@material-ui/core'
+import { Button, CircularProgress, createStyles, makeStyles } from '@material-ui/core'
 import React, { ReactElement } from 'react'
 import { IconProps } from 'react-feather'
 
@@ -7,11 +7,14 @@ interface Props {
   iconType: React.ComponentType<IconProps>
   children: string
   className?: string
+  disabled?: boolean
+  loading?: boolean
 }
 
 const useStyles = makeStyles(() =>
   createStyles({
     button: {
+      position: 'relative',
       '&:hover': {
         '& svg': {
           stroke: '#fff',
@@ -25,22 +28,35 @@ const useStyles = makeStyles(() =>
         },
       },
     },
+    spinnerWrapper: {
+      position: 'absolute',
+      left: '50%',
+      top: '50%',
+      width: '40px',
+      height: '40px',
+      transform: 'translate(-50%, -50%)',
+    },
   }),
 )
 
-export function SwarmButton({ children, onClick, iconType, className }: Props): ReactElement {
+export function SwarmButton({ children, onClick, iconType, className, disabled, loading }: Props): ReactElement {
   const classes = useStyles()
 
   const icon = React.createElement(iconType, {
     size: '1.25rem',
-    color: '#dd7700',
+    color: disabled ? 'rgba(0, 0, 0, 0.26)' : '#dd7700',
   })
 
   const classNames = className ? [className, classes.button].join(' ') : classes.button
 
   return (
-    <Button className={classNames} onClick={onClick} variant="contained" startIcon={icon}>
+    <Button className={classNames} onClick={onClick} variant="contained" startIcon={icon} disabled={disabled}>
       {children}
+      {loading && (
+        <div className={classes.spinnerWrapper}>
+          <CircularProgress />
+        </div>
+      )}
     </Button>
   )
 }

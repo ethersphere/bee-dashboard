@@ -29,6 +29,7 @@ export default function Files(): ReactElement {
   const [isBuyingStamp, setBuyingStamp] = useState(false)
   const [isSelectingStamp, setSelectingStamp] = useState(false)
   const [stamp, setStamp] = useState<EnrichedPostageBatch | null>(null)
+  const [isUploading, setUploading] = useState(false)
 
   const { stamps, refresh } = useContext(Context)
   const { beeApi } = useContext(SettingsContext)
@@ -46,15 +47,19 @@ export default function Files(): ReactElement {
     const indexDocument =
       files.length === 1 ? files[0].name : detectIndexHtml(files as unknown as NameWithPath[]) || undefined
 
+    setUploading(true)
+
     beeApi
       .uploadFiles(stamp.batchID, files, { indexDocument })
       .then(hash => setUploadReference(hash.reference))
       .catch(e => enqueueSnackbar(`Error uploading: ${e.message}`, { variant: 'error' }))
+      .finally(() => setUploading(false))
   }
 
   const reset = () => {
     setFiles([])
     setStamp(null)
+    setUploading(false)
   }
 
   const uploadNew = () => {
@@ -82,6 +87,7 @@ export default function Files(): ReactElement {
           onSelect={() => setSelectingStamp(true)}
           onUpload={uploadFiles}
           onClearStamp={() => setStamp(null)}
+          isUploading={isUploading}
         />
       ) : null}
       <div className={classes.content}>
