@@ -78,6 +78,7 @@ export function SelectPostageStampModal({ stamps, onSelect, onClose }: Props): R
             fullWidth
             variant="outlined"
             className={classes.select}
+            defaultValue=""
           >
             {stamps.map(x => (
               <MenuItem key={x.batchID} value={x.batchID} className={classes.option}>
