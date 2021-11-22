@@ -1,5 +1,6 @@
 import { Utils } from '@ethersphere/bee-js'
 import { Box } from '@material-ui/core'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import ExpandableListItemInput from '../../components/ExpandableListItemInput'
 import { Context as SettingsContext } from '../../providers/Settings'
@@ -16,6 +17,8 @@ export default function Files(): ReactElement {
   const [referenceError, setReferenceError] = useState<string | undefined>(undefined)
   const [downloadedFile, setDownloadedFile] = useState<Partial<File> | null>(null)
 
+  const { enqueueSnackbar } = useSnackbar()
+
   const validateChange = (value: string) => {
     if (Utils.isHexString(value, 64) || Utils.isHexString(value, 128)) setReferenceError(undefined)
     else setReferenceError('Incorrect format of swarm hash. Expected 64 or 128 hexstring characters.')
@@ -30,8 +33,21 @@ export default function Files(): ReactElement {
       return
     }
     setReference(identifier)
-    const response = await beeApi.downloadFile(identifier)
-    setDownloadedFile(convertBeeFileToBrowserFile(response))
+    try {
+      const response = await beeApi.downloadFile(identifier)
+      setDownloadedFile(convertBeeFileToBrowserFile(response))
+    } catch (error: unknown) {
+      let message = typeof error === 'object' && error !== null && Reflect.get(error, 'message')
+
+      if (message.includes('path address not found')) {
+        message = 'The specified hash does not have an index document set.'
+      }
+
+      if (message.includes('Not Found: Not Found')) {
+        message = 'The specified hash was not found.'
+      }
+      enqueueSnackbar(<span>Error: {message || 'Unknown'}</span>, { variant: 'error' })
+    }
   }
 
   if (downloadedFile) {
