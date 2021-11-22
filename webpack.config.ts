@@ -20,7 +20,7 @@ export default (): Configuration => {
     devtool: 'source-map',
     externals: {
       // Use external version of React
-      // react: 'root React1',
+      // react: 'root React',
       react: 'react',
       'react-dom': 'react-dom',
     },
@@ -49,10 +49,8 @@ export default (): Configuration => {
     },
     // plugins: [
     //   new ProvidePlugin({
-    //     React: 'React',
-    //     react: 'React',
-    //     'window.react': 'React',
-    //     'window.React': 'React',
+    //     React: 'react',
+    //     'window.React': 'react',
     //   }),
     // ],
   }
