@@ -1,10 +1,9 @@
 import { FileData } from '@ethersphere/bee-js'
+import { SwarmFile } from './SwarmFile'
 
 const indexHtmls = ['index.html', 'index.htm']
 
-export type NameWithPath = { name: string; path: string }
-
-export function detectIndexHtml(files: NameWithPath[]): string | false {
+export function detectIndexHtml(files: SwarmFile[]): string | false {
   if (!files.length) {
     return false
   }

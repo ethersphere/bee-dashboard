@@ -3,22 +3,23 @@ import { Web } from '@material-ui/icons'
 import { ReactElement, useEffect, useState } from 'react'
 import { File, Folder } from 'react-feather'
 import { FitImage } from '../../components/FitImage'
-import { detectIndexHtml, getHumanReadableFileSize, NameWithPath } from '../../utils/file'
+import { detectIndexHtml, getHumanReadableFileSize } from '../../utils/file'
+import { SwarmFile } from '../../utils/SwarmFile'
 import { AssetIcon } from './AssetIcon'
 
 interface Props {
-  files: File[]
+  files: SwarmFile[]
 }
 
-export function AssetPreview(props: Props): ReactElement {
+export function AssetPreview({ files }: Props): ReactElement {
   const [previewComponent, setPreviewComponent] = useState<ReactElement | undefined>(undefined)
   const [previewUri, setPreviewUri] = useState<string | undefined>(undefined)
 
   useEffect(() => {
-    if (props.files.length === 1) {
+    if (files.length === 1) {
       // single image
-      if (props.files[0].type.startsWith('image/')) {
-        props.files[0].arrayBuffer().then(value => {
+      if (files[0].type.startsWith('image/')) {
+        files[0].arrayBuffer().then(value => {
           const blob = new Blob([value])
           setPreviewUri(URL.createObjectURL(blob))
         })
@@ -28,29 +29,29 @@ export function AssetPreview(props: Props): ReactElement {
         setPreviewComponent(<AssetIcon icon={<File />} />)
       }
       // collection
-    } else if (detectIndexHtml(props.files as unknown as NameWithPath[])) {
+    } else if (detectIndexHtml(files)) {
       setPreviewUri(undefined)
       setPreviewComponent(<AssetIcon icon={<Web />} />)
     } else {
       setPreviewUri(undefined)
       setPreviewComponent(<AssetIcon icon={<Folder />} />)
     }
-  }, [props.files])
+  }, [files])
 
   const getPrimaryText = () => {
-    if (props.files.length === 1) {
-      return 'Filename: ' + props.files[0].name
+    if (files.length === 1) {
+      return 'Filename: ' + files[0].name
     }
 
-    return 'Folder name: ' + props.files[0].webkitRelativePath.split('/')[0]
+    return 'Folder name: ' + files[0].path.split('/')[0]
   }
 
   const getKind = () => {
-    if (props.files.length === 1) {
-      return props.files[0].type
+    if (files.length === 1) {
+      return files[0].type
     }
 
-    if (detectIndexHtml(props.files as unknown as NameWithPath[])) {
+    if (detectIndexHtml(files)) {
       return 'Website'
     }
 
@@ -60,7 +61,7 @@ export function AssetPreview(props: Props): ReactElement {
   const isFolder = () => ['Folder', 'Website'].includes(getKind())
 
   const getSize = () => {
-    const bytes = props.files.reduce((total, item) => total + item.size, 0)
+    const bytes = files.reduce((total, item) => total + item.size, 0)
 
     return getHumanReadableFileSize(bytes)
   }
@@ -85,7 +86,7 @@ export function AssetPreview(props: Props): ReactElement {
         <Box mt={0.25} p={2} bgcolor="background.paper">
           <Grid container justifyContent="space-between" alignItems="center" direction="row">
             <Typography variant="subtitle2">Folder content</Typography>
-            <Typography variant="subtitle2">{props.files.length} items</Typography>
+            <Typography variant="subtitle2">{files.length} items</Typography>
           </Grid>
         </Box>
       )}

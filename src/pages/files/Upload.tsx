@@ -3,7 +3,8 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context, EnrichedPostageBatch } from '../../providers/Stamps'
-import { detectIndexHtml, NameWithPath } from '../../utils/file'
+import { detectIndexHtml } from '../../utils/file'
+import { SwarmFile } from '../../utils/SwarmFile'
 import { CreatePostageStampModal } from '../stamps/CreatePostageStampModal'
 import { SelectPostageStampModal } from '../stamps/SelectPostageStampModal'
 import { AssetPreview } from './AssetPreview'
@@ -24,7 +25,7 @@ const MAX_FILE_SIZE = 1_000_000_000 // 1 gigabyte
 export default function Files(): ReactElement {
   const classes = useStyles()
   const [dropzoneKey, setDropzoneKey] = useState(0)
-  const [files, setFiles] = useState<File[]>([])
+  const [files, setFiles] = useState<SwarmFile[]>([])
   const [uploadReference, setUploadReference] = useState('')
   const [isBuyingStamp, setBuyingStamp] = useState(false)
   const [isSelectingStamp, setSelectingStamp] = useState(false)
@@ -44,13 +45,12 @@ export default function Files(): ReactElement {
       return
     }
 
-    const indexDocument =
-      files.length === 1 ? files[0].name : detectIndexHtml(files as unknown as NameWithPath[]) || undefined
+    const indexDocument = files.length === 1 ? files[0].name : detectIndexHtml(files) || undefined
 
     setUploading(true)
 
     beeApi
-      .uploadFiles(stamp.batchID, files, { indexDocument })
+      .uploadFiles(stamp.batchID, files as unknown as File[], { indexDocument })
       .then(hash => setUploadReference(hash.reference))
       .catch(e => enqueueSnackbar(`Error uploading: ${e.message}`, { variant: 'error' }))
       .finally(() => setUploading(false))

@@ -3,9 +3,10 @@ import { DropzoneArea } from 'material-ui-dropzone'
 import { ReactElement } from 'react'
 import { FilePlus, FolderPlus } from 'react-feather'
 import { SwarmButton } from '../../components/SwarmButton'
+import { SwarmFile } from '../../utils/SwarmFile'
 
 interface Props {
-  setFiles: (files: File[]) => void
+  setFiles: (files: SwarmFile[]) => void
   maximumSizeInBytes: number
 }
 
@@ -67,7 +68,7 @@ export function UploadArea(props: Props): ReactElement {
 
   const handleChange = (files?: File[]) => {
     if (files) {
-      props.setFiles(files)
+      props.setFiles(files.map(x => new SwarmFile(x)))
     }
   }
 

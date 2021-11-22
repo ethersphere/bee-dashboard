@@ -5,6 +5,7 @@ import ExpandableListItemInput from '../../components/ExpandableListItemInput'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { extractSwarmHash } from '../../utils'
 import { convertBeeFileToBrowserFile } from '../../utils/file'
+import { SwarmFile } from '../../utils/SwarmFile'
 import { AssetPreview } from './AssetPreview'
 import { DownloadActionBar } from './DownloadActionBar'
 
@@ -37,7 +38,7 @@ export default function Files(): ReactElement {
     return (
       <>
         <Box mb={4}>
-          <AssetPreview files={[downloadedFile as File]} />
+          <AssetPreview files={[new SwarmFile(downloadedFile as File)]} />
         </Box>
         <DownloadActionBar onCancel={() => setDownloadedFile(null)} onDownload={onDownload} />
       </>
