@@ -101,7 +101,7 @@ export function SelectPostageStampModal({ stamps, onSelect, onClose }: Props): R
         </DialogContent>
       </Box>
       <DialogContent>
-        <Typography variant="body2" className={classes.hint}>
+        <Typography className={classes.hint}>
           Please refer to the{' '}
           <a
             href="https://docs.ethswarm.org/docs/access-the-swarm/keep-your-data-alive#purchase-a-batch-of-stamps"

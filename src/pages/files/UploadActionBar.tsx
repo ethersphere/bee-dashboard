@@ -59,7 +59,7 @@ export function UploadActionBar({
         </Button>
       </ExpandableListItemActions>
       {showSelect ? (
-        <Typography variant="body2">
+        <Typography>
           You need a postage stamp to upload. Please refer to the official Bee documentation to understand how postage
           stamps work.
         </Typography>

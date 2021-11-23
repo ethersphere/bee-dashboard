@@ -90,7 +90,7 @@ export function UploadArea(props: Props): ReactElement {
           </SwarmButton>
         </div>
       </div>
-      <Typography variant="body2">
+      <Typography>
         You can click the buttons above or simply drag and drop to add a file or folder. To upload a website to Swarm,
         make sure that your folder contains an “index.html” file.
       </Typography>
