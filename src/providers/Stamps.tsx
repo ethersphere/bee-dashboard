@@ -1,5 +1,5 @@
 import { PostageBatch } from '@ethersphere/bee-js'
-import { createContext, ReactChild, ReactElement, useEffect, useState, useContext } from 'react'
+import { createContext, ReactChild, ReactElement, useContext, useEffect, useState } from 'react'
 import { Context as SettingsContext } from './Settings'
 
 export interface EnrichedPostageBatch extends PostageBatch {
@@ -48,7 +48,7 @@ function enrichStamp(postageBatch: PostageBatch): EnrichedPostageBatch {
 }
 
 export function Provider({ children }: Props): ReactElement {
-  const { beeApi } = useContext(SettingsContext)
+  const { beeDebugApi } = useContext(SettingsContext)
   const [stamps, setStamps] = useState<EnrichedPostageBatch[] | null>(initialValues.stamps)
   const [error, setError] = useState<Error | null>(initialValues.error)
   const [isLoading, setIsLoading] = useState<boolean>(initialValues.isLoading)
@@ -59,11 +59,11 @@ export function Provider({ children }: Props): ReactElement {
     // Don't want to refresh when already refreshing
     if (isLoading) return
 
-    if (!beeApi) return
+    if (!beeDebugApi) return
 
     try {
       setIsLoading(true)
-      const stamps = await beeApi.getAllPostageBatch()
+      const stamps = await beeDebugApi.getAllPostageBatch()
 
       setStamps(stamps.map(enrichStamp))
       setLastUpdate(Date.now())
