@@ -51,6 +51,8 @@ interface ContextInterface {
   refresh: () => Promise<void>
 }
 
+const startedInDevMode = window.location.search.includes('devMode=1')
+
 const initialValues: ContextInterface = {
   status: {
     all: false,
@@ -102,6 +104,7 @@ function getStatus(
   chequebookBalance: ChequebookBalance | null,
   error: Error | null,
 ): Status {
+  const devMode = startedInDevMode || Boolean(process.env.REACT_APP_DEV_MODE)
   const status = {
     version: Boolean(
       debugApiHealth &&
@@ -113,12 +116,12 @@ function getStatus(
     debugApiConnection: Boolean(debugApiHealth?.status === 'ok'),
     apiConnection: apiHealth,
     // FIXME: `REACT_APP_DEV_MODE` is a temporary workaround to be able to develop with only one node
-    topology: Boolean(topology?.connected && topology?.connected > 0) || Boolean(process.env.REACT_APP_DEV_MODE),
+    topology: Boolean(topology?.connected && topology?.connected > 0) || devMode,
     chequebook:
       (Boolean(chequebookAddress?.chequebookAddress) &&
         chequebookBalance !== null &&
         chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0)) ||
-      Boolean(process.env.REACT_APP_DEV_MODE),
+      devMode,
   }
 
   return { ...status, all: !error && Object.values(status).every(v => v) }
