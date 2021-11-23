@@ -1,8 +1,10 @@
 import { createStyles, makeStyles, Theme, Typography } from '@material-ui/core'
 import { DropzoneArea } from 'material-ui-dropzone'
+import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import { FilePlus, FolderPlus } from 'react-feather'
+import { FilePlus, Globe } from 'react-feather'
 import { SwarmButton } from '../../components/SwarmButton'
+import { detectIndexHtml } from '../../utils/file'
 import { SwarmFile } from '../../utils/SwarmFile'
 
 interface Props {
@@ -39,8 +41,10 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-export function UploadArea(props: Props): ReactElement {
+export function UploadArea({ setFiles, maximumSizeInBytes }: Props): ReactElement {
   const classes = useStyles()
+
+  const { enqueueSnackbar } = useSnackbar()
 
   const getDropzoneInputDomElement = () => document.querySelector('.MuiDropzoneArea-root input') as HTMLInputElement
 
@@ -66,9 +70,28 @@ export function UploadArea(props: Props): ReactElement {
     }
   }
 
+  const resetComponentOnAddingInvalidContent = (files: SwarmFile[]) => {
+    setFiles(files)
+    setTimeout(() => {
+      setFiles([])
+    }, 0)
+  }
+
   const handleChange = (files?: File[]) => {
     if (files) {
-      props.setFiles(files.map(x => new SwarmFile(x)))
+      const swarmFiles = files.map(x => new SwarmFile(x))
+      const indexDocument = files.length === 1 ? files[0].name : detectIndexHtml(swarmFiles) || undefined
+
+      if (files.length && !indexDocument) {
+        enqueueSnackbar('To upload a website, there must be an index.html or index.htm in the root of the folder.', {
+          variant: 'error',
+        })
+        resetComponentOnAddingInvalidContent(swarmFiles)
+
+        return
+      }
+
+      setFiles(swarmFiles)
     }
   }
 
@@ -79,14 +102,14 @@ export function UploadArea(props: Props): ReactElement {
           dropzoneClass={classes.dropzone}
           onChange={handleChange}
           filesLimit={1e9}
-          maxFileSize={props.maximumSizeInBytes}
+          maxFileSize={maximumSizeInBytes}
         />
         <div className={classes.buttonWrapper}>
           <SwarmButton className={classes.button} onClick={onUploadFileClick} iconType={FilePlus}>
             Add File
           </SwarmButton>
-          <SwarmButton className={classes.button} onClick={onUploadFolderClick} iconType={FolderPlus}>
-            Add Folder
+          <SwarmButton className={classes.button} onClick={onUploadFolderClick} iconType={Globe}>
+            Add Website
           </SwarmButton>
         </div>
       </div>
