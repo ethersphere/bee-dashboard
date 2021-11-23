@@ -103,6 +103,7 @@ export function UploadArea({ setFiles, maximumSizeInBytes }: Props): ReactElemen
           onChange={handleChange}
           filesLimit={1e9}
           maxFileSize={maximumSizeInBytes}
+          showPreviews={false}
         />
         <div className={classes.buttonWrapper}>
           <SwarmButton className={classes.button} onClick={onUploadFileClick} iconType={FilePlus}>
