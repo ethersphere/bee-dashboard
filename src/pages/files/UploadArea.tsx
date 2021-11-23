@@ -2,7 +2,7 @@ import { createStyles, makeStyles, Theme, Typography } from '@material-ui/core'
 import { DropzoneArea } from 'material-ui-dropzone'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import { FilePlus, Globe } from 'react-feather'
+import { FilePlus } from 'react-feather'
 import { SwarmButton } from '../../components/SwarmButton'
 import { detectIndexHtml } from '../../utils/file'
 import { SwarmFile } from '../../utils/SwarmFile'
@@ -48,6 +48,7 @@ export function UploadArea({ setFiles, maximumSizeInBytes }: Props): ReactElemen
 
   const getDropzoneInputDomElement = () => document.querySelector('.MuiDropzoneArea-root input') as HTMLInputElement
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onUploadFolderClick = () => {
     const element = getDropzoneInputDomElement()
 
@@ -101,7 +102,7 @@ export function UploadArea({ setFiles, maximumSizeInBytes }: Props): ReactElemen
         <DropzoneArea
           dropzoneClass={classes.dropzone}
           onChange={handleChange}
-          filesLimit={1e9}
+          filesLimit={1}
           maxFileSize={maximumSizeInBytes}
           showPreviews={false}
         />
@@ -109,15 +110,9 @@ export function UploadArea({ setFiles, maximumSizeInBytes }: Props): ReactElemen
           <SwarmButton className={classes.button} onClick={onUploadFileClick} iconType={FilePlus}>
             Add File
           </SwarmButton>
-          <SwarmButton className={classes.button} onClick={onUploadFolderClick} iconType={Globe}>
-            Add Website
-          </SwarmButton>
         </div>
       </div>
-      <Typography>
-        You can click the buttons above or simply drag and drop to add a file or folder. To upload a website to Swarm,
-        make sure that your folder contains an “index.html” file.
-      </Typography>
+      <Typography>You can click the button above or simply drag and drop to add a file.</Typography>
     </>
   )
 }
