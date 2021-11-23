@@ -104,6 +104,7 @@ function getStatus(
   chequebookBalance: ChequebookBalance | null,
   error: Error | null,
 ): Status {
+  // FIXME: `REACT_APP_DEV_MODE` is a temporary workaround to be able to develop with only one node
   const devMode = startedInDevMode || Boolean(process.env.REACT_APP_DEV_MODE)
   const status = {
     version: Boolean(
@@ -115,7 +116,6 @@ function getStatus(
     blockchainConnection: Boolean(nodeAddresses?.ethereum),
     debugApiConnection: Boolean(debugApiHealth?.status === 'ok'),
     apiConnection: apiHealth,
-    // FIXME: `REACT_APP_DEV_MODE` is a temporary workaround to be able to develop with only one node
     topology: Boolean(topology?.connected && topology?.connected > 0) || devMode,
     chequebook:
       (Boolean(chequebookAddress?.chequebookAddress) &&
