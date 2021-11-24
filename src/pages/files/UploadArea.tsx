@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme: Theme) =>
     areaWrapper: { position: 'relative', marginBottom: theme.spacing(2) },
     dropzone: {
       background: theme.palette.background.default,
+      outline: 'none',
       color: 'transparent',
       zIndex: 1,
       '& svg': {
