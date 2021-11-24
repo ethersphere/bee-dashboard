@@ -50,7 +50,16 @@ export function SwarmButton({ children, onClick, iconType, className, disabled, 
   const classNames = className ? [className, classes.button].join(' ') : classes.button
 
   return (
-    <Button className={classNames} onClick={onClick} variant="contained" startIcon={icon} disabled={disabled}>
+    <Button
+      className={classNames}
+      onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+        onClick()
+        event.currentTarget.blur()
+      }}
+      variant="contained"
+      startIcon={icon}
+      disabled={disabled}
+    >
       {children}
       {loading && (
         <div className={classes.spinnerWrapper}>
