@@ -15,13 +15,8 @@ const useStyles = makeStyles(() =>
   createStyles({
     button: {
       position: 'relative',
-      '&:hover': {
-        '& svg': {
-          stroke: '#fff',
-          transition: '0.1s',
-        },
-      },
-      '&:focus': {
+      whiteSpace: 'nowrap',
+      '&:hover, &:focus': {
         '& svg': {
           stroke: '#fff',
           transition: '0.1s',
