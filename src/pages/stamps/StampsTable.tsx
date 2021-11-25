@@ -1,8 +1,9 @@
 import type { ReactElement } from 'react'
-import { EnrichedPostageBatch } from '../../providers/Stamps'
+import ExpandableElement from '../../components/ExpandableElement'
 import ExpandableList from '../../components/ExpandableList'
-import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
+import { EnrichedPostageBatch } from '../../providers/Stamps'
+import { PostageStamp } from './PostageStamp'
 
 interface Props {
   postageStamps: EnrichedPostageBatch[] | null
@@ -13,11 +14,13 @@ function StampsTable({ postageStamps }: Props): ReactElement | null {
 
   return (
     <ExpandableList label="Postage Stamps" defaultOpen>
-      {postageStamps.map(({ batchID, usageText }) => (
-        <ExpandableList key={batchID} label={`${batchID.substr(0, 8)}[…]`} level={1} info={`${usageText} used`}>
-          <ExpandableListItemKey label="Batch ID" value={batchID} />
-          <ExpandableListItem label="Usage" value={usageText} />
-        </ExpandableList>
+      {postageStamps.map(stamp => (
+        <ExpandableElement
+          key={stamp.batchID}
+          expandable={<ExpandableListItemKey label="Batch ID" value={stamp.batchID} />}
+        >
+          <PostageStamp stamp={stamp} shorten={true} />
+        </ExpandableElement>
       ))}
     </ExpandableList>
   )

@@ -1,9 +1,9 @@
-import { ReactElement, useState } from 'react'
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
+import { Grid, IconButton, ListItem, Tooltip, Typography } from '@material-ui/core'
 import Collapse from '@material-ui/core/Collapse'
-import { ListItem, Typography, Grid, IconButton, Tooltip } from '@material-ui/core'
-import { Eye, Minus } from 'react-feather'
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import { ReactElement, useState } from 'react'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
+import { Eye, Minus } from 'react-feather'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

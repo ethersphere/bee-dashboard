@@ -1,14 +1,13 @@
-import { ReactElement, useContext } from 'react'
 import MuiAlert from '@material-ui/lab/Alert'
-
+import { ReactElement, useContext } from 'react'
 import CodeBlockTabs from '../../../components/CodeBlockTabs'
 import ExpandableList from '../../../components/ExpandableList'
 import ExpandableListItem from '../../../components/ExpandableListItem'
 import ExpandableListItemInput from '../../../components/ExpandableListItemInput'
 import ExpandableListItemNote from '../../../components/ExpandableListItemNote'
 import StatusIcon from '../../../components/StatusIcon'
-import { Context as SettingsContext } from '../../../providers/Settings'
 import { Context } from '../../../providers/Bee'
+import { Context as SettingsContext } from '../../../providers/Settings'
 
 export default function NodeConnectionCheck(): ReactElement | null {
   const { status, isLoading } = useContext(Context)
@@ -25,7 +24,7 @@ export default function NodeConnectionCheck(): ReactElement | null {
     >
       <ExpandableListItemNote>
         {isOk
-          ? 'The connection to the Bee nodes deug API has been successful'
+          ? 'The connection to the Bee nodes debug API has been successful'
           : 'We cannot connect to your nodes debug API. Please check the following to troubleshoot your issue.'}
       </ExpandableListItemNote>
       <ExpandableListItemInput label="Bee Debug API" value={apiDebugUrl} onConfirm={setDebugApiUrl} />

@@ -1,13 +1,13 @@
-import { ReactElement, useContext, useEffect } from 'react'
+import { CircularProgress, Container } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
-import { Container, CircularProgress } from '@material-ui/core'
-
-import StampsTable from './StampsTable'
-import CreatePostageStampModal from './CreatePostageStampModal'
-
-import { Context as StampsContext } from '../../providers/Stamps'
+import { ReactElement, useContext, useEffect, useState } from 'react'
+import { PlusSquare } from 'react-feather'
+import { SwarmButton } from '../../components/SwarmButton'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { Context as BeeContext } from '../../providers/Bee'
+import { Context as StampsContext } from '../../providers/Stamps'
+import { CreatePostageStampModal } from './CreatePostageStampModal'
+import StampsTable from './StampsTable'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -25,8 +25,11 @@ const useStyles = makeStyles(() =>
   }),
 )
 
-export default function Accounting(): ReactElement {
+export default function Stamp(): ReactElement {
   const classes = useStyles()
+
+  const [isBuyingStamp, setBuyingStamp] = useState(false)
+
   const { stamps, isLoading, error, start, stop } = useContext(StampsContext)
   const { status } = useContext(BeeContext)
 
@@ -49,7 +52,11 @@ export default function Accounting(): ReactElement {
       {!error && (
         <>
           <div className={classes.actions}>
-            <CreatePostageStampModal />
+            {isBuyingStamp ? <CreatePostageStampModal onClose={() => setBuyingStamp(false)} /> : null}
+
+            <SwarmButton onClick={() => setBuyingStamp(true)} iconType={PlusSquare}>
+              Buy New Postage Stamp
+            </SwarmButton>
             <div style={{ height: '5px' }}>{isLoading && <CircularProgress />}</div>
           </div>
           <StampsTable postageStamps={stamps} />
