@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.9.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.8.0...v0.9.0) (2021-11-25)
+
+
+### Features
+
+* add dev mode flag ([#246](https://www.github.com/ethersphere/bee-dashboard/issues/246)) ([49350b0](https://www.github.com/ethersphere/bee-dashboard/commit/49350b05709053ecfbc4fc98f8b1df1aa0345e95))
+* enable setting devMode from queryParams ([#254](https://www.github.com/ethersphere/bee-dashboard/issues/254)) ([844383b](https://www.github.com/ethersphere/bee-dashboard/commit/844383bea7b2118232a74ac23c9e9a38fc47d3fd))
+* improve upload flow ([#240](https://www.github.com/ethersphere/bee-dashboard/issues/240)) ([635621b](https://www.github.com/ethersphere/bee-dashboard/commit/635621b04aea7124a99d00f9e31a86983063f5ce))
+* move postage stamp operations to bee debug api ([#256](https://www.github.com/ethersphere/bee-dashboard/issues/256)) ([3bb0077](https://www.github.com/ethersphere/bee-dashboard/commit/3bb00771d684ad93fd7acd921b648574013aec5c))
+
 ## [0.8.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.7.0...v0.8.0) (2021-10-20)
 
 In this version we are adding support for the bee release 1.2.0. The app also went through a graphical redesign. More to come soon!
