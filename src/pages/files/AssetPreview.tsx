@@ -8,10 +8,13 @@ import { SwarmFile } from '../../utils/SwarmFile'
 import { AssetIcon } from './AssetIcon'
 
 interface Props {
+  assetName?: string
   files: SwarmFile[]
 }
 
-export function AssetPreview({ files }: Props): ReactElement {
+// TODO: add optional prop for indexDocument when it is already known (e.g. downloading a manifest)
+
+export function AssetPreview({ assetName, files }: Props): ReactElement {
   const [previewComponent, setPreviewComponent] = useState<ReactElement | undefined>(undefined)
   const [previewUri, setPreviewUri] = useState<string | undefined>(undefined)
 
@@ -40,10 +43,10 @@ export function AssetPreview({ files }: Props): ReactElement {
 
   const getPrimaryText = () => {
     if (files.length === 1) {
-      return 'Filename: ' + files[0].name
+      return 'Filename: ' + (assetName || files[0].name)
     }
 
-    return 'Folder name: ' + files[0].path.split('/')[0]
+    return 'Folder name: ' + (assetName || files[0].path.split('/')[0])
   }
 
   const getKind = () => {

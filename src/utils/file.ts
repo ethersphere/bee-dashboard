@@ -49,3 +49,17 @@ export function convertBeeFileToBrowserFile(file: FileData<ArrayBuffer>): Partia
     arrayBuffer: () => new Promise(resolve => resolve(file.data)),
   }
 }
+
+export function convertManifestToFiles(files: Record<string, string>): SwarmFile[] {
+  return Object.entries(files).map(
+    x =>
+      ({
+        name: x[0],
+        path: x[0],
+        type: 'n/a',
+        size: 0,
+        webkitRelativePath: x[0],
+        arrayBuffer: () => new Promise(resolve => resolve(new ArrayBuffer(0))),
+      } as SwarmFile),
+  )
+}
