@@ -25,7 +25,7 @@ export function DownloadActionBar({ onOpen, onDownload, onCancel, hasIndexDocume
         Download
       </SwarmButton>
       <Button onClick={onCancel} variant="contained" startIcon={<Clear />} disabled={loading}>
-        Cancel
+        Close
       </Button>
     </ExpandableListItemActions>
   )

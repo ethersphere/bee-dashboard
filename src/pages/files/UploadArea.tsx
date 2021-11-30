@@ -1,14 +1,16 @@
 import { createStyles, makeStyles, Theme, Typography } from '@material-ui/core'
 import { DropzoneArea } from 'material-ui-dropzone'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useContext, useState } from 'react'
 import { FilePlus, FolderPlus, PlusCircle } from 'react-feather'
+import { useHistory } from 'react-router'
 import { SwarmButton } from '../../components/SwarmButton'
+import { Context } from '../../providers/File'
+import { ROUTES } from '../../routes'
 import { detectIndexHtml } from '../../utils/file'
 import { SwarmFile } from '../../utils/SwarmFile'
 
 interface Props {
-  setFiles: (files: SwarmFile[]) => void
   maximumSizeInBytes: number
 }
 
@@ -42,9 +44,10 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-export function UploadArea({ setFiles, maximumSizeInBytes }: Props): ReactElement {
+export function UploadArea({ maximumSizeInBytes }: Props): ReactElement {
+  const { setFiles } = useContext(Context)
   const classes = useStyles()
-
+  const history = useHistory()
   const { enqueueSnackbar } = useSnackbar()
   const [strictWebsiteMode, setStrictWebsiteMode] = useState(false)
 
@@ -104,6 +107,10 @@ export function UploadArea({ setFiles, maximumSizeInBytes }: Props): ReactElemen
       }
 
       setFiles(swarmFiles)
+
+      if (files.length) {
+        history.push(ROUTES.UPLOAD_IN_PROGRESS)
+      }
     }
   }
 
