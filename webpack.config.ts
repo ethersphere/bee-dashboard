@@ -10,7 +10,7 @@ export default (): Configuration => {
     entry,
     output: {
       path: Path.resolve(__dirname, 'lib'),
-      filename: 'index.js',
+      filename: 'App.js',
       library: 'beeDashboard',
       libraryTarget: 'umd',
     },

@@ -15,7 +15,8 @@
   "bin": {
     "bee-dashboard": "./serve.js"
   },
-  "main": "lib/index.js",
+  "main": "lib/App.js",
+  "types": "lib/src/App.d.ts",
   "bugs": {
     "url": "https://github.com/ethersphere/bee-dashboard/issues/"
   },
@@ -102,10 +103,11 @@
     "react-dom": ">= 17.0.2"
   },
   "scripts": {
-    "prepare": "npm run build && npm run build:component",
+    "prepare": "npm run build && npm run build:component && npm run compile:types",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "build:component": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' webpack --mode=production",
+    "compile:types": "tsc --project tsconfig.lib.json --emitDeclarationOnly --declaration",
     "test": "react-scripts test",
     "serve": "node ./serve.js",
     "depcheck": "depcheck .",

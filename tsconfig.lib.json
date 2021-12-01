@@ -18,7 +18,9 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
-    "outDir": "lib"
+    "outDir": "lib",
+    "rootDirs": ["src"],
+    "typeRoots": ["./src/@types", "node_modules/@types"]
   },
   "include": [
     "src"
