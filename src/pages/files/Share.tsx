@@ -108,7 +108,7 @@ export function Share(props: Props): ReactElement {
         onOpen={onOpen}
         onCancel={onClose}
         onDownload={onDownload}
-        hasIndexDocument={Boolean(indexDocument)}
+        hasIndexDocument={Boolean(indexDocument && files.length > 1)}
         loading={downloading}
       />
     </>
