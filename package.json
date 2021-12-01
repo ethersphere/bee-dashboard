@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@ethersphere/bee-js": "3.0.0",
+    "@ethersphere/manifest-js": "^1.0.0",
     "@material-ui/core": "4.12.3",
     "@material-ui/icons": "4.11.2",
     "@material-ui/lab": "4.0.0-alpha.57",
@@ -46,8 +47,7 @@
     "react-router-dom": "5.2.0",
     "react-syntax-highlighter": "15.4.4",
     "semver": "7.3.5",
-    "serve-handler": "6.1.3",
-    "swarm-manifest-list": "^1.1.0"
+    "serve-handler": "6.1.3"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "14.1.0",

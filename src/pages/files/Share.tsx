@@ -1,9 +1,9 @@
+import { ManifestJs } from '@ethersphere/manifest-js'
 import { Box } from '@material-ui/core'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { SwarmManifestList } from 'swarm-manifest-list'
 import { Loading } from '../../components/Loading'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { convertBeeFileToBrowserFile, convertManifestToFiles } from '../../utils/file'
@@ -36,15 +36,15 @@ export function Share(props: Props): ReactElement {
       return
     }
 
-    const swarmManifestList = new SwarmManifestList(beeApi)
-    const isManifest = await swarmManifestList.isManifest(reference)
+    const manifestJs = new ManifestJs(beeApi)
+    const isManifest = await manifestJs.isManifest(reference)
 
     if (!isManifest) {
       throw Error('The specified hash does not contain valid content.')
     }
-    const entries = await swarmManifestList.getHashes(reference)
+    const entries = await manifestJs.getHashes(reference)
     setSwarmEntries(entries)
-    const indexDocument = await swarmManifestList.getIndexDocument(reference)
+    const indexDocument = await manifestJs.getIndexDocumentPath(reference)
     setIndexDocument(indexDocument)
 
     if (Object.keys(entries).length === 1) {

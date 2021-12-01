@@ -1,8 +1,8 @@
 import { Utils } from '@ethersphere/bee-js'
+import { ManifestJs } from '@ethersphere/manifest-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { SwarmManifestList } from 'swarm-manifest-list'
 import ExpandableListItemInput from '../../components/ExpandableListItemInput'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
@@ -23,9 +23,13 @@ export function Download(): ReactElement {
   }
 
   async function onSwarmIdentifier(identifier: string) {
+    if (!beeApi) {
+      return
+    }
+
     try {
-      const swarmManifestList = new SwarmManifestList(beeApi)
-      const isManifest = await swarmManifestList.isManifest(identifier)
+      const manifestJs = new ManifestJs(beeApi)
+      const isManifest = await manifestJs.isManifest(identifier)
 
       if (!isManifest) {
         throw Error('The specified hash does not contain valid content.')
