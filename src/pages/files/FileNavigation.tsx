@@ -1,6 +1,6 @@
 import { createStyles, makeStyles, Tab, Tabs, Theme } from '@material-ui/core'
 import { ReactElement } from 'react'
-import { useHistory } from 'react-router'
+import { useHistory } from 'react-router-dom'
 import { ROUTES } from '../../routes'
 
 interface Props {

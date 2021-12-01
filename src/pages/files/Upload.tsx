@@ -1,6 +1,6 @@
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
-import { useHistory } from 'react-router'
+import { useHistory } from 'react-router-dom'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { Context as FileContext } from '../../providers/File'
 import { Context as SettingsContext } from '../../providers/Settings'

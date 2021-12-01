@@ -1,7 +1,7 @@
 import { Utils } from '@ethersphere/bee-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
-import { useHistory } from 'react-router'
+import { useHistory } from 'react-router-dom'
 import { SwarmManifestList } from 'swarm-manifest-list'
 import ExpandableListItemInput from '../../components/ExpandableListItemInput'
 import { Context as SettingsContext } from '../../providers/Settings'

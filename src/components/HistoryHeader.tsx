@@ -1,7 +1,7 @@
 import { Box, createStyles, Grid, makeStyles, Typography } from '@material-ui/core'
 import { ArrowBack } from '@material-ui/icons'
 import { ReactElement } from 'react'
-import { useHistory } from 'react-router'
+import { useHistory } from 'react-router-dom'
 
 interface Props {
   children: string
