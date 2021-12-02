@@ -69,6 +69,8 @@ export function AssetPreview({ assetName, files }: Props): ReactElement {
     return getHumanReadableFileSize(bytes)
   }
 
+  const size = getSize()
+
   return (
     <Box mb={4}>
       <Box bgcolor="background.paper">
@@ -81,7 +83,7 @@ export function AssetPreview({ assetName, files }: Props): ReactElement {
           <Box p={2}>
             <Typography>{getPrimaryText()}</Typography>
             <Typography>Kind: {getKind()}</Typography>
-            <Typography>Size: {getSize()}</Typography>
+            {size !== '0 bytes' && <Typography>Size: {size}</Typography>}
           </Box>
         </Grid>
       </Box>

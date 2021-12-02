@@ -50,6 +50,7 @@ export function UploadArea({ maximumSizeInBytes }: Props): ReactElement {
   const history = useHistory()
   const { enqueueSnackbar } = useSnackbar()
   const [strictWebsiteMode, setStrictWebsiteMode] = useState(false)
+  const [version, setVersion] = useState(0)
 
   const getDropzoneInputDomElement = () => document.querySelector('.MuiDropzoneArea-root input') as HTMLInputElement
 
@@ -85,9 +86,9 @@ export function UploadArea({ maximumSizeInBytes }: Props): ReactElement {
     }
   }
 
-  const resetComponentOnAddingInvalidContent = (files: SwarmFile[]) => {
-    setFiles(files)
+  const resetComponentOnAddingInvalidContent = () => {
     setTimeout(() => {
+      setVersion(x => x + 1)
       setFiles([])
     }, 0)
   }
@@ -101,7 +102,7 @@ export function UploadArea({ maximumSizeInBytes }: Props): ReactElement {
         enqueueSnackbar('To upload a website, there must be an index.html or index.htm in the root of the folder.', {
           variant: 'error',
         })
-        resetComponentOnAddingInvalidContent(swarmFiles)
+        resetComponentOnAddingInvalidContent()
 
         return
       }
@@ -118,6 +119,7 @@ export function UploadArea({ maximumSizeInBytes }: Props): ReactElement {
     <>
       <div className={classes.areaWrapper}>
         <DropzoneArea
+          key={version}
           dropzoneClass={classes.dropzone}
           onChange={handleChange}
           filesLimit={1e9}
