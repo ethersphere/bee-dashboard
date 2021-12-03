@@ -1,3 +1,19 @@
 {
-  "ignores": ["@types/jest", "@commitlint/config-conventional", "@types/react-router"]
+  "ignores": [
+    "@types/jest", 
+    "@commitlint/config-conventional", 
+    "@types/react-router",
+    "@babel/core",
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-transform-runtime",
+    "@babel/preset-env",
+    "@babel/preset-react",
+    "@babel/preset-typescript",
+    "babel-loader",
+    "babel-plugin-syntax-dynamic-import",
+    "babel-plugin-tsconfig-paths",
+    "file-loader",
+    "ts-node",
+    "webpack-cli"
+  ]
 }
