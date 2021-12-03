@@ -9,6 +9,7 @@ interface ContextInterface {
   beeDebugApi: BeeDebug | null
   setApiUrl: (url: string) => void
   setDebugApiUrl: (url: string) => void
+  lockedApiSettings: boolean
 }
 
 const initialValues: ContextInterface = {
@@ -18,6 +19,7 @@ const initialValues: ContextInterface = {
   beeDebugApi: null,
   setApiUrl: () => {}, // eslint-disable-line
   setDebugApiUrl: () => {}, // eslint-disable-line
+  lockedApiSettings: false,
 }
 
 export const Context = createContext<ContextInterface>(initialValues)
@@ -27,13 +29,20 @@ interface Props {
   children: ReactChild
   beeApiUrl?: string
   beeDebugApiUrl?: string
+  lockedApiSettings?: boolean
 }
 
-export function Provider({ children, beeApiUrl, beeDebugApiUrl }: Props): ReactElement {
+export function Provider({
+  children,
+  beeApiUrl,
+  beeDebugApiUrl,
+  lockedApiSettings: extLockedApiSettings,
+}: Props): ReactElement {
   const [apiUrl, setApiUrl] = useState<string>(initialValues.apiUrl)
   const [apiDebugUrl, setDebugApiUrl] = useState<string>(initialValues.apiDebugUrl)
   const [beeApi, setBeeApi] = useState<Bee | null>(null)
   const [beeDebugApi, setBeeDebugApi] = useState<BeeDebug | null>(null)
+  const [lockedApiSettings] = useState<boolean>(Boolean(extLockedApiSettings))
 
   useEffect(() => {
     try {
@@ -65,7 +74,9 @@ export function Provider({ children, beeApiUrl, beeDebugApiUrl }: Props): ReactE
   }, [apiDebugUrl])
 
   return (
-    <Context.Provider value={{ apiUrl, apiDebugUrl, beeApi, beeDebugApi, setApiUrl, setDebugApiUrl }}>
+    <Context.Provider
+      value={{ apiUrl, apiDebugUrl, beeApi, beeDebugApi, setApiUrl, setDebugApiUrl, lockedApiSettings }}
+    >
       {children}
     </Context.Provider>
   )

@@ -16,12 +16,13 @@ import { theme } from './theme'
 interface Props {
   beeApiUrl?: string
   beeDebugApiUrl?: string
+  lockedApiSettings?: boolean
 }
 
-const App = ({ beeApiUrl, beeDebugApiUrl }: Props): ReactElement => (
+const App = ({ beeApiUrl, beeDebugApiUrl, lockedApiSettings }: Props): ReactElement => (
   <div className="App">
     <ThemeProvider theme={theme}>
-      <SettingsProvider beeApiUrl={beeApiUrl} beeDebugApiUrl={beeDebugApiUrl}>
+      <SettingsProvider beeApiUrl={beeApiUrl} beeDebugApiUrl={beeDebugApiUrl} lockedApiSettings={lockedApiSettings}>
         <BeeProvider>
           <StampsProvider>
             <FileProvider>
