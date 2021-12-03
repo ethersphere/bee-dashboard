@@ -35,8 +35,18 @@ export default (): Configuration => {
           use: ['style-loader', 'css-loader'],
         },
         {
-          test: /\.(png|jp(e*)g|svg|gif|ttf)$/,
-          use: ['file-loader'],
+          test: /\.(png|jp(e*)g|svg|gif)$/,
+          loader: 'file-loader',
+          options: {
+            name: 'assets/[name].[ext]'
+          }
+        },
+        {
+          test: /\.(ttf)$/,
+          loader: 'file-loader',
+          options: {
+            name: 'assets/fonts/[name].[ext]'
+          }
         },
         {
           test: /\.(ts|js|tsx|jsx)$/,
