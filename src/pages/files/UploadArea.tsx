@@ -138,7 +138,10 @@ export function UploadArea({ maximumSizeInBytes }: Props): ReactElement {
           </SwarmButton>
         </div>
       </div>
-      <Typography>You can click the button above or simply drag and drop to add a file.</Typography>
+      <Typography>
+        You can click the buttons above or simply drag and drop to add a file or folder. To upload a website to Swarm,
+        make sure that your folder contains an “index.html” file.
+      </Typography>
     </>
   )
 }
