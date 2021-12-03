@@ -1,4 +1,6 @@
 import { ReactElement } from 'react'
+import { History } from '../../components/History'
+import { HISTORY_KEYS } from '../../utils/local-storage'
 import { FileNavigation } from './FileNavigation'
 import { UploadArea } from './UploadArea'
 
@@ -9,6 +11,7 @@ export function UploadLander(): ReactElement {
     <>
       <FileNavigation active="UPLOAD" />
       <UploadArea maximumSizeInBytes={MAX_FILE_SIZE} />
+      <History title="Upload History" localStorageKey={HISTORY_KEYS.UPLOAD_HISTORY} />
     </>
   )
 }

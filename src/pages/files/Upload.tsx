@@ -6,7 +6,8 @@ import { Context as FileContext } from '../../providers/File'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context, EnrichedPostageBatch } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
-import { detectIndexHtml } from '../../utils/file'
+import { detectIndexHtml, getAssetNameFromFiles } from '../../utils/file'
+import { HISTORY_KEYS, putHistory } from '../../utils/local-storage'
 import { CreatePostageStampModal } from '../stamps/CreatePostageStampModal'
 import { SelectPostageStampModal } from '../stamps/SelectPostageStampModal'
 import { AssetPreview } from './AssetPreview'
@@ -45,7 +46,10 @@ export function Upload(): ReactElement {
 
     beeApi
       .uploadFiles(stamp.batchID, files as unknown as File[], { indexDocument })
-      .then(hash => history.replace(ROUTES.HASH.replace(':hash', hash.reference)))
+      .then(hash => {
+        putHistory(HISTORY_KEYS.UPLOAD_HISTORY, hash.reference, getAssetNameFromFiles(files))
+        history.replace(ROUTES.HASH.replace(':hash', hash.reference))
+      })
       .catch(e => {
         enqueueSnackbar(`Error uploading: ${e.message}`, { variant: 'error' })
         setUploading(false)

@@ -4,9 +4,11 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import ExpandableListItemInput from '../../components/ExpandableListItemInput'
+import { History } from '../../components/History'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
 import { extractSwarmHash } from '../../utils'
+import { HISTORY_KEYS, putHistory } from '../../utils/local-storage'
 import { FileNavigation } from './FileNavigation'
 
 export function Download(): ReactElement {
@@ -34,6 +36,8 @@ export function Download(): ReactElement {
       if (!isManifest) {
         throw Error('The specified hash does not contain valid content.')
       }
+      const indexDocument = await manifestJs.getIndexDocumentPath(identifier)
+      putHistory(HISTORY_KEYS.DOWNLOAD_HISTORY, identifier, indexDocument || identifier)
       history.push(ROUTES.HASH.replace(':hash', identifier))
     } catch (error: unknown) {
       let message = typeof error === 'object' && error !== null && Reflect.get(error, 'message')
@@ -79,6 +83,7 @@ export function Download(): ReactElement {
         expandedOnly
         mapperFn={value => recognizeSwarmHash(value)}
       />
+      <History title="Download History" localStorageKey={HISTORY_KEYS.DOWNLOAD_HISTORY} />
     </>
   )
 }

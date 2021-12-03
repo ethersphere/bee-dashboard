@@ -3,7 +3,7 @@ import { Web } from '@material-ui/icons'
 import { ReactElement, useEffect, useState } from 'react'
 import { File, Folder } from 'react-feather'
 import { FitImage } from '../../components/FitImage'
-import { detectIndexHtml, getHumanReadableFileSize } from '../../utils/file'
+import { detectIndexHtml, getAssetNameFromFiles, getHumanReadableFileSize } from '../../utils/file'
 import { SwarmFile } from '../../utils/SwarmFile'
 import { AssetIcon } from './AssetIcon'
 
@@ -42,11 +42,13 @@ export function AssetPreview({ assetName, files }: Props): ReactElement {
   }, [files])
 
   const getPrimaryText = () => {
+    const name = getAssetNameFromFiles(files)
+
     if (files.length === 1) {
-      return 'Filename: ' + (assetName || files[0].name)
+      return 'Filename: ' + (assetName || name)
     }
 
-    return 'Folder name: ' + (assetName || files[0].path.split('/')[0])
+    return 'Folder name: ' + (assetName || name)
   }
 
   const getKind = () => {

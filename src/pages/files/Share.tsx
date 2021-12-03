@@ -6,7 +6,9 @@ import { ReactElement, useContext, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { Loading } from '../../components/Loading'
 import { Context as SettingsContext } from '../../providers/Settings'
+import { ROUTES } from '../../routes'
 import { convertBeeFileToBrowserFile, convertManifestToFiles } from '../../utils/file'
+import { shortenHash } from '../../utils/hash'
 import { SwarmFile } from '../../utils/SwarmFile'
 import { AssetPreview } from './AssetPreview'
 import { AssetSummary } from './AssetSummary'
@@ -60,7 +62,11 @@ export function Share(props: Props): ReactElement {
   }
 
   function onClose() {
-    history.goBack()
+    if (history.length < 2) {
+      history.push(ROUTES.UPLOAD)
+    } else {
+      history.goBack()
+    }
   }
 
   useEffect(() => {
@@ -90,7 +96,7 @@ export function Share(props: Props): ReactElement {
     setDownloading(false)
   }
 
-  const assetName = reference.slice(0, 8) + '[…]' + reference.slice(-8)
+  const assetName = shortenHash(reference)
 
   if (loading) {
     return <Loading />
