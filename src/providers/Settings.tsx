@@ -26,9 +26,10 @@ export const Consumer = Context.Consumer
 interface Props {
   children: ReactChild
   beeApiUrl?: string
+  beeDebugApiUrl?: string
 }
 
-export function Provider({ children, beeApiUrl }: Props): ReactElement {
+export function Provider({ children, beeApiUrl, beeDebugApiUrl }: Props): ReactElement {
   const [apiUrl, setApiUrl] = useState<string>(initialValues.apiUrl)
   const [apiDebugUrl, setDebugApiUrl] = useState<string>(initialValues.apiDebugUrl)
   const [beeApi, setBeeApi] = useState<Bee | null>(null)
@@ -49,6 +50,10 @@ export function Provider({ children, beeApiUrl }: Props): ReactElement {
 
     if (beeApiUrl) setApiUrl(beeApiUrl)
   }, [beeApiUrl])
+
+  useEffect(() => {
+    if (beeDebugApiUrl) setDebugApiUrl(beeDebugApiUrl)
+  }, [beeDebugApiUrl])
 
   useEffect(() => {
     try {
