@@ -29,6 +29,7 @@ export function History({ title, localStorageKey }: Props): ReactElement | null 
           link={'/files/hash/' + x.hash}
           key={i}
           navigationType="HISTORY_PUSH"
+          allowClipboard={false}
         />
       ))}
     </ExpandableList>

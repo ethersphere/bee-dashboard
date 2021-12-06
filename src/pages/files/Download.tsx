@@ -8,7 +8,7 @@ import { History } from '../../components/History'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
 import { extractSwarmHash } from '../../utils'
-import { HISTORY_KEYS, putHistory } from '../../utils/local-storage'
+import { determineHistoryName, HISTORY_KEYS, putHistory } from '../../utils/local-storage'
 import { FileNavigation } from './FileNavigation'
 
 export function Download(): ReactElement {
@@ -20,8 +20,11 @@ export function Download(): ReactElement {
   const history = useHistory()
 
   const validateChange = (value: string) => {
-    if (Utils.isHexString(value, 64) || Utils.isHexString(value, 128)) setReferenceError(undefined)
-    else setReferenceError('Incorrect format of swarm hash. Expected 64 or 128 hexstring characters.')
+    if (Utils.isHexString(value, 64) || Utils.isHexString(value, 128) || !value.trim().length) {
+      setReferenceError(undefined)
+    } else {
+      setReferenceError('Incorrect format of swarm hash. Expected 64 or 128 hexstring characters.')
+    }
   }
 
   async function onSwarmIdentifier(identifier: string) {
@@ -37,7 +40,7 @@ export function Download(): ReactElement {
         throw Error('The specified hash does not contain valid content.')
       }
       const indexDocument = await manifestJs.getIndexDocumentPath(identifier)
-      putHistory(HISTORY_KEYS.DOWNLOAD_HISTORY, identifier, indexDocument || identifier)
+      putHistory(HISTORY_KEYS.DOWNLOAD_HISTORY, identifier, determineHistoryName(identifier, indexDocument))
       history.push(ROUTES.HASH.replace(':hash', identifier))
     } catch (error: unknown) {
       let message = typeof error === 'object' && error !== null && Reflect.get(error, 'message')

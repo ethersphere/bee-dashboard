@@ -1,3 +1,5 @@
+import { shortenHash } from './hash'
+
 export enum HISTORY_KEYS {
   UPLOAD_HISTORY = 'UPLOAD_HISTORY',
   DOWNLOAD_HISTORY = 'DOWNLOAD_HISTORY',
@@ -55,4 +57,14 @@ function isHistoryItem(x: unknown): x is HistoryItem {
   }
 
   return 'createdAt' in x && 'hash' in x
+}
+
+export function determineHistoryName(hash: string, indexDocument?: string | null): string {
+  if (indexDocument === 'index.html') {
+    return `Website ${shortenHash(hash, 4)}`
+  } else if (indexDocument) {
+    return indexDocument
+  }
+
+  return `Folder ${shortenHash(hash, 4)}`
 }

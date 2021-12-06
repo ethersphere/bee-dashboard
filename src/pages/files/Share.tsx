@@ -9,6 +9,7 @@ import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
 import { convertBeeFileToBrowserFile, convertManifestToFiles } from '../../utils/file'
 import { shortenHash } from '../../utils/hash'
+import { determineHistoryName, HISTORY_KEYS, putHistory } from '../../utils/local-storage'
 import { SwarmFile } from '../../utils/SwarmFile'
 import { AssetPreview } from './AssetPreview'
 import { AssetSummary } from './AssetSummary'
@@ -81,6 +82,7 @@ export function Share(props: Props): ReactElement {
     if (!beeApi) {
       return
     }
+    putHistory(HISTORY_KEYS.DOWNLOAD_HISTORY, reference, determineHistoryName(reference, indexDocument))
     setDownloading(true)
 
     if (Object.keys(swarmEntries).length === 1) {

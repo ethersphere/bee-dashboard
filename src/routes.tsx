@@ -14,7 +14,7 @@ export enum ROUTES {
   INFO = '/',
   FILES = '/files',
   UPLOAD = '/files/upload',
-  UPLOAD_IN_PROGRESS = '/files/upload/lorem-ipsum',
+  UPLOAD_IN_PROGRESS = '/files/upload/workflow',
   DOWNLOAD = '/files/download',
   HASH = '/files/hash/:hash',
   ACCOUNTING = '/accounting',

@@ -1,4 +1,4 @@
-import { Box, createStyles, FormControl, makeStyles, MenuItem, Select, Theme, Typography } from '@material-ui/core'
+import { createStyles, FormControl, makeStyles, MenuItem, Select, Theme } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -88,30 +88,15 @@ export function SelectPostageStampModal({ stamps, onSelect, onClose }: Props): R
           </Select>
         </FormControl>
       </DialogContent>
-      <Box mb={2}>
-        <DialogContent>
-          <ExpandableListItemActions>
-            <Button disabled={!selectedStamp} onClick={onFinish} variant="contained" startIcon={<Check />}>
-              Select
-            </Button>
-            <Button onClick={onClose} variant="contained" startIcon={<Clear />}>
-              Cancel
-            </Button>
-          </ExpandableListItemActions>
-        </DialogContent>
-      </Box>
       <DialogContent>
-        <Typography className={classes.hint}>
-          Please refer to the{' '}
-          <a
-            href="https://docs.ethswarm.org/docs/access-the-swarm/keep-your-data-alive#purchase-a-batch-of-stamps"
-            target="_blank"
-            rel="noreferrer"
-          >
-            official Bee documentation
-          </a>{' '}
-          to understand these values.
-        </Typography>
+        <ExpandableListItemActions>
+          <Button disabled={!selectedStamp} onClick={onFinish} variant="contained" startIcon={<Check />}>
+            Select
+          </Button>
+          <Button onClick={onClose} variant="contained" startIcon={<Clear />}>
+            Cancel
+          </Button>
+        </ExpandableListItemActions>
       </DialogContent>
     </Dialog>
   )

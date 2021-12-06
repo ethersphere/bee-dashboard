@@ -1,3 +1,3 @@
-export function shortenHash(hash: string): string {
-  return hash.slice(0, 8) + '[…]' + hash.slice(-8)
+export function shortenHash(hash: string, sliceLength = 8): string {
+  return hash.slice(0, sliceLength) + '[…]' + hash.slice(-sliceLength)
 }

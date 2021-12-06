@@ -49,6 +49,7 @@ interface Props {
   value: string
   link?: string
   navigationType?: 'NEW_WINDOW' | 'HISTORY_PUSH'
+  allowClipboard?: boolean
 }
 
 export default function ExpandableListItemLink({
@@ -56,6 +57,7 @@ export default function ExpandableListItemLink({
   value,
   link,
   navigationType = 'NEW_WINDOW',
+  allowClipboard = true,
 }: Props): ReactElement | null {
   const classes = useStyles()
   const [copied, setCopied] = useState(false)
@@ -81,13 +83,16 @@ export default function ExpandableListItemLink({
           {label && <Typography variant="body1">{label}</Typography>}
           <Typography variant="body2">
             <div>
-              <span className={classes.copyValue}>
-                <Tooltip title={copied ? 'Copied' : 'Copy'} placement="top" arrow onClose={tooltipCloseHandler}>
-                  <CopyToClipboard text={value}>
-                    <span onClick={tooltipClickHandler}>{displayValue}</span>
-                  </CopyToClipboard>
-                </Tooltip>
-              </span>
+              {allowClipboard && (
+                <span className={classes.copyValue}>
+                  <Tooltip title={copied ? 'Copied' : 'Copy'} placement="top" arrow onClose={tooltipCloseHandler}>
+                    <CopyToClipboard text={value}>
+                      <span onClick={tooltipClickHandler}>{displayValue}</span>
+                    </CopyToClipboard>
+                  </Tooltip>
+                </span>
+              )}
+              {!allowClipboard && <span onClick={onNavigation}>{displayValue}</span>}
               <IconButton size="small" className={classes.openLinkIcon}>
                 {navigationType === 'NEW_WINDOW' && <OpenInNewSharp onClick={onNavigation} strokeWidth={1} />}
                 {navigationType === 'HISTORY_PUSH' && <ArrowForward onClick={onNavigation} strokeWidth={1} />}
