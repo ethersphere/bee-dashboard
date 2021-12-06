@@ -38,15 +38,15 @@ export default (): Configuration => {
           test: /\.(png|jp(e*)g|svg|gif)$/,
           loader: 'file-loader',
           options: {
-            name: 'assets/[name].[ext]'
-          }
+            name: 'assets/[name].[ext]',
+          },
         },
         {
           test: /\.(ttf)$/,
           loader: 'file-loader',
           options: {
-            name: 'assets/fonts/[name].[ext]'
-          }
+            name: 'assets/fonts/[name].[ext]',
+          },
         },
         {
           test: /\.(ts|js|tsx|jsx)$/,
@@ -57,11 +57,5 @@ export default (): Configuration => {
         },
       ],
     },
-    // plugins: [
-    //   new ProvidePlugin({
-    //     React: 'react',
-    //     'window.React': 'react',
-    //   }),
-    // ],
   }
 }
