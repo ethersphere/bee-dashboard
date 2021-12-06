@@ -112,7 +112,8 @@
     "serve": "node ./serve.js",
     "depcheck": "depcheck .",
     "lint": "eslint --fix \"src/**/*.ts\" \"src/**/*.tsx\" && prettier --write \"src/**/*.ts\" \"src/**/*.tsx\"",
-    "lint:check": "eslint \"src/**/*.ts\" \"src/**/*.tsx\" && prettier --check \"src/**/*.ts\" \"src/**/*.tsx\""
+    "lint:check": "eslint \"src/**/*.ts\" \"src/**/*.tsx\" && prettier --check \"src/**/*.ts\" \"src/**/*.tsx\"",
+    "check:types": "tsc --project tsconfig.lib.json"
   },
   "files": [
     "build",
