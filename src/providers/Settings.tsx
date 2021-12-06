@@ -54,9 +54,6 @@ export function Provider({
   }, [apiUrl])
 
   useEffect(() => {
-    // eslint-disable-next-line no-console
-    console.log('bee-api-url2', beeApiUrl)
-
     if (beeApiUrl) setApiUrl(beeApiUrl)
   }, [beeApiUrl])
 
