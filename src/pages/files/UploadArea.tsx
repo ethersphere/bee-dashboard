@@ -1,14 +1,16 @@
 import { createStyles, makeStyles, Theme, Typography } from '@material-ui/core'
 import { DropzoneArea } from 'material-ui-dropzone'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
-import { FilePlus } from 'react-feather'
+import { ReactElement, useContext, useState } from 'react'
+import { FilePlus, FolderPlus, PlusCircle } from 'react-feather'
+import { useHistory } from 'react-router-dom'
 import { SwarmButton } from '../../components/SwarmButton'
+import { Context } from '../../providers/File'
+import { ROUTES } from '../../routes'
 import { detectIndexHtml } from '../../utils/file'
 import { SwarmFile } from '../../utils/SwarmFile'
 
 interface Props {
-  setFiles: (files: SwarmFile[]) => void
   maximumSizeInBytes: number
 }
 
@@ -42,15 +44,17 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-export function UploadArea({ setFiles, maximumSizeInBytes }: Props): ReactElement {
+export function UploadArea({ maximumSizeInBytes }: Props): ReactElement {
+  const { setFiles } = useContext(Context)
   const classes = useStyles()
-
+  const history = useHistory()
   const { enqueueSnackbar } = useSnackbar()
+  const [strictWebsiteMode, setStrictWebsiteMode] = useState(false)
+  const [version, setVersion] = useState(0)
 
   const getDropzoneInputDomElement = () => document.querySelector('.MuiDropzoneArea-root input') as HTMLInputElement
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const onUploadFolderClick = () => {
+  const onUploadCollectionClick = () => {
     const element = getDropzoneInputDomElement()
 
     if (element) {
@@ -59,6 +63,16 @@ export function UploadArea({ setFiles, maximumSizeInBytes }: Props): ReactElemen
       element.setAttribute('mozdirectory', '')
       element.click()
     }
+  }
+
+  const onUploadWebsiteClick = () => {
+    onUploadCollectionClick()
+    setStrictWebsiteMode(true)
+  }
+
+  const onUploadFolderClick = () => {
+    onUploadCollectionClick()
+    setStrictWebsiteMode(false)
   }
 
   const onUploadFileClick = () => {
@@ -72,9 +86,9 @@ export function UploadArea({ setFiles, maximumSizeInBytes }: Props): ReactElemen
     }
   }
 
-  const resetComponentOnAddingInvalidContent = (files: SwarmFile[]) => {
-    setFiles(files)
+  const resetComponentOnAddingInvalidContent = () => {
     setTimeout(() => {
+      setVersion(x => x + 1)
       setFiles([])
     }, 0)
   }
@@ -84,16 +98,20 @@ export function UploadArea({ setFiles, maximumSizeInBytes }: Props): ReactElemen
       const swarmFiles = files.map(x => new SwarmFile(x))
       const indexDocument = files.length === 1 ? files[0].name : detectIndexHtml(swarmFiles) || undefined
 
-      if (files.length && !indexDocument) {
+      if (files.length && strictWebsiteMode && !indexDocument) {
         enqueueSnackbar('To upload a website, there must be an index.html or index.htm in the root of the folder.', {
           variant: 'error',
         })
-        resetComponentOnAddingInvalidContent(swarmFiles)
+        resetComponentOnAddingInvalidContent()
 
         return
       }
 
       setFiles(swarmFiles)
+
+      if (files.length) {
+        history.push(ROUTES.UPLOAD_IN_PROGRESS)
+      }
     }
   }
 
@@ -101,9 +119,10 @@ export function UploadArea({ setFiles, maximumSizeInBytes }: Props): ReactElemen
     <>
       <div className={classes.areaWrapper}>
         <DropzoneArea
+          key={version}
           dropzoneClass={classes.dropzone}
           onChange={handleChange}
-          filesLimit={1}
+          filesLimit={1e9}
           maxFileSize={maximumSizeInBytes}
           showPreviews={false}
         />
@@ -111,9 +130,18 @@ export function UploadArea({ setFiles, maximumSizeInBytes }: Props): ReactElemen
           <SwarmButton className={classes.button} onClick={onUploadFileClick} iconType={FilePlus}>
             Add File
           </SwarmButton>
+          <SwarmButton className={classes.button} onClick={onUploadFolderClick} iconType={FolderPlus}>
+            Add Folder
+          </SwarmButton>
+          <SwarmButton className={classes.button} onClick={onUploadWebsiteClick} iconType={PlusCircle}>
+            Add Website
+          </SwarmButton>
         </div>
       </div>
-      <Typography>You can click the button above or simply drag and drop to add a file.</Typography>
+      <Typography>
+        You can click the buttons above or simply drag and drop to add a file or folder. To upload a website to Swarm,
+        make sure that your folder contains an “index.html” file.
+      </Typography>
     </>
   )
 }

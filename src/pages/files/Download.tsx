@@ -1,41 +1,47 @@
 import { Utils } from '@ethersphere/bee-js'
-import { Box } from '@material-ui/core'
+import { ManifestJs } from '@ethersphere/manifest-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import ExpandableListItemInput from '../../components/ExpandableListItemInput'
+import { History } from '../../components/History'
 import { Context as SettingsContext } from '../../providers/Settings'
+import { ROUTES } from '../../routes'
 import { extractSwarmHash } from '../../utils'
-import { convertBeeFileToBrowserFile } from '../../utils/file'
-import { SwarmFile } from '../../utils/SwarmFile'
-import { AssetPreview } from './AssetPreview'
-import { DownloadActionBar } from './DownloadActionBar'
+import { determineHistoryName, HISTORY_KEYS, putHistory } from '../../utils/local-storage'
+import { FileNavigation } from './FileNavigation'
 
-export default function Files(): ReactElement {
-  const { apiUrl, beeApi } = useContext(SettingsContext)
-
-  const [reference, setReference] = useState('')
+export function Download(): ReactElement {
+  const [loading, setLoading] = useState(false)
+  const { beeApi } = useContext(SettingsContext)
   const [referenceError, setReferenceError] = useState<string | undefined>(undefined)
-  const [downloadedFile, setDownloadedFile] = useState<Partial<File> | null>(null)
 
   const { enqueueSnackbar } = useSnackbar()
+  const history = useHistory()
 
   const validateChange = (value: string) => {
-    if (Utils.isHexString(value, 64) || Utils.isHexString(value, 128)) setReferenceError(undefined)
-    else setReferenceError('Incorrect format of swarm hash. Expected 64 or 128 hexstring characters.')
-  }
-
-  function onDownload() {
-    window.open(`${apiUrl}/bzz/${reference}/`, '_blank')
+    if (Utils.isHexString(value, 64) || Utils.isHexString(value, 128) || !value.trim().length) {
+      setReferenceError(undefined)
+    } else {
+      setReferenceError('Incorrect format of swarm hash. Expected 64 or 128 hexstring characters.')
+    }
   }
 
   async function onSwarmIdentifier(identifier: string) {
     if (!beeApi) {
       return
     }
-    setReference(identifier)
+
     try {
-      const response = await beeApi.downloadFile(identifier)
-      setDownloadedFile(convertBeeFileToBrowserFile(response))
+      const manifestJs = new ManifestJs(beeApi)
+      const isManifest = await manifestJs.isManifest(identifier)
+
+      if (!isManifest) {
+        throw Error('The specified hash does not contain valid content.')
+      }
+      const indexDocument = await manifestJs.getIndexDocumentPath(identifier)
+      putHistory(HISTORY_KEYS.DOWNLOAD_HISTORY, identifier, determineHistoryName(identifier, indexDocument))
+      history.push(ROUTES.HASH.replace(':hash', identifier))
     } catch (error: unknown) {
       let message = typeof error === 'object' && error !== null && Reflect.get(error, 'message')
 
@@ -47,18 +53,9 @@ export default function Files(): ReactElement {
         message = 'The specified hash was not found.'
       }
       enqueueSnackbar(<span>Error: {message || 'Unknown'}</span>, { variant: 'error' })
+    } finally {
+      setLoading(false)
     }
-  }
-
-  if (downloadedFile) {
-    return (
-      <>
-        <Box mb={4}>
-          <AssetPreview files={[new SwarmFile(downloadedFile as File)]} />
-        </Box>
-        <DownloadActionBar onCancel={() => setDownloadedFile(null)} onDownload={onDownload} />
-      </>
-    )
   }
 
   function recognizeSwarmHash(value: string) {
@@ -76,16 +73,20 @@ export default function Files(): ReactElement {
   }
 
   return (
-    <ExpandableListItemInput
-      label="Swarm Hash"
-      onConfirm={value => onSwarmIdentifier(value)}
-      onChange={validateChange}
-      helperText={referenceError}
-      confirmLabel={'Search'}
-      confirmLabelDisabled={Boolean(referenceError)}
-      placeholder="e.g. 31fb0362b1a42536134c86bc58b97ac0244e5c6630beec3e27c2d1cecb38c605"
-      expandedOnly
-      mapperFn={value => recognizeSwarmHash(value)}
-    />
+    <>
+      <FileNavigation active="DOWNLOAD" />
+      <ExpandableListItemInput
+        label="Swarm Hash"
+        onConfirm={value => onSwarmIdentifier(value)}
+        onChange={validateChange}
+        helperText={referenceError}
+        confirmLabel={'Search'}
+        confirmLabelDisabled={Boolean(referenceError) || loading}
+        placeholder="e.g. 31fb0362b1a42536134c86bc58b97ac0244e5c6630beec3e27c2d1cecb38c605"
+        expandedOnly
+        mapperFn={value => recognizeSwarmHash(value)}
+      />
+      <History title="Download History" localStorageKey={HISTORY_KEYS.DOWNLOAD_HISTORY} />
+    </>
   )
 }

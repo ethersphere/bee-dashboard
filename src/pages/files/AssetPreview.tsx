@@ -3,15 +3,18 @@ import { Web } from '@material-ui/icons'
 import { ReactElement, useEffect, useState } from 'react'
 import { File, Folder } from 'react-feather'
 import { FitImage } from '../../components/FitImage'
-import { detectIndexHtml, getHumanReadableFileSize } from '../../utils/file'
+import { detectIndexHtml, getAssetNameFromFiles, getHumanReadableFileSize } from '../../utils/file'
 import { SwarmFile } from '../../utils/SwarmFile'
 import { AssetIcon } from './AssetIcon'
 
 interface Props {
+  assetName?: string
   files: SwarmFile[]
 }
 
-export function AssetPreview({ files }: Props): ReactElement {
+// TODO: add optional prop for indexDocument when it is already known (e.g. downloading a manifest)
+
+export function AssetPreview({ assetName, files }: Props): ReactElement {
   const [previewComponent, setPreviewComponent] = useState<ReactElement | undefined>(undefined)
   const [previewUri, setPreviewUri] = useState<string | undefined>(undefined)
 
@@ -39,11 +42,13 @@ export function AssetPreview({ files }: Props): ReactElement {
   }, [files])
 
   const getPrimaryText = () => {
+    const name = getAssetNameFromFiles(files)
+
     if (files.length === 1) {
-      return 'Filename: ' + files[0].name
+      return 'Filename: ' + (assetName || name)
     }
 
-    return 'Folder name: ' + files[0].path.split('/')[0]
+    return 'Folder name: ' + (assetName || name)
   }
 
   const getKind = () => {
@@ -66,6 +71,8 @@ export function AssetPreview({ files }: Props): ReactElement {
     return getHumanReadableFileSize(bytes)
   }
 
+  const size = getSize()
+
   return (
     <Box mb={4}>
       <Box bgcolor="background.paper">
@@ -78,7 +85,7 @@ export function AssetPreview({ files }: Props): ReactElement {
           <Box p={2}>
             <Typography>{getPrimaryText()}</Typography>
             <Typography>Kind: {getKind()}</Typography>
-            <Typography>Size: {getSize()}</Typography>
+            {size !== '0 bytes' && <Typography>Size: {size}</Typography>}
           </Box>
         </Grid>
       </Box>

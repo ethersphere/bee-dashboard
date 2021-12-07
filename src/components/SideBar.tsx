@@ -1,15 +1,13 @@
-import type { ReactElement } from 'react'
-import { Link } from 'react-router-dom'
-
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
+import { Divider, Drawer, Grid, Link as MUILink, List } from '@material-ui/core'
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import { OpenInNewSharp } from '@material-ui/icons'
-import { Divider, List, Drawer, Grid, Link as MUILink } from '@material-ui/core'
-import { Home, FileText, DollarSign, Settings, Layers, BookOpen } from 'react-feather'
+import type { ReactElement } from 'react'
+import { BookOpen, DollarSign, FileText, Home, Layers, Settings } from 'react-feather'
+import { Link } from 'react-router-dom'
+import Logo from '../assets/logo.svg'
 import { ROUTES } from '../routes'
 import SideBarItem from './SideBarItem'
 import SideBarStatus from './SideBarStatus'
-
-import Logo from '../assets/logo.svg'
 
 const navBarItems = [
   {
@@ -19,7 +17,7 @@ const navBarItems = [
   },
   {
     label: 'Files',
-    path: ROUTES.FILES,
+    path: ROUTES.UPLOAD,
     icon: FileText,
   },
   {

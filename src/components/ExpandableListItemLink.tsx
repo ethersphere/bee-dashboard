@@ -1,8 +1,9 @@
 import { Grid, IconButton, ListItem, Tooltip, Typography } from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import { OpenInNewSharp } from '@material-ui/icons'
+import { ArrowForward, OpenInNewSharp } from '@material-ui/icons'
 import { ReactElement, useState } from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
+import { useHistory } from 'react-router'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -46,14 +47,34 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   label: string
   value: string
+  link?: string
+  navigationType?: 'NEW_WINDOW' | 'HISTORY_PUSH'
+  allowClipboard?: boolean
 }
 
-export default function ExpandableListItemLink({ label, value }: Props): ReactElement | null {
+export default function ExpandableListItemLink({
+  label,
+  value,
+  link,
+  navigationType = 'NEW_WINDOW',
+  allowClipboard = true,
+}: Props): ReactElement | null {
   const classes = useStyles()
   const [copied, setCopied] = useState(false)
+  const history = useHistory()
 
   const tooltipClickHandler = () => setCopied(true)
   const tooltipCloseHandler = () => setCopied(false)
+
+  const displayValue = value.length > 22 ? value.slice(0, 19) + '...' : value
+
+  function onNavigation() {
+    if (navigationType === 'NEW_WINDOW') {
+      window.open(link || value)
+    } else {
+      history.push(link || value)
+    }
+  }
 
   return (
     <ListItem className={classes.header}>
@@ -62,15 +83,19 @@ export default function ExpandableListItemLink({ label, value }: Props): ReactEl
           {label && <Typography variant="body1">{label}</Typography>}
           <Typography variant="body2">
             <div>
-              <span className={classes.copyValue}>
-                <Tooltip title={copied ? 'Copied' : 'Copy'} placement="top" arrow onClose={tooltipCloseHandler}>
-                  <CopyToClipboard text={value}>
-                    <span onClick={tooltipClickHandler}>{value.slice(0, 19)}...</span>
-                  </CopyToClipboard>
-                </Tooltip>
-              </span>
+              {allowClipboard && (
+                <span className={classes.copyValue}>
+                  <Tooltip title={copied ? 'Copied' : 'Copy'} placement="top" arrow onClose={tooltipCloseHandler}>
+                    <CopyToClipboard text={value}>
+                      <span onClick={tooltipClickHandler}>{displayValue}</span>
+                    </CopyToClipboard>
+                  </Tooltip>
+                </span>
+              )}
+              {!allowClipboard && <span onClick={onNavigation}>{displayValue}</span>}
               <IconButton size="small" className={classes.openLinkIcon}>
-                <OpenInNewSharp onClick={() => window.open(value)} strokeWidth={1} />
+                {navigationType === 'NEW_WINDOW' && <OpenInNewSharp onClick={onNavigation} strokeWidth={1} />}
+                {navigationType === 'HISTORY_PUSH' && <ArrowForward onClick={onNavigation} strokeWidth={1} />}
               </IconButton>
             </div>
           </Typography>
