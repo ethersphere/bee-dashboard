@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.9.0...v0.10.0) (2021-12-07)
+
+
+### Features
+
+* add website and folder upload and download ([#260](https://www.github.com/ethersphere/bee-dashboard/issues/260)) ([3ef1ad9](https://www.github.com/ethersphere/bee-dashboard/commit/3ef1ad9574c9193f83d8a1447fddb79266c1a4f4))
+
 ## [0.9.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.8.0...v0.9.0) (2021-11-25)
 
 
