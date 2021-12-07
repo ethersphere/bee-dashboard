@@ -3,7 +3,7 @@ import { Box } from '@material-ui/core'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 import { ReactElement, useContext, useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { RouteComponentProps, useHistory } from 'react-router-dom'
 import { Loading } from '../../components/Loading'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
@@ -15,15 +15,11 @@ import { AssetPreview } from './AssetPreview'
 import { AssetSummary } from './AssetSummary'
 import { DownloadActionBar } from './DownloadActionBar'
 
-interface Props {
-  match: {
-    params: {
-      hash: string
-    }
-  }
+interface MatchParams {
+  hash: string
 }
 
-export function Share(props: Props): ReactElement {
+export function Share(props: RouteComponentProps<MatchParams>): ReactElement {
   const { apiUrl, beeApi } = useContext(SettingsContext)
   const reference = props.match.params.hash
   const history = useHistory()
@@ -63,7 +59,8 @@ export function Share(props: Props): ReactElement {
   }
 
   function onClose() {
-    if (history.length < 2) {
+    // POP means there is no history - nowhere to go back yet
+    if (history.action === 'POP') {
       history.push(ROUTES.UPLOAD)
     } else {
       history.goBack()
