@@ -52,6 +52,9 @@ jobs:
         env:
           CI: true
 
+      - name: Types check
+        run: npm run check:types
+
       - name: Dependency check
         run: npm run depcheck
 

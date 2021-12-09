@@ -1,7 +1,7 @@
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { ThemeProvider } from '@material-ui/core/styles'
 import { SnackbarProvider } from 'notistack'
-import { ReactElement } from 'react'
+import React, { ReactElement } from 'react'
 import { BrowserRouter as Router } from 'react-router-dom'
 import './App.css'
 import Dashboard from './layout/Dashboard'
@@ -13,10 +13,16 @@ import { Provider as StampsProvider } from './providers/Stamps'
 import BaseRouter from './routes'
 import { theme } from './theme'
 
-const App = (): ReactElement => (
+interface Props {
+  beeApiUrl?: string
+  beeDebugApiUrl?: string
+  lockedApiSettings?: boolean
+}
+
+const App = ({ beeApiUrl, beeDebugApiUrl, lockedApiSettings }: Props): ReactElement => (
   <div className="App">
     <ThemeProvider theme={theme}>
-      <SettingsProvider>
+      <SettingsProvider beeApiUrl={beeApiUrl} beeDebugApiUrl={beeDebugApiUrl} lockedApiSettings={lockedApiSettings}>
         <BeeProvider>
           <StampsProvider>
             <FileProvider>
