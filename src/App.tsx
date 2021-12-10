@@ -6,6 +6,7 @@ import { BrowserRouter as Router } from 'react-router-dom'
 import './App.css'
 import Dashboard from './layout/Dashboard'
 import { Provider as BeeProvider } from './providers/Bee'
+import { Provider as FeedsProvider } from './providers/Feeds'
 import { Provider as FileProvider } from './providers/File'
 import { Provider as PlatformProvider } from './providers/Platform'
 import { Provider as SettingsProvider } from './providers/Settings'
@@ -20,18 +21,20 @@ const App = (): ReactElement => (
         <BeeProvider>
           <StampsProvider>
             <FileProvider>
-              <PlatformProvider>
-                <SnackbarProvider>
-                  <Router>
-                    <>
-                      <CssBaseline />
-                      <Dashboard>
-                        <BaseRouter />
-                      </Dashboard>
-                    </>
-                  </Router>
-                </SnackbarProvider>
-              </PlatformProvider>
+              <FeedsProvider>
+                <PlatformProvider>
+                  <SnackbarProvider>
+                    <Router>
+                      <>
+                        <CssBaseline />
+                        <Dashboard>
+                          <BaseRouter />
+                        </Dashboard>
+                      </>
+                    </Router>
+                  </SnackbarProvider>
+                </PlatformProvider>
+              </FeedsProvider>
             </FileProvider>
           </StampsProvider>
         </BeeProvider>

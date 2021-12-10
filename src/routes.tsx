@@ -1,6 +1,9 @@
 import type { ReactElement } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import Accounting from './pages/accounting'
+import Feeds from './pages/feeds'
+import CreateNewFeed from './pages/feeds/CreateNewFeed'
+import UpdateFeed from './pages/feeds/UpdateFeed'
 import { Download } from './pages/files/Download'
 import { Share } from './pages/files/Share'
 import { Upload } from './pages/files/Upload'
@@ -21,6 +24,9 @@ export enum ROUTES {
   SETTINGS = '/settings',
   STAMPS = '/stamps',
   STATUS = '/status',
+  FEEDS = '/feeds',
+  FEEDS_NEW = '/feeds/new',
+  FEEDS_UPDATE = '/feeds/update/:hash',
 }
 
 const BaseRouter = (): ReactElement => (
@@ -33,6 +39,9 @@ const BaseRouter = (): ReactElement => (
     <Route exact path={ROUTES.SETTINGS} component={Settings} />
     <Route exact path={ROUTES.STAMPS} component={Stamps} />
     <Route exact path={ROUTES.STATUS} component={Status} />
+    <Route exact path={ROUTES.FEEDS} component={Feeds} />
+    <Route exact path={ROUTES.FEEDS_NEW} component={CreateNewFeed} />
+    <Route exact path={ROUTES.FEEDS_UPDATE} component={UpdateFeed} />
     <Route path={ROUTES.INFO} component={Info} />
   </Switch>
 )

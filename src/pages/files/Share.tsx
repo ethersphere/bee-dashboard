@@ -67,6 +67,10 @@ export function Share(props: RouteComponentProps<MatchParams>): ReactElement {
     }
   }
 
+  function onUpdateFeed() {
+    history.push(ROUTES.FEEDS_UPDATE.replace(':hash', reference))
+  }
+
   useEffect(() => {
     setLoading(true)
     prepare().then(() => {
@@ -113,6 +117,7 @@ export function Share(props: RouteComponentProps<MatchParams>): ReactElement {
         onOpen={onOpen}
         onCancel={onClose}
         onDownload={onDownload}
+        onUpdateFeed={onUpdateFeed}
         hasIndexDocument={Boolean(indexDocument && files.length > 1)}
         loading={downloading}
       />
