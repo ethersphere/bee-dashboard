@@ -55,6 +55,9 @@ jobs:
       - name: Types check
         run: npm run check:types
 
+      - name: Types build
+        run: npm run compile:types
+
       - name: Dependency check
         run: npm run depcheck
 
