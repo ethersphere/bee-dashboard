@@ -68,7 +68,7 @@ jobs:
         run: npm run build
       
       - name: Build Component
-        run: npm build:component
+        run: npm run build:component
 
       - name: Create preview
         uses: ethersphere/beeload-action@v1
