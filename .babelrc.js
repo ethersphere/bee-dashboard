@@ -35,6 +35,7 @@ module.exports = function (api) {
           "tsconfig": "tsconfig.lib.json",
         }
       ],
+      "@babel/plugin-proposal-numeric-separator",
       "syntax-dynamic-import",
       '@babel/plugin-proposal-class-properties',
       [
