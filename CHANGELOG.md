@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.11.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.10.0...v0.11.0) (2021-12-14)
+
+
+### Features
+
+* modularisation ([#244](https://www.github.com/ethersphere/bee-dashboard/issues/244)) ([2a13da1](https://www.github.com/ethersphere/bee-dashboard/commit/2a13da1a6c5925946d22666a84f975cec87df115))
+
+
+### Bug Fixes
+
+* **build:** bee-dashboard component building ([#267](https://www.github.com/ethersphere/bee-dashboard/issues/267)) ([153b007](https://www.github.com/ethersphere/bee-dashboard/commit/153b007387618e34e1d5dc7fd82d49722783e757))
+
 ## [0.10.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.9.0...v0.10.0) (2021-12-07)
 
 
