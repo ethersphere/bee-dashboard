@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.11.1](https://www.github.com/ethersphere/bee-dashboard/compare/v0.11.0...v0.11.1) (2021-12-14)
+
+
+### Bug Fixes
+
+* typo in publish script ([#268](https://www.github.com/ethersphere/bee-dashboard/issues/268)) ([c1e77bf](https://www.github.com/ethersphere/bee-dashboard/commit/c1e77bfc0d3ac442d6bacec7402f576a6422927e))
+
 ## [0.11.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.10.0...v0.11.0) (2021-12-14)
 
 
