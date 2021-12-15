@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.11.2](https://www.github.com/ethersphere/bee-dashboard/compare/v0.11.1...v0.11.2) (2021-12-15)
+
+
+### Bug Fixes
+
+* **ci:** add lib folder to the package.json files prop ([#270](https://www.github.com/ethersphere/bee-dashboard/issues/270)) ([5ac0f01](https://www.github.com/ethersphere/bee-dashboard/commit/5ac0f01bf50ee23b474ab9c8d61c6af418544083))
+
 ### [0.11.1](https://www.github.com/ethersphere/bee-dashboard/compare/v0.11.0...v0.11.1) (2021-12-14)
 
 
