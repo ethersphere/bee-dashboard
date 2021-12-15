@@ -117,6 +117,7 @@
     "check:types": "tsc --project tsconfig.lib.json"
   },
   "files": [
+    "lib",
     "build",
     "serve.js"
   ],
