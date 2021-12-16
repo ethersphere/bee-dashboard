@@ -9,11 +9,13 @@ interface Props {
   className?: string
   disabled?: boolean
   loading?: boolean
+  cancel?: boolean
 }
 
 const useStyles = makeStyles(() =>
   createStyles({
     button: {
+      height: '52px',
       position: 'relative',
       whiteSpace: 'nowrap',
       '&:hover, &:focus': {
@@ -22,6 +24,10 @@ const useStyles = makeStyles(() =>
           transition: '0.1s',
         },
       },
+    },
+    cancelButton: {
+      background: '#f7f7f7',
+      color: '#606060',
     },
     spinnerWrapper: {
       position: 'absolute',
@@ -34,19 +40,37 @@ const useStyles = makeStyles(() =>
   }),
 )
 
-export function SwarmButton({ children, onClick, iconType, className, disabled, loading }: Props): ReactElement {
+export function SwarmButton({
+  children,
+  onClick,
+  iconType,
+  className,
+  disabled,
+  loading,
+  cancel,
+}: Props): ReactElement {
   const classes = useStyles()
+
+  function getIconColor() {
+    if (loading || disabled) {
+      return 'rgba(0, 0, 0, 0.26)'
+    }
+
+    return cancel ? '#606060' : '#dd7700'
+  }
+
+  function getButtonClassName() {
+    return [className, classes.button, cancel && classes.cancelButton].filter(x => x).join(' ')
+  }
 
   const icon = React.createElement(iconType, {
     size: '1.25rem',
-    color: disabled ? 'rgba(0, 0, 0, 0.26)' : '#dd7700',
+    color: getIconColor(),
   })
-
-  const classNames = className ? [className, classes.button].join(' ') : classes.button
 
   return (
     <Button
-      className={classNames}
+      className={getButtonClassName()}
       onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
         onClick()
         event.currentTarget.blur()

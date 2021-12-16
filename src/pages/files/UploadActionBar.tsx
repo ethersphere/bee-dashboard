@@ -1,69 +1,80 @@
-import { Button, Typography } from '@material-ui/core'
-import { Clear } from '@material-ui/icons'
+import { Grid } from '@material-ui/core'
 import { ReactElement } from 'react'
-import { Check, Layers, PlusSquare, RefreshCcw } from 'react-feather'
+import { ArrowLeft, Check, Layers, PlusSquare } from 'react-feather'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import { SwarmButton } from '../../components/SwarmButton'
 
 interface Props {
-  canSelectStamp: boolean
-  hasSelectedStamp: boolean
+  step: number
   onUpload: () => void
-  onBuy: () => void
-  onSelect: () => void
   onCancel: () => void
-  onClearStamp: () => void
+  onGoBack: () => void
+  onProceed: () => void
   isUploading: boolean
+  hasStamp: boolean
+  uploadLabel: string
+  stampMode: 'BUY' | 'SELECT'
+  setStampMode: (mode: 'BUY' | 'SELECT') => void
 }
 
 export function UploadActionBar({
-  canSelectStamp,
-  hasSelectedStamp,
+  step,
   onUpload,
-  onBuy,
-  onSelect,
   onCancel,
-  onClearStamp,
+  onGoBack,
+  onProceed,
   isUploading,
+  hasStamp,
+  uploadLabel,
+  stampMode,
+  setStampMode,
 }: Props): ReactElement {
-  const showBuy = !hasSelectedStamp
-  const showSelect = canSelectStamp && !hasSelectedStamp
-  const showUpload = hasSelectedStamp
-  const showChange = canSelectStamp && hasSelectedStamp
-
-  return (
-    <>
+  if (step === 0) {
+    return (
       <ExpandableListItemActions>
-        {showBuy ? (
-          <SwarmButton onClick={onBuy} iconType={PlusSquare}>
-            Buy New Postage Stamp
-          </SwarmButton>
-        ) : null}
-        {showSelect ? (
-          <SwarmButton onClick={onSelect} iconType={Layers}>
-            Use Existing Postage Stamp
-          </SwarmButton>
-        ) : null}
-        {showUpload ? (
-          <SwarmButton onClick={onUpload} iconType={Check} disabled={isUploading} loading={isUploading}>
-            Upload To Your Node
-          </SwarmButton>
-        ) : null}
-        {showChange ? (
-          <SwarmButton onClick={onClearStamp} iconType={RefreshCcw} disabled={isUploading}>
-            Change Postage Stamp
-          </SwarmButton>
-        ) : null}
-        <Button onClick={onCancel} variant="contained" startIcon={<Clear />}>
+        <SwarmButton onClick={onProceed} iconType={Layers}>
+          Add Postage Stamp
+        </SwarmButton>
+        <SwarmButton onClick={onCancel} iconType={ArrowLeft} cancel>
           Cancel
-        </Button>
+        </SwarmButton>
       </ExpandableListItemActions>
-      {showSelect ? (
-        <Typography>
-          You need a postage stamp to upload. Please refer to the official Bee documentation to understand how postage
-          stamps work.
-        </Typography>
-      ) : null}
-    </>
-  )
+    )
+  }
+
+  if (step === 1) {
+    return (
+      <Grid container direction="row" justifyContent="space-between">
+        <ExpandableListItemActions>
+          <SwarmButton onClick={onProceed} iconType={Check} disabled={!hasStamp}>
+            Proceed With Selected Stamp
+          </SwarmButton>
+          <SwarmButton onClick={onGoBack} iconType={ArrowLeft} cancel>
+            Back To Preview
+          </SwarmButton>
+        </ExpandableListItemActions>
+        <SwarmButton
+          onClick={() => setStampMode(stampMode === 'BUY' ? 'SELECT' : 'BUY')}
+          iconType={stampMode === 'BUY' ? Layers : PlusSquare}
+        >
+          {stampMode === 'BUY' ? 'Use Existing Stamp' : 'Buy New Stamp'}
+        </SwarmButton>
+      </Grid>
+    )
+  }
+
+  if (step === 2) {
+    return (
+      <ExpandableListItemActions>
+        <SwarmButton onClick={onUpload} iconType={Check} disabled={isUploading} loading={isUploading}>
+          {uploadLabel}
+        </SwarmButton>
+        <SwarmButton onClick={onGoBack} iconType={ArrowLeft} disabled={isUploading} cancel>
+          Change Postage Stamp
+        </SwarmButton>
+      </ExpandableListItemActions>
+    )
+  }
+
+  return <></>
 }

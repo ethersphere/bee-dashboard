@@ -1,12 +1,15 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core'
+import { createStyles, makeStyles, TextField as SimpleTextField, Theme } from '@material-ui/core'
 import { Field } from 'formik'
 import { TextField } from 'formik-material-ui'
-import { ReactElement } from 'react'
+import { ChangeEvent, ReactElement } from 'react'
 
 interface Props {
   name: string
   label: string
   password?: boolean
+  formik?: boolean
+  optional?: boolean
+  onChange?: (event: ChangeEvent<HTMLTextAreaElement>) => void
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -21,20 +24,35 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-export function SwarmTextInput({ name, label, password }: Props): ReactElement {
+export function SwarmTextInput({ name, label, password, optional, formik, onChange }: Props): ReactElement {
   const classes = useStyles()
 
+  if (formik) {
+    return (
+      <Field
+        component={TextField}
+        type={password ? 'password' : undefined}
+        required={!optional}
+        name={name}
+        label={label}
+        fullWidth
+        variant="outlined"
+        className={classes.field}
+        defaultValue=""
+      />
+    )
+  }
+
   return (
-    <Field
-      component={TextField}
+    <SimpleTextField
       type={password ? 'password' : undefined}
       required
-      name={name}
       label={label}
       fullWidth
       variant="outlined"
       className={classes.field}
       defaultValue=""
+      onChange={onChange}
     />
   )
 }

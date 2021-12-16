@@ -1,50 +1,58 @@
-import { Reference } from '@ethersphere/bee-js'
-import { Box, Button, Grid } from '@material-ui/core'
-import { Clear } from '@material-ui/icons'
+import { Box, Grid } from '@material-ui/core'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
-import { Bookmark } from 'react-feather'
+import { Bookmark, X } from 'react-feather'
 import { RouteComponentProps, useHistory } from 'react-router'
+import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SelectEvent, SwarmSelect } from '../../components/SwarmSelect'
-import { Context as FeedsContext } from '../../providers/Feeds'
+import { Context as FeedsContext, Feed } from '../../providers/Feeds'
 import { Context as SettingsContext } from '../../providers/Settings'
+import { ROUTES } from '../../routes'
+import { persistIdentity, updateFeed } from '../../utils/identity'
+import { FeedPasswordDialog } from './FeedPasswordDialog'
 
 interface MatchParams {
   hash: string
 }
 
 export default function UpdateFeed(props: RouteComponentProps<MatchParams>): ReactElement {
-  const { feeds } = useContext(FeedsContext)
+  const { feeds, setFeeds } = useContext(FeedsContext)
   const { beeApi, beeDebugApi } = useContext(SettingsContext)
-  const [identityName, setIdentityName] = useState('')
+  const [selectedFeed, setSelectedFeed] = useState<Feed | null>(null)
   const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
+  const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
 
   const history = useHistory()
 
   function onChange(event: SelectEvent) {
-    setIdentityName(event.target.value as string)
+    const uuid = event.target.value
+    setSelectedFeed(feeds.find(x => x.uuid === uuid) || null)
   }
 
   function onCancel() {
     history.goBack()
   }
 
-  async function onFeedUpdate() {
+  function onBeginUpdatingFeed() {
+    if (!selectedFeed) {
+      return
+    }
+
+    if (selectedFeed.type === 'V3') {
+      setShowPasswordPrompt(true)
+    } else {
+      onFeedUpdate(selectedFeed)
+    }
+  }
+
+  async function onFeedUpdate(identity: Feed, password?: string) {
     setLoading(true)
 
     if (!beeApi || !beeDebugApi) {
       enqueueSnackbar(<span>Bee API unavailabe</span>, { variant: 'error' })
-      setLoading(false)
-
-      return
-    }
-    const identity = feeds.find(x => x.name === identityName)
-
-    if (!identity) {
-      enqueueSnackbar(<span>No identity selected</span>, { variant: 'error' })
       setLoading(false)
 
       return
@@ -57,30 +65,41 @@ export default function UpdateFeed(props: RouteComponentProps<MatchParams>): Rea
 
       return
     }
-    const writer = beeApi.makeFeedWriter('sequence', '00'.repeat(32), identity.identity)
-    await writer.upload(stamps[0].batchID, props.match.params.hash as Reference)
-    enqueueSnackbar('Feed successfully updated')
-    setLoading(false)
+
+    await updateFeed(beeApi, identity, props.match.params.hash, stamps[0].batchID, password as string)
+    persistIdentity(feeds, identity)
+    setFeeds([...feeds])
+    history.push(ROUTES.FEEDS_PAGE.replace(':uuid', identity.uuid))
   }
 
   return (
     <div>
+      {showPasswordPrompt && selectedFeed && (
+        <FeedPasswordDialog
+          feedName={selectedFeed.name + ' Website'}
+          onCancel={() => {
+            setShowPasswordPrompt(false)
+          }}
+          onProceed={(password: string) => {
+            onFeedUpdate(selectedFeed, password)
+          }}
+          loading={loading}
+        />
+      )}
       <HistoryHeader>Update feed</HistoryHeader>
       <Box mb={4}>
         <Grid container>
-          <SwarmSelect options={feeds.map(x => ({ value: x.name, label: `${x.name} Website` }))} onChange={onChange} />
+          <SwarmSelect options={feeds.map(x => ({ value: x.uuid, label: `${x.name} Website` }))} onChange={onChange} />
         </Grid>
       </Box>
-      <Grid container>
-        <Box mr={1}>
-          <Button onClick={onCancel} variant="contained" startIcon={<Clear />}>
-            Close
-          </Button>
-        </Box>
-        <SwarmButton onClick={onFeedUpdate} iconType={Bookmark} loading={loading} disabled={loading}>
+      <ExpandableListItemActions>
+        <SwarmButton onClick={onBeginUpdatingFeed} iconType={Bookmark} loading={loading} disabled={loading}>
           Update Selected Feed
         </SwarmButton>
-      </Grid>
+        <SwarmButton onClick={onCancel} iconType={X} disabled={loading} cancel>
+          Close
+        </SwarmButton>
+      </ExpandableListItemActions>
     </div>
   )
 }

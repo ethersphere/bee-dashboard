@@ -1,7 +1,7 @@
-import { Box, Button, Grid } from '@material-ui/core'
-import { Clear } from '@material-ui/icons'
+import { Box, Grid } from '@material-ui/core'
 import { ReactElement } from 'react'
-import { Bookmark, Download, Link } from 'react-feather'
+import { Bookmark, Download, Link, X } from 'react-feather'
+import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import { SwarmButton } from '../../components/SwarmButton'
 
 interface Props {
@@ -22,24 +22,20 @@ export function DownloadActionBar({
   loading,
 }: Props): ReactElement {
   return (
-    <Grid container>
-      {hasIndexDocument && (
-        <Box mb={1} mr={1}>
+    <Grid container justifyContent="space-between">
+      <ExpandableListItemActions>
+        {hasIndexDocument && (
           <SwarmButton onClick={onOpen} iconType={Link} disabled={loading}>
             View Website
           </SwarmButton>
-        </Box>
-      )}
-      <Box mb={1} mr={1}>
+        )}
         <SwarmButton onClick={onDownload} iconType={Download} disabled={loading} loading={loading}>
           Download
         </SwarmButton>
-      </Box>
-      <Box mb={1} mr={1}>
-        <Button onClick={onCancel} variant="contained" startIcon={<Clear />} disabled={loading}>
+        <SwarmButton onClick={onCancel} iconType={X} disabled={loading} loading={loading} cancel>
           Close
-        </Button>
-      </Box>
+        </SwarmButton>
+      </ExpandableListItemActions>
       <Box mb={1} mr={1}>
         <SwarmButton onClick={onUpdateFeed} iconType={Bookmark}>
           Update Feed

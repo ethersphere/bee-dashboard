@@ -3,6 +3,7 @@ import { Route, Switch } from 'react-router-dom'
 import Accounting from './pages/accounting'
 import Feeds from './pages/feeds'
 import CreateNewFeed from './pages/feeds/CreateNewFeed'
+import { FeedSubpage } from './pages/feeds/FeedSubpage'
 import UpdateFeed from './pages/feeds/UpdateFeed'
 import { Download } from './pages/files/Download'
 import { Share } from './pages/files/Share'
@@ -27,6 +28,7 @@ export enum ROUTES {
   FEEDS = '/feeds',
   FEEDS_NEW = '/feeds/new',
   FEEDS_UPDATE = '/feeds/update/:hash',
+  FEEDS_PAGE = '/feeds/:uuid',
 }
 
 const BaseRouter = (): ReactElement => (
@@ -42,6 +44,7 @@ const BaseRouter = (): ReactElement => (
     <Route exact path={ROUTES.FEEDS} component={Feeds} />
     <Route exact path={ROUTES.FEEDS_NEW} component={CreateNewFeed} />
     <Route exact path={ROUTES.FEEDS_UPDATE} component={UpdateFeed} />
+    <Route exact path={ROUTES.FEEDS_PAGE} component={FeedSubpage} />
     <Route path={ROUTES.INFO} component={Info} />
   </Switch>
 )

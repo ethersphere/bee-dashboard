@@ -1,11 +1,13 @@
 import { createContext, ReactChild, ReactElement, useEffect, useState } from 'react'
 
+export type IdentityType = 'V3' | 'PRIVATE_KEY'
+
 export interface Feed {
+  uuid: string
   name: string
-  feedHash: string
+  feedHash?: string
   identity: string
-  identityType: 'WITH_PW' | 'WITHOUT_PW'
-  hasPassword: boolean
+  type: IdentityType
 }
 
 interface ContextInterface {

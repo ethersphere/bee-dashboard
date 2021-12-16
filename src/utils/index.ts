@@ -112,3 +112,13 @@ export function extractSwarmHash(string: string): string | null {
 
   return (matches && matches[0]) || null
 }
+
+export function uuidV4(): string {
+  const pattern = '10000000-1000-4000-8000-100000000000'
+
+  return pattern.replace(/[018]/g, (s: string) => {
+    const c = parseInt(s, 10)
+
+    return (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16)
+  })
+}

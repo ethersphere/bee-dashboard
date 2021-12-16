@@ -2,7 +2,7 @@ import { Box, Grid, Typography } from '@material-ui/core'
 import { Form, Formik } from 'formik'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
-import { Check, Crosshair } from 'react-feather'
+import { Check, X } from 'react-feather'
 import { useHistory } from 'react-router'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
@@ -10,19 +10,21 @@ import { HistoryHeader } from '../../components/HistoryHeader'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmSelect } from '../../components/SwarmSelect'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
-import { Context as FeedsContext } from '../../providers/Feeds'
+import { Context as FeedsContext, IdentityType } from '../../providers/Feeds'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
 import { convertWalletToIdentity, generateWallet, persistIdentity } from '../../utils/identity'
 
 interface FormValues {
   identityName?: string
-  type?: string
+  type?: IdentityType
+  password?: string
 }
 
 const initialValues: FormValues = {
   identityName: '',
-  type: 'WITHOUT_PW',
+  type: 'PRIVATE_KEY',
+  password: '',
 }
 
 export default function CreateNewFeed(): ReactElement {
@@ -59,13 +61,7 @@ export default function CreateNewFeed(): ReactElement {
       return
     }
 
-    const identity = await convertWalletToIdentity(
-      beeApi,
-      stamps[0],
-      wallet,
-      values.identityName,
-      values.type === 'WITH_PW',
-    )
+    const identity = await convertWalletToIdentity(wallet, values.type, values.identityName, values.password)
     persistIdentity(feeds, identity)
     setFeeds(feeds)
     history.push(ROUTES.FEEDS)
@@ -89,19 +85,19 @@ export default function CreateNewFeed(): ReactElement {
         {({ submitForm, values }) => (
           <Form>
             <Box mb={0.25}>
-              <SwarmTextInput name="identityName" label="Identity name" />
+              <SwarmTextInput name="identityName" label="Identity name" formik />
             </Box>
             <Box mb={0.25}>
               <SwarmSelect
                 formik
                 name="type"
                 options={[
-                  { label: 'Password Protected', value: 'WITH_PW' },
-                  { label: 'Keypair Only', value: 'WITHOUT_PW' },
+                  { label: 'Keypair Only', value: 'PRIVATE_KEY' },
+                  { label: 'Password Protected', value: 'V3' },
                 ]}
               />
             </Box>
-            {values.type === 'WITH_PW' && <SwarmTextInput name="password" label="Password" password />}
+            {values.type === 'V3' && <SwarmTextInput name="password" label="Password" password formik />}
             <Box mt={2}>
               <ExpandableListItemKey label="Topic" value={'00'.repeat(32)} />
             </Box>
@@ -116,7 +112,7 @@ export default function CreateNewFeed(): ReactElement {
                 <SwarmButton onClick={submitForm} iconType={Check} disabled={loading} loading={loading}>
                   Create Feed
                 </SwarmButton>
-                <SwarmButton onClick={cancel} iconType={Crosshair} disabled={loading}>
+                <SwarmButton onClick={cancel} iconType={X} disabled={loading} cancel>
                   Cancel
                 </SwarmButton>
               </ExpandableListItemActions>

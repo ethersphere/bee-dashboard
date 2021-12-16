@@ -4,8 +4,12 @@ import { ReactElement, ReactNode } from 'react'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    wrapper: {
+      display: 'flex',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+    },
     action: {
-      marginTop: theme.spacing(0.75),
       marginBottom: theme.spacing(1),
       marginRight: theme.spacing(1),
     },
@@ -21,16 +25,16 @@ export default function ExpandableListItemActions({ children }: Props): ReactEle
 
   if (Array.isArray(children)) {
     return (
-      <Grid container direction="row">
+      <div className={classes.wrapper}>
         {children
           // Exclude falsy values to allow conditional rendering
           .filter(x => x)
           .map((a, i) => (
-            <Grid key={i} className={classes.action}>
+            <div key={i} className={classes.action}>
               {a}
-            </Grid>
+            </div>
           ))}
-      </Grid>
+      </div>
     )
   }
 
