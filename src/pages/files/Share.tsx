@@ -111,7 +111,7 @@ export function Share(props: RouteComponentProps<MatchParams>): ReactElement {
         <AssetPreview files={files} assetName={assetName} />
       </Box>
       <Box mb={4}>
-        <AssetSummary hash={reference} />
+        <AssetSummary files={files} hash={reference} />
       </Box>
       <DownloadActionBar
         onOpen={onOpen}
