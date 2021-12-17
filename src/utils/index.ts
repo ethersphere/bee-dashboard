@@ -157,3 +157,23 @@ export function secondsToTimeString(seconds: number): string {
 
   return `${unit.toFixed(1)} years`
 }
+
+export function formatBzz(amount: number): string {
+  const asString = amount.toFixed(16)
+
+  let indexOfSignificantDigit = -1
+  let reachedDecimalPoint = false
+
+  for (let i = 0; i < asString.length; i++) {
+    const char = asString[i]
+
+    if (char === '.') {
+      reachedDecimalPoint = true
+    } else if (reachedDecimalPoint && char !== '0') {
+      indexOfSignificantDigit = i
+      break
+    }
+  }
+
+  return asString.slice(0, indexOfSignificantDigit + 4)
+}

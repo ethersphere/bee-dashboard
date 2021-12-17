@@ -8,7 +8,7 @@ import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context } from '../../providers/Stamps'
-import { secondsToTimeString } from '../../utils'
+import { formatBzz, secondsToTimeString } from '../../utils'
 
 interface FormValues {
   depth?: string
@@ -32,15 +32,28 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
 
   function getFileSize(depth: number): string {
+    if (isNaN(depth) || depth <= 0) {
+      return '-'
+    }
+
     return `~${(2 ** depth * 4096) / 1024 / 1024} MB`
   }
 
   function getTtl(amount: number): string {
+    if (isNaN(amount) || amount <= 0) {
+      return '-'
+    }
+
     return secondsToTimeString(amount / 10)
   }
 
   function getPrice(depth: number, amount: number): string {
-    return `${((amount * 2 ** (depth - 16)) / 1e16).toFixed(16)} BZZ`
+    if (isNaN(amount) || amount <= 0 || isNaN(depth) || depth <= 0) {
+      return '-'
+    }
+    const price = (amount * 2 ** (depth - 16)) / 1e16
+
+    return `${formatBzz(price)} BZZ`
   }
 
   return (
