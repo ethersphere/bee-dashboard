@@ -8,10 +8,10 @@ import ExpandableListItemActions from '../../components/ExpandableListItemAction
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmDialog } from '../../components/SwarmDialog'
 import { TitleWithClose } from '../../components/TitleWithClose'
-import { Feed } from '../../providers/Feeds'
+import { Identity } from '../../providers/Feeds'
 
 interface Props {
-  feed: Feed
+  identity: Identity
   onClose: () => void
 }
 
@@ -23,23 +23,27 @@ const useStyles = makeStyles(() =>
   }),
 )
 
-export function ExportFeedDialog({ feed, onClose }: Props): ReactElement {
+export function ExportFeedDialog({ identity, onClose }: Props): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
 
   const classes = useStyles()
 
   function onDownload() {
     saveAs(
-      new Blob([feed.identity], {
+      new Blob([identity.identity], {
         type: 'application/json',
       }),
-      feed.name + '.json',
+      identity.name + '.json',
     )
+  }
+
+  function getExportText() {
+    return identity.type === 'V3' ? 'JSON file' : 'the private key string'
   }
 
   function onCopy() {
     navigator.clipboard
-      .writeText(feed.identity)
+      .writeText(identity.identity)
       .then(() => enqueueSnackbar('Copied to Clipboard', { variant: 'success' }))
   }
 
@@ -49,10 +53,10 @@ export function ExportFeedDialog({ feed, onClose }: Props): ReactElement {
         <TitleWithClose onClose={onClose}>Export</TitleWithClose>
       </Box>
       <Box mb={2}>
-        <Typography align="center">We exported the identity associated with this feed as JSON file.</Typography>
+        <Typography align="center">{`We exported the identity associated with this feed as ${getExportText()}.`}</Typography>
       </Box>
       <Box mb={4} className={classes.wrapper}>
-        <Code prettify>{feed.identity}</Code>
+        <Code prettify>{identity.identity}</Code>
       </Box>
       <ExpandableListItemActions>
         <SwarmButton iconType={Download} onClick={onDownload}>

@@ -1,7 +1,7 @@
 import { Bee, Reference } from '@ethersphere/bee-js'
 import Wallet from 'ethereumjs-wallet'
 import { uuidV4 } from '.'
-import { Feed, IdentityType } from '../providers/Feeds'
+import { Identity, IdentityType } from '../providers/Feeds'
 
 export function generateWallet(): Wallet {
   const buffer = new Uint8Array(32)
@@ -11,17 +11,17 @@ export function generateWallet(): Wallet {
   return wallet
 }
 
-export function persistIdentity(identities: Feed[], feed: Feed): void {
-  const existingIndex = identities.findIndex(x => x.uuid === feed.uuid)
+export function persistIdentity(identities: Identity[], identity: Identity): void {
+  const existingIndex = identities.findIndex(x => x.uuid === identity.uuid)
 
   if (existingIndex !== -1) {
     identities.splice(existingIndex, 1)
   }
-  identities.unshift(feed)
+  identities.unshift(identity)
   localStorage.setItem('feeds', JSON.stringify(identities))
 }
 
-export function persistIdentitiesWithoutUpdate(identities: Feed[]): void {
+export function persistIdentitiesWithoutUpdate(identities: Identity[]): void {
   localStorage.setItem('feeds', JSON.stringify(identities))
 }
 
@@ -30,7 +30,7 @@ export async function convertWalletToIdentity(
   type: IdentityType,
   name: string,
   password?: string,
-): Promise<Feed> {
+): Promise<Identity> {
   if (type === 'V3' && !password) {
     throw Error('V3 passwords require password')
   }
@@ -42,41 +42,51 @@ export async function convertWalletToIdentity(
     uuid: uuidV4(),
     name,
     type: password ? 'V3' : 'PRIVATE_KEY',
+    address: identity.getAddressString(),
     identity: identityString,
   }
 }
 
-export function importIdentity(name: string, data: string): Feed | null {
+export async function importIdentity(name: string, data: string): Promise<Identity | null> {
   if (data.length === 64) {
+    const wallet = await getWallet('PRIVATE_KEY', data)
+
     return {
       uuid: uuidV4(),
       name,
       type: 'PRIVATE_KEY',
       identity: data,
+      address: wallet.getAddressString(),
     }
   }
 
   if (data.length === 66 && data.toLowerCase().startsWith('0x')) {
-    return { uuid: uuidV4(), name, type: 'PRIVATE_KEY', identity: data }
+    const wallet = await getWallet('PRIVATE_KEY', data.slice(2))
+
+    return { uuid: uuidV4(), name, type: 'PRIVATE_KEY', identity: data, address: wallet.getAddressString() }
   }
   try {
-    JSON.parse(data)
+    const { address } = JSON.parse(data)
 
-    return { uuid: uuidV4(), name, type: 'V3', identity: data }
+    return { uuid: uuidV4(), name, type: 'V3', identity: data, address }
   } catch {
     return null
   }
 }
 
-async function getWalletFromIdentity(identity: Feed, password?: string): Promise<Wallet> {
-  return identity.type === 'PRIVATE_KEY'
-    ? Wallet.fromPrivateKey(Buffer.from(trimHexString(identity.identity), 'hex'))
-    : await Wallet.fromV3(identity.identity, password as string)
+function getWalletFromIdentity(identity: Identity, password?: string): Promise<Wallet> {
+  return getWallet(identity.type, identity.identity, password)
+}
+
+async function getWallet(type: IdentityType, data: string, password?: string): Promise<Wallet> {
+  return type === 'PRIVATE_KEY'
+    ? Wallet.fromPrivateKey(Buffer.from(trimHexString(data), 'hex'))
+    : await Wallet.fromV3(data, password as string)
 }
 
 export async function updateFeed(
   beeApi: Bee,
-  identity: Feed,
+  identity: Identity,
   hash: string,
   stamp: string,
   password?: string,

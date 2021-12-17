@@ -65,6 +65,10 @@ export function convertManifestToFiles(files: Record<string, string>): SwarmFile
 }
 
 export function getAssetNameFromFiles(files: SwarmFile[]): string {
+  if (!files.length) {
+    return 'Unknown'
+  }
+
   if (files.length === 1) {
     return files[0].name
   }

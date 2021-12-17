@@ -1,12 +1,13 @@
 import { CircularProgress, Container } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
-import { ReactElement, useContext, useEffect, useState } from 'react'
+import { ReactElement, useContext, useEffect } from 'react'
 import { PlusSquare } from 'react-feather'
+import { useHistory } from 'react-router'
 import { SwarmButton } from '../../components/SwarmButton'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as StampsContext } from '../../providers/Stamps'
-import { CreatePostageStampModal } from './CreatePostageStampModal'
+import { ROUTES } from '../../routes'
 import StampsTable from './StampsTable'
 
 const useStyles = makeStyles(() =>
@@ -28,7 +29,7 @@ const useStyles = makeStyles(() =>
 export default function Stamp(): ReactElement {
   const classes = useStyles()
 
-  const [isBuyingStamp, setBuyingStamp] = useState(false)
+  const history = useHistory()
 
   const { stamps, isLoading, error, start, stop } = useContext(StampsContext)
   const { status } = useContext(BeeContext)
@@ -42,6 +43,10 @@ export default function Stamp(): ReactElement {
 
   if (!status.all) return <TroubleshootConnectionCard />
 
+  function navigateToNewStamp() {
+    history.push(ROUTES.STAMPS_NEW)
+  }
+
   return (
     <div className={classes.root}>
       {error && (
@@ -52,9 +57,7 @@ export default function Stamp(): ReactElement {
       {!error && (
         <>
           <div className={classes.actions}>
-            {isBuyingStamp ? <CreatePostageStampModal onClose={() => setBuyingStamp(false)} /> : null}
-
-            <SwarmButton onClick={() => setBuyingStamp(true)} iconType={PlusSquare}>
+            <SwarmButton onClick={navigateToNewStamp} iconType={PlusSquare}>
               Buy New Postage Stamp
             </SwarmButton>
             <div style={{ height: '5px' }}>{isLoading && <CircularProgress />}</div>

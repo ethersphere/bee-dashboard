@@ -12,6 +12,7 @@ import { UploadLander } from './pages/files/UploadLander'
 import Info from './pages/info'
 import Settings from './pages/settings'
 import Stamps from './pages/stamps'
+import { CreatePostageStampPage } from './pages/stamps/CreatePostageStampPage'
 import Status from './pages/status'
 
 export enum ROUTES {
@@ -24,6 +25,7 @@ export enum ROUTES {
   ACCOUNTING = '/accounting',
   SETTINGS = '/settings',
   STAMPS = '/stamps',
+  STAMPS_NEW = '/stamps/new',
   STATUS = '/status',
   FEEDS = '/feeds',
   FEEDS_NEW = '/feeds/new',
@@ -40,6 +42,7 @@ const BaseRouter = (): ReactElement => (
     <Route exact path={ROUTES.ACCOUNTING} component={Accounting} />
     <Route exact path={ROUTES.SETTINGS} component={Settings} />
     <Route exact path={ROUTES.STAMPS} component={Stamps} />
+    <Route exact path={ROUTES.STAMPS_NEW} component={CreatePostageStampPage} />
     <Route exact path={ROUTES.STATUS} component={Status} />
     <Route exact path={ROUTES.FEEDS} component={Feeds} />
     <Route exact path={ROUTES.FEEDS_NEW} component={CreateNewFeed} />

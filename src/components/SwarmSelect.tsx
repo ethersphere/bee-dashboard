@@ -13,6 +13,7 @@ interface Props {
   options: { value: string; label: string }[]
   onChange?: (event: SelectEvent) => void
   formik?: boolean
+  defaultValue?: string
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -30,12 +31,20 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-export function SwarmSelect({ formik, name, options, onChange }: Props): ReactElement {
+export function SwarmSelect({ defaultValue, formik, name, options, onChange }: Props): ReactElement {
   const classes = useStyles()
 
   if (formik) {
     return (
-      <Field required component={Select} name={name} fullWidth variant="outlined" className={classes.select}>
+      <Field
+        required
+        component={Select}
+        name={name}
+        fullWidth
+        variant="outlined"
+        defaultValue={defaultValue}
+        className={classes.select}
+      >
         {options.map((x, i) => (
           <MenuItem key={i} value={x.value} className={classes.option}>
             {x.label}
@@ -46,7 +55,15 @@ export function SwarmSelect({ formik, name, options, onChange }: Props): ReactEl
   }
 
   return (
-    <SimpleSelect required name={name} fullWidth variant="outlined" className={classes.select} onChange={onChange}>
+    <SimpleSelect
+      required
+      name={name}
+      fullWidth
+      variant="outlined"
+      className={classes.select}
+      defaultValue={defaultValue}
+      onChange={onChange}
+    >
       {options.map((x, i) => (
         <MenuItem key={i} value={x.value} className={classes.option}>
           {x.label}

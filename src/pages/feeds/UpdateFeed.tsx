@@ -1,14 +1,15 @@
-import { Box, Grid } from '@material-ui/core'
+import { Box, Grid, Typography } from '@material-ui/core'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useContext, useState } from 'react'
+import { ReactElement, useContext, useEffect, useState } from 'react'
 import { Bookmark, X } from 'react-feather'
 import { RouteComponentProps, useHistory } from 'react-router'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SelectEvent, SwarmSelect } from '../../components/SwarmSelect'
-import { Context as FeedsContext, Feed } from '../../providers/Feeds'
+import { Context as IdentityContext, Identity } from '../../providers/Feeds'
 import { Context as SettingsContext } from '../../providers/Settings'
+import { Context as StampContext } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
 import { persistIdentity, updateFeed } from '../../utils/identity'
 import { FeedPasswordDialog } from './FeedPasswordDialog'
@@ -18,18 +19,30 @@ interface MatchParams {
 }
 
 export default function UpdateFeed(props: RouteComponentProps<MatchParams>): ReactElement {
-  const { feeds, setFeeds } = useContext(FeedsContext)
+  const { identities, setIdentities } = useContext(IdentityContext)
   const { beeApi, beeDebugApi } = useContext(SettingsContext)
-  const [selectedFeed, setSelectedFeed] = useState<Feed | null>(null)
+  const { stamps, refresh } = useContext(StampContext)
+
+  const [selectedStamp, setSelectedStamp] = useState<string | null>(null)
+  const [selectedIdentity, setSelectedIdentity] = useState<Identity | null>(null)
   const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
 
   const history = useHistory()
 
-  function onChange(event: SelectEvent) {
+  useEffect(() => {
+    refresh()
+  }, [refresh])
+
+  function onFeedChange(event: SelectEvent) {
     const uuid = event.target.value
-    setSelectedFeed(feeds.find(x => x.uuid === uuid) || null)
+    setSelectedIdentity(identities.find(x => x.uuid === uuid) || null)
+  }
+
+  function onStampChange(event: SelectEvent) {
+    const batchId = event.target.value as string
+    setSelectedStamp(batchId)
   }
 
   function onCancel() {
@@ -37,63 +50,76 @@ export default function UpdateFeed(props: RouteComponentProps<MatchParams>): Rea
   }
 
   function onBeginUpdatingFeed() {
-    if (!selectedFeed) {
+    if (!selectedIdentity) {
       return
     }
 
-    if (selectedFeed.type === 'V3') {
+    if (selectedIdentity.type === 'V3') {
       setShowPasswordPrompt(true)
     } else {
-      onFeedUpdate(selectedFeed)
+      onFeedUpdate(selectedIdentity)
     }
   }
 
-  async function onFeedUpdate(identity: Feed, password?: string) {
+  async function onFeedUpdate(identity: Identity, password?: string) {
     setLoading(true)
 
-    if (!beeApi || !beeDebugApi) {
+    if (!beeApi || !beeDebugApi || !selectedStamp) {
       enqueueSnackbar(<span>Bee API unavailabe</span>, { variant: 'error' })
       setLoading(false)
 
       return
     }
-    const stamps = await beeDebugApi.getAllPostageBatch()
 
-    if (!stamps.length) {
-      enqueueSnackbar(<span>No stamp available</span>, { variant: 'error' })
-      setLoading(false)
-
-      return
-    }
-
-    await updateFeed(beeApi, identity, props.match.params.hash, stamps[0].batchID, password as string)
-    persistIdentity(feeds, identity)
-    setFeeds([...feeds])
+    await updateFeed(beeApi, identity, props.match.params.hash, selectedStamp, password as string)
+    persistIdentity(identities, identity)
+    setIdentities([...identities])
     history.push(ROUTES.FEEDS_PAGE.replace(':uuid', identity.uuid))
   }
 
   return (
     <div>
-      {showPasswordPrompt && selectedFeed && (
+      {showPasswordPrompt && selectedIdentity && (
         <FeedPasswordDialog
-          feedName={selectedFeed.name + ' Website'}
+          feedName={selectedIdentity.name + ' Website'}
           onCancel={() => {
             setShowPasswordPrompt(false)
           }}
           onProceed={(password: string) => {
-            onFeedUpdate(selectedFeed, password)
+            onFeedUpdate(selectedIdentity, password)
           }}
           loading={loading}
         />
       )}
       <HistoryHeader>Update feed</HistoryHeader>
+      <Box mb={2}>
+        <Grid container>
+          <SwarmSelect
+            options={identities.map(x => ({ value: x.uuid, label: `${x.name} Website` }))}
+            onChange={onFeedChange}
+          />
+        </Grid>
+      </Box>
+
       <Box mb={4}>
         <Grid container>
-          <SwarmSelect options={feeds.map(x => ({ value: x.uuid, label: `${x.name} Website` }))} onChange={onChange} />
+          {stamps ? (
+            <SwarmSelect
+              options={stamps.map(x => ({ value: x.batchID, label: x.batchID.slice(0, 8) }))}
+              onChange={onStampChange}
+            />
+          ) : (
+            <Typography>You need to buy a stamp first to be able to update a feed.</Typography>
+          )}
         </Grid>
       </Box>
       <ExpandableListItemActions>
-        <SwarmButton onClick={onBeginUpdatingFeed} iconType={Bookmark} loading={loading} disabled={loading}>
+        <SwarmButton
+          onClick={onBeginUpdatingFeed}
+          iconType={Bookmark}
+          loading={loading}
+          disabled={loading || !selectedStamp || !selectedIdentity}
+        >
           Update Selected Feed
         </SwarmButton>
         <SwarmButton onClick={onCancel} iconType={X} disabled={loading} cancel>

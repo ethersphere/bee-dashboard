@@ -2,22 +2,23 @@ import { createContext, ReactChild, ReactElement, useEffect, useState } from 're
 
 export type IdentityType = 'V3' | 'PRIVATE_KEY'
 
-export interface Feed {
+export interface Identity {
   uuid: string
   name: string
   feedHash?: string
   identity: string
+  address: string
   type: IdentityType
 }
 
 interface ContextInterface {
-  feeds: Feed[]
-  setFeeds: (feeds: Feed[]) => void
+  identities: Identity[]
+  setIdentities: (identities: Identity[]) => void
 }
 
 const initialValues: ContextInterface = {
-  feeds: [],
-  setFeeds: () => {}, // eslint-disable-line
+  identities: [],
+  setIdentities: () => {}, // eslint-disable-line
 }
 
 export const Context = createContext<ContextInterface>(initialValues)
@@ -28,11 +29,11 @@ interface Props {
 }
 
 export function Provider({ children }: Props): ReactElement {
-  const [feeds, setFeeds] = useState<Feed[]>(initialValues.feeds)
+  const [identities, setIdentities] = useState<Identity[]>(initialValues.identities)
 
   useEffect(() => {
-    setFeeds(JSON.parse(localStorage.getItem('feeds') || '[]'))
+    setIdentities(JSON.parse(localStorage.getItem('feeds') || '[]'))
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  return <Context.Provider value={{ feeds, setFeeds }}>{children}</Context.Provider>
+  return <Context.Provider value={{ identities, setIdentities }}>{children}</Context.Provider>
 }

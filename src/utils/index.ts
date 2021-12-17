@@ -122,3 +122,38 @@ export function uuidV4(): string {
     return (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16)
   })
 }
+
+export function formatEnum(string: string): string {
+  return (string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()).replaceAll('_', ' ')
+}
+
+export function secondsToTimeString(seconds: number): string {
+  let unit = seconds
+
+  if (unit < 120) {
+    return `${seconds} seconds`
+  }
+  unit /= 60
+
+  if (unit < 120) {
+    return `${Math.round(unit)} minutes`
+  }
+  unit /= 60
+
+  if (unit < 48) {
+    return `${Math.round(unit)} hours`
+  }
+  unit /= 24
+
+  if (unit < 14) {
+    return `${Math.round(unit)} days`
+  }
+  unit /= 7
+
+  if (unit < 52) {
+    return `${Math.round(unit)} weeks`
+  }
+  unit /= 52
+
+  return `${unit.toFixed(1)} years`
+}

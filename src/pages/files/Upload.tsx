@@ -4,7 +4,7 @@ import { ReactElement, useContext, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { ProgressIndicator } from '../../components/ProgressIndicator'
-import { Context as FeedsContext, Feed } from '../../providers/Feeds'
+import { Context as IdentityContext, Identity } from '../../providers/Feeds'
 import { Context as FileContext } from '../../providers/File'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as StampsContext, EnrichedPostageBatch } from '../../providers/Stamps'
@@ -13,7 +13,6 @@ import { detectIndexHtml, getAssetNameFromFiles } from '../../utils/file'
 import { persistIdentity, updateFeed } from '../../utils/identity'
 import { HISTORY_KEYS, putHistory } from '../../utils/local-storage'
 import { FeedPasswordDialog } from '../feeds/FeedPasswordDialog'
-import { CreatePostageStampModal } from '../stamps/CreatePostageStampModal'
 import { PostageStampCreation } from '../stamps/PostageStampCreation'
 import { PostageStampSelector } from '../stamps/PostageStampSelector'
 import { AssetPreview } from './AssetPreview'
@@ -23,7 +22,6 @@ import { UploadActionBar } from './UploadActionBar'
 export function Upload(): ReactElement {
   const [step, setStep] = useState(0)
   const [stampMode, setStampMode] = useState<'SELECT' | 'BUY'>('SELECT')
-  const [isBuyingStamp, setBuyingStamp] = useState(false)
   const [stamp, setStamp] = useState<EnrichedPostageBatch | null>(null)
   const [isUploading, setUploading] = useState(false)
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
@@ -31,7 +29,7 @@ export function Upload(): ReactElement {
   const { refresh } = useContext(StampsContext)
   const { beeApi } = useContext(SettingsContext)
   const { files, setFiles, uploadOrigin } = useContext(FileContext)
-  const { feeds, setFeeds } = useContext(FeedsContext)
+  const { identities, setIdentities } = useContext(IdentityContext)
   const { enqueueSnackbar } = useSnackbar()
   const history = useHistory()
 
@@ -46,13 +44,13 @@ export function Upload(): ReactElement {
     return <></>
   }
 
-  const feed = uploadOrigin.uuid ? feeds.find(x => x.uuid === uploadOrigin.uuid) : null
+  const identity = uploadOrigin.uuid ? identities.find(x => x.uuid === uploadOrigin.uuid) : null
 
   const onUpload = () => {
     if (uploadOrigin.origin === 'UPLOAD') {
       uploadFiles()
     } else {
-      if ((feed as Feed).type === 'PRIVATE_KEY') {
+      if ((identity as Identity).type === 'PRIVATE_KEY') {
         uploadFiles()
       } else {
         setShowPasswordPrompt(true)
@@ -77,9 +75,9 @@ export function Upload(): ReactElement {
         if (uploadOrigin.origin === 'UPLOAD') {
           history.replace(ROUTES.HASH.replace(':hash', hash.reference))
         } else {
-          updateFeed(beeApi, feed as Feed, hash.reference, stamp.batchID, password as string).then(() => {
-            persistIdentity(feeds, feed as Feed)
-            setFeeds([...feeds])
+          updateFeed(beeApi, identity as Identity, hash.reference, stamp.batchID, password as string).then(() => {
+            persistIdentity(identities, identity as Identity)
+            setIdentities([...identities])
             history.replace(ROUTES.FEEDS_PAGE.replace(':uuid', uploadOrigin.uuid as string))
           })
         }
@@ -106,13 +104,13 @@ export function Upload(): ReactElement {
       {showPasswordPrompt && (
         <FeedPasswordDialog
           loading={isUploading}
-          feedName={(feed as Feed).name}
+          feedName={(identity as Identity).name}
           onCancel={() => setShowPasswordPrompt(false)}
           onProceed={onFeedPasswordGiven}
         />
       )}
-      {feed && <HistoryHeader>{`Update "${feed.name}"`}</HistoryHeader>}
-      {!feed && <HistoryHeader>Upload</HistoryHeader>}
+      {identity && <HistoryHeader>{`Update "${identity.name}"`}</HistoryHeader>}
+      {!identity && <HistoryHeader>Upload</HistoryHeader>}
       <Box mb={4}>
         <ProgressIndicator steps={['Preview', 'Add postage stamp', 'Upload to node']} index={step} />
       </Box>
@@ -121,7 +119,7 @@ export function Upload(): ReactElement {
         <>
           <Box mb={2}>
             {stampMode === 'SELECT' ? (
-              <PostageStampSelector onSelect={stamp => setStamp(stamp)} />
+              <PostageStampSelector onSelect={stamp => setStamp(stamp)} defaultValue={stamp?.batchID} />
             ) : (
               <PostageStampCreation onFinished={() => setStampMode('SELECT')} />
             )}
@@ -144,11 +142,10 @@ export function Upload(): ReactElement {
         onUpload={onUpload}
         isUploading={isUploading}
         hasStamp={Boolean(stamp)}
-        uploadLabel={feed ? 'Update Feed' : 'Upload To Your Node'}
+        uploadLabel={identity ? 'Update Feed' : 'Upload To Your Node'}
         stampMode={stampMode}
         setStampMode={setStampMode}
       />
-      {isBuyingStamp ? <CreatePostageStampModal onClose={() => setBuyingStamp(false)} /> : null}
     </>
   )
 }

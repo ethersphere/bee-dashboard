@@ -4,9 +4,10 @@ import { Context, EnrichedPostageBatch } from '../../providers/Stamps'
 
 interface Props {
   onSelect: (stamp: EnrichedPostageBatch) => void
+  defaultValue?: string
 }
 
-export function PostageStampSelector({ onSelect }: Props): ReactElement {
+export function PostageStampSelector({ onSelect, defaultValue }: Props): ReactElement {
   const { stamps } = useContext(Context)
 
   function onChange(stampId: string) {
@@ -24,6 +25,7 @@ export function PostageStampSelector({ onSelect }: Props): ReactElement {
     <SwarmSelect
       options={(stamps || []).map(x => ({ label: x.batchID, value: x.batchID }))}
       onChange={event => onChange(event.target.value as string)}
+      defaultValue={defaultValue}
     />
   )
 }

@@ -29,7 +29,7 @@ const initialValues: FormValues = {
 
 export default function CreateNewFeed(): ReactElement {
   const { beeApi, beeDebugApi } = useContext(SettingsContext)
-  const { feeds, setFeeds } = useContext(FeedsContext)
+  const { identities, setIdentities } = useContext(FeedsContext)
   const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
 
@@ -62,8 +62,8 @@ export default function CreateNewFeed(): ReactElement {
     }
 
     const identity = await convertWalletToIdentity(wallet, values.type, values.identityName, values.password)
-    persistIdentity(feeds, identity)
-    setFeeds(feeds)
+    persistIdentity(identities, identity)
+    setIdentities(identities)
     history.push(ROUTES.FEEDS)
     setLoading(false)
   }
