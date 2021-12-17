@@ -32,15 +32,15 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
 
   function getFileSize(depth: number): string {
-    return `~${depth} MB`
+    return `~${(2 ** depth * 4096) / 1024 / 1024} MB`
   }
 
   function getTtl(amount: number): string {
-    return secondsToTimeString(amount)
+    return secondsToTimeString(amount / 10)
   }
 
   function getPrice(depth: number, amount: number): string {
-    return `${(depth * amount) / 1e9} BZZ`
+    return `${((amount * 2 ** (depth - 16)) / 1e16).toFixed(16)} BZZ`
   }
 
   return (
