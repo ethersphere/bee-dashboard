@@ -1,9 +1,11 @@
 import { ManifestJs } from '@ethersphere/manifest-js'
-import { Box } from '@material-ui/core'
+import { Box, Typography } from '@material-ui/core'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { RouteComponentProps, useHistory } from 'react-router-dom'
+import { HistoryHeader } from '../../components/HistoryHeader'
 import { Loading } from '../../components/Loading'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
@@ -22,13 +24,16 @@ interface MatchParams {
 export function Share(props: RouteComponentProps<MatchParams>): ReactElement {
   const { apiUrl, beeApi } = useContext(SettingsContext)
   const reference = props.match.params.hash
+
   const history = useHistory()
+  const { enqueueSnackbar } = useSnackbar()
 
   const [loading, setLoading] = useState(true)
   const [downloading, setDownloading] = useState(false)
   const [files, setFiles] = useState<SwarmFile[]>([])
   const [swarmEntries, setSwarmEntries] = useState<Record<string, string>>({})
   const [indexDocument, setIndexDocument] = useState<string | null>(null)
+  const [notFound, setNotFound] = useState(false)
 
   async function prepare() {
     if (!beeApi) {
@@ -39,7 +44,10 @@ export function Share(props: RouteComponentProps<MatchParams>): ReactElement {
     const isManifest = await manifestJs.isManifest(reference)
 
     if (!isManifest) {
-      throw Error('The specified hash does not contain valid content.')
+      setNotFound(true)
+      enqueueSnackbar('The specified hash does not contain valid content.', { variant: 'error' })
+
+      return
     }
     const entries = await manifestJs.getHashes(reference)
     setSwarmEntries(entries)
@@ -73,7 +81,7 @@ export function Share(props: RouteComponentProps<MatchParams>): ReactElement {
 
   useEffect(() => {
     setLoading(true)
-    prepare().then(() => {
+    prepare().finally(() => {
       setLoading(false)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -103,6 +111,15 @@ export function Share(props: RouteComponentProps<MatchParams>): ReactElement {
 
   if (loading) {
     return <Loading />
+  }
+
+  if (notFound) {
+    return (
+      <>
+        <HistoryHeader>Not Found</HistoryHeader>
+        <Typography>The specified hash is not found.</Typography>
+      </>
+    )
   }
 
   return (

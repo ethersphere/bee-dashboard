@@ -1,4 +1,4 @@
-import { createStyles, makeStyles, MenuItem, Select as SimpleSelect, Theme } from '@material-ui/core'
+import { createStyles, FormHelperText, makeStyles, MenuItem, Select as SimpleSelect, Theme } from '@material-ui/core'
 import { Field } from 'formik'
 import { Select } from 'formik-material-ui'
 import { ReactElement } from 'react'
@@ -9,6 +9,7 @@ export type SelectEvent = React.ChangeEvent<{
 }>
 
 interface Props {
+  label?: string
   name?: string
   options: { value: string; label: string }[]
   onChange?: (event: SelectEvent) => void
@@ -31,44 +32,52 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-export function SwarmSelect({ defaultValue, formik, name, options, onChange }: Props): ReactElement {
+export function SwarmSelect({ defaultValue, formik, name, options, onChange, label }: Props): ReactElement {
   const classes = useStyles()
 
   if (formik) {
     return (
-      <Field
+      <>
+        {label && <FormHelperText>{label}</FormHelperText>}
+        <Field
+          required
+          component={Select}
+          name={name}
+          fullWidth
+          variant="outlined"
+          defaultValue={defaultValue || ''}
+          className={classes.select}
+          placeholder={label}
+        >
+          {options.map((x, i) => (
+            <MenuItem key={i} value={x.value} className={classes.option}>
+              {x.label}
+            </MenuItem>
+          ))}
+        </Field>
+      </>
+    )
+  }
+
+  return (
+    <>
+      {label && <FormHelperText>{label}</FormHelperText>}
+      <SimpleSelect
         required
-        component={Select}
         name={name}
         fullWidth
         variant="outlined"
-        defaultValue={defaultValue}
         className={classes.select}
+        defaultValue={defaultValue || ''}
+        onChange={onChange}
+        placeholder={label}
       >
         {options.map((x, i) => (
           <MenuItem key={i} value={x.value} className={classes.option}>
             {x.label}
           </MenuItem>
         ))}
-      </Field>
-    )
-  }
-
-  return (
-    <SimpleSelect
-      required
-      name={name}
-      fullWidth
-      variant="outlined"
-      className={classes.select}
-      defaultValue={defaultValue}
-      onChange={onChange}
-    >
-      {options.map((x, i) => (
-        <MenuItem key={i} value={x.value} className={classes.option}>
-          {x.label}
-        </MenuItem>
-      ))}
-    </SimpleSelect>
+      </SimpleSelect>
+    </>
   )
 }

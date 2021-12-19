@@ -33,7 +33,8 @@ export default function UpdateFeed(props: RouteComponentProps<MatchParams>): Rea
 
   useEffect(() => {
     refresh()
-  }, [refresh])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   function onFeedChange(event: SelectEvent) {
     const uuid = event.target.value
@@ -97,6 +98,7 @@ export default function UpdateFeed(props: RouteComponentProps<MatchParams>): Rea
           <SwarmSelect
             options={identities.map(x => ({ value: x.uuid, label: `${x.name} Website` }))}
             onChange={onFeedChange}
+            label="Feed"
           />
         </Grid>
       </Box>
@@ -107,6 +109,7 @@ export default function UpdateFeed(props: RouteComponentProps<MatchParams>): Rea
             <SwarmSelect
               options={stamps.map(x => ({ value: x.batchID, label: x.batchID.slice(0, 8) }))}
               onChange={onStampChange}
+              label="Stamp"
             />
           ) : (
             <Typography>You need to buy a stamp first to be able to update a feed.</Typography>

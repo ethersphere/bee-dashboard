@@ -1,10 +1,11 @@
-import { Button, Grid, IconButton, InputBase, ListItem, Typography } from '@material-ui/core'
+import { Grid, IconButton, InputBase, ListItem, Typography } from '@material-ui/core'
 import Collapse from '@material-ui/core/Collapse'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import { ChangeEvent, ReactElement, useState } from 'react'
-import { Check, Edit, Minus, RotateCcw } from 'react-feather'
+import { Edit, Minus, Search, X } from 'react-feather'
 import ExpandableListItemActions from './ExpandableListItemActions'
 import ExpandableListItemNote from './ExpandableListItemNote'
+import { SwarmButton } from './SwarmButton'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -52,6 +53,7 @@ interface Props {
   expandedOnly?: boolean
   confirmLabel?: string
   confirmLabelDisabled?: boolean
+  loading?: boolean
   onChange?: (value: string) => void
   onConfirm: (value: string) => void
   mapperFn?: (value: string) => string
@@ -67,6 +69,7 @@ export default function ExpandableListItemKey({
   expandedOnly,
   helperText,
   placeholder,
+  loading,
   mapperFn,
 }: Props): ReactElement | null {
   const classes = useStyles()
@@ -123,26 +126,27 @@ export default function ExpandableListItemKey({
       <Collapse in={open} timeout="auto" unmountOnExit>
         {helperText && <ExpandableListItemNote>{helperText}</ExpandableListItemNote>}
         <ExpandableListItemActions>
-          <Button
-            variant="contained"
+          <SwarmButton
             disabled={
+              loading ||
               inputValue === value ||
               Boolean(confirmLabelDisabled) || // Disable if external validation is provided
               (inputValue === '' && value === undefined) // Disable if no initial value was not provided and the field is empty. The undefined check is improtant so that it is possible to submit with empty input in other cases
             }
-            startIcon={<Check size="1rem" />}
+            loading={loading}
+            iconType={Search}
             onClick={() => onConfirm(inputValue)}
           >
             {confirmLabel || 'Save'}
-          </Button>
-          <Button
-            variant="contained"
-            disabled={inputValue === value || inputValue === ''}
-            startIcon={<RotateCcw size="1rem" />}
+          </SwarmButton>
+          <SwarmButton
+            disabled={loading || inputValue === value || inputValue === ''}
+            iconType={X}
             onClick={() => setInputValue(value || '')}
+            cancel
           >
             Cancel
-          </Button>
+          </SwarmButton>
         </ExpandableListItemActions>
       </Collapse>
     </>
