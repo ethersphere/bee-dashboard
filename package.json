@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@ethersphere/bee-js": "3.0.0",
-    "@ethersphere/manifest-js": "^1.0.0",
+    "@ethersphere/manifest-js": "1.1.0",
     "@ethersphere/swarm-cid": "^0.1.0",
     "@material-ui/core": "4.12.3",
     "@material-ui/icons": "4.11.2",
