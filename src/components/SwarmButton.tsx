@@ -18,6 +18,7 @@ const useStyles = makeStyles(() =>
       height: '52px',
       position: 'relative',
       whiteSpace: 'nowrap',
+      color: '#242424',
       '&:hover, &:focus': {
         '& svg': {
           stroke: '#fff',

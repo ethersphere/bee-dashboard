@@ -1,7 +1,8 @@
-import { Box, Typography } from '@material-ui/core'
+import { Box } from '@material-ui/core'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
+import { DocumentationText } from '../../components/DocumentationText'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { ProgressIndicator } from '../../components/ProgressIndicator'
 import { Context as IdentityContext, Identity } from '../../providers/Feeds'
@@ -125,11 +126,17 @@ export function Upload(): ReactElement {
             )}
           </Box>
           <Box mb={4}>
-            <Typography>
-              To upload this file to your node, you need a postage stamp. You can use an existing stamp (providing it
-              has sufficicient depth) or you can buy a new stamp. Please refer to the official Bee documentation to
-              understand how stamps work.
-            </Typography>
+            <DocumentationText>
+              Please refer to the{' '}
+              <a
+                href="https://docs.ethswarm.org/debug-api/#tag/Postage-Stamps/paths/~1stamps~1{amount}~1{depth}/post"
+                target="_blank"
+                rel="noreferrer"
+              >
+                official Bee documentation
+              </a>{' '}
+              to understand these values.
+            </DocumentationText>
           </Box>
         </>
       )}

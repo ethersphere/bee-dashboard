@@ -1,6 +1,7 @@
 import * as swarmCid from '@ethersphere/swarm-cid'
-import { Box, Typography } from '@material-ui/core'
+import { Box } from '@material-ui/core'
 import { ReactElement } from 'react'
+import { DocumentationText } from '../../components/DocumentationText'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import ExpandableListItemLink from '../../components/ExpandableListItemLink'
 import { detectIndexHtml } from '../../utils/file'
@@ -24,11 +25,11 @@ export function AssetSummary({ files, hash }: Props): ReactElement {
           />
         )}
       </Box>
-      <Typography>
+      <DocumentationText>
         The Swarm Gateway is graciously provided by the Swarm Foundation. This service is under development and provided
         for testing purposes only. Learn more at{' '}
         <a href="https://gateway.ethswarm.org/">https://gateway.ethswarm.org/</a>.
-      </Typography>
+      </DocumentationText>
     </>
   )
 }

@@ -32,7 +32,11 @@ export function Provider({ children }: Props): ReactElement {
   const [identities, setIdentities] = useState<Identity[]>(initialValues.identities)
 
   useEffect(() => {
-    setIdentities(JSON.parse(localStorage.getItem('feeds') || '[]'))
+    try {
+      setIdentities(JSON.parse(localStorage.getItem('feeds') || '[]'))
+    } catch {
+      setIdentities([])
+    }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return <Context.Provider value={{ identities, setIdentities }}>{children}</Context.Provider>

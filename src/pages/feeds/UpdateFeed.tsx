@@ -72,10 +72,22 @@ export default function UpdateFeed(props: RouteComponentProps<MatchParams>): Rea
       return
     }
 
-    await updateFeed(beeApi, identity, props.match.params.hash, selectedStamp, password as string)
-    persistIdentity(identities, identity)
-    setIdentities([...identities])
-    history.push(ROUTES.FEEDS_PAGE.replace(':uuid', identity.uuid))
+    try {
+      await updateFeed(beeApi, identity, props.match.params.hash, selectedStamp, password as string)
+      persistIdentity(identities, identity)
+      setIdentities([...identities])
+      history.push(ROUTES.FEEDS_PAGE.replace(':uuid', identity.uuid))
+    } catch (error: unknown) {
+      setLoading(false)
+
+      const message = (typeof error === 'object' && error !== null && Reflect.get(error, 'message')) || ''
+
+      if (message.includes('possibly wrong passphrase')) {
+        enqueueSnackbar('Wrong password, please try again', { variant: 'error' })
+      } else {
+        enqueueSnackbar('Could not update feed at this time, please try again later', { variant: 'error' })
+      }
+    }
   }
 
   return (
@@ -120,7 +132,7 @@ export default function UpdateFeed(props: RouteComponentProps<MatchParams>): Rea
         <SwarmButton
           onClick={onBeginUpdatingFeed}
           iconType={Bookmark}
-          loading={loading}
+          loading={!showPasswordPrompt && loading}
           disabled={loading || !selectedStamp || !selectedIdentity}
         >
           Update Selected Feed

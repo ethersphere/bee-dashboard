@@ -1,8 +1,9 @@
 import * as swarmCid from '@ethersphere/swarm-cid'
-import { Box, Typography } from '@material-ui/core'
+import { Box } from '@material-ui/core'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { X } from 'react-feather'
 import { RouteComponentProps, useHistory } from 'react-router-dom'
+import { DocumentationText } from '../../components/DocumentationText'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import ExpandableListItemLink from '../../components/ExpandableListItemLink'
@@ -67,10 +68,17 @@ export function FeedSubpage(props: RouteComponentProps<MatchParams>): ReactEleme
         </>
       ) : (
         <Box mb={4}>
-          <Typography>
-            This feed is curently not pointing anywhere, you can update the feed to fix this. Please refer to the
-            official Bee documentation.
-          </Typography>
+          <DocumentationText>
+            This feed is curently not pointing anywhere, you can update the feed to fix this. Please refer to the{' '}
+            <a
+              href="https://docs.ethswarm.org/api/#tag/Feed/paths/~1feeds~1{owner}~1{topic}/post"
+              target="_blank"
+              rel="noreferrer"
+            >
+              official Bee documentation
+            </a>
+            .
+          </DocumentationText>
         </Box>
       )}
       <ExpandableListItemActions>

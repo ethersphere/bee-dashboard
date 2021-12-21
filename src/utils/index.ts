@@ -177,3 +177,15 @@ export function formatBzz(amount: number): string {
 
   return asString.slice(0, indexOfSignificantDigit + 4)
 }
+
+export function convertDepthToBytes(depth: number): number {
+  return 2 ** depth * 4096
+}
+
+export function convertAmountToSeconds(amount: number): number {
+  return amount / 10 / 1
+}
+
+export function calculateStampPrice(depth: number, amount: number): number {
+  return (amount * 2 ** (depth - 16) * 2) / 1e16
+}

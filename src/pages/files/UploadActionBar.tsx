@@ -1,6 +1,7 @@
-import { Grid } from '@material-ui/core'
+import { Box, Grid } from '@material-ui/core'
 import { ReactElement } from 'react'
-import { ArrowLeft, Check, Layers, PlusSquare } from 'react-feather'
+import { ArrowLeft, Check, Layers, PlusSquare, X } from 'react-feather'
+import { DocumentationText } from '../../components/DocumentationText'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import { SwarmButton } from '../../components/SwarmButton'
 
@@ -31,14 +32,19 @@ export function UploadActionBar({
 }: Props): ReactElement {
   if (step === 0) {
     return (
-      <ExpandableListItemActions>
-        <SwarmButton onClick={onProceed} iconType={Layers}>
-          Add Postage Stamp
-        </SwarmButton>
-        <SwarmButton onClick={onCancel} iconType={ArrowLeft} cancel>
-          Cancel
-        </SwarmButton>
-      </ExpandableListItemActions>
+      <>
+        <Box mb={1}>
+          <ExpandableListItemActions>
+            <SwarmButton onClick={onProceed} iconType={Layers}>
+              Add Postage Stamp
+            </SwarmButton>
+            <SwarmButton onClick={onCancel} iconType={X} cancel>
+              Cancel
+            </SwarmButton>
+          </ExpandableListItemActions>
+        </Box>
+        <DocumentationText>You need a postage stamp to upload.</DocumentationText>
+      </>
     )
   }
 
@@ -46,9 +52,11 @@ export function UploadActionBar({
     return (
       <Grid container direction="row" justifyContent="space-between">
         <ExpandableListItemActions>
-          <SwarmButton onClick={onProceed} iconType={Check} disabled={!hasStamp}>
-            Proceed With Selected Stamp
-          </SwarmButton>
+          {stampMode === 'SELECT' && (
+            <SwarmButton onClick={onProceed} iconType={Check} disabled={!hasStamp}>
+              Proceed With Selected Stamp
+            </SwarmButton>
+          )}
           <SwarmButton onClick={onGoBack} iconType={ArrowLeft} cancel>
             Back To Preview
           </SwarmButton>

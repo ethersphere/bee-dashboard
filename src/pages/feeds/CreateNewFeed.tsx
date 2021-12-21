@@ -4,6 +4,7 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { Check, X } from 'react-feather'
 import { useHistory } from 'react-router'
+import { DocumentationText } from '../../components/DocumentationText'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import { HistoryHeader } from '../../components/HistoryHeader'
@@ -76,10 +77,17 @@ export default function CreateNewFeed(): ReactElement {
     <div>
       <HistoryHeader>Create new feed</HistoryHeader>
       <Box mb={4}>
-        <Typography>
-          To create a feed you will need to create an identity. Please refer to the official Bee documentation to
-          understand how feeds work.
-        </Typography>
+        <DocumentationText>
+          To create a feed you will need to create an identity. Please refer to the{' '}
+          <a
+            href="https://docs.ethswarm.org/api/#tag/Feed/paths/~1feeds~1{owner}~1{topic}/post"
+            target="_blank"
+            rel="noreferrer"
+          >
+            official Bee documentation
+          </a>{' '}
+          to understand how feeds work.
+        </DocumentationText>
       </Box>
       <Formik initialValues={initialValues} onSubmit={onSubmit}>
         {({ submitForm, values }) => (

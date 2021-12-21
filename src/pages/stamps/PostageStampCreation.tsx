@@ -8,7 +8,14 @@ import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context } from '../../providers/Stamps'
-import { formatBzz, secondsToTimeString } from '../../utils'
+import {
+  calculateStampPrice,
+  convertAmountToSeconds,
+  convertDepthToBytes,
+  formatBzz,
+  secondsToTimeString,
+} from '../../utils'
+import { getHumanReadableFileSize } from '../../utils/file'
 
 interface FormValues {
   depth?: string
@@ -32,11 +39,11 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
 
   function getFileSize(depth: number): string {
-    if (isNaN(depth) || depth <= 0) {
+    if (isNaN(depth) || depth < 17 || depth > 255) {
       return '-'
     }
 
-    return `~${(2 ** depth * 4096) / 1024 / 1024} MB`
+    return `~${getHumanReadableFileSize(convertDepthToBytes(depth))}`
   }
 
   function getTtl(amount: number): string {
@@ -44,14 +51,14 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
       return '-'
     }
 
-    return secondsToTimeString(amount / 10)
+    return secondsToTimeString(convertAmountToSeconds(amount))
   }
 
   function getPrice(depth: number, amount: number): string {
-    if (isNaN(amount) || amount <= 0 || isNaN(depth) || depth <= 0) {
+    if (isNaN(amount) || amount <= 0 || isNaN(depth) || depth < 17 || depth > 255) {
       return '-'
     }
-    const price = (amount * 2 ** (depth - 16)) / 1e16
+    const price = calculateStampPrice(depth, amount)
 
     return `${formatBzz(price)} BZZ`
   }

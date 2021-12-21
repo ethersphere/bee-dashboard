@@ -1,9 +1,10 @@
-import { createStyles, makeStyles, Theme, Typography } from '@material-ui/core'
+import { createStyles, makeStyles, Theme } from '@material-ui/core'
 import { DropzoneArea } from 'material-ui-dropzone'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { FilePlus, FolderPlus, PlusCircle } from 'react-feather'
 import { useHistory } from 'react-router-dom'
+import { DocumentationText } from '../../components/DocumentationText'
 import { SwarmButton } from '../../components/SwarmButton'
 import { Context, UploadOrigin } from '../../providers/File'
 import { ROUTES } from '../../routes'
@@ -143,10 +144,10 @@ export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
         </div>
       </div>
       {showHelp && (
-        <Typography>
+        <DocumentationText>
           You can click the buttons above or simply drag and drop to add a file or folder. To upload a website to Swarm,
           make sure that your folder contains an “index.html” file.
-        </Typography>
+        </DocumentationText>
       )}
     </>
   )
