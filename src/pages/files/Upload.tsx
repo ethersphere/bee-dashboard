@@ -5,6 +5,8 @@ import { useHistory } from 'react-router-dom'
 import { DocumentationText } from '../../components/DocumentationText'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { ProgressIndicator } from '../../components/ProgressIndicator'
+import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
+import { Context as BeeContext } from '../../providers/Bee'
 import { Context as IdentityContext, Identity } from '../../providers/Feeds'
 import { Context as FileContext } from '../../providers/File'
 import { Context as SettingsContext } from '../../providers/Settings'
@@ -31,12 +33,16 @@ export function Upload(): ReactElement {
   const { beeApi } = useContext(SettingsContext)
   const { files, setFiles, uploadOrigin } = useContext(FileContext)
   const { identities, setIdentities } = useContext(IdentityContext)
+  const { status } = useContext(BeeContext)
+
   const { enqueueSnackbar } = useSnackbar()
   const history = useHistory()
 
   useEffect(() => {
     refresh()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!status.all) return <TroubleshootConnectionCard />
 
   if (!files.length) {
     setFiles([])

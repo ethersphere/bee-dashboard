@@ -7,6 +7,7 @@ import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import { SwarmButton } from '../../components/SwarmButton'
+import { Context as BeeContext } from '../../providers/Bee'
 import { Context as IdentityContext, Identity } from '../../providers/Feeds'
 import { ROUTES } from '../../routes'
 import { formatEnum } from '../../utils'
@@ -17,6 +18,8 @@ import { ImportFeedDialog } from './ImportFeedDialog'
 
 export default function Feeds(): ReactElement {
   const { identities, setIdentities } = useContext(IdentityContext)
+  const { status } = useContext(BeeContext)
+
   const history = useHistory()
 
   const [selectedIdentity, setSelectedIdentity] = useState<Identity | null>(null)
@@ -92,9 +95,11 @@ export default function Feeds(): ReactElement {
           {x.feedHash && <ExpandableListItemKey label="Feed hash" value={x.feedHash} />}
           <Box mt={0.75}>
             <ExpandableListItemActions>
-              <SwarmButton onClick={() => viewFeed(x.uuid)} iconType={Info}>
-                View Feed Page
-              </SwarmButton>
+              {status.all && (
+                <SwarmButton onClick={() => viewFeed(x.uuid)} iconType={Info}>
+                  View Feed Page
+                </SwarmButton>
+              )}
               <SwarmButton onClick={() => onShowExport(x)} iconType={Download}>
                 Export...
               </SwarmButton>

@@ -9,6 +9,7 @@ import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import ExpandableListItemLink from '../../components/ExpandableListItemLink'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { SwarmButton } from '../../components/SwarmButton'
+import { Context as BeeContext } from '../../providers/Bee'
 import { Context as IdentityContext } from '../../providers/Feeds'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
@@ -21,6 +22,8 @@ interface MatchParams {
 export function FeedSubpage(props: RouteComponentProps<MatchParams>): ReactElement {
   const { identities } = useContext(IdentityContext)
   const { beeApi } = useContext(SettingsContext)
+  const { status } = useContext(BeeContext)
+
   const history = useHistory()
 
   const [available, setAvailable] = useState(false)
@@ -40,7 +43,7 @@ export function FeedSubpage(props: RouteComponentProps<MatchParams>): ReactEleme
     }
   }, [beeApi, uuid, identity])
 
-  if (!identity) {
+  if (!identity || !status.all) {
     history.replace(ROUTES.FEEDS)
 
     return <></>

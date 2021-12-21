@@ -7,6 +7,8 @@ import { ReactElement, useContext, useEffect, useState } from 'react'
 import { RouteComponentProps, useHistory } from 'react-router-dom'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { Loading } from '../../components/Loading'
+import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
+import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
 import { convertBeeFileToBrowserFile, convertManifestToFiles } from '../../utils/file'
@@ -23,6 +25,8 @@ interface MatchParams {
 
 export function Share(props: RouteComponentProps<MatchParams>): ReactElement {
   const { apiUrl, beeApi } = useContext(SettingsContext)
+  const { status } = useContext(BeeContext)
+
   const reference = props.match.params.hash
 
   const history = useHistory()
@@ -36,7 +40,7 @@ export function Share(props: RouteComponentProps<MatchParams>): ReactElement {
   const [notFound, setNotFound] = useState(false)
 
   async function prepare() {
-    if (!beeApi) {
+    if (!beeApi || !status.all) {
       return
     }
 
@@ -108,6 +112,8 @@ export function Share(props: RouteComponentProps<MatchParams>): ReactElement {
   }
 
   const assetName = shortenHash(reference)
+
+  if (!status.all) return <TroubleshootConnectionCard />
 
   if (loading) {
     return <Loading />

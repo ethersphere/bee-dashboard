@@ -7,6 +7,8 @@ import ExpandableListItemActions from '../../components/ExpandableListItemAction
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SelectEvent, SwarmSelect } from '../../components/SwarmSelect'
+import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
+import { Context as BeeContext } from '../../providers/Bee'
 import { Context as IdentityContext, Identity } from '../../providers/Feeds'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as StampContext } from '../../providers/Stamps'
@@ -22,6 +24,7 @@ export default function UpdateFeed(props: RouteComponentProps<MatchParams>): Rea
   const { identities, setIdentities } = useContext(IdentityContext)
   const { beeApi, beeDebugApi } = useContext(SettingsContext)
   const { stamps, refresh } = useContext(StampContext)
+  const { status } = useContext(BeeContext)
 
   const [selectedStamp, setSelectedStamp] = useState<string | null>(null)
   const [selectedIdentity, setSelectedIdentity] = useState<Identity | null>(null)
@@ -89,6 +92,8 @@ export default function UpdateFeed(props: RouteComponentProps<MatchParams>): Rea
       }
     }
   }
+
+  if (!status.all) return <TroubleshootConnectionCard />
 
   return (
     <div>
