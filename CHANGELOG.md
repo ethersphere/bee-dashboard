@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.11.2...v0.12.0) (2021-12-21)
+
+
+### Features
+
+* add identity and feed management ([#272](https://www.github.com/ethersphere/bee-dashboard/issues/272)) ([25b65c3](https://www.github.com/ethersphere/bee-dashboard/commit/25b65c3fb770b09c685fe66596e372dfbb616625))
+
 ### [0.11.2](https://www.github.com/ethersphere/bee-dashboard/compare/v0.11.1...v0.11.2) (2021-12-15)
 
 
