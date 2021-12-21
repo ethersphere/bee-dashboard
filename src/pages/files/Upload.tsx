@@ -1,41 +1,71 @@
+import { Box } from '@material-ui/core'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
+import { DocumentationText } from '../../components/DocumentationText'
 import { HistoryHeader } from '../../components/HistoryHeader'
+import { ProgressIndicator } from '../../components/ProgressIndicator'
+import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
+import { Context as BeeContext } from '../../providers/Bee'
+import { Context as IdentityContext, Identity } from '../../providers/Feeds'
 import { Context as FileContext } from '../../providers/File'
 import { Context as SettingsContext } from '../../providers/Settings'
-import { Context, EnrichedPostageBatch } from '../../providers/Stamps'
+import { Context as StampsContext, EnrichedPostageBatch } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
 import { detectIndexHtml, getAssetNameFromFiles } from '../../utils/file'
+import { persistIdentity, updateFeed } from '../../utils/identity'
 import { HISTORY_KEYS, putHistory } from '../../utils/local-storage'
-import { CreatePostageStampModal } from '../stamps/CreatePostageStampModal'
-import { SelectPostageStampModal } from '../stamps/SelectPostageStampModal'
+import { FeedPasswordDialog } from '../feeds/FeedPasswordDialog'
+import { PostageStampCreation } from '../stamps/PostageStampCreation'
+import { PostageStampSelector } from '../stamps/PostageStampSelector'
 import { AssetPreview } from './AssetPreview'
 import { StampPreview } from './StampPreview'
 import { UploadActionBar } from './UploadActionBar'
 
 export function Upload(): ReactElement {
-  const [isBuyingStamp, setBuyingStamp] = useState(false)
-  const [isSelectingStamp, setSelectingStamp] = useState(false)
+  const [step, setStep] = useState(0)
+  const [stampMode, setStampMode] = useState<'SELECT' | 'BUY'>('SELECT')
   const [stamp, setStamp] = useState<EnrichedPostageBatch | null>(null)
   const [isUploading, setUploading] = useState(false)
+  const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
 
-  const { stamps, refresh } = useContext(Context)
+  const { refresh } = useContext(StampsContext)
   const { beeApi } = useContext(SettingsContext)
-  const { files, setFiles } = useContext(FileContext)
+  const { files, setFiles, uploadOrigin } = useContext(FileContext)
+  const { identities, setIdentities } = useContext(IdentityContext)
+  const { status } = useContext(BeeContext)
+
   const { enqueueSnackbar } = useSnackbar()
   const history = useHistory()
-
-  if (!files.length) {
-    setFiles([])
-    history.replace(ROUTES.UPLOAD)
-  }
 
   useEffect(() => {
     refresh()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const uploadFiles = () => {
+  if (!status.all) return <TroubleshootConnectionCard />
+
+  if (!files.length) {
+    setFiles([])
+    history.replace(ROUTES.UPLOAD)
+
+    return <></>
+  }
+
+  const identity = uploadOrigin.uuid ? identities.find(x => x.uuid === uploadOrigin.uuid) : null
+
+  const onUpload = () => {
+    if (uploadOrigin.origin === 'UPLOAD') {
+      uploadFiles()
+    } else {
+      if ((identity as Identity).type === 'PRIVATE_KEY') {
+        uploadFiles()
+      } else {
+        setShowPasswordPrompt(true)
+      }
+    }
+  }
+
+  const uploadFiles = (password?: string) => {
     if (!beeApi || !files.length || !stamp) {
       return
     }
@@ -48,7 +78,16 @@ export function Upload(): ReactElement {
       .uploadFiles(stamp.batchID, files as unknown as File[], { indexDocument })
       .then(hash => {
         putHistory(HISTORY_KEYS.UPLOAD_HISTORY, hash.reference, getAssetNameFromFiles(files))
-        history.replace(ROUTES.HASH.replace(':hash', hash.reference))
+
+        if (uploadOrigin.origin === 'UPLOAD') {
+          history.replace(ROUTES.HASH.replace(':hash', hash.reference))
+        } else {
+          updateFeed(beeApi, identity as Identity, hash.reference, stamp.batchID, password as string).then(() => {
+            persistIdentity(identities, identity as Identity)
+            setIdentities([...identities])
+            history.replace(ROUTES.FEEDS_PAGE.replace(':uuid', uploadOrigin.uuid as string))
+          })
+        }
       })
       .catch(e => {
         enqueueSnackbar(`Error uploading: ${e.message}`, { variant: 'error' })
@@ -57,36 +96,69 @@ export function Upload(): ReactElement {
   }
 
   const reset = () => {
+    setStep(0)
     setFiles([])
     setStamp(null)
     setUploading(false)
   }
 
+  const onFeedPasswordGiven = (password: string) => {
+    uploadFiles(password)
+  }
+
   return (
     <>
-      <HistoryHeader>Upload</HistoryHeader>
-      {files.length && <AssetPreview files={files} />}
-      {stamp !== null ? <StampPreview stamp={stamp} /> : null}
-      {files.length && (
-        <UploadActionBar
-          canSelectStamp={stamps !== null && stamps.length > 0}
-          hasSelectedStamp={stamp !== null}
-          onCancel={reset}
-          onBuy={() => setBuyingStamp(true)}
-          onSelect={() => setSelectingStamp(true)}
-          onUpload={uploadFiles}
-          onClearStamp={() => setStamp(null)}
-          isUploading={isUploading}
+      {showPasswordPrompt && (
+        <FeedPasswordDialog
+          loading={isUploading}
+          feedName={(identity as Identity).name}
+          onCancel={() => setShowPasswordPrompt(false)}
+          onProceed={onFeedPasswordGiven}
         />
       )}
-      {isBuyingStamp ? <CreatePostageStampModal onClose={() => setBuyingStamp(false)} /> : null}
-      {stamps && isSelectingStamp ? (
-        <SelectPostageStampModal
-          stamps={stamps}
-          onClose={() => setSelectingStamp(false)}
-          onSelect={stamp => setStamp(stamp)}
-        />
-      ) : null}
+      {identity && <HistoryHeader>{`Update "${identity.name}"`}</HistoryHeader>}
+      {!identity && <HistoryHeader>Upload</HistoryHeader>}
+      <Box mb={4}>
+        <ProgressIndicator steps={['Preview', 'Add postage stamp', 'Upload to node']} index={step} />
+      </Box>
+      {(step === 0 || step === 2) && <AssetPreview files={files} />}
+      {step === 1 && (
+        <>
+          <Box mb={2}>
+            {stampMode === 'SELECT' ? (
+              <PostageStampSelector onSelect={stamp => setStamp(stamp)} defaultValue={stamp?.batchID} />
+            ) : (
+              <PostageStampCreation onFinished={() => setStampMode('SELECT')} />
+            )}
+          </Box>
+          <Box mb={4}>
+            <DocumentationText>
+              Please refer to the{' '}
+              <a
+                href="https://docs.ethswarm.org/debug-api/#tag/Postage-Stamps/paths/~1stamps~1{amount}~1{depth}/post"
+                target="_blank"
+                rel="noreferrer"
+              >
+                official Bee documentation
+              </a>{' '}
+              to understand these values.
+            </DocumentationText>
+          </Box>
+        </>
+      )}
+      {step === 2 && stamp && <StampPreview stamp={stamp} />}
+      <UploadActionBar
+        step={step}
+        onCancel={reset}
+        onGoBack={() => setStep(step => step - 1)}
+        onProceed={() => setStep(step => step + 1)}
+        onUpload={onUpload}
+        isUploading={isUploading}
+        hasStamp={Boolean(stamp)}
+        uploadLabel={identity ? 'Update Feed' : 'Upload To Your Node'}
+        stampMode={stampMode}
+        setStampMode={setStampMode}
+      />
     </>
   )
 }

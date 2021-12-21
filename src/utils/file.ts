@@ -30,6 +30,18 @@ export function detectIndexHtml(files: SwarmFile[]): string | false {
 }
 
 export function getHumanReadableFileSize(bytes: number): string {
+  if (bytes >= 1e15) {
+    return (bytes / 1e15).toFixed(2) + ' PB'
+  }
+
+  if (bytes >= 1e12) {
+    return (bytes / 1e12).toFixed(2) + ' TB'
+  }
+
+  if (bytes >= 1e9) {
+    return (bytes / 1e9).toFixed(2) + ' GB'
+  }
+
   if (bytes >= 1e6) {
     return (bytes / 1e6).toFixed(2) + ' MB'
   }
@@ -65,6 +77,10 @@ export function convertManifestToFiles(files: Record<string, string>): SwarmFile
 }
 
 export function getAssetNameFromFiles(files: SwarmFile[]): string {
+  if (!files.length) {
+    return 'Unknown'
+  }
+
   if (files.length === 1) {
     return files[0].name
   }

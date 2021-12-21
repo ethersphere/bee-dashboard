@@ -1,4 +1,4 @@
-import { createStyles, FormControl, makeStyles, MenuItem, Select, Theme } from '@material-ui/core'
+import { createStyles, makeStyles, Theme } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -6,6 +6,7 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import { Check, Clear } from '@material-ui/icons'
 import React, { ReactElement, useState } from 'react'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
+import { SwarmSelect } from '../../components/SwarmSelect'
 import { EnrichedPostageBatch } from '../../providers/Stamps'
 
 interface Props {
@@ -25,14 +26,6 @@ const useStyles = makeStyles((theme: Theme) =>
     title: {
       color: '#606060',
       textAlign: 'center',
-    },
-    select: {
-      background: theme.palette.background.paper,
-      borderRadius: 0,
-      border: 0,
-    },
-    option: {
-      height: '52px',
     },
     hint: {
       marginBottom: '16px',
@@ -72,21 +65,10 @@ export function SelectPostageStampModal({ stamps, onSelect, onClose }: Props): R
         Select postage stamp
       </DialogTitle>
       <DialogContent>
-        <FormControl fullWidth>
-          <Select
-            onChange={event => onChange(event.target.value as string)}
-            fullWidth
-            variant="outlined"
-            className={classes.select}
-            defaultValue=""
-          >
-            {stamps.map(x => (
-              <MenuItem key={x.batchID} value={x.batchID} className={classes.option}>
-                {x.batchID.slice(0, 8)}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <SwarmSelect
+          options={stamps.map(x => ({ label: x.batchID, value: x.batchID }))}
+          onChange={event => onChange(event.target.value as string)}
+        />
       </DialogContent>
       <DialogContent>
         <ExpandableListItemActions>

@@ -58,9 +58,6 @@ jobs:
       - name: Types build
         run: npm run compile:types
 
-      - name: Dependency check
-        run: npm run depcheck
-
       - name: Update supported Bee action
         uses: ethersphere/update-supported-bee-action@v1
         if: github.ref == 'refs/heads/master'
@@ -69,16 +66,6 @@ jobs:
 
       - name: Build
         run: npm run build
-      
+
       - name: Build Component
         run: npm run build:component
-
-      - name: Create preview
-        uses: ethersphere/beeload-action@v1
-        with:
-          preview: 'true'
-
-      - name: Upload to testnet
-        uses: ethersphere/beeload-action@v1
-        with:
-          bee-url: https://api.gateway.testnet.ethswarm.org

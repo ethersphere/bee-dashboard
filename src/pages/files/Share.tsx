@@ -1,10 +1,14 @@
 import { ManifestJs } from '@ethersphere/manifest-js'
-import { Box } from '@material-ui/core'
+import { Box, Typography } from '@material-ui/core'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { RouteComponentProps, useHistory } from 'react-router-dom'
+import { HistoryHeader } from '../../components/HistoryHeader'
 import { Loading } from '../../components/Loading'
+import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
+import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
 import { convertBeeFileToBrowserFile, convertManifestToFiles } from '../../utils/file'
@@ -21,17 +25,22 @@ interface MatchParams {
 
 export function Share(props: RouteComponentProps<MatchParams>): ReactElement {
   const { apiUrl, beeApi } = useContext(SettingsContext)
+  const { status } = useContext(BeeContext)
+
   const reference = props.match.params.hash
+
   const history = useHistory()
+  const { enqueueSnackbar } = useSnackbar()
 
   const [loading, setLoading] = useState(true)
   const [downloading, setDownloading] = useState(false)
   const [files, setFiles] = useState<SwarmFile[]>([])
   const [swarmEntries, setSwarmEntries] = useState<Record<string, string>>({})
   const [indexDocument, setIndexDocument] = useState<string | null>(null)
+  const [notFound, setNotFound] = useState(false)
 
   async function prepare() {
-    if (!beeApi) {
+    if (!beeApi || !status.all) {
       return
     }
 
@@ -39,7 +48,10 @@ export function Share(props: RouteComponentProps<MatchParams>): ReactElement {
     const isManifest = await manifestJs.isManifest(reference)
 
     if (!isManifest) {
-      throw Error('The specified hash does not contain valid content.')
+      setNotFound(true)
+      enqueueSnackbar('The specified hash does not contain valid content.', { variant: 'error' })
+
+      return
     }
     const entries = await manifestJs.getHashes(reference)
     setSwarmEntries(entries)
@@ -67,9 +79,13 @@ export function Share(props: RouteComponentProps<MatchParams>): ReactElement {
     }
   }
 
+  function onUpdateFeed() {
+    history.push(ROUTES.FEEDS_UPDATE.replace(':hash', reference))
+  }
+
   useEffect(() => {
     setLoading(true)
-    prepare().then(() => {
+    prepare().finally(() => {
       setLoading(false)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -97,8 +113,19 @@ export function Share(props: RouteComponentProps<MatchParams>): ReactElement {
 
   const assetName = shortenHash(reference)
 
+  if (!status.all) return <TroubleshootConnectionCard />
+
   if (loading) {
     return <Loading />
+  }
+
+  if (notFound) {
+    return (
+      <>
+        <HistoryHeader>Not Found</HistoryHeader>
+        <Typography>The specified hash is not found.</Typography>
+      </>
+    )
   }
 
   return (
@@ -107,12 +134,13 @@ export function Share(props: RouteComponentProps<MatchParams>): ReactElement {
         <AssetPreview files={files} assetName={assetName} />
       </Box>
       <Box mb={4}>
-        <AssetSummary hash={reference} />
+        <AssetSummary files={files} hash={reference} />
       </Box>
       <DownloadActionBar
         onOpen={onOpen}
         onCancel={onClose}
         onDownload={onDownload}
+        onUpdateFeed={onUpdateFeed}
         hasIndexDocument={Boolean(indexDocument && files.length > 1)}
         loading={downloading}
       />

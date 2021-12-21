@@ -1,18 +1,22 @@
-import { createStyles, makeStyles, Theme, Typography } from '@material-ui/core'
+import { createStyles, makeStyles, Theme } from '@material-ui/core'
 import { DropzoneArea } from 'material-ui-dropzone'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { FilePlus, FolderPlus, PlusCircle } from 'react-feather'
 import { useHistory } from 'react-router-dom'
+import { DocumentationText } from '../../components/DocumentationText'
 import { SwarmButton } from '../../components/SwarmButton'
-import { Context } from '../../providers/File'
+import { Context, UploadOrigin } from '../../providers/File'
 import { ROUTES } from '../../routes'
 import { detectIndexHtml } from '../../utils/file'
 import { SwarmFile } from '../../utils/SwarmFile'
 
 interface Props {
-  maximumSizeInBytes: number
+  uploadOrigin: UploadOrigin
+  showHelp: boolean
 }
+
+const MAX_FILE_SIZE = 1_000_000_000 // 1 gigabyte
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -44,8 +48,8 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-export function UploadArea({ maximumSizeInBytes }: Props): ReactElement {
-  const { setFiles } = useContext(Context)
+export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
+  const { setFiles, setUploadOrigin } = useContext(Context)
   const classes = useStyles()
   const history = useHistory()
   const { enqueueSnackbar } = useSnackbar()
@@ -110,6 +114,7 @@ export function UploadArea({ maximumSizeInBytes }: Props): ReactElement {
       setFiles(swarmFiles)
 
       if (files.length) {
+        setUploadOrigin(uploadOrigin)
         history.push(ROUTES.UPLOAD_IN_PROGRESS)
       }
     }
@@ -123,7 +128,7 @@ export function UploadArea({ maximumSizeInBytes }: Props): ReactElement {
           dropzoneClass={classes.dropzone}
           onChange={handleChange}
           filesLimit={1e9}
-          maxFileSize={maximumSizeInBytes}
+          maxFileSize={MAX_FILE_SIZE}
           showPreviews={false}
         />
         <div className={classes.buttonWrapper}>
@@ -138,10 +143,12 @@ export function UploadArea({ maximumSizeInBytes }: Props): ReactElement {
           </SwarmButton>
         </div>
       </div>
-      <Typography>
-        You can click the buttons above or simply drag and drop to add a file or folder. To upload a website to Swarm,
-        make sure that your folder contains an “index.html” file.
-      </Typography>
+      {showHelp && (
+        <DocumentationText>
+          You can click the buttons above or simply drag and drop to add a file or folder. To upload a website to Swarm,
+          make sure that your folder contains an “index.html” file.
+        </DocumentationText>
+      )}
     </>
   )
 }

@@ -112,3 +112,80 @@ export function extractSwarmHash(string: string): string | null {
 
   return (matches && matches[0]) || null
 }
+
+export function uuidV4(): string {
+  const pattern = '10000000-1000-4000-8000-100000000000'
+
+  return pattern.replace(/[018]/g, (s: string) => {
+    const c = parseInt(s, 10)
+
+    return (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16)
+  })
+}
+
+export function formatEnum(string: string): string {
+  return (string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()).replaceAll('_', ' ')
+}
+
+export function secondsToTimeString(seconds: number): string {
+  let unit = seconds
+
+  if (unit < 120) {
+    return `${seconds} seconds`
+  }
+  unit /= 60
+
+  if (unit < 120) {
+    return `${Math.round(unit)} minutes`
+  }
+  unit /= 60
+
+  if (unit < 48) {
+    return `${Math.round(unit)} hours`
+  }
+  unit /= 24
+
+  if (unit < 14) {
+    return `${Math.round(unit)} days`
+  }
+  unit /= 7
+
+  if (unit < 52) {
+    return `${Math.round(unit)} weeks`
+  }
+  unit /= 52
+
+  return `${unit.toFixed(1)} years`
+}
+
+export function formatBzz(amount: number): string {
+  const asString = amount.toFixed(16)
+
+  let indexOfSignificantDigit = -1
+  let reachedDecimalPoint = false
+
+  for (let i = 0; i < asString.length; i++) {
+    const char = asString[i]
+
+    if (char === '.') {
+      reachedDecimalPoint = true
+    } else if (reachedDecimalPoint && char !== '0') {
+      indexOfSignificantDigit = i
+      break
+    }
+  }
+
+  return asString.slice(0, indexOfSignificantDigit + 4)
+}
+
+export function convertDepthToBytes(depth: number): number {
+  return 2 ** depth * 4096
+}
+
+export function convertAmountToSeconds(amount: number): number {
+  return amount / 10 / 1
+}
+
+export function calculateStampPrice(depth: number, amount: number): number {
+  return (amount * 2 ** (depth - 16) * 2) / 1e16
+}
