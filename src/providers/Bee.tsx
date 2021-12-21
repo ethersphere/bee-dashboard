@@ -3,6 +3,7 @@ import type {
   Health,
   LastChequesResponse,
   NodeAddresses,
+  NodesInfo,
   Peer,
   Topology,
 } from '@ethersphere/bee-js'
@@ -35,6 +36,7 @@ interface ContextInterface {
   apiHealth: boolean
   debugApiHealth: Health | null
   nodeAddresses: NodeAddresses | null
+  nodeInfo: NodesInfo | null
   topology: Topology | null
   chequebookAddress: ChequebookAddressResponse | null
   peers: Peer[] | null
@@ -72,6 +74,7 @@ const initialValues: ContextInterface = {
   apiHealth: false,
   debugApiHealth: null,
   nodeAddresses: null,
+  nodeInfo: null,
   topology: null,
   chequebookAddress: null,
   peers: null,
@@ -98,6 +101,7 @@ interface Props {
 function getStatus(
   debugApiHealth: Health | null,
   nodeAddresses: NodeAddresses | null,
+  nodeInfo: NodesInfo | null,
   apiHealth: boolean,
   topology: Topology | null,
   chequebookAddress: ChequebookAddressResponse | null,
@@ -105,7 +109,7 @@ function getStatus(
   error: Error | null,
 ): Status {
   // FIXME: `devMode` is a temporary workaround to be able to develop with only one node
-  const devMode = startedInDevMode || Boolean(process.env.REACT_APP_DEV_MODE)
+  const devMode = startedInDevMode || Boolean(process.env.REACT_APP_DEV_MODE) || nodeInfo?.beeMode === 'dev'
   const status = {
     version: Boolean(
       debugApiHealth &&
@@ -132,6 +136,7 @@ export function Provider({ children }: Props): ReactElement {
   const [apiHealth, setApiHealth] = useState<boolean>(false)
   const [debugApiHealth, setDebugApiHealth] = useState<Health | null>(null)
   const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses | null>(null)
+  const [nodeInfo, setNodeInfo] = useState<NodesInfo | null>(null)
   const [topology, setNodeTopology] = useState<Topology | null>(null)
   const [chequebookAddress, setChequebookAddress] = useState<ChequebookAddressResponse | null>(null)
   const [peers, setPeers] = useState<Peer[] | null>(null)
@@ -165,6 +170,7 @@ export function Provider({ children }: Props): ReactElement {
     setDebugApiHealth(null)
     setNodeAddresses(null)
     setNodeTopology(null)
+    setNodeInfo(null)
     setPeers(null)
     setChequebookAddress(null)
     setChequebookBalance(null)
@@ -241,6 +247,12 @@ export function Provider({ children }: Props): ReactElement {
           .then(setNodeAddresses)
           .catch(() => setNodeAddresses(null)),
 
+        // NodeInfo
+        beeDebugApi
+          .getNodeInfo()
+          .then(setNodeInfo)
+          .catch(() => setNodeInfo(null)),
+
         // Network Topology
         beeDebugApi
           .getTopology()
@@ -312,6 +324,7 @@ export function Provider({ children }: Props): ReactElement {
         status: getStatus(
           debugApiHealth,
           nodeAddresses,
+          nodeInfo,
           apiHealth,
           topology,
           chequebookAddress,
@@ -333,6 +346,7 @@ export function Provider({ children }: Props): ReactElement {
         apiHealth,
         debugApiHealth,
         nodeAddresses,
+        nodeInfo,
         topology,
         chequebookAddress,
         peers,

@@ -63,13 +63,3 @@ jobs:
 
       - name: Build
         run: npm run build
-
-      - name: Create preview
-        uses: ethersphere/beeload-action@v1
-        with:
-          preview: 'true'
-
-      - name: Upload to testnet
-        uses: ethersphere/beeload-action@v1
-        with:
-          bee-url: https://api.gateway.testnet.ethswarm.org
