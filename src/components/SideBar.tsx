@@ -5,6 +5,7 @@ import type { ReactElement } from 'react'
 import { Bookmark, BookOpen, DollarSign, FileText, Home, Layers, Settings } from 'react-feather'
 import { Link } from 'react-router-dom'
 import Logo from '../assets/logo.svg'
+import { config } from '../config'
 import { ROUTES } from '../routes'
 import SideBarItem from './SideBarItem'
 import SideBarStatus from './SideBarStatus'
@@ -116,7 +117,7 @@ export default function SideBar(): ReactElement {
           </List>
           <Divider className={classes.divider} />
           <List>
-            <MUILink href={process.env.REACT_APP_BEE_DOCS_HOST} target="_blank" className={classes.link}>
+            <MUILink href={config.BEE_DOCS_HOST} target="_blank" className={classes.link}>
               <SideBarItem
                 iconStart={<BookOpen className={classes.icon} />}
                 iconEnd={<OpenInNewSharp className={classes.iconSmall} />}

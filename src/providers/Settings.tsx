@@ -1,5 +1,6 @@
-import { createContext, ReactChild, ReactElement, useState, useEffect } from 'react'
 import { Bee, BeeDebug } from '@ethersphere/bee-js'
+import { createContext, ReactChild, ReactElement, useEffect, useState } from 'react'
+import { config } from '../config'
 
 interface ContextInterface {
   apiUrl: string
@@ -8,16 +9,17 @@ interface ContextInterface {
   beeDebugApi: BeeDebug | null
   setApiUrl: (url: string) => void
   setDebugApiUrl: (url: string) => void
+  lockedApiSettings: boolean
 }
 
 const initialValues: ContextInterface = {
-  apiUrl: sessionStorage.getItem('api_host') || process.env.REACT_APP_BEE_HOST || 'http://localhost:1633',
-  apiDebugUrl:
-    sessionStorage.getItem('debug_api_host') || process.env.REACT_APP_BEE_DEBUG_HOST || 'http://localhost:1635',
+  apiUrl: config.BEE_API_HOST,
+  apiDebugUrl: config.BEE_DEBUG_API_HOST,
   beeApi: null,
   beeDebugApi: null,
   setApiUrl: () => {}, // eslint-disable-line
   setDebugApiUrl: () => {}, // eslint-disable-line
+  lockedApiSettings: false,
 }
 
 export const Context = createContext<ContextInterface>(initialValues)
@@ -25,13 +27,22 @@ export const Consumer = Context.Consumer
 
 interface Props {
   children: ReactChild
+  beeApiUrl?: string
+  beeDebugApiUrl?: string
+  lockedApiSettings?: boolean
 }
 
-export function Provider({ children }: Props): ReactElement {
+export function Provider({
+  children,
+  beeApiUrl,
+  beeDebugApiUrl,
+  lockedApiSettings: extLockedApiSettings,
+}: Props): ReactElement {
   const [apiUrl, setApiUrl] = useState<string>(initialValues.apiUrl)
   const [apiDebugUrl, setDebugApiUrl] = useState<string>(initialValues.apiDebugUrl)
   const [beeApi, setBeeApi] = useState<Bee | null>(null)
   const [beeDebugApi, setBeeDebugApi] = useState<BeeDebug | null>(null)
+  const [lockedApiSettings] = useState<boolean>(Boolean(extLockedApiSettings))
 
   useEffect(() => {
     try {
@@ -43,6 +54,14 @@ export function Provider({ children }: Props): ReactElement {
   }, [apiUrl])
 
   useEffect(() => {
+    if (beeApiUrl) setApiUrl(beeApiUrl)
+  }, [beeApiUrl])
+
+  useEffect(() => {
+    if (beeDebugApiUrl) setDebugApiUrl(beeDebugApiUrl)
+  }, [beeDebugApiUrl])
+
+  useEffect(() => {
     try {
       setBeeDebugApi(new BeeDebug(apiDebugUrl))
       sessionStorage.setItem('debug_api_host', apiDebugUrl)
@@ -52,7 +71,9 @@ export function Provider({ children }: Props): ReactElement {
   }, [apiDebugUrl])
 
   return (
-    <Context.Provider value={{ apiUrl, apiDebugUrl, beeApi, beeDebugApi, setApiUrl, setDebugApiUrl }}>
+    <Context.Provider
+      value={{ apiUrl, apiDebugUrl, beeApi, beeDebugApi, setApiUrl, setDebugApiUrl, lockedApiSettings }}
+    >
       {children}
     </Context.Provider>
   )

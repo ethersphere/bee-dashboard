@@ -1,5 +1,31 @@
 # Changelog
 
+### [0.11.2](https://www.github.com/ethersphere/bee-dashboard/compare/v0.11.1...v0.11.2) (2021-12-15)
+
+
+### Bug Fixes
+
+* **ci:** add lib folder to the package.json files prop ([#270](https://www.github.com/ethersphere/bee-dashboard/issues/270)) ([5ac0f01](https://www.github.com/ethersphere/bee-dashboard/commit/5ac0f01bf50ee23b474ab9c8d61c6af418544083))
+
+### [0.11.1](https://www.github.com/ethersphere/bee-dashboard/compare/v0.11.0...v0.11.1) (2021-12-14)
+
+
+### Bug Fixes
+
+* typo in publish script ([#268](https://www.github.com/ethersphere/bee-dashboard/issues/268)) ([c1e77bf](https://www.github.com/ethersphere/bee-dashboard/commit/c1e77bfc0d3ac442d6bacec7402f576a6422927e))
+
+## [0.11.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.10.0...v0.11.0) (2021-12-14)
+
+
+### Features
+
+* modularisation ([#244](https://www.github.com/ethersphere/bee-dashboard/issues/244)) ([2a13da1](https://www.github.com/ethersphere/bee-dashboard/commit/2a13da1a6c5925946d22666a84f975cec87df115))
+
+
+### Bug Fixes
+
+* **build:** bee-dashboard component building ([#267](https://www.github.com/ethersphere/bee-dashboard/issues/267)) ([153b007](https://www.github.com/ethersphere/bee-dashboard/commit/153b007387618e34e1d5dc7fd82d49722783e757))
+
 ## [0.10.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.9.0...v0.10.0) (2021-12-07)
 
 

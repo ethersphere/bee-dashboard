@@ -57,6 +57,7 @@ interface Props {
   onChange?: (value: string) => void
   onConfirm: (value: string) => void
   mapperFn?: (value: string) => string
+  locked?: boolean
 }
 
 export default function ExpandableListItemKey({
@@ -71,6 +72,7 @@ export default function ExpandableListItemKey({
   placeholder,
   loading,
   mapperFn,
+  locked,
 }: Props): ReactElement | null {
   const classes = useStyles()
   const [open, setOpen] = useState(Boolean(expandedOnly))
@@ -99,7 +101,7 @@ export default function ExpandableListItemKey({
             <Typography variant="body2">
               <div>
                 {!open && value}
-                {!expandedOnly && (
+                {!expandedOnly && !locked && (
                   <IconButton size="small" className={classes.copyValue}>
                     {open ? (
                       <Minus onClick={toggleOpen} strokeWidth={1} />
@@ -119,6 +121,7 @@ export default function ExpandableListItemKey({
               fullWidth
               className={classes.content}
               autoFocus
+              hidden={locked}
             />
           </Collapse>
         </Grid>
