@@ -4,7 +4,7 @@ import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
-import { RouteComponentProps, useHistory } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { Loading } from '../../components/Loading'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
@@ -19,17 +19,14 @@ import { AssetPreview } from './AssetPreview'
 import { AssetSummary } from './AssetSummary'
 import { DownloadActionBar } from './DownloadActionBar'
 
-interface MatchParams {
-  hash: string
-}
-
-export function Share(props: RouteComponentProps<MatchParams>): ReactElement {
+export function Share(): ReactElement {
   const { apiUrl, beeApi } = useContext(SettingsContext)
   const { status } = useContext(BeeContext)
 
-  const reference = props.match.params.hash
+  const { hash } = useParams()
+  const reference = hash! // eslint-disable-line
 
-  const history = useHistory()
+  const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
 
   const [loading, setLoading] = useState(true)
@@ -72,15 +69,15 @@ export function Share(props: RouteComponentProps<MatchParams>): ReactElement {
 
   function onClose() {
     // POP means there is no history - nowhere to go back yet
-    if (history.action === 'POP') {
-      history.push(ROUTES.UPLOAD)
+    if (navigate.length > 0) {
+      navigate(ROUTES.UPLOAD)
     } else {
-      history.goBack()
+      navigate(-1)
     }
   }
 
   function onUpdateFeed() {
-    history.push(ROUTES.FEEDS_UPDATE.replace(':hash', reference))
+    navigate(ROUTES.FEEDS_UPDATE.replace(':hash', reference))
   }
 
   useEffect(() => {

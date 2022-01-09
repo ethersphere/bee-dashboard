@@ -2,7 +2,7 @@ import { CircularProgress, Container } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { ReactElement, useContext, useEffect } from 'react'
 import { PlusSquare } from 'react-feather'
-import { useHistory } from 'react-router'
+import { useNavigate } from 'react-router'
 import { SwarmButton } from '../../components/SwarmButton'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { Context as BeeContext } from '../../providers/Bee'
@@ -29,7 +29,7 @@ const useStyles = makeStyles(() =>
 export default function Stamp(): ReactElement {
   const classes = useStyles()
 
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const { stamps, isLoading, error, start, stop } = useContext(StampsContext)
   const { status } = useContext(BeeContext)
@@ -44,7 +44,7 @@ export default function Stamp(): ReactElement {
   if (!status.all) return <TroubleshootConnectionCard />
 
   function navigateToNewStamp() {
-    history.push(ROUTES.STAMPS_NEW)
+    navigate(ROUTES.STAMPS_NEW)
   }
 
   return (

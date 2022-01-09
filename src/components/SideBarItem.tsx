@@ -50,7 +50,7 @@ interface Props {
 export default function SideBarItem({ iconStart, iconEnd, path, label }: Props): ReactElement {
   const classes = useStyles()
   const location = useLocation()
-  const isSelected = Boolean(matchPath(location.pathname, { path, exact: true }))
+  const isSelected = Boolean(path && matchPath(location.pathname, path))
 
   return (
     <StyledListItem button selected={isSelected} disableRipple>

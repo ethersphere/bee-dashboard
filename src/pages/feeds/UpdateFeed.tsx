@@ -2,7 +2,7 @@ import { Box, Grid, Typography } from '@material-ui/core'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { Bookmark, X } from 'react-feather'
-import { RouteComponentProps, useHistory } from 'react-router'
+import { useParams, useNavigate } from 'react-router'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { SwarmButton } from '../../components/SwarmButton'
@@ -16,15 +16,12 @@ import { ROUTES } from '../../routes'
 import { persistIdentity, updateFeed } from '../../utils/identity'
 import { FeedPasswordDialog } from './FeedPasswordDialog'
 
-interface MatchParams {
-  hash: string
-}
-
-export default function UpdateFeed(props: RouteComponentProps<MatchParams>): ReactElement {
+export default function UpdateFeed(): ReactElement {
   const { identities, setIdentities } = useContext(IdentityContext)
   const { beeApi, beeDebugApi } = useContext(SettingsContext)
   const { stamps, refresh } = useContext(StampContext)
   const { status } = useContext(BeeContext)
+  const { hash } = useParams()
 
   const [selectedStamp, setSelectedStamp] = useState<string | null>(null)
   const [selectedIdentity, setSelectedIdentity] = useState<Identity | null>(null)
@@ -32,7 +29,7 @@ export default function UpdateFeed(props: RouteComponentProps<MatchParams>): Rea
   const { enqueueSnackbar } = useSnackbar()
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
 
-  const history = useHistory()
+  const navigate = useNavigate()
 
   useEffect(() => {
     refresh()
@@ -50,7 +47,7 @@ export default function UpdateFeed(props: RouteComponentProps<MatchParams>): Rea
   }
 
   function onCancel() {
-    history.goBack()
+    navigate(-1)
   }
 
   function onBeginUpdatingFeed() {
@@ -76,10 +73,10 @@ export default function UpdateFeed(props: RouteComponentProps<MatchParams>): Rea
     }
 
     try {
-      await updateFeed(beeApi, identity, props.match.params.hash, selectedStamp, password as string)
+      await updateFeed(beeApi, identity, hash!, selectedStamp, password as string) // eslint-disable-line
       persistIdentity(identities, identity)
       setIdentities([...identities])
-      history.push(ROUTES.FEEDS_PAGE.replace(':uuid', identity.uuid))
+      navigate(ROUTES.FEEDS_PAGE.replace(':uuid', identity.uuid))
     } catch (error: unknown) {
       setLoading(false)
 

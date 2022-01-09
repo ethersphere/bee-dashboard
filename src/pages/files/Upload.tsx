@@ -1,7 +1,7 @@
 import { Box } from '@material-ui/core'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { DocumentationText } from '../../components/DocumentationText'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { ProgressIndicator } from '../../components/ProgressIndicator'
@@ -36,7 +36,7 @@ export function Upload(): ReactElement {
   const { status } = useContext(BeeContext)
 
   const { enqueueSnackbar } = useSnackbar()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   useEffect(() => {
     refresh()
@@ -46,7 +46,7 @@ export function Upload(): ReactElement {
 
   if (!files.length) {
     setFiles([])
-    history.replace(ROUTES.UPLOAD)
+    navigate(ROUTES.UPLOAD, { replace: true })
 
     return <></>
   }
@@ -80,12 +80,12 @@ export function Upload(): ReactElement {
         putHistory(HISTORY_KEYS.UPLOAD_HISTORY, hash.reference, getAssetNameFromFiles(files))
 
         if (uploadOrigin.origin === 'UPLOAD') {
-          history.replace(ROUTES.HASH.replace(':hash', hash.reference))
+          navigate(ROUTES.HASH.replace(':hash', hash.reference), { replace: true })
         } else {
           updateFeed(beeApi, identity as Identity, hash.reference, stamp.batchID, password as string).then(() => {
             persistIdentity(identities, identity as Identity)
             setIdentities([...identities])
-            history.replace(ROUTES.FEEDS_PAGE.replace(':uuid', uploadOrigin.uuid as string))
+            navigate(ROUTES.FEEDS_PAGE.replace(':uuid', uploadOrigin.uuid as string), { replace: true })
           })
         }
       })

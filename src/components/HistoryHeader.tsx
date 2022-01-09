@@ -1,7 +1,7 @@
 import { Box, createStyles, Grid, makeStyles, Typography } from '@material-ui/core'
 import { ArrowBack } from '@material-ui/icons'
 import { ReactElement } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 interface Props {
   children: string
@@ -20,10 +20,10 @@ const useStyles = makeStyles(() =>
 
 export function HistoryHeader({ children }: Props): ReactElement {
   const classes = useStyles()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   function goBack() {
-    history.goBack()
+    navigate(-1)
   }
 
   return (

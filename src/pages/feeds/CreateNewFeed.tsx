@@ -3,7 +3,7 @@ import { Form, Formik } from 'formik'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { Check, X } from 'react-feather'
-import { useHistory } from 'react-router'
+import { useNavigate } from 'react-router'
 import { DocumentationText } from '../../components/DocumentationText'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
@@ -34,7 +34,7 @@ export default function CreateNewFeed(): ReactElement {
   const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
 
-  const history = useHistory()
+  const navigate = useNavigate()
 
   async function onSubmit(values: FormValues) {
     setLoading(true)
@@ -65,12 +65,12 @@ export default function CreateNewFeed(): ReactElement {
     const identity = await convertWalletToIdentity(wallet, values.type, values.identityName, values.password)
     persistIdentity(identities, identity)
     setIdentities(identities)
-    history.push(ROUTES.FEEDS)
+    navigate(ROUTES.FEEDS)
     setLoading(false)
   }
 
   function cancel() {
-    history.goBack()
+    navigate(-1)
   }
 
   return (

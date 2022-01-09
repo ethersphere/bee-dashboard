@@ -1,7 +1,7 @@
 import { Box, Typography } from '@material-ui/core'
 import { ReactElement, useContext, useState } from 'react'
 import { Download, Info, PlusSquare, Trash } from 'react-feather'
-import { useHistory } from 'react-router'
+import { useNavigate } from 'react-router'
 import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
@@ -20,7 +20,7 @@ export default function Feeds(): ReactElement {
   const { identities, setIdentities } = useContext(IdentityContext)
   const { status } = useContext(BeeContext)
 
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const [selectedIdentity, setSelectedIdentity] = useState<Identity | null>(null)
   const [showImport, setShowImport] = useState(false)
@@ -28,11 +28,11 @@ export default function Feeds(): ReactElement {
   const [showDelete, setShowDelete] = useState(false)
 
   function createNewFeed() {
-    return history.push(ROUTES.FEEDS_NEW)
+    return navigate(ROUTES.FEEDS_NEW)
   }
 
   function viewFeed(uuid: string) {
-    history.push(ROUTES.FEEDS_PAGE.replace(':uuid', uuid))
+    navigate(ROUTES.FEEDS_PAGE.replace(':uuid', uuid))
   }
 
   function onDialogClose() {
