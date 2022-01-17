@@ -3,7 +3,7 @@ import { DropzoneArea } from 'material-ui-dropzone'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { FilePlus, FolderPlus, PlusCircle } from 'react-feather'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { DocumentationText } from '../../components/DocumentationText'
 import { SwarmButton } from '../../components/SwarmButton'
 import { Context, UploadOrigin } from '../../providers/File'
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
   const { setFiles, setUploadOrigin } = useContext(Context)
   const classes = useStyles()
-  const history = useHistory()
+  const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
   const [strictWebsiteMode, setStrictWebsiteMode] = useState(false)
   const [version, setVersion] = useState(0)
@@ -115,7 +115,7 @@ export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
 
       if (files.length) {
         setUploadOrigin(uploadOrigin)
-        history.push(ROUTES.UPLOAD_IN_PROGRESS)
+        navigate(ROUTES.UPLOAD_IN_PROGRESS)
       }
     }
   }

@@ -2,7 +2,7 @@ import { Utils } from '@ethersphere/bee-js'
 import { ManifestJs } from '@ethersphere/manifest-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import ExpandableListItemInput from '../../components/ExpandableListItemInput'
 import { History } from '../../components/History'
 import { Context, defaultUploadOrigin } from '../../providers/File'
@@ -20,7 +20,7 @@ export function Download(): ReactElement {
   const { setUploadOrigin } = useContext(Context)
 
   const { enqueueSnackbar } = useSnackbar()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const validateChange = (value: string) => {
     if (Utils.isHexString(value, 64) || Utils.isHexString(value, 128) || !value.trim().length) {
@@ -54,7 +54,7 @@ export function Download(): ReactElement {
       const indexDocument = await manifestJs.getIndexDocumentPath(identifier)
       putHistory(HISTORY_KEYS.DOWNLOAD_HISTORY, identifier, determineHistoryName(identifier, indexDocument))
       setUploadOrigin(defaultUploadOrigin)
-      history.push(ROUTES.HASH.replace(':hash', identifier))
+      navigate(ROUTES.HASH.replace(':hash', identifier))
     } catch (error: unknown) {
       let message = typeof error === 'object' && error !== null && Reflect.get(error, 'message')
 

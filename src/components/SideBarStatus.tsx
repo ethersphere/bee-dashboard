@@ -56,7 +56,7 @@ export default function SideBarItem({ path }: Props): ReactElement {
   const { status, isLoading } = useContext(Context)
   const classes = useStyles()
   const location = useLocation()
-  const isSelected = Boolean(matchPath(location.pathname, { path, exact: true }))
+  const isSelected = Boolean(path && matchPath(location.pathname, path))
 
   return (
     <ListItem

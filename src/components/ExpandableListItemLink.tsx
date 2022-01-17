@@ -3,7 +3,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import { ArrowForward, OpenInNewSharp } from '@material-ui/icons'
 import { ReactElement, useState } from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
-import { useHistory } from 'react-router'
+import { useNavigate } from 'react-router'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -61,7 +61,7 @@ export default function ExpandableListItemLink({
 }: Props): ReactElement | null {
   const classes = useStyles()
   const [copied, setCopied] = useState(false)
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const tooltipClickHandler = () => setCopied(true)
   const tooltipCloseHandler = () => setCopied(false)
@@ -72,7 +72,7 @@ export default function ExpandableListItemLink({
     if (navigationType === 'NEW_WINDOW') {
       window.open(link || value)
     } else {
-      history.push(link || value)
+      navigate(link || value)
     }
   }
 

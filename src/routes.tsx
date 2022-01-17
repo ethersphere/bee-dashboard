@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import Accounting from './pages/accounting'
 import Feeds from './pages/feeds'
 import CreateNewFeed from './pages/feeds/CreateNewFeed'
@@ -34,22 +34,22 @@ export enum ROUTES {
 }
 
 const BaseRouter = (): ReactElement => (
-  <Switch>
-    <Route exact path={ROUTES.UPLOAD_IN_PROGRESS} component={Upload} />
-    <Route exact path={ROUTES.UPLOAD} component={UploadLander} />
-    <Route exact path={ROUTES.DOWNLOAD} component={Download} />
-    <Route exact path={ROUTES.HASH} component={Share} />
-    <Route exact path={ROUTES.ACCOUNTING} component={Accounting} />
-    <Route exact path={ROUTES.SETTINGS} component={Settings} />
-    <Route exact path={ROUTES.STAMPS} component={Stamps} />
-    <Route exact path={ROUTES.STAMPS_NEW} component={CreatePostageStampPage} />
-    <Route exact path={ROUTES.STATUS} component={Status} />
-    <Route exact path={ROUTES.FEEDS} component={Feeds} />
-    <Route exact path={ROUTES.FEEDS_NEW} component={CreateNewFeed} />
-    <Route exact path={ROUTES.FEEDS_UPDATE} component={UpdateFeed} />
-    <Route exact path={ROUTES.FEEDS_PAGE} component={FeedSubpage} />
-    <Route path={ROUTES.INFO} component={Info} />
-  </Switch>
+  <Routes>
+    <Route path={ROUTES.UPLOAD_IN_PROGRESS} element={<Upload />} />
+    <Route path={ROUTES.UPLOAD} element={<UploadLander />} />
+    <Route path={ROUTES.DOWNLOAD} element={<Download />} />
+    <Route path={ROUTES.HASH} element={<Share />} />
+    <Route path={ROUTES.ACCOUNTING} element={<Accounting />} />
+    <Route path={ROUTES.SETTINGS} element={<Settings />} />
+    <Route path={ROUTES.STAMPS} element={<Stamps />} />
+    <Route path={ROUTES.STAMPS_NEW} element={<CreatePostageStampPage />} />
+    <Route path={ROUTES.STATUS} element={<Status />} />
+    <Route path={ROUTES.FEEDS} element={<Feeds />} />
+    <Route path={ROUTES.FEEDS_NEW} element={<CreateNewFeed />} />
+    <Route path={ROUTES.FEEDS_UPDATE} element={<UpdateFeed />} />
+    <Route path={ROUTES.FEEDS_PAGE} element={<FeedSubpage />} />
+    <Route path={ROUTES.INFO} element={<Info />} />
+  </Routes>
 )
 
 export default BaseRouter

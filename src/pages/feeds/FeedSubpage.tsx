@@ -2,7 +2,7 @@ import * as swarmCid from '@ethersphere/swarm-cid'
 import { Box } from '@material-ui/core'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { X } from 'react-feather'
-import { RouteComponentProps, useHistory } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { DocumentationText } from '../../components/DocumentationText'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
@@ -15,20 +15,16 @@ import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
 import { UploadArea } from '../files/UploadArea'
 
-interface MatchParams {
-  uuid: string
-}
-
-export function FeedSubpage(props: RouteComponentProps<MatchParams>): ReactElement {
+export function FeedSubpage(): ReactElement {
   const { identities } = useContext(IdentityContext)
+  const { uuid } = useParams()
   const { beeApi } = useContext(SettingsContext)
   const { status } = useContext(BeeContext)
 
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const [available, setAvailable] = useState(false)
 
-  const uuid = props.match.params.uuid
   const identity = identities.find(x => x.uuid === uuid)
 
   useEffect(() => {
@@ -44,13 +40,13 @@ export function FeedSubpage(props: RouteComponentProps<MatchParams>): ReactEleme
   }, [beeApi, uuid, identity])
 
   if (!identity || !status.all) {
-    history.replace(ROUTES.FEEDS)
+    navigate(ROUTES.FEEDS, { replace: true })
 
     return <></>
   }
 
   function onClose() {
-    history.push(ROUTES.FEEDS)
+    navigate(ROUTES.FEEDS)
   }
 
   return (

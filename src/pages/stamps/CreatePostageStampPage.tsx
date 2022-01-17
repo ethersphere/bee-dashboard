@@ -1,14 +1,14 @@
 import { ReactElement } from 'react'
-import { useHistory } from 'react-router'
+import { useNavigate } from 'react-router'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { ROUTES } from '../../routes'
 import { PostageStampCreation } from './PostageStampCreation'
 
 export function CreatePostageStampPage(): ReactElement {
-  const history = useHistory()
+  const navigate = useNavigate()
 
   function onFinished() {
-    history.push(ROUTES.STAMPS)
+    navigate(ROUTES.STAMPS)
   }
 
   return (

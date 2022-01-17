@@ -1,6 +1,6 @@
 import { createStyles, makeStyles, Tab, Tabs, Theme } from '@material-ui/core'
 import { ReactElement } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../routes'
 
 interface Props {
@@ -24,10 +24,10 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export function FileNavigation({ active }: Props): ReactElement {
   const classes = useStyles()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   function onChange(event: React.ChangeEvent<Record<string, never>>, newValue: number) {
-    history.push(newValue === 1 ? ROUTES.DOWNLOAD : ROUTES.UPLOAD)
+    navigate(newValue === 1 ? ROUTES.DOWNLOAD : ROUTES.UPLOAD)
   }
 
   return (
