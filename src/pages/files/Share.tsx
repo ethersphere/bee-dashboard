@@ -68,11 +68,12 @@ export function Share(): ReactElement {
   }
 
   function onClose() {
-    // POP means there is no history - nowhere to go back yet
     if (navigate.length > 0) {
-      navigate(ROUTES.UPLOAD)
-    } else {
+      // There is at least one different route in browser history that we can return to
       navigate(-1)
+    } else {
+      // This is the first page user opened, navigate to upload page instead of going back
+      navigate(ROUTES.UPLOAD)
     }
   }
 
