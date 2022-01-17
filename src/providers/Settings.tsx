@@ -44,35 +44,38 @@ export function Provider({
   const [beeDebugApi, setBeeDebugApi] = useState<BeeDebug | null>(null)
   const [lockedApiSettings] = useState<boolean>(Boolean(extLockedApiSettings))
 
+  const url = beeApiUrl || apiUrl
+  const debugUrl = beeDebugApiUrl || apiDebugUrl
+
   useEffect(() => {
     try {
-      setBeeApi(new Bee(apiUrl))
-      sessionStorage.setItem('api_host', apiUrl)
+      setBeeApi(new Bee(url))
+      sessionStorage.setItem('api_host', url)
     } catch (e) {
       setBeeApi(null)
     }
-  }, [apiUrl])
-
-  useEffect(() => {
-    if (beeApiUrl) setApiUrl(beeApiUrl)
-  }, [beeApiUrl])
-
-  useEffect(() => {
-    if (beeDebugApiUrl) setDebugApiUrl(beeDebugApiUrl)
-  }, [beeDebugApiUrl])
+  }, [url])
 
   useEffect(() => {
     try {
-      setBeeDebugApi(new BeeDebug(apiDebugUrl))
-      sessionStorage.setItem('debug_api_host', apiDebugUrl)
+      setBeeDebugApi(new BeeDebug(debugUrl))
+      sessionStorage.setItem('debug_api_host', debugUrl)
     } catch (e) {
       setBeeDebugApi(null)
     }
-  }, [apiDebugUrl])
+  }, [debugUrl])
 
   return (
     <Context.Provider
-      value={{ apiUrl, apiDebugUrl, beeApi, beeDebugApi, setApiUrl, setDebugApiUrl, lockedApiSettings }}
+      value={{
+        apiUrl: url,
+        apiDebugUrl: debugUrl,
+        beeApi,
+        beeDebugApi,
+        setApiUrl,
+        setDebugApiUrl,
+        lockedApiSettings,
+      }}
     >
       {children}
     </Context.Provider>
