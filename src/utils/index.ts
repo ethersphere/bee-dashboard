@@ -1,3 +1,4 @@
+import { NumberString } from '@ethersphere/bee-js'
 import { BigNumber } from 'bignumber.js'
 
 /**
@@ -186,6 +187,11 @@ export function convertAmountToSeconds(amount: number): number {
   return amount / 10 / 1
 }
 
-export function calculateStampPrice(depth: number, amount: number): number {
-  return (amount * 2 ** (depth - 16) * 2) / 1e16
+export function calculateStampPrice(depth: number, amount: number, currentPrice?: NumberString): number {
+  if (!currentPrice) {
+    currentPrice = '4'
+  }
+  const price = parseInt(currentPrice, 10)
+
+  return (amount * 2 ** (depth - 16) * price) / 1e16
 }
