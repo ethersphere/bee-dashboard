@@ -6,8 +6,9 @@ import React, { ReactElement, useContext } from 'react'
 import { Check } from 'react-feather'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
+import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
-import { Context } from '../../providers/Stamps'
+import { Context as StampsContext } from '../../providers/Stamps'
 import {
   calculateStampPrice,
   convertAmountToSeconds,
@@ -34,8 +35,10 @@ interface Props {
 }
 
 export function PostageStampCreation({ onFinished }: Props): ReactElement {
-  const { refresh } = useContext(Context)
+  const { chainState } = useContext(BeeContext)
+  const { refresh } = useContext(StampsContext)
   const { beeDebugApi } = useContext(SettingsContext)
+
   const { enqueueSnackbar } = useSnackbar()
 
   function getFileSize(depth: number): string {
@@ -55,10 +58,14 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
   }
 
   function getPrice(depth: number, amount: number): string {
-    if (isNaN(amount) || amount <= 0 || isNaN(depth) || depth < 17 || depth > 255) {
+    const hasInvalidInput = isNaN(amount) || amount <= 0 || isNaN(depth) || depth < 17 || depth > 255
+    const isCurrentPriceAvailable = chainState && chainState.currentPrice
+
+    if (hasInvalidInput || !isCurrentPriceAvailable) {
       return '-'
     }
-    const price = calculateStampPrice(depth, amount)
+
+    const price = calculateStampPrice(depth, amount, chainState.currentPrice)
 
     return `${formatBzz(price)} BZZ`
   }

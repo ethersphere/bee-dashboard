@@ -1,4 +1,5 @@
 import type {
+  ChainState,
   ChequebookAddressResponse,
   Health,
   LastChequesResponse,
@@ -44,6 +45,7 @@ interface ContextInterface {
   peerBalances: Balance[] | null
   peerCheques: LastChequesResponse | null
   settlements: Settlements | null
+  chainState: ChainState | null
   latestBeeRelease: LatestBeeRelease | null
   isLoading: boolean
   isRefreshing: boolean
@@ -82,6 +84,7 @@ const initialValues: ContextInterface = {
   peerBalances: null,
   peerCheques: null,
   settlements: null,
+  chainState: null,
   latestBeeRelease: null,
   isLoading: true,
   isRefreshing: false,
@@ -144,6 +147,8 @@ export function Provider({ children }: Props): ReactElement {
   const [peerBalances, setPeerBalances] = useState<Balance[] | null>(null)
   const [peerCheques, setPeerCheques] = useState<LastChequesResponse | null>(null)
   const [settlements, setSettlements] = useState<Settlements | null>(null)
+  const [chainState, setChainState] = useState<ChainState | null>(null)
+
   const { latestBeeRelease } = useLatestBeeRelease()
 
   const [error, setError] = useState<Error | null>(initialValues.error)
@@ -177,6 +182,7 @@ export function Provider({ children }: Props): ReactElement {
     setPeerBalances(null)
     setPeerCheques(null)
     setSettlements(null)
+    setChainState(null)
 
     refresh()
   }, [beeDebugApi]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -277,6 +283,12 @@ export function Provider({ children }: Props): ReactElement {
           .then(setPeerCheques)
           .catch(() => setPeerCheques(null)),
 
+        // Chain state
+        beeDebugApi
+          .getChainState()
+          .then(setChainState)
+          .catch(() => setChainState(null)),
+
         // Chequebook balance
         chequeBalanceWrapper()
           .then(setChequebookBalance)
@@ -354,6 +366,7 @@ export function Provider({ children }: Props): ReactElement {
         peerBalances,
         peerCheques,
         settlements,
+        chainState,
         latestBeeRelease,
         isLoading,
         isRefreshing,
