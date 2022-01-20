@@ -1,34 +1,63 @@
 @font-face {
-  font-family: "IBMPlexMono500";
+  font-family: 'Work Sans';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(assets/fonts/WorkSans/WorkSans-Light.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Work Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/WorkSans/WorkSans-Regular.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Work Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(assets/fonts/WorkSans/WorkSans-Medium.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Work Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(assets/fonts/WorkSans/WorkSans-SemiBold.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'IBMPlexMono500';
   src: url(assets/fonts/IBMPlexMono500.ttf) format('truetype');
   font-weight: 500;
 }
 @font-face {
-  font-family: "IBMPlexMono600";
+  font-family: 'IBMPlexMono600';
   src: url(assets/fonts/IBMPlexMono600.ttf) format('truetype');
   font-weight: 600;
 }
 @font-face {
-  font-family: "IBMPlexMonoregular";
+  font-family: 'IBMPlexMonoregular';
   src: url(assets/fonts/IBMPlexMonoregular.ttf) format('truetype');
   font-weight: 300;
 }
 @font-face {
-  font-family: "WorkSans-Italic-VariableFont_wght";
+  font-family: 'WorkSans-Italic-VariableFont_wght';
   src: url(assets/fonts/WorkSans-Italic-VariableFont_wght.ttf) format('truetype');
   font-weight: 700;
 }
 @font-face {
-  font-family: "WorkSans-VariableFont_wght";
+  font-family: 'WorkSans-VariableFont_wght';
   src: url(assets/fonts/WorkSans-VariableFont_wght.ttf) format('truetype');
   font-weight: 400;
 }
 
 .App {
-  font-family: "Helvetica Neue", HelveticaNeue, Helvetica, Arial, sans-serif;
+  font-family: 'Work Sans', 'Helvetica Neue', HelveticaNeue, Helvetica, Arial, sans-serif;
 }
 
-a, button {  
-  font-family: "IBMPlexMono500" !important;
+a,
+button {
+  font-family: 'IBMPlexMono500' !important;
   color: #dd7700;
 }
