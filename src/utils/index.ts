@@ -187,10 +187,7 @@ export function convertAmountToSeconds(amount: number): number {
   return amount / 10 / 1
 }
 
-export function calculateStampPrice(depth: number, amount: number, currentPrice?: NumberString): number {
-  if (!currentPrice) {
-    currentPrice = '4'
-  }
+export function calculateStampPrice(depth: number, amount: number, currentPrice: NumberString): number {
   const price = parseInt(currentPrice, 10)
 
   return (amount * 2 ** (depth - 16) * price) / 1e16

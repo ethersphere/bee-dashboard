@@ -58,10 +58,14 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
   }
 
   function getPrice(depth: number, amount: number): string {
-    if (isNaN(amount) || amount <= 0 || isNaN(depth) || depth < 17 || depth > 255) {
+    const hasInvalidInput = isNaN(amount) || amount <= 0 || isNaN(depth) || depth < 17 || depth > 255
+    const isCurrentPriceAvailable = chainState && chainState.currentPrice
+
+    if (hasInvalidInput || !isCurrentPriceAvailable) {
       return '-'
     }
-    const price = calculateStampPrice(depth, amount, chainState?.currentPrice)
+
+    const price = calculateStampPrice(depth, amount, chainState.currentPrice)
 
     return `${formatBzz(price)} BZZ`
   }
