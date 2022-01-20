@@ -69,3 +69,14 @@ jobs:
 
       - name: Build Component
         run: npm run build:component
+
+      - name: Create preview
+        uses: ethersphere/beeload-action@v1
+        with:
+          preview: 'true'
+          token: ${{ secrets.REPO_GHA_PAT }}
+
+      - name: Upload to testnet
+        uses: ethersphere/beeload-action@v1
+        with:
+          bee-url: https://api.gateway.testnet.ethswarm.org
