@@ -75,3 +75,9 @@ jobs:
         with:
           preview: 'true'
           token: ${{ secrets.REPO_GHA_PAT }}
+
+      - name: Upload to testnet
+        continue-on-error: true
+        uses: ethersphere/beeload-action@v1
+        with:
+          bee-url: https://api.gateway.testnet.ethswarm.org
