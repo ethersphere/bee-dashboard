@@ -21,6 +21,7 @@ import { PostageStampSelector } from '../stamps/PostageStampSelector'
 import { AssetPreview } from './AssetPreview'
 import { StampPreview } from './StampPreview'
 import { UploadActionBar } from './UploadActionBar'
+import { META_FILE_NAME, PREVIEW_FILE_NAME } from '../../constants'
 
 export function Upload(): ReactElement {
   const [step, setStep] = useState(0)
@@ -31,7 +32,7 @@ export function Upload(): ReactElement {
 
   const { refresh } = useContext(StampsContext)
   const { beeApi } = useContext(SettingsContext)
-  const { files, setFiles, uploadOrigin, metadata, previewUri } = useContext(FileContext)
+  const { files, setFiles, uploadOrigin, metadata, previewUri, previewBlob } = useContext(FileContext)
   const { identities, setIdentities } = useContext(IdentityContext)
   const { status } = useContext(BeeContext)
 
@@ -66,16 +67,41 @@ export function Upload(): ReactElement {
   }
 
   const uploadFiles = (password?: string) => {
-    if (!beeApi || !files.length || !stamp) {
+    if (!beeApi || !files.length || !stamp || !metadata) {
       return
     }
 
+    const fls = files.map(packageFile) // Apart from packaging, this is needed to not modify the original files array as it can trigger effects
     const indexDocument = files.length === 1 ? files[0].name : detectIndexHtml(files) || undefined
+    const lastModified = files[0].lastModified
+
+    // We want to store only some metadata
+    const mtd: SwarmMetadata = {
+      name: metadata.name,
+      size: metadata.size,
+    }
+
+    // Type of the file only makes sense for a single file
+    if (files.length === 1) mtd.type = metadata.type
+
+    fls.push(
+      new File([JSON.stringify(mtd)], META_FILE_NAME, {
+        type: 'application/json',
+        lastModified,
+      }),
+    )
+
+    if (previewBlob) {
+      const previewFile = new File([previewBlob], PREVIEW_FILE_NAME, {
+        lastModified,
+      })
+      fls.push(previewFile)
+    }
 
     setUploading(true)
 
     beeApi
-      .uploadFiles(stamp.batchID, files.map(packageFile), { indexDocument })
+      .uploadFiles(stamp.batchID, fls, { indexDocument })
       .then(hash => {
         putHistory(HISTORY_KEYS.UPLOAD_HISTORY, hash.reference, getAssetNameFromFiles(files))
 
