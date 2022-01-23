@@ -11,11 +11,12 @@ import TroubleshootConnectionCard from '../../components/TroubleshootConnectionC
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
-import { convertBeeFileToBrowserFile, convertManifestToFiles } from '../../utils/file'
 import { determineHistoryName, HISTORY_KEYS, putHistory } from '../../utils/local-storage'
 import { AssetPreview } from './AssetPreview'
 import { AssetSummary } from './AssetSummary'
 import { DownloadActionBar } from './DownloadActionBar'
+import { META_FILE_NAME, PREVIEW_FILE_NAME } from '../../constants'
+import config from '../../config'
 
 export function Share(): ReactElement {
   const { apiUrl, beeApi } = useContext(SettingsContext)
@@ -29,10 +30,11 @@ export function Share(): ReactElement {
 
   const [loading, setLoading] = useState(true)
   const [downloading, setDownloading] = useState(false)
-  const [files, setFiles] = useState<FilePath[]>([])
   const [swarmEntries, setSwarmEntries] = useState<Record<string, string>>({})
   const [indexDocument, setIndexDocument] = useState<string | null>(null)
   const [notFound, setNotFound] = useState(false)
+  const [preview, setPreview] = useState<string | undefined>(undefined)
+  const [metadata, setMetadata] = useState<Metadata | undefined>()
 
   async function prepare() {
     if (!beeApi || !status.all) {
@@ -49,16 +51,37 @@ export function Share(): ReactElement {
       return
     }
     const entries = await manifestJs.getHashes(reference)
-    setSwarmEntries(entries)
     const indexDocument = await manifestJs.getIndexDocumentPath(reference)
     setIndexDocument(indexDocument)
 
-    // if (Object.keys(entries).length === 1) {
-    //   const response = await beeApi.downloadFile(reference)
-    //   setFiles([new FilePath(convertBeeFileToBrowserFile(response) as File)])
-    // } else {
-    setFiles(convertManifestToFiles(entries))
-    // }
+    let metadata: Metadata | undefined = {
+      size: 0,
+      type: 'unknown',
+      name: reference,
+      isWebsite: Boolean(indexDocument && Object.keys(swarmEntries).length > 1),
+    }
+
+    try {
+      const mtdt = await beeApi.downloadFile(reference, META_FILE_NAME)
+      metadata = { ...metadata, ...(JSON.parse(mtdt.data.text()) as Metadata) }
+    } catch (e) {} // eslint-disable-line no-empty
+
+    if (entries[PREVIEW_FILE_NAME]) {
+      setPreview(`${config.BEE_API_HOST}/bzz/${reference}/${PREVIEW_FILE_NAME}`)
+    }
+
+    // Erase the files added by the gateway / dashboard
+    delete entries[META_FILE_NAME]
+    delete entries[PREVIEW_FILE_NAME]
+    setSwarmEntries(entries)
+
+    metadata.count = Object.keys(entries).length
+
+    if (metadata.count > 1) metadata.type = 'folder'
+
+    metadata.hash = hash
+
+    setMetadata(metadata)
   }
 
   function onOpen() {
@@ -125,17 +148,17 @@ export function Share(): ReactElement {
   return (
     <>
       <Box mb={4}>
-        <AssetPreview metadata={undefined} />
+        <AssetPreview metadata={metadata} previewUri={preview} />
       </Box>
       <Box mb={4}>
-        <AssetSummary files={files} hash={reference} />
+        <AssetSummary isWebsite={metadata?.isWebsite} hash={reference} />
       </Box>
       <DownloadActionBar
         onOpen={onOpen}
         onCancel={onClose}
         onDownload={onDownload}
         onUpdateFeed={onUpdateFeed}
-        hasIndexDocument={Boolean(indexDocument && files.length > 1)}
+        hasIndexDocument={Boolean(metadata?.isWebsite)}
         loading={downloading}
       />
     </>

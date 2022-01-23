@@ -1,27 +1,27 @@
-import { FileData } from '@ethersphere/bee-js'
-
 const indexHtmls = ['index.html', 'index.htm']
 
 export function detectIndexHtml(files: FilePath[]): string | false {
-  if (!files.length) {
+  const paths = files.map(getPath)
+
+  if (!paths.length) {
     return false
   }
 
-  const exactMatch = files.find(x => indexHtmls.includes(getPath(x)))
+  const exactMatch = paths.find(x => indexHtmls.includes(x))
 
   if (exactMatch) {
-    return exactMatch.name
+    return exactMatch
   }
 
-  const prefix = getPath(files[0]).split('/')[0] + '/'
+  const prefix = paths[0].split('/')[0] + '/'
 
-  const allStartWithSamePrefix = files.every(x => getPath(x).startsWith(prefix))
+  const allStartWithSamePrefix = paths.every(x => x.startsWith(prefix))
 
   if (allStartWithSamePrefix) {
-    const match = files.find(x => indexHtmls.map(y => prefix + y).includes(getPath(x)))
+    const match = paths.find(x => indexHtmls.map(y => prefix + y).includes(x))
 
     if (match) {
-      return match.name
+      return match
     }
   }
 
@@ -50,29 +50,6 @@ export function getHumanReadableFileSize(bytes: number): string {
   }
 
   return bytes + ' bytes'
-}
-
-export function convertBeeFileToBrowserFile(file: FileData<ArrayBuffer>): Partial<File> {
-  return {
-    name: file.name,
-    size: file.data.byteLength,
-    type: file.contentType,
-    arrayBuffer: () => new Promise(resolve => resolve(file.data)),
-  }
-}
-
-export function convertManifestToFiles(files: Record<string, string>): FilePath[] {
-  return Object.entries(files).map(
-    x =>
-      ({
-        name: x[0],
-        path: x[0],
-        type: 'n/a',
-        size: 0,
-        webkitRelativePath: x[0],
-        arrayBuffer: () => new Promise(resolve => resolve(new ArrayBuffer(0))),
-      } as FilePath),
-  )
 }
 
 export function getAssetNameFromFiles(files: FilePath[]): string {

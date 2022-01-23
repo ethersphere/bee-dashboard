@@ -4,20 +4,19 @@ import { ReactElement } from 'react'
 import { DocumentationText } from '../../components/DocumentationText'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import ExpandableListItemLink from '../../components/ExpandableListItemLink'
-import { detectIndexHtml } from '../../utils/file'
 
 interface Props {
-  files: FilePath[]
+  isWebsite?: boolean
   hash: string
 }
 
-export function AssetSummary({ files, hash }: Props): ReactElement {
+export function AssetSummary({ isWebsite, hash }: Props): ReactElement {
   return (
     <>
       <Box mb={4}>
         <ExpandableListItemKey label="Swarm hash" value={hash} />
         <ExpandableListItemLink label="Share on Swarm Gateway" value={`https://gateway.ethswarm.org/access/${hash}`} />
-        {detectIndexHtml(files) && (
+        {isWebsite && (
           <ExpandableListItemLink
             label="BZZ Link"
             value={`https://${swarmCid.encodeManifestReference(hash).toString()}.bzz.link`}
