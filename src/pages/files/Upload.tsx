@@ -21,6 +21,7 @@ import { PostageStampSelector } from '../stamps/PostageStampSelector'
 import { AssetPreview } from './AssetPreview'
 import { StampPreview } from './StampPreview'
 import { UploadActionBar } from './UploadActionBar'
+import { packageFile } from '../../utils/SwarmFile'
 
 export function Upload(): ReactElement {
   const [step, setStep] = useState(0)
@@ -31,7 +32,7 @@ export function Upload(): ReactElement {
 
   const { refresh } = useContext(StampsContext)
   const { beeApi } = useContext(SettingsContext)
-  const { files, setFiles, uploadOrigin } = useContext(FileContext)
+  const { files, setFiles, uploadOrigin, metadata, previewUri } = useContext(FileContext)
   const { identities, setIdentities } = useContext(IdentityContext)
   const { status } = useContext(BeeContext)
 
@@ -75,7 +76,7 @@ export function Upload(): ReactElement {
     setUploading(true)
 
     beeApi
-      .uploadFiles(stamp.batchID, files as unknown as File[], { indexDocument })
+      .uploadFiles(stamp.batchID, files.map(packageFile), { indexDocument })
       .then(hash => {
         putHistory(HISTORY_KEYS.UPLOAD_HISTORY, hash.reference, getAssetNameFromFiles(files))
 
@@ -121,7 +122,7 @@ export function Upload(): ReactElement {
       <Box mb={4}>
         <ProgressIndicator steps={['Preview', 'Add postage stamp', 'Upload to node']} index={step} />
       </Box>
-      {(step === 0 || step === 2) && <AssetPreview files={files} />}
+      {(step === 0 || step === 2) && <AssetPreview metadata={metadata} previewUri={previewUri} />}
       {step === 1 && (
         <>
           <Box mb={2}>

@@ -12,9 +12,7 @@ import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
 import { convertBeeFileToBrowserFile, convertManifestToFiles } from '../../utils/file'
-import { shortenHash } from '../../utils/hash'
 import { determineHistoryName, HISTORY_KEYS, putHistory } from '../../utils/local-storage'
-import { SwarmFile } from '../../utils/SwarmFile'
 import { AssetPreview } from './AssetPreview'
 import { AssetSummary } from './AssetSummary'
 import { DownloadActionBar } from './DownloadActionBar'
@@ -55,12 +53,12 @@ export function Share(): ReactElement {
     const indexDocument = await manifestJs.getIndexDocumentPath(reference)
     setIndexDocument(indexDocument)
 
-    if (Object.keys(entries).length === 1) {
-      const response = await beeApi.downloadFile(reference)
-      setFiles([new SwarmFile(convertBeeFileToBrowserFile(response) as File)])
-    } else {
-      setFiles(convertManifestToFiles(entries))
-    }
+    // if (Object.keys(entries).length === 1) {
+    //   const response = await beeApi.downloadFile(reference)
+    //   setFiles([new SwarmFile(convertBeeFileToBrowserFile(response) as File)])
+    // } else {
+    setFiles(convertManifestToFiles(entries))
+    // }
   }
 
   function onOpen() {
@@ -109,8 +107,6 @@ export function Share(): ReactElement {
     setDownloading(false)
   }
 
-  const assetName = shortenHash(reference)
-
   if (!status.all) return <TroubleshootConnectionCard />
 
   if (loading) {
@@ -129,7 +125,7 @@ export function Share(): ReactElement {
   return (
     <>
       <Box mb={4}>
-        <AssetPreview files={files} assetName={assetName} />
+        <AssetPreview metadata={undefined} />
       </Box>
       <Box mb={4}>
         <AssetSummary files={files} hash={reference} />

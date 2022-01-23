@@ -1,5 +1,4 @@
 import { FileData } from '@ethersphere/bee-js'
-import { SwarmFile } from './SwarmFile'
 
 const indexHtmls = ['index.html', 'index.htm']
 
@@ -87,4 +86,14 @@ export function getAssetNameFromFiles(files: SwarmFile[]): string {
   }
 
   return 'unknown'
+}
+
+export function getMetadata(files: SwarmFile[]): Metadata {
+  const size = files.reduce((total, item) => total + item.size, 0)
+  const isWebsite = Boolean(detectIndexHtml(files))
+  const name = getAssetNameFromFiles(files)
+  const type = files.length === 1 ? files[0].type : 'folder'
+  const count = files.length
+
+  return { size, name, type, isWebsite, count }
 }

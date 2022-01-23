@@ -5,7 +5,6 @@ import { DocumentationText } from '../../components/DocumentationText'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import ExpandableListItemLink from '../../components/ExpandableListItemLink'
 import { detectIndexHtml } from '../../utils/file'
-import { SwarmFile } from '../../utils/SwarmFile'
 
 interface Props {
   files: SwarmFile[]

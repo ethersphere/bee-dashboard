@@ -9,7 +9,6 @@ import { SwarmButton } from '../../components/SwarmButton'
 import { Context, UploadOrigin } from '../../providers/File'
 import { ROUTES } from '../../routes'
 import { detectIndexHtml } from '../../utils/file'
-import { SwarmFile } from '../../utils/SwarmFile'
 
 interface Props {
   uploadOrigin: UploadOrigin
@@ -99,7 +98,7 @@ export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
 
   const handleChange = (files?: File[]) => {
     if (files) {
-      const swarmFiles = files.map(x => new SwarmFile(x))
+      const swarmFiles = files as SwarmFile[]
       const indexDocument = files.length === 1 ? files[0].name : detectIndexHtml(swarmFiles) || undefined
 
       if (files.length && strictWebsiteMode && !indexDocument) {
