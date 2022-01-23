@@ -12,7 +12,7 @@ import { Context as FileContext } from '../../providers/File'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as StampsContext, EnrichedPostageBatch } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
-import { detectIndexHtml, getAssetNameFromFiles } from '../../utils/file'
+import { detectIndexHtml, getAssetNameFromFiles, packageFile } from '../../utils/file'
 import { persistIdentity, updateFeed } from '../../utils/identity'
 import { HISTORY_KEYS, putHistory } from '../../utils/local-storage'
 import { FeedPasswordDialog } from '../feeds/FeedPasswordDialog'
@@ -21,7 +21,6 @@ import { PostageStampSelector } from '../stamps/PostageStampSelector'
 import { AssetPreview } from './AssetPreview'
 import { StampPreview } from './StampPreview'
 import { UploadActionBar } from './UploadActionBar'
-import { packageFile } from '../../utils/SwarmFile'
 
 export function Upload(): ReactElement {
   const [step, setStep] = useState(0)

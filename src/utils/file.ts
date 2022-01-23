@@ -2,23 +2,23 @@ import { FileData } from '@ethersphere/bee-js'
 
 const indexHtmls = ['index.html', 'index.htm']
 
-export function detectIndexHtml(files: SwarmFile[]): string | false {
+export function detectIndexHtml(files: FilePath[]): string | false {
   if (!files.length) {
     return false
   }
 
-  const exactMatch = files.find(x => indexHtmls.includes(x.path))
+  const exactMatch = files.find(x => indexHtmls.includes(getPath(x)))
 
   if (exactMatch) {
     return exactMatch.name
   }
 
-  const prefix = files[0].path.split('/')[0] + '/'
+  const prefix = getPath(files[0]).split('/')[0] + '/'
 
-  const allStartWithSamePrefix = files.every(x => x.path.startsWith(prefix))
+  const allStartWithSamePrefix = files.every(x => getPath(x).startsWith(prefix))
 
   if (allStartWithSamePrefix) {
-    const match = files.find(x => indexHtmls.map(y => prefix + y).includes(x.path))
+    const match = files.find(x => indexHtmls.map(y => prefix + y).includes(getPath(x)))
 
     if (match) {
       return match.name
@@ -61,7 +61,7 @@ export function convertBeeFileToBrowserFile(file: FileData<ArrayBuffer>): Partia
   }
 }
 
-export function convertManifestToFiles(files: Record<string, string>): SwarmFile[] {
+export function convertManifestToFiles(files: Record<string, string>): FilePath[] {
   return Object.entries(files).map(
     x =>
       ({
@@ -71,24 +71,24 @@ export function convertManifestToFiles(files: Record<string, string>): SwarmFile
         size: 0,
         webkitRelativePath: x[0],
         arrayBuffer: () => new Promise(resolve => resolve(new ArrayBuffer(0))),
-      } as SwarmFile),
+      } as FilePath),
   )
 }
 
-export function getAssetNameFromFiles(files: SwarmFile[]): string {
+export function getAssetNameFromFiles(files: FilePath[]): string {
   if (files.length === 1) return files[0].name
 
   if (files.length > 0) {
-    const prefix = files[0].path.split('/')[0]
+    const prefix = getPath(files[0]).split('/')[0]
 
     // Only if all files have a common prefix we can use it as a folder name
-    if (files.every(f => f.path.split('/')[0] === prefix)) return prefix
+    if (files.every(f => getPath(f).split('/')[0] === prefix)) return prefix
   }
 
   return 'unknown'
 }
 
-export function getMetadata(files: SwarmFile[]): Metadata {
+export function getMetadata(files: FilePath[]): Metadata {
   const size = files.reduce((total, item) => total + item.size, 0)
   const isWebsite = Boolean(detectIndexHtml(files))
   const name = getAssetNameFromFiles(files)
@@ -96,4 +96,29 @@ export function getMetadata(files: SwarmFile[]): Metadata {
   const count = files.length
 
   return { size, name, type, isWebsite, count }
+}
+
+export function getPath(file: FilePath): string {
+  return (file.path || file.webkitRelativePath || file.name).replace(/^\//g, '') // remove the starting slash
+}
+
+/**
+ * Utility function that is needed to have correct directory structure as webkitRelativePath is read only
+ */
+export function packageFile(file: FilePath): FilePath {
+  const path = getPath(file)
+
+  return {
+    path: path,
+    fullPath: path,
+    webkitRelativePath: path,
+    lastModified: file.lastModified,
+    name: file.name,
+    size: file.size,
+    type: file.type,
+    stream: file.stream,
+    slice: file.slice,
+    text: file.text,
+    arrayBuffer: async () => await file.arrayBuffer(), // This is needed for successful upload and can not simply be { arrayBuffer: file.arrayBuffer }
+  }
 }

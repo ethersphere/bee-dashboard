@@ -10,8 +10,8 @@ export type UploadOrigin = { origin: 'UPLOAD' | 'FEED'; uuid?: string }
 export const defaultUploadOrigin: UploadOrigin = { origin: 'UPLOAD' }
 
 interface ContextInterface {
-  files: SwarmFile[]
-  setFiles: (files: SwarmFile[]) => void
+  files: FilePath[]
+  setFiles: (files: FilePath[]) => void
   uploadOrigin: UploadOrigin
   setUploadOrigin: (uploadOrigin: UploadOrigin) => void
   metadata?: Metadata
@@ -34,7 +34,7 @@ interface Props {
 }
 
 export function Provider({ children }: Props): ReactElement {
-  const [files, setFiles] = useState<SwarmFile[]>(initialValues.files)
+  const [files, setFiles] = useState<FilePath[]>(initialValues.files)
   const [uploadOrigin, setUploadOrigin] = useState<UploadOrigin>(initialValues.uploadOrigin)
   const [metadata, setMetadata] = useState<Metadata | undefined>(undefined)
   const [previewUri, setPreviewUri] = useState<string | undefined>(undefined)

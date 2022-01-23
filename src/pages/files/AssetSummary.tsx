@@ -7,7 +7,7 @@ import ExpandableListItemLink from '../../components/ExpandableListItemLink'
 import { detectIndexHtml } from '../../utils/file'
 
 interface Props {
-  files: SwarmFile[]
+  files: FilePath[]
   hash: string
 }
 

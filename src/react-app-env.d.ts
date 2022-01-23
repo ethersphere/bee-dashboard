@@ -36,7 +36,3 @@ interface Metadata extends SwarmMetadata {
 }
 
 type FilePath = File & { path?: string; fullPath?: string }
-
-interface SwarmFile extends File {
-  path: string
-}

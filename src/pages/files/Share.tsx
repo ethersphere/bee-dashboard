@@ -29,7 +29,7 @@ export function Share(): ReactElement {
 
   const [loading, setLoading] = useState(true)
   const [downloading, setDownloading] = useState(false)
-  const [files, setFiles] = useState<SwarmFile[]>([])
+  const [files, setFiles] = useState<FilePath[]>([])
   const [swarmEntries, setSwarmEntries] = useState<Record<string, string>>({})
   const [indexDocument, setIndexDocument] = useState<string | null>(null)
   const [notFound, setNotFound] = useState(false)
@@ -55,7 +55,7 @@ export function Share(): ReactElement {
 
     // if (Object.keys(entries).length === 1) {
     //   const response = await beeApi.downloadFile(reference)
-    //   setFiles([new SwarmFile(convertBeeFileToBrowserFile(response) as File)])
+    //   setFiles([new FilePath(convertBeeFileToBrowserFile(response) as File)])
     // } else {
     setFiles(convertManifestToFiles(entries))
     // }
