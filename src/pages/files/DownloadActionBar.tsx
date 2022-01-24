@@ -32,12 +32,12 @@ export function DownloadActionBar({
         <SwarmButton onClick={onDownload} iconType={Download} disabled={loading} loading={loading}>
           Download
         </SwarmButton>
-        <SwarmButton onClick={onCancel} iconType={X} disabled={loading} loading={loading} cancel>
+        <SwarmButton onClick={onCancel} iconType={X} disabled={loading} cancel>
           Close
         </SwarmButton>
       </ExpandableListItemActions>
       <Box mb={1} mr={1}>
-        <SwarmButton onClick={onUpdateFeed} iconType={Bookmark}>
+        <SwarmButton onClick={onUpdateFeed} iconType={Bookmark} disabled={loading}>
           Update Feed
         </SwarmButton>
       </Box>
