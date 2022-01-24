@@ -84,18 +84,18 @@ export function Upload(): ReactElement {
     // Type of the file only makes sense for a single file
     if (files.length === 1) mtd.type = metadata.type
 
-    fls.push(
-      new File([JSON.stringify(mtd)], META_FILE_NAME, {
-        type: 'application/json',
-        lastModified,
-      }),
-    )
+    const metafile = new File([JSON.stringify(mtd)], META_FILE_NAME, {
+      type: 'application/json',
+      lastModified,
+    })
+    fls.push(packageFile(metafile))
 
     if (previewBlob) {
       const previewFile = new File([previewBlob], PREVIEW_FILE_NAME, {
+        type: 'image/jpeg',
         lastModified,
       })
-      fls.push(previewFile)
+      fls.push(packageFile(previewFile))
     }
 
     setUploading(true)
