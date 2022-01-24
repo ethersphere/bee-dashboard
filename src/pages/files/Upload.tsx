@@ -71,8 +71,27 @@ export function Upload(): ReactElement {
       return
     }
 
-    const fls = files.map(packageFile) // Apart from packaging, this is needed to not modify the original files array as it can trigger effects
-    const indexDocument = files.length === 1 ? files[0].name : detectIndexHtml(files) || undefined
+    let fls = files.map(packageFile) // Apart from packaging, this is needed to not modify the original files array as it can trigger effects
+    let indexDocument = undefined
+
+    if (files.length === 1) indexDocument = files[0].name
+    else if (files.length > 1) {
+      const idx = detectIndexHtml(files)
+
+      if (idx) {
+        if (idx.commonPrefix) {
+          const substrStart = idx.commonPrefix.length
+          indexDocument = idx.indexPath.substr(substrStart)
+          fls = fls.map(f => {
+            const path = (f.path as string).substr(substrStart)
+
+            return { ...f, path, webkitRelativePath: path, fullPath: path }
+          })
+        } else {
+          indexDocument = idx.indexPath
+        }
+      }
+    }
     const lastModified = files[0].lastModified
 
     // We want to store only some metadata
