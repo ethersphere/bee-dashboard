@@ -1,6 +1,11 @@
 const indexHtmls = ['index.html', 'index.htm']
 
-export function detectIndexHtml(files: FilePath[]): string | false {
+interface DetectedIndex {
+  indexPath: string
+  commonPrefix?: string
+}
+
+export function detectIndexHtml(files: FilePath[]): DetectedIndex | false {
   const paths = files.map(getPath)
 
   if (!paths.length) {
@@ -10,7 +15,7 @@ export function detectIndexHtml(files: FilePath[]): string | false {
   const exactMatch = paths.find(x => indexHtmls.includes(x))
 
   if (exactMatch) {
-    return exactMatch
+    return { indexPath: exactMatch }
   }
 
   const prefix = paths[0].split('/')[0] + '/'
@@ -21,7 +26,7 @@ export function detectIndexHtml(files: FilePath[]): string | false {
     const match = paths.find(x => indexHtmls.map(y => prefix + y).includes(x))
 
     if (match) {
-      return match
+      return { indexPath: match, commonPrefix: prefix }
     }
   }
 
