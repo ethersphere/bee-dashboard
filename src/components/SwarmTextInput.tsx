@@ -16,9 +16,17 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     field: {
       background: theme.palette.background.paper,
-      height: '52px',
       '& fieldset': {
         border: 0,
+      },
+      '& .Mui-focused': {
+        background: theme.palette.background.paper,
+      },
+      '& .MuiInputBase-root': {
+        background: theme.palette.background.paper,
+      },
+      '& .MuiFilledInput-root': {
+        borderRadius: 0,
       },
     },
   }),
@@ -36,9 +44,10 @@ export function SwarmTextInput({ name, label, password, optional, formik, onChan
         name={name}
         label={label}
         fullWidth
-        variant="outlined"
+        variant="filled"
         className={classes.field}
         defaultValue=""
+        InputProps={{ disableUnderline: true }}
       />
     )
   }
@@ -49,10 +58,11 @@ export function SwarmTextInput({ name, label, password, optional, formik, onChan
       required
       label={label}
       fullWidth
-      variant="outlined"
+      variant="filled"
       className={classes.field}
       defaultValue=""
       onChange={onChange}
+      InputProps={{ disableUnderline: true }}
     />
   )
 }

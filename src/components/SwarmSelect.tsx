@@ -25,6 +25,11 @@ const useStyles = makeStyles((theme: Theme) =>
       '& fieldset': {
         border: 0,
       },
+      '& .MuiSelect-select': {
+        '&:focus': {
+          background: theme.palette.background.paper,
+        },
+      },
     },
     option: {
       height: '52px',
@@ -48,6 +53,7 @@ export function SwarmSelect({ defaultValue, formik, name, options, onChange, lab
           defaultValue={defaultValue || ''}
           className={classes.select}
           placeholder={label}
+          MenuProps={{ MenuListProps: { disablePadding: true }, PaperProps: { square: true } }}
         >
           {options.map((x, i) => (
             <MenuItem key={i} value={x.value} className={classes.option}>
@@ -71,6 +77,7 @@ export function SwarmSelect({ defaultValue, formik, name, options, onChange, lab
         defaultValue={defaultValue || ''}
         onChange={onChange}
         placeholder={label}
+        MenuProps={{ MenuListProps: { disablePadding: true }, PaperProps: { square: true } }}
       >
         {options.map((x, i) => (
           <MenuItem key={i} value={x.value} className={classes.option}>
