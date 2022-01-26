@@ -4,10 +4,12 @@ import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { Loading } from '../../components/Loading'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
+import config from '../../config'
+import { META_FILE_NAME, PREVIEW_FILE_NAME } from '../../constants'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
@@ -15,8 +17,6 @@ import { determineHistoryName, HISTORY_KEYS, putHistory } from '../../utils/loca
 import { AssetPreview } from './AssetPreview'
 import { AssetSummary } from './AssetSummary'
 import { DownloadActionBar } from './DownloadActionBar'
-import { META_FILE_NAME, PREVIEW_FILE_NAME } from '../../constants'
-import config from '../../config'
 
 export function Share(): ReactElement {
   const { apiUrl, beeApi } = useContext(SettingsContext)
@@ -54,32 +54,32 @@ export function Share(): ReactElement {
     const indexDocument = await manifestJs.getIndexDocumentPath(reference)
     setIndexDocument(indexDocument)
 
-    let metadata: Metadata | undefined = {
-      size: 0,
-      type: 'unknown',
-      name: reference,
-      isWebsite: Boolean(indexDocument && Object.keys(swarmEntries).length > 1),
-    }
+    const previewFile = entries[PREVIEW_FILE_NAME]
 
-    try {
-      const mtdt = await beeApi.downloadFile(reference, META_FILE_NAME)
-      metadata = { ...metadata, ...(JSON.parse(mtdt.data.text()) as Metadata) }
-    } catch (e) {} // eslint-disable-line no-empty
-
-    if (entries[PREVIEW_FILE_NAME]) {
-      setPreview(`${config.BEE_API_HOST}/bzz/${reference}/${PREVIEW_FILE_NAME}`)
-    }
-
-    // Erase the files added by the gateway / dashboard
     delete entries[META_FILE_NAME]
     delete entries[PREVIEW_FILE_NAME]
     setSwarmEntries(entries)
 
-    metadata.count = Object.keys(entries).length
+    const count = Object.keys(entries).length
 
-    if (metadata.count > 1) metadata.type = 'folder'
+    let metadata: Metadata | undefined = {
+      hash,
+      size: 0,
+      type: count > 1 ? 'folder' : 'unknown',
+      name: reference,
+      isWebsite: Boolean(indexDocument) && count > 1,
+      count,
+    }
 
-    metadata.hash = hash
+    try {
+      const mtdt = await beeApi.downloadFile(reference, META_FILE_NAME)
+      const remoteMetadata = mtdt.data.text()
+      metadata = { ...metadata, ...(JSON.parse(remoteMetadata) as Metadata) }
+    } catch (e) {} // eslint-disable-line no-empty
+
+    if (previewFile) {
+      setPreview(`${config.BEE_API_HOST}/bzz/${reference}/${PREVIEW_FILE_NAME}`)
+    }
 
     setMetadata(metadata)
   }
