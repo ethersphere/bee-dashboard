@@ -21,3 +21,18 @@ interface StatusEthereumConnectionHook extends StatusHookCommon {
 interface StatusTopologyHook extends StatusHookCommon {
   topology: Topology | null
 }
+
+interface SwarmMetadata {
+  size: number
+  name: string
+  type?: string
+}
+
+interface Metadata extends SwarmMetadata {
+  type: string
+  isWebsite: boolean
+  count?: number
+  hash?: string
+}
+
+type FilePath = File & { path?: string; fullPath?: string }

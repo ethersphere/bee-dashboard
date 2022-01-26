@@ -4,17 +4,16 @@ import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { Loading } from '../../components/Loading'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
+import config from '../../config'
+import { META_FILE_NAME, PREVIEW_FILE_NAME } from '../../constants'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
-import { convertBeeFileToBrowserFile, convertManifestToFiles } from '../../utils/file'
-import { shortenHash } from '../../utils/hash'
 import { determineHistoryName, HISTORY_KEYS, putHistory } from '../../utils/local-storage'
-import { SwarmFile } from '../../utils/SwarmFile'
 import { AssetPreview } from './AssetPreview'
 import { AssetSummary } from './AssetSummary'
 import { DownloadActionBar } from './DownloadActionBar'
@@ -31,10 +30,11 @@ export function Share(): ReactElement {
 
   const [loading, setLoading] = useState(true)
   const [downloading, setDownloading] = useState(false)
-  const [files, setFiles] = useState<SwarmFile[]>([])
   const [swarmEntries, setSwarmEntries] = useState<Record<string, string>>({})
   const [indexDocument, setIndexDocument] = useState<string | null>(null)
   const [notFound, setNotFound] = useState(false)
+  const [preview, setPreview] = useState<string | undefined>(undefined)
+  const [metadata, setMetadata] = useState<Metadata | undefined>()
 
   async function prepare() {
     if (!beeApi || !status.all) {
@@ -51,16 +51,37 @@ export function Share(): ReactElement {
       return
     }
     const entries = await manifestJs.getHashes(reference)
-    setSwarmEntries(entries)
     const indexDocument = await manifestJs.getIndexDocumentPath(reference)
     setIndexDocument(indexDocument)
 
-    if (Object.keys(entries).length === 1) {
-      const response = await beeApi.downloadFile(reference)
-      setFiles([new SwarmFile(convertBeeFileToBrowserFile(response) as File)])
-    } else {
-      setFiles(convertManifestToFiles(entries))
+    const previewFile = entries[PREVIEW_FILE_NAME]
+
+    delete entries[META_FILE_NAME]
+    delete entries[PREVIEW_FILE_NAME]
+    setSwarmEntries(entries)
+
+    const count = Object.keys(entries).length
+
+    let metadata: Metadata | undefined = {
+      hash,
+      size: 0,
+      type: count > 1 ? 'folder' : 'unknown',
+      name: reference,
+      isWebsite: Boolean(indexDocument) && count > 1,
+      count,
     }
+
+    try {
+      const mtdt = await beeApi.downloadFile(reference, META_FILE_NAME)
+      const remoteMetadata = mtdt.data.text()
+      metadata = { ...metadata, ...(JSON.parse(remoteMetadata) as Metadata) }
+    } catch (e) {} // eslint-disable-line no-empty
+
+    if (previewFile) {
+      setPreview(`${config.BEE_API_HOST}/bzz/${reference}/${PREVIEW_FILE_NAME}`)
+    }
+
+    setMetadata(metadata)
   }
 
   function onOpen() {
@@ -109,8 +130,6 @@ export function Share(): ReactElement {
     setDownloading(false)
   }
 
-  const assetName = shortenHash(reference)
-
   if (!status.all) return <TroubleshootConnectionCard />
 
   if (loading) {
@@ -129,17 +148,17 @@ export function Share(): ReactElement {
   return (
     <>
       <Box mb={4}>
-        <AssetPreview files={files} assetName={assetName} />
+        <AssetPreview metadata={metadata} previewUri={preview} />
       </Box>
       <Box mb={4}>
-        <AssetSummary files={files} hash={reference} />
+        <AssetSummary isWebsite={metadata?.isWebsite} hash={reference} />
       </Box>
       <DownloadActionBar
         onOpen={onOpen}
         onCancel={onClose}
         onDownload={onDownload}
         onUpdateFeed={onUpdateFeed}
-        hasIndexDocument={Boolean(indexDocument && files.length > 1)}
+        hasIndexDocument={Boolean(metadata?.isWebsite)}
         loading={downloading}
       />
     </>

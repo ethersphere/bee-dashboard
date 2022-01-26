@@ -9,7 +9,6 @@ import { SwarmButton } from '../../components/SwarmButton'
 import { Context, UploadOrigin } from '../../providers/File'
 import { ROUTES } from '../../routes'
 import { detectIndexHtml } from '../../utils/file'
-import { SwarmFile } from '../../utils/SwarmFile'
 
 interface Props {
   uploadOrigin: UploadOrigin
@@ -99,8 +98,8 @@ export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
 
   const handleChange = (files?: File[]) => {
     if (files) {
-      const swarmFiles = files.map(x => new SwarmFile(x))
-      const indexDocument = files.length === 1 ? files[0].name : detectIndexHtml(swarmFiles) || undefined
+      const FilePaths = files as FilePath[]
+      const indexDocument = files.length === 1 ? files[0].name : detectIndexHtml(FilePaths) || undefined
 
       if (files.length && strictWebsiteMode && !indexDocument) {
         enqueueSnackbar('To upload a website, there must be an index.html or index.htm in the root of the folder.', {
@@ -111,7 +110,7 @@ export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
         return
       }
 
-      setFiles(swarmFiles)
+      setFiles(FilePaths)
 
       if (files.length) {
         setUploadOrigin(uploadOrigin)

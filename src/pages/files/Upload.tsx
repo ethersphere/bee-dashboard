@@ -12,7 +12,7 @@ import { Context as FileContext } from '../../providers/File'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as StampsContext, EnrichedPostageBatch } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
-import { detectIndexHtml, getAssetNameFromFiles } from '../../utils/file'
+import { detectIndexHtml, getAssetNameFromFiles, packageFile } from '../../utils/file'
 import { persistIdentity, updateFeed } from '../../utils/identity'
 import { HISTORY_KEYS, putHistory } from '../../utils/local-storage'
 import { FeedPasswordDialog } from '../feeds/FeedPasswordDialog'
@@ -21,6 +21,7 @@ import { PostageStampSelector } from '../stamps/PostageStampSelector'
 import { AssetPreview } from './AssetPreview'
 import { StampPreview } from './StampPreview'
 import { UploadActionBar } from './UploadActionBar'
+import { META_FILE_NAME, PREVIEW_FILE_NAME } from '../../constants'
 
 export function Upload(): ReactElement {
   const [step, setStep] = useState(0)
@@ -31,7 +32,7 @@ export function Upload(): ReactElement {
 
   const { refresh } = useContext(StampsContext)
   const { beeApi } = useContext(SettingsContext)
-  const { files, setFiles, uploadOrigin } = useContext(FileContext)
+  const { files, setFiles, uploadOrigin, metadata, previewUri, previewBlob } = useContext(FileContext)
   const { identities, setIdentities } = useContext(IdentityContext)
   const { status } = useContext(BeeContext)
 
@@ -66,16 +67,63 @@ export function Upload(): ReactElement {
   }
 
   const uploadFiles = (password?: string) => {
-    if (!beeApi || !files.length || !stamp) {
+    if (!beeApi || !files.length || !stamp || !metadata) {
       return
     }
 
-    const indexDocument = files.length === 1 ? files[0].name : detectIndexHtml(files) || undefined
+    let fls = files.map(packageFile) // Apart from packaging, this is needed to not modify the original files array as it can trigger effects
+    let indexDocument: string | undefined = undefined // This means we assume it's folder
+
+    if (files.length === 1) indexDocument = files[0].name
+    else if (files.length > 1) {
+      const idx = detectIndexHtml(files)
+
+      // This is a website
+      if (idx) {
+        // The website is in some directory, remove it
+        if (idx.commonPrefix) {
+          const substrStart = idx.commonPrefix.length
+          indexDocument = idx.indexPath.substr(substrStart)
+          fls = fls.map(f => {
+            const path = (f.path as string).substr(substrStart)
+
+            return { ...f, path, webkitRelativePath: path, fullPath: path }
+          })
+        } else {
+          // The website is not packed in a directory
+          indexDocument = idx.indexPath
+        }
+      }
+    }
+    const lastModified = files[0].lastModified
+
+    // We want to store only some metadata
+    const mtd: SwarmMetadata = {
+      name: metadata.name,
+      size: metadata.size,
+    }
+
+    // Type of the file only makes sense for a single file
+    if (files.length === 1) mtd.type = metadata.type
+
+    const metafile = new File([JSON.stringify(mtd)], META_FILE_NAME, {
+      type: 'application/json',
+      lastModified,
+    })
+    fls.push(packageFile(metafile))
+
+    if (previewBlob) {
+      const previewFile = new File([previewBlob], PREVIEW_FILE_NAME, {
+        type: 'image/jpeg',
+        lastModified,
+      })
+      fls.push(packageFile(previewFile))
+    }
 
     setUploading(true)
 
     beeApi
-      .uploadFiles(stamp.batchID, files as unknown as File[], { indexDocument })
+      .uploadFiles(stamp.batchID, fls, { indexDocument })
       .then(hash => {
         putHistory(HISTORY_KEYS.UPLOAD_HISTORY, hash.reference, getAssetNameFromFiles(files))
 
@@ -121,7 +169,7 @@ export function Upload(): ReactElement {
       <Box mb={4}>
         <ProgressIndicator steps={['Preview', 'Add postage stamp', 'Upload to node']} index={step} />
       </Box>
-      {(step === 0 || step === 2) && <AssetPreview files={files} />}
+      {(step === 0 || step === 2) && <AssetPreview metadata={metadata} previewUri={previewUri} />}
       {step === 1 && (
         <>
           <Box mb={2}>
