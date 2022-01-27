@@ -37,9 +37,11 @@ export function AssetPreview({ metadata, previewUri }: Props): ReactElement | nu
           )}
           <Box p={2}>
             {metadata?.hash && <Typography>Swarm Hash: {shortenHash(metadata.hash)}</Typography>}
-            <Typography>
-              {metadata?.type === 'folder' ? 'Folder Name' : 'Filename'}: {metadata?.name}
-            </Typography>
+            {metadata?.name !== metadata?.hash && (
+              <Typography>
+                {metadata?.type === 'folder' ? 'Folder Name' : 'Filename'}: {metadata?.name}
+              </Typography>
+            )}
             <Typography>Kind: {type}</Typography>
             {metadata?.size ? <Typography>Size: {getHumanReadableFileSize(metadata.size)}</Typography> : null}
           </Box>
