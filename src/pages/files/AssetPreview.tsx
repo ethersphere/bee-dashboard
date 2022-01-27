@@ -4,8 +4,8 @@ import { ReactElement } from 'react'
 import { File, Folder } from 'react-feather'
 import { FitImage } from '../../components/FitImage'
 import { getHumanReadableFileSize } from '../../utils/file'
-import { AssetIcon } from './AssetIcon'
 import { shortenHash } from '../../utils/hash'
+import { AssetIcon } from './AssetIcon'
 
 interface Props {
   previewUri?: string
@@ -41,7 +41,7 @@ export function AssetPreview({ metadata, previewUri }: Props): ReactElement | nu
               {metadata?.type === 'folder' ? 'Folder Name' : 'Filename'}: {metadata?.name}
             </Typography>
             <Typography>Kind: {type}</Typography>
-            {metadata?.size && <Typography>Size: {getHumanReadableFileSize(metadata.size)}</Typography>}
+            {metadata?.size ? <Typography>Size: {getHumanReadableFileSize(metadata.size)}</Typography> : null}
           </Box>
         </Grid>
       </Box>
