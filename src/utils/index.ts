@@ -192,3 +192,11 @@ export function calculateStampPrice(depth: number, amount: number, currentPrice:
 
   return (amount * 2 ** (depth - 16) * price) / 1e16
 }
+
+export function shortenText(text: string, length = 20, separator = '[…]'): string {
+  if (text.length <= length * 2 + separator.length) {
+    return text
+  }
+
+  return `${text.slice(0, length)}${separator}${text.slice(-length)}`
+}

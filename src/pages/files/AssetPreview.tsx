@@ -3,6 +3,7 @@ import { Web } from '@material-ui/icons'
 import { ReactElement } from 'react'
 import { File, Folder } from 'react-feather'
 import { FitImage } from '../../components/FitImage'
+import { shortenText } from '../../utils'
 import { getHumanReadableFileSize } from '../../utils/file'
 import { shortenHash } from '../../utils/hash'
 import { AssetIcon } from './AssetIcon'
@@ -37,9 +38,9 @@ export function AssetPreview({ metadata, previewUri }: Props): ReactElement | nu
           )}
           <Box p={2}>
             {metadata?.hash && <Typography>Swarm Hash: {shortenHash(metadata.hash)}</Typography>}
-            {metadata?.name !== metadata?.hash && (
+            {metadata?.name && metadata?.name !== metadata?.hash && (
               <Typography>
-                {metadata?.type === 'folder' ? 'Folder Name' : 'Filename'}: {metadata?.name}
+                {metadata?.type === 'folder' ? 'Folder Name' : 'Filename'}: {shortenText(metadata?.name)}
               </Typography>
             )}
             <Typography>Kind: {type}</Typography>
