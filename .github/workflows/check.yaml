@@ -73,8 +73,10 @@ jobs:
       - name: Create preview
         uses: ethersphere/beeload-action@v1
         with:
+          bee-url: https://unlimited.gateway.ethswarm.org
           preview: 'true'
           token: ${{ secrets.REPO_GHA_PAT }}
+          extra-params: '-H "${{ secrets.GATEWAY_AUTHORIZATION_HEADER }}"'
 
       - name: Upload to testnet
         continue-on-error: true
