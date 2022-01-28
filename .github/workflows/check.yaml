@@ -75,6 +75,7 @@ jobs:
         with:
           preview: 'true'
           token: ${{ secrets.REPO_GHA_PAT }}
+          extra-params: '-H "${{ secrets.SWARM_CLI_EXTRA_FLAGS }}"'
 
       - name: Upload to testnet
         continue-on-error: true
