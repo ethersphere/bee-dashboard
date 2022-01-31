@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.13.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.12.0...v0.13.0) (2022-01-28)
+
+
+### Features
+
+* add hash based routing ([#287](https://www.github.com/ethersphere/bee-dashboard/issues/287)) ([9ee1c91](https://www.github.com/ethersphere/bee-dashboard/commit/9ee1c9107bb08d1838044f39e4d0dd5817c8f283))
+* add metadata and preview ([#292](https://www.github.com/ethersphere/bee-dashboard/issues/292)) ([f401314](https://www.github.com/ethersphere/bee-dashboard/commit/f4013142afdb407e699eff9587921e23c971f1db))
+
+
+### Bug Fixes
+
+* clean up spinner and disabled state on download page ([#294](https://www.github.com/ethersphere/bee-dashboard/issues/294)) ([a406e0f](https://www.github.com/ethersphere/bee-dashboard/commit/a406e0fc014991fcbaca230f27f41cd071d8a863))
+* correct folder name when uploading multiple files or mix of files & directories ([#291](https://www.github.com/ethersphere/bee-dashboard/issues/291)) ([d878747](https://www.github.com/ethersphere/bee-dashboard/commit/d8787476acf068be6609a77b1fadb2f61d0fd502))
+* disable feeds page when disconnected ([#293](https://www.github.com/ethersphere/bee-dashboard/issues/293)) ([1310deb](https://www.github.com/ethersphere/bee-dashboard/commit/1310deb17aec91f368f99974aaa245abb0a3e201))
+* do not print size and name when meta is unknown ([#297](https://www.github.com/ethersphere/bee-dashboard/issues/297)) ([7880c80](https://www.github.com/ethersphere/bee-dashboard/commit/7880c802aea6b0830ca52b47b88540b8df5888cc))
+* get current price from chain state ([#286](https://www.github.com/ethersphere/bee-dashboard/issues/286)) ([bc82e67](https://www.github.com/ethersphere/bee-dashboard/commit/bc82e6756154b33d01796a6e66e51dcfa1495338))
+
 ## [0.12.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.11.2...v0.12.0) (2021-12-21)
 
 
