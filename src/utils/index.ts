@@ -1,4 +1,3 @@
-import { NumberString } from '@ethersphere/bee-js'
 import { BigNumber } from 'bignumber.js'
 import { Token } from '../models/Token'
 
@@ -174,10 +173,6 @@ export function convertAmountToSeconds(amount: number, pricePerBlock: number): n
 
 export function calculateStampPrice(depth: number, amount: bigint): Token {
   // See https://github.com/ethersphere/bee/blob/66f079930d739182c4c79eb6008784afeeba1096/pkg/debugapi/postage.go#L410-L413
-  console.log(amount) // eslint-disable-line
-  console.log(BigInt(2 ** depth)) // eslint-disable-line
-  console.log(amount * BigInt(2 ** depth)) // eslint-disable-line
-
   return new Token(amount * BigInt(2 ** depth)) // FIXME: the 2 ** depth should be performed on bigint already
 }
 

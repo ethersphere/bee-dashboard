@@ -76,8 +76,6 @@ export class Token {
       }
     }
 
-    console.log(reachedDecimalPoint, indexOfSignificantDigit, digits) // eslint-disable-line
-
     return asString.slice(0, indexOfSignificantDigit + digits)
   }
 }
