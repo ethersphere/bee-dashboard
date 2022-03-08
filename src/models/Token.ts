@@ -57,4 +57,27 @@ export class Token {
   toFixedDecimal(digits = 7): string {
     return this.toDecimal.toFixed(digits)
   }
+
+  toSignificantDigits(digits = 4): string {
+    const asString = this.toDecimal.toFixed(16)
+
+    let indexOfSignificantDigit = -1
+    let reachedDecimalPoint = false
+
+    for (let i = 0; i < asString.length; i++) {
+      const char = asString[i]
+
+      if (char === '.') {
+        reachedDecimalPoint = true
+        indexOfSignificantDigit = i + 1
+      } else if (reachedDecimalPoint && char !== '0') {
+        indexOfSignificantDigit = i
+        break
+      }
+    }
+
+    console.log(reachedDecimalPoint, indexOfSignificantDigit, digits) // eslint-disable-line
+
+    return asString.slice(0, indexOfSignificantDigit + digits)
+  }
 }
