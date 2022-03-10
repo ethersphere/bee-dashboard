@@ -1,5 +1,5 @@
-import { NumberString } from '@ethersphere/bee-js'
 import { BigNumber } from 'bignumber.js'
+import { Token } from '../models/Token'
 
 /**
  * Test if value is an integer
@@ -159,38 +159,21 @@ export function secondsToTimeString(seconds: number): string {
   return `${unit.toFixed(1)} years`
 }
 
-export function formatBzz(amount: number): string {
-  const asString = amount.toFixed(16)
-
-  let indexOfSignificantDigit = -1
-  let reachedDecimalPoint = false
-
-  for (let i = 0; i < asString.length; i++) {
-    const char = asString[i]
-
-    if (char === '.') {
-      reachedDecimalPoint = true
-    } else if (reachedDecimalPoint && char !== '0') {
-      indexOfSignificantDigit = i
-      break
-    }
-  }
-
-  return asString.slice(0, indexOfSignificantDigit + 4)
-}
-
 export function convertDepthToBytes(depth: number): number {
   return 2 ** depth * 4096
 }
 
-export function convertAmountToSeconds(amount: number): number {
-  return amount / 10 / 1
+export function convertAmountToSeconds(amount: number, pricePerBlock: number): number {
+  // TODO: blocktime should come directly from the blockchain as it may differ between different networks
+  const blockTime = 5 // On mainnet there is 5 seconds between blocks
+
+  // See https://github.com/ethersphere/bee/blob/66f079930d739182c4c79eb6008784afeeba1096/pkg/debugapi/postage.go#L410-L413
+  return (amount * blockTime) / pricePerBlock
 }
 
-export function calculateStampPrice(depth: number, amount: number, currentPrice: NumberString): number {
-  const price = parseInt(currentPrice, 10)
-
-  return (amount * 2 ** (depth - 16) * price) / 1e16
+export function calculateStampPrice(depth: number, amount: bigint): Token {
+  // See https://github.com/ethersphere/bee/blob/66f079930d739182c4c79eb6008784afeeba1096/pkg/debugapi/postage.go#L410-L413
+  return new Token(amount * BigInt(2 ** depth)) // FIXME: the 2 ** depth should be performed on bigint already
 }
 
 export function shortenText(text: string, length = 20, separator = '[…]'): string {

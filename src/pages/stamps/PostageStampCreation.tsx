@@ -2,20 +2,14 @@ import { Box, Grid, Typography } from '@material-ui/core'
 import BigNumber from 'bignumber.js'
 import { Form, Formik, FormikHelpers } from 'formik'
 import { useSnackbar } from 'notistack'
-import React, { ReactElement, useContext } from 'react'
+import { ReactElement, useContext } from 'react'
 import { Check } from 'react-feather'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as StampsContext } from '../../providers/Stamps'
-import {
-  calculateStampPrice,
-  convertAmountToSeconds,
-  convertDepthToBytes,
-  formatBzz,
-  secondsToTimeString,
-} from '../../utils'
+import { calculateStampPrice, convertAmountToSeconds, convertDepthToBytes, secondsToTimeString } from '../../utils'
 import { getHumanReadableFileSize } from '../../utils/file'
 
 interface FormValues {
@@ -50,24 +44,27 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
   }
 
   function getTtl(amount: number): string {
-    if (isNaN(amount) || amount <= 0) {
-      return '-'
-    }
-
-    return secondsToTimeString(convertAmountToSeconds(amount))
-  }
-
-  function getPrice(depth: number, amount: number): string {
-    const hasInvalidInput = isNaN(amount) || amount <= 0 || isNaN(depth) || depth < 17 || depth > 255
     const isCurrentPriceAvailable = chainState && chainState.currentPrice
 
-    if (hasInvalidInput || !isCurrentPriceAvailable) {
+    if (amount <= 0 || !isCurrentPriceAvailable) {
       return '-'
     }
 
-    const price = calculateStampPrice(depth, amount, chainState.currentPrice)
+    const pricePerBlock = Number.parseInt(chainState.currentPrice, 10)
 
-    return `${formatBzz(price)} BZZ`
+    return `${secondsToTimeString(convertAmountToSeconds(amount, pricePerBlock))} (with price of 0 per block)`
+  }
+
+  function getPrice(depth: number, amount: bigint): string {
+    const hasInvalidInput = amount <= 0 || isNaN(depth) || depth < 17 || depth > 255
+
+    if (hasInvalidInput) {
+      return '-'
+    }
+
+    const price = calculateStampPrice(depth, amount)
+
+    return `${price.toSignificantDigits()} BZZ`
   }
 
   return (
@@ -136,7 +133,7 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
             <Box mt={0.25} sx={{ bgcolor: '#f6f6f6' }} p={2}>
               <Grid container justifyContent="space-between">
                 <Typography>Corresponding TTL (Time to live)</Typography>
-                <Typography>{getTtl(parseInt(values.amount || '0', 10))}</Typography>
+                <Typography>{getTtl(Number.parseInt(values.amount || '0', 10))}</Typography>
               </Grid>
             </Box>
           </Box>
@@ -146,7 +143,7 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
           <Box mb={4} sx={{ bgcolor: '#fcf2e8' }} p={2}>
             <Grid container justifyContent="space-between">
               <Typography>Indicative Price</Typography>
-              <Typography>{getPrice(parseInt(values.depth || '0', 10), parseInt(values.amount || '0', 10))}</Typography>
+              <Typography>{getPrice(parseInt(values.depth || '0', 10), BigInt(values.amount || '0'))}</Typography>
             </Grid>
           </Box>
           <SwarmButton
