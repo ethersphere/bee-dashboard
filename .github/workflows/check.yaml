@@ -71,15 +71,18 @@ jobs:
         run: npm run build:component
 
       - name: Create preview
-        uses: ethersphere/beeload-action@v1
+        uses: ethersphere/swarm-actions/pr-preview@v0
         with:
           bee-url: https://unlimited.gateway.ethswarm.org
-          preview: 'true'
           token: ${{ secrets.REPO_GHA_PAT }}
-          extra-params: '-H "${{ secrets.GATEWAY_AUTHORIZATION_HEADER }}"'
+          error-document: index.html
+          headers: "${{ secrets.GATEWAY_AUTHORIZATION_HEADER }}"
 
       - name: Upload to testnet
+        uses: ethersphere/swarm-actions/upload-dir@v0
         continue-on-error: true
-        uses: ethersphere/beeload-action@v1
         with:
+          index-document: index.html
+          error-document: index.html
+          dir: ./build
           bee-url: https://api.gateway.testnet.ethswarm.org
