@@ -9,6 +9,7 @@ interface Props {
   password?: boolean
   formik?: boolean
   optional?: boolean
+  defaultValue?: string
   onChange?: (event: ChangeEvent<HTMLTextAreaElement>) => void
 }
 
@@ -32,7 +33,15 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-export function SwarmTextInput({ name, label, password, optional, formik, onChange }: Props): ReactElement {
+export function SwarmTextInput({
+  name,
+  label,
+  password,
+  optional,
+  formik,
+  onChange,
+  defaultValue,
+}: Props): ReactElement {
   const classes = useStyles()
 
   if (formik) {
@@ -46,7 +55,7 @@ export function SwarmTextInput({ name, label, password, optional, formik, onChan
         fullWidth
         variant="filled"
         className={classes.field}
-        defaultValue=""
+        defaultValue={defaultValue || ''}
         InputProps={{ disableUnderline: true }}
       />
     )
@@ -60,7 +69,7 @@ export function SwarmTextInput({ name, label, password, optional, formik, onChan
       fullWidth
       variant="filled"
       className={classes.field}
-      defaultValue=""
+      defaultValue={defaultValue || ''}
       onChange={onChange}
       InputProps={{ disableUnderline: true }}
     />

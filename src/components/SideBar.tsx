@@ -2,7 +2,7 @@ import { Divider, Drawer, Grid, Link as MUILink, List } from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import { OpenInNewSharp } from '@material-ui/icons'
 import type { ReactElement } from 'react'
-import { Bookmark, BookOpen, DollarSign, FileText, Home, Layers, Settings } from 'react-feather'
+import { Bookmark, BookOpen, DollarSign, FileText, Home, Layers, Send, Settings } from 'react-feather'
 import { Link } from 'react-router-dom'
 import Logo from '../assets/logo.svg'
 import { config } from '../config'
@@ -15,6 +15,11 @@ const navBarItems = [
     label: 'Info',
     path: ROUTES.INFO,
     icon: Home,
+  },
+  {
+    label: 'Upgrade',
+    path: ROUTES.UPGRADE,
+    icon: Send,
   },
   {
     label: 'Files',

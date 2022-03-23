@@ -101,6 +101,10 @@ interface Props {
   children: ReactChild
 }
 
+function isUltraLight(string?: string) {
+  return string === 'ultra-light'
+}
+
 function getStatus(
   debugApiHealth: Health | null,
   nodeAddresses: NodeAddresses | null,
@@ -128,7 +132,8 @@ function getStatus(
       (Boolean(chequebookAddress?.chequebookAddress) &&
         chequebookBalance !== null &&
         chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0)) ||
-      devMode,
+      devMode ||
+      isUltraLight(nodeInfo?.beeMode),
   }
 
   return { ...status, all: !error && Object.values(status).every(v => v) }
