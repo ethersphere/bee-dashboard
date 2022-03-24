@@ -16,6 +16,12 @@ export default (): Configuration => {
     },
     resolve: {
       extensions: ['.css', '.png', '.svg', '.ttf', '.ts', '.tsx', '.js'],
+      fallback: {
+        crypto: require.resolve('crypto-browserify'),
+        stream: require.resolve('stream-browserify'),
+        buffer: require.resolve('buffer'),
+        assert: require.resolve('assert'),
+      },
     },
     devtool: 'source-map',
     externals: {

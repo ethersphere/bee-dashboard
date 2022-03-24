@@ -10,7 +10,7 @@ import type {
 } from '@ethersphere/bee-js'
 import { createContext, ReactChild, ReactElement, useContext, useEffect, useState } from 'react'
 import semver from 'semver'
-import { engines } from '../../package.json'
+import packageJson from '../../package.json'
 import { useLatestBeeRelease } from '../hooks/apiHooks'
 import { Token } from '../models/Token'
 import type { Balance, ChequebookBalance, Settlements } from '../types'
@@ -55,6 +55,7 @@ interface ContextInterface {
   refresh: () => Promise<void>
 }
 
+const engines = packageJson.engines
 const startedInDevMode = window.location.search.includes('devMode=1')
 
 const initialValues: ContextInterface = {
