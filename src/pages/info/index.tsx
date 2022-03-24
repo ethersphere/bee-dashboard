@@ -1,15 +1,15 @@
-import { ReactElement, useContext } from 'react'
 import { Button } from '@material-ui/core'
-
-import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
-import { Context as BeeContext } from '../../providers/Bee'
+import { ReactElement, useContext } from 'react'
 import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import TopologyStats from '../../components/TopologyStats'
+import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
+import { Context as BeeContext } from '../../providers/Bee'
 
 export default function Status(): ReactElement {
   const {
+    nodeInfo,
     status,
     latestUserVersion,
     isLatestBeeVersion,
@@ -24,6 +24,7 @@ export default function Status(): ReactElement {
   return (
     <div>
       <ExpandableList label="Bee Node" defaultOpen>
+        <ExpandableListItem label="Mode" value={nodeInfo?.beeMode || 'Unknown'} />
         <ExpandableListItem
           label="Agent"
           value={
