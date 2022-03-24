@@ -20,7 +20,7 @@ export default function UpgradePage(): ReactElement {
   const [balance, setBalance] = useState<string | null>(null)
   const [balanceBzz, setBalanceBzz] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
-  const [rpcProvider, setRpcProvider] = useState<string>('https://dai.poa.network/')
+  const [rpcProvider, setRpcProvider] = useState<string>('https://rpc.gnosischain.com/')
 
   useEffect(() => {
     fetch('http://localhost:5000/status')
@@ -149,7 +149,7 @@ export default function UpgradePage(): ReactElement {
               <SwarmTextInput
                 label="RPC Provider"
                 name="rpc-provider"
-                defaultValue="https://dai.poa.network/"
+                defaultValue="https://rpc.gnosischain.com/"
                 onChange={event => {
                   setRpcProvider(event.target.value)
                 }}
