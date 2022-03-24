@@ -1,6 +1,6 @@
 const PROVIDER = 'https://dai.poa.network/'
 
-async function eth_getBalance(address: string): Promise<number> {
+async function eth_getBalance(address: string): Promise<string> {
   const response = await fetch(PROVIDER, {
     method: 'POST',
     headers: {
@@ -14,10 +14,8 @@ async function eth_getBalance(address: string): Promise<number> {
     }),
   })
   const json = await response.json()
-  const result = json.result
-  const number = parseInt(result, 16)
 
-  return number
+  return json.result
 }
 
 export const Rpc = {

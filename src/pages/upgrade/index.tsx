@@ -2,19 +2,22 @@ import { Box, Card, Typography } from '@material-ui/core'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { ArrowUp, Send } from 'react-feather'
+import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { Loading } from '../../components/Loading'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
+import { Token } from '../../models/Token'
 import { Context } from '../../providers/Bee'
+import { requestBzz } from '../../utils/bzz-faucet'
 import { Rpc } from '../../utils/rpc'
 
 export default function UpgradePage(): ReactElement {
-  const { nodeInfo } = useContext(Context)
+  const { nodeInfo, chequebookAddress, nodeAddresses } = useContext(Context)
 
   const { enqueueSnackbar } = useSnackbar()
 
-  const [balance, setBalance] = useState<number | null>(null)
+  const [balance, setBalance] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [rpcProvider, setRpcProvider] = useState<string>('https://dai.poa.network/')
 
@@ -29,7 +32,7 @@ export default function UpgradePage(): ReactElement {
     setLoading(true)
     try {
       const { address } = await fetch('http://localhost:5000/status').then(response => response.json())
-      await fetch(`http://getxdai.co/${address}/0.01`, {
+      await fetch(`http://getxdai.co/${address}/0.1`, {
         method: 'POST',
       })
       const balance = await Rpc.eth_getBalance(address)
@@ -37,6 +40,22 @@ export default function UpgradePage(): ReactElement {
       enqueueSnackbar('Wallet funded successfully', { variant: 'success' })
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function onChequebookBzzFund() {
+    if (chequebookAddress?.chequebookAddress) {
+      setLoading(true)
+      await requestBzz(chequebookAddress?.chequebookAddress).finally(() => setLoading(false))
+      enqueueSnackbar('Successfully funded chequebook address', { variant: 'success' })
+    }
+  }
+
+  async function onOverlayBzzFund() {
+    if (nodeAddresses?.ethereum) {
+      setLoading(true)
+      await requestBzz(nodeAddresses?.ethereum).finally(() => setLoading(false))
+      enqueueSnackbar('Successfully funded overlay address', { variant: 'success' })
     }
   }
 
@@ -78,18 +97,36 @@ export default function UpgradePage(): ReactElement {
             </Box>
             <Box mb={4}>
               <Typography>
-                Your current balance is {balance}. Fund your node with XDAI so chequebook can be deployed.
+                Your current balance is {new Token(balance || '0', 18).toSignificantDigits(4)} xDAI. Fund your node with
+                xDAI so chequebook can be deployed.
               </Typography>
             </Box>
-            <SwarmButton
-              onClick={onFund}
-              iconType={Send}
-              loading={loading}
-              disabled={Boolean(balance) || loading}
-              variant="outlined"
-            >
-              Fund
-            </SwarmButton>
+            <ExpandableListItemActions>
+              <SwarmButton onClick={onFund} iconType={Send} loading={loading} disabled={loading} variant="outlined">
+                Fund xDAI
+              </SwarmButton>
+              {chequebookAddress?.chequebookAddress &&
+                chequebookAddress?.chequebookAddress !== '0x0000000000000000000000000000000000000000' && (
+                  <SwarmButton
+                    onClick={onChequebookBzzFund}
+                    iconType={Send}
+                    loading={loading}
+                    disabled={loading}
+                    variant="outlined"
+                  >
+                    Fund xBZZ (Chequebook)
+                  </SwarmButton>
+                )}
+              <SwarmButton
+                onClick={onOverlayBzzFund}
+                iconType={Send}
+                loading={loading}
+                disabled={loading}
+                variant="outlined"
+              >
+                Fund xBZZ (Overlay)
+              </SwarmButton>
+            </ExpandableListItemActions>
           </Box>
         </Card>
       </Box>
