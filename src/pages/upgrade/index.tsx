@@ -18,6 +18,7 @@ export default function UpgradePage(): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
 
   const [balance, setBalance] = useState<string | null>(null)
+  const [balanceBzz, setBalanceBzz] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [rpcProvider, setRpcProvider] = useState<string>('https://dai.poa.network/')
 
@@ -26,6 +27,11 @@ export default function UpgradePage(): ReactElement {
       .then(response => response.json())
       .then(status => Rpc.eth_getBalance(status.address))
       .then(balance => setBalance(balance))
+
+    fetch('http://localhost:5000/status')
+      .then(response => response.json())
+      .then(status => Rpc.eth_getBalanceERC20(status.address))
+      .then(balanceBzz => setBalanceBzz(balanceBzz))
   }, [])
 
   async function onFund() {
@@ -37,6 +43,8 @@ export default function UpgradePage(): ReactElement {
       })
       const balance = await Rpc.eth_getBalance(address)
       setBalance(balance)
+      const balanceBzz = await Rpc.eth_getBalance(address)
+      setBalanceBzz(balanceBzz)
       enqueueSnackbar('Wallet funded successfully', { variant: 'success' })
     } finally {
       setLoading(false)
@@ -97,8 +105,9 @@ export default function UpgradePage(): ReactElement {
             </Box>
             <Box mb={4}>
               <Typography>
-                Your current balance is {new Token(balance || '0', 18).toSignificantDigits(4)} xDAI. Fund your node with
-                xDAI so chequebook can be deployed.
+                Your current balance is {new Token(balance || '0', 18).toSignificantDigits(4)} xDAI and{' '}
+                {new Token(balanceBzz || '0', 16).toSignificantDigits(4)} xBZZ. Fund your node with xDAI so chequebook
+                can be deployed.
               </Typography>
             </Box>
             <ExpandableListItemActions>
