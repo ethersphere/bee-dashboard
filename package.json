@@ -26,7 +26,7 @@
     "url": "https://github.com/ethersphere/bee-dashboard.git"
   },
   "dependencies": {
-    "@ethersphere/bee-js": "3.1.0",
+    "@ethersphere/bee-js": "^3.3.3",
     "@ethersphere/manifest-js": "1.1.0",
     "@ethersphere/swarm-cid": "^0.1.0",
     "@material-ui/core": "4.12.3",
