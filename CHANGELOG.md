@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.13.1](https://www.github.com/ethersphere/bee-dashboard/compare/v0.13.0...v0.13.1) (2022-03-27)
+
+
+### Bug Fixes
+
+* postage stamp price and TTL calculation ([#305](https://www.github.com/ethersphere/bee-dashboard/issues/305)) ([d0b3f1a](https://www.github.com/ethersphere/bee-dashboard/commit/d0b3f1abee7ea017bdd05954d5fadafb67365efd))
+
 ## [0.13.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.12.0...v0.13.0) (2022-01-28)
 
 
