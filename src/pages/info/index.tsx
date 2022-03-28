@@ -17,6 +17,7 @@ export default function Status(): ReactElement {
     topology,
     nodeAddresses,
     chequebookAddress,
+    nodeInfo,
   } = useContext(BeeContext)
 
   if (!status.all) return <TroubleshootConnectionCard />
@@ -24,6 +25,7 @@ export default function Status(): ReactElement {
   return (
     <div>
       <ExpandableList label="Bee Node" defaultOpen>
+        <ExpandableListItem label="Mode" value={nodeInfo?.beeMode} />
         <ExpandableListItem
           label="Agent"
           value={

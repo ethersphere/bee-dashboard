@@ -12,7 +12,9 @@ import { Context as SettingsContext } from '../../../providers/Settings'
 export default function NodeConnectionCheck(): ReactElement | null {
   const { status, isLoading } = useContext(Context)
   const { setDebugApiUrl, apiDebugUrl } = useContext(SettingsContext)
-  const isOk = status.debugApiConnection
+  const { isOk, isEnabled } = status.debugApiConnection
+
+  if (!isEnabled) return null
 
   return (
     <ExpandableList

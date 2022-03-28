@@ -7,7 +7,9 @@ import { Context } from '../../../providers/Bee'
 
 export default function PeerConnection(): ReactElement | null {
   const { status, isLoading, topology } = useContext(Context)
-  const isOk = status.topology
+  const { isEnabled, isOk } = status.topology
+
+  if (!isEnabled) return null
 
   return (
     <ExpandableList
