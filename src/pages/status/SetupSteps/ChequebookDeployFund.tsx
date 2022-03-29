@@ -10,7 +10,9 @@ import { Context } from '../../../providers/Bee'
 
 const ChequebookDeployFund = (): ReactElement | null => {
   const { status, isLoading, chequebookAddress } = useContext(Context)
-  const isOk = status.chequebook
+  const { isOk, isEnabled } = status.chequebook
+
+  if (!isEnabled) return null
 
   return (
     <ExpandableList

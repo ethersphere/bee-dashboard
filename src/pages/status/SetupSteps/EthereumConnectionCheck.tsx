@@ -7,7 +7,9 @@ import { Context } from '../../../providers/Bee'
 
 export default function EthereumConnectionCheck(): ReactElement | null {
   const { status, isLoading, nodeAddresses } = useContext(Context)
-  const isOk = status.blockchainConnection
+  const { isOk, isEnabled } = status.blockchainConnection
+
+  if (!isEnabled) return null
 
   return (
     <ExpandableList
