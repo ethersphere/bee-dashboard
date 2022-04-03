@@ -44,6 +44,51 @@ export const useIsBeeDesktop = (conf: Config = config): IsBeeDesktopHook => {
   return { isBeeDesktop, isLoading }
 }
 
+export interface BeeConfig {
+  'api-addr': string
+  'debug-api-addr': string
+  'debug-api-enable': boolean
+  password: string
+  'swap-enable': boolean
+  'swap-initial-deposit': bigint
+  mainnet: boolean
+  'full-node': boolean
+  'chain-enable': boolean
+  'cors-allowed-origins': string
+  'resolver-options': string
+  'use-postage-snapshot': boolean
+  'data-dir': string
+  transaction: string
+  'block-hash': string
+  'swap-endpoint'?: string
+}
+
+export interface GetBeeConfig {
+  config: BeeConfig | null
+  isLoading: boolean
+  error: Error | null
+}
+
+export const useGetBeeConfig = (conf: Config = config): GetBeeConfig => {
+  const [beeConfig, setBeeConfig] = useState<BeeConfig | null>(null)
+  const [isLoading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<Error | null>(null)
+
+  useEffect(() => {
+    axios
+      .get<BeeConfig>(`${conf.BEE_DESKTOP_URL}/config`)
+      .then(res => setBeeConfig(res.data))
+      .catch((err: Error) => {
+        setError(err)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }, [conf])
+
+  return { config: beeConfig, isLoading, error }
+}
+
 export const useLatestBeeRelease = (): LatestBeeReleaseHook => {
   const [latestBeeRelease, setLatestBeeRelease] = useState<LatestBeeRelease | null>(null)
   const [isLoadingLatestBeeRelease, setLoading] = useState<boolean>(false)
