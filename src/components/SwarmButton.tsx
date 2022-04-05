@@ -10,7 +10,7 @@ interface Props {
   disabled?: boolean
   loading?: boolean
   cancel?: boolean
-  variant?: 'text' | 'contained' | 'outlined' | undefined
+  variant?: 'text' | 'contained' | 'outlined'
 }
 
 const useStyles = makeStyles(() =>
