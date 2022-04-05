@@ -12,7 +12,9 @@ import { Context } from '../../../providers/Bee'
 export default function NodeConnectionCheck(): ReactElement | null {
   const { setApiUrl, apiUrl } = useContext(SettingsContext)
   const { status, isLoading } = useContext(Context)
-  const isOk = status.apiConnection
+  const { isEnabled, isOk } = status.apiConnection
+
+  if (!isEnabled) return null
 
   return (
     <ExpandableList

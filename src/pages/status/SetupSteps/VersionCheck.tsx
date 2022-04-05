@@ -8,7 +8,9 @@ import { Context } from '../../../providers/Bee'
 
 export default function VersionCheck(): ReactElement | null {
   const { status, isLoading, latestUserVersion, latestPublishedVersion, latestBeeVersionUrl } = useContext(Context)
-  const isOk = status.version
+  const { isEnabled, isOk } = status.version
+
+  if (!isEnabled) return null
 
   return (
     <ExpandableList

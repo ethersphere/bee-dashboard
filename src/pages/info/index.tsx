@@ -24,7 +24,7 @@ export default function Status(): ReactElement {
   return (
     <div>
       <ExpandableList label="Bee Node" defaultOpen>
-        <ExpandableListItem label="Mode" value={nodeInfo?.beeMode || 'Unknown'} />
+        <ExpandableListItem label="Mode" value={nodeInfo?.beeMode} />
         <ExpandableListItem
           label="Agent"
           value={

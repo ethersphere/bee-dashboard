@@ -1,10 +1,11 @@
-import type {
+import {
+  BeeModes,
   ChainState,
   ChequebookAddressResponse,
   Health,
   LastChequesResponse,
   NodeAddresses,
-  NodesInfo,
+  NodeInfo,
   Peer,
   Topology,
 } from '@ethersphere/bee-js'
@@ -16,14 +17,19 @@ import { Token } from '../models/Token'
 import type { Balance, ChequebookBalance, Settlements } from '../types'
 import { Context as SettingsContext } from './Settings'
 
+interface StatusItem {
+  isEnabled: boolean
+  isOk: boolean
+}
+
 interface Status {
   all: boolean
-  version: boolean
-  blockchainConnection: boolean
-  debugApiConnection: boolean
-  apiConnection: boolean
-  topology: boolean
-  chequebook: boolean
+  version: StatusItem
+  blockchainConnection: StatusItem
+  debugApiConnection: StatusItem
+  apiConnection: StatusItem
+  topology: StatusItem
+  chequebook: StatusItem
 }
 
 interface ContextInterface {
@@ -37,7 +43,7 @@ interface ContextInterface {
   apiHealth: boolean
   debugApiHealth: Health | null
   nodeAddresses: NodeAddresses | null
-  nodeInfo: NodesInfo | null
+  nodeInfo: NodeInfo | null
   topology: Topology | null
   chequebookAddress: ChequebookAddressResponse | null
   peers: Peer[] | null
@@ -66,12 +72,12 @@ if (newApiKey) {
 const initialValues: ContextInterface = {
   status: {
     all: false,
-    version: false,
-    blockchainConnection: false,
-    debugApiConnection: false,
-    apiConnection: false,
-    topology: false,
-    chequebook: false,
+    version: { isEnabled: false, isOk: false },
+    blockchainConnection: { isEnabled: false, isOk: false },
+    debugApiConnection: { isEnabled: false, isOk: false },
+    apiConnection: { isEnabled: false, isOk: false },
+    topology: { isEnabled: false, isOk: false },
+    chequebook: { isEnabled: false, isOk: false },
   },
   latestPublishedVersion: undefined,
   latestUserVersion: undefined,
@@ -114,35 +120,52 @@ function isUltraLight(string?: string) {
 function getStatus(
   debugApiHealth: Health | null,
   nodeAddresses: NodeAddresses | null,
-  nodeInfo: NodesInfo | null,
+  nodeInfo: NodeInfo | null,
   apiHealth: boolean,
   topology: Topology | null,
   chequebookAddress: ChequebookAddressResponse | null,
   chequebookBalance: ChequebookBalance | null,
   error: Error | null,
 ): Status {
-  // FIXME: `devMode` is a temporary workaround to be able to develop with only one node
-  const devMode = Boolean(process.env.REACT_APP_DEV_MODE) || nodeInfo?.beeMode === 'dev'
   const status = {
-    version: Boolean(
-      debugApiHealth &&
-        semver.satisfies(debugApiHealth.version, engines.bee, {
-          includePrerelease: true,
-        }),
-    ),
-    blockchainConnection: Boolean(nodeAddresses?.ethereum),
-    debugApiConnection: Boolean(debugApiHealth?.status === 'ok'),
-    apiConnection: apiHealth,
-    topology: Boolean(topology?.connected && topology?.connected > 0) || devMode,
-    chequebook:
-      (Boolean(chequebookAddress?.chequebookAddress) &&
+    version: {
+      isEnabled: true,
+      isOk: Boolean(
+        debugApiHealth &&
+          semver.satisfies(debugApiHealth.version, engines.bee, {
+            includePrerelease: true,
+          }),
+      ),
+    },
+    blockchainConnection: {
+      isEnabled: true,
+      isOk: Boolean(nodeAddresses?.ethereum),
+    },
+    debugApiConnection: {
+      isEnabled: true,
+      isOk: Boolean(debugApiHealth?.status === 'ok'),
+    },
+    apiConnection: {
+      isEnabled: true,
+      isOk: apiHealth,
+    },
+    topology: {
+      isEnabled: Boolean(nodeInfo && [BeeModes.FULL, BeeModes.LIGHT, BeeModes.ULTRA_LIGHT].includes(nodeInfo.beeMode)),
+      isOk: Boolean(topology?.connected && topology?.connected > 0),
+    },
+    chequebook: {
+      isEnabled: Boolean(nodeInfo && [BeeModes.FULL, BeeModes.LIGHT].includes(nodeInfo.beeMode)),
+      isOk:
+        Boolean(chequebookAddress?.chequebookAddress) &&
         chequebookBalance !== null &&
-        chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0)) ||
-      devMode ||
-      isUltraLight(nodeInfo?.beeMode),
+        chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0),
+    },
   }
 
-  return { ...status, all: !error && Object.values(status).every(v => v) }
+  return {
+    ...status,
+    all: !error && Object.values(status).every(({ isEnabled, isOk }) => !isEnabled || (isEnabled && isOk)),
+  }
 }
 
 export function Provider({ children }: Props): ReactElement {
@@ -150,7 +173,7 @@ export function Provider({ children }: Props): ReactElement {
   const [apiHealth, setApiHealth] = useState<boolean>(false)
   const [debugApiHealth, setDebugApiHealth] = useState<Health | null>(null)
   const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses | null>(null)
-  const [nodeInfo, setNodeInfo] = useState<NodesInfo | null>(null)
+  const [nodeInfo, setNodeInfo] = useState<NodeInfo | null>(null)
   const [topology, setNodeTopology] = useState<Topology | null>(null)
   const [chequebookAddress, setChequebookAddress] = useState<ChequebookAddressResponse | null>(null)
   const [peers, setPeers] = useState<Peer[] | null>(null)

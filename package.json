@@ -26,7 +26,7 @@
     "url": "https://github.com/ethersphere/bee-dashboard.git"
   },
   "dependencies": {
-    "@ethersphere/bee-js": "3.1.0",
+    "@ethersphere/bee-js": "^3.3.3",
     "@ethersphere/manifest-js": "1.1.0",
     "@ethersphere/swarm-cid": "^0.1.0",
     "@material-ui/core": "4.12.3",
@@ -81,7 +81,7 @@
     "babel-loader": "8.1.0",
     "babel-plugin-syntax-dynamic-import": "6.18.0",
     "babel-plugin-tsconfig-paths": "1.0.2",
-    "depcheck": "1.4.2",
+    "depcheck": "^1.4.3",
     "eslint": "7.24.0",
     "eslint-config-prettier": "8.2.0",
     "eslint-config-react-app": "6.0.0",
