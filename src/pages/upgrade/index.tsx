@@ -44,7 +44,7 @@ export default function UpgradePage(): ReactElement {
       })
       const balance = await Rpc.eth_getBalance(address)
       setBalance(balance)
-      const balanceBzz = await Rpc.eth_getBalance(address)
+      const balanceBzz = await Rpc.eth_getBalanceERC20(address)
       setBalanceBzz(balanceBzz)
       enqueueSnackbar('Wallet funded successfully', { variant: 'success' })
     } finally {
