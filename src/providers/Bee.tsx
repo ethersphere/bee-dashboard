@@ -113,10 +113,6 @@ interface Props {
   children: ReactChild
 }
 
-function isUltraLight(string?: string) {
-  return string === 'ultra-light'
-}
-
 function getStatus(
   debugApiHealth: Health | null,
   nodeAddresses: NodeAddresses | null,
