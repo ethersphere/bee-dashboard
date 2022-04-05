@@ -10,6 +10,7 @@ import { SwarmTextInput } from '../../components/SwarmTextInput'
 import { Token } from '../../models/Token'
 import { Context } from '../../providers/Bee'
 import { requestBzz } from '../../utils/bzz-faucet'
+import { getJson, postJson } from '../../utils/net'
 import { Rpc } from '../../utils/rpc'
 
 export default function UpgradePage(): ReactElement {
@@ -22,22 +23,22 @@ export default function UpgradePage(): ReactElement {
   const [loading, setLoading] = useState<boolean>(false)
   const [rpcProvider, setRpcProvider] = useState<string>('https://rpc.gnosischain.com/')
 
+  const port = parseInt(window.location.host.split(':')[1], 10)
+
   useEffect(() => {
-    fetch('http://localhost:5000/status')
-      .then(response => response.json())
+    getJson(`http://localhost:${port}/status`)
       .then(status => Rpc.eth_getBalance(status.address))
       .then(balance => setBalance(balance))
 
-    fetch('http://localhost:5000/status')
-      .then(response => response.json())
+    getJson(`http://localhost:${port}/status`)
       .then(status => Rpc.eth_getBalanceERC20(status.address))
       .then(balanceBzz => setBalanceBzz(balanceBzz))
-  }, [])
+  }, [port])
 
   async function onFund() {
     setLoading(true)
     try {
-      const { address } = await fetch('http://localhost:5000/status').then(response => response.json())
+      const { address } = await getJson(`http://localhost:${port}/status`)
       await fetch(`http://getxdai.co/${address}/0.1`, {
         method: 'POST',
       })
@@ -70,20 +71,12 @@ export default function UpgradePage(): ReactElement {
   async function onUpgrade() {
     setLoading(true)
     try {
-      await fetch('http://localhost:5000/config', {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({
-          'chain-enable': true,
-          'swap-enable': true,
-          'swap-endpoint': rpcProvider,
-        }),
+      await postJson(`http://localhost:${port}/config`, {
+        'chain-enable': true,
+        'swap-enable': true,
+        'swap-endpoint': rpcProvider,
       })
-      await fetch('http://localhost:5000/restart', {
-        method: 'POST',
-      })
+      await postJson(`http://localhost:${port}/restart`)
       enqueueSnackbar('Restarting Bee in Light Mode...', { variant: 'success' })
     } finally {
       setLoading(false)

@@ -55,7 +55,13 @@ interface ContextInterface {
   refresh: () => Promise<void>
 }
 
-const startedInDevMode = window.location.search.includes('devMode=1')
+const urlSearchParams = new URLSearchParams(window.location.search)
+const newApiKey = urlSearchParams.get('v')
+
+if (newApiKey) {
+  localStorage.setItem('apiKey', newApiKey)
+  window.location.search = ''
+}
 
 const initialValues: ContextInterface = {
   status: {
@@ -116,7 +122,7 @@ function getStatus(
   error: Error | null,
 ): Status {
   // FIXME: `devMode` is a temporary workaround to be able to develop with only one node
-  const devMode = startedInDevMode || Boolean(process.env.REACT_APP_DEV_MODE) || nodeInfo?.beeMode === 'dev'
+  const devMode = Boolean(process.env.REACT_APP_DEV_MODE) || nodeInfo?.beeMode === 'dev'
   const status = {
     version: Boolean(
       debugApiHealth &&
