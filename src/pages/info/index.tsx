@@ -1,15 +1,15 @@
-import { Button } from '@material-ui/core'
 import { ReactElement, useContext } from 'react'
+import { Button } from '@material-ui/core'
+
+import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
+import { Context as BeeContext } from '../../providers/Bee'
 import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import TopologyStats from '../../components/TopologyStats'
-import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
-import { Context as BeeContext } from '../../providers/Bee'
 
 export default function Status(): ReactElement {
   const {
-    nodeInfo,
     status,
     latestUserVersion,
     isLatestBeeVersion,
@@ -17,6 +17,7 @@ export default function Status(): ReactElement {
     topology,
     nodeAddresses,
     chequebookAddress,
+    nodeInfo,
   } = useContext(BeeContext)
 
   if (!status.all) return <TroubleshootConnectionCard />
