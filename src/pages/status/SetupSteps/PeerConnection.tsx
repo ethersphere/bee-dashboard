@@ -7,12 +7,12 @@ import { CheckState, Context } from '../../../providers/Bee'
 
 export default function PeerConnection(): ReactElement | null {
   const { status, isLoading, topology } = useContext(Context)
-  const { isEnabled, isOk } = status.topology
+  const { isEnabled, checkState } = status.topology
 
   if (!isEnabled) return null
 
   let text: ReactNode
-  switch (isOk) {
+  switch (checkState) {
     case CheckState.OK:
       text = 'You are connected to other Bee nodes'
       break
@@ -27,7 +27,7 @@ export default function PeerConnection(): ReactElement | null {
     <ExpandableList
       label={
         <>
-          <StatusIcon isOk={isOk} isLoading={isLoading} /> Connection to Peers
+          <StatusIcon checkState={checkState} isLoading={isLoading} /> Connection to Peers
         </>
       }
     >

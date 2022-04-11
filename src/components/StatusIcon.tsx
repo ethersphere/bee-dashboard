@@ -3,19 +3,19 @@ import { CircularProgress } from '@material-ui/core'
 import { CheckState } from '../providers/Bee'
 
 interface Props {
-  isOk: CheckState
+  checkState: CheckState
   isLoading?: boolean
   size?: number | string
   className?: string
 }
 
-export default function StatusIcon({ isOk, size, className, isLoading }: Props): ReactElement {
+export default function StatusIcon({ checkState, size, className, isLoading }: Props): ReactElement {
   const s = size || '1rem'
 
   if (isLoading) return <CircularProgress size={s} className={className} />
 
   let backgroundColor: string
-  switch (isOk) {
+  switch (checkState) {
     case CheckState.OK:
       backgroundColor = '#1de600'
       break

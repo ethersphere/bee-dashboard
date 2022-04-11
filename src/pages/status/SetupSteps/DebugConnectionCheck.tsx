@@ -12,7 +12,7 @@ import { Context as SettingsContext } from '../../../providers/Settings'
 export default function NodeConnectionCheck(): ReactElement | null {
   const { status, isLoading } = useContext(Context)
   const { setDebugApiUrl, apiDebugUrl } = useContext(SettingsContext)
-  const { isOk, isEnabled } = status.debugApiConnection
+  const { checkState, isEnabled } = status.debugApiConnection
 
   if (!isEnabled) return null
 
@@ -20,18 +20,18 @@ export default function NodeConnectionCheck(): ReactElement | null {
     <ExpandableList
       label={
         <>
-          <StatusIcon isOk={isOk} isLoading={isLoading} /> Connection to Bee Debug API
+          <StatusIcon checkState={checkState} isLoading={isLoading} /> Connection to Bee Debug API
         </>
       }
     >
       <ExpandableListItemNote>
-        {isOk === CheckState.OK
+        {checkState === CheckState.OK
           ? 'The connection to the Bee nodes debug API has been successful'
           : 'We cannot connect to your nodes debug API. Please check the following to troubleshoot your issue.'}
       </ExpandableListItemNote>
       <ExpandableListItemInput label="Bee Debug API" value={apiDebugUrl} onConfirm={setDebugApiUrl} />
 
-      {isOk === CheckState.ERROR && (
+      {checkState === CheckState.ERROR && (
         <ExpandableList level={1} label="Troubleshoot">
           <ExpandableListItem
             label={

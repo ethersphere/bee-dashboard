@@ -8,7 +8,7 @@ import { CheckState, Context } from '../../../providers/Bee'
 
 export default function VersionCheck(): ReactElement | null {
   const { status, isLoading, latestUserVersion, latestPublishedVersion, latestBeeVersionUrl } = useContext(Context)
-  const { isEnabled, isOk } = status.version
+  const { isEnabled, checkState } = status.version
 
   if (!isEnabled) return null
 
@@ -16,12 +16,12 @@ export default function VersionCheck(): ReactElement | null {
     <ExpandableList
       label={
         <>
-          <StatusIcon isOk={isOk} isLoading={isLoading} /> Bee Version
+          <StatusIcon checkState={checkState} isLoading={isLoading} /> Bee Version
         </>
       }
     >
       <ExpandableListItemNote>
-        {isOk === CheckState.OK ? (
+        {checkState === CheckState.OK ? (
           'You are running the latest version of Bee.'
         ) : (
           <>

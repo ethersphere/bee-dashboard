@@ -25,7 +25,7 @@ export enum CheckState {
 
 interface StatusItem {
   isEnabled: boolean
-  isOk: CheckState
+  checkState: CheckState
 }
 
 interface Status {
@@ -70,12 +70,12 @@ interface ContextInterface {
 const initialValues: ContextInterface = {
   status: {
     all: CheckState.ERROR,
-    version: { isEnabled: false, isOk: CheckState.ERROR },
-    blockchainConnection: { isEnabled: false, isOk: CheckState.ERROR },
-    debugApiConnection: { isEnabled: false, isOk: CheckState.ERROR },
-    apiConnection: { isEnabled: false, isOk: CheckState.ERROR },
-    topology: { isEnabled: false, isOk: CheckState.ERROR },
-    chequebook: { isEnabled: false, isOk: CheckState.ERROR },
+    version: { isEnabled: false, checkState: CheckState.ERROR },
+    blockchainConnection: { isEnabled: false, checkState: CheckState.ERROR },
+    debugApiConnection: { isEnabled: false, checkState: CheckState.ERROR },
+    apiConnection: { isEnabled: false, checkState: CheckState.ERROR },
+    topology: { isEnabled: false, checkState: CheckState.ERROR },
+    chequebook: { isEnabled: false, checkState: CheckState.ERROR },
   },
   latestPublishedVersion: undefined,
   latestUserVersion: undefined,
@@ -125,7 +125,7 @@ function getStatus(
 
   // Version check
   status.version.isEnabled = true
-  status.version.isOk =
+  status.version.checkState =
     debugApiHealth &&
     semver.satisfies(debugApiHealth.version, engines.bee, {
       includePrerelease: true,
@@ -135,20 +135,20 @@ function getStatus(
 
   // Blockchain connection check
   status.blockchainConnection.isEnabled = true
-  status.blockchainConnection.isOk = Boolean(debugApiHealth?.status === 'ok') ? CheckState.OK : CheckState.ERROR
+  status.blockchainConnection.checkState = Boolean(debugApiHealth?.status === 'ok') ? CheckState.OK : CheckState.ERROR
 
   // Debug API connection check
   status.debugApiConnection.isEnabled = true
-  status.debugApiConnection.isOk = Boolean(debugApiHealth?.status === 'ok') ? CheckState.OK : CheckState.ERROR
+  status.debugApiConnection.checkState = Boolean(debugApiHealth?.status === 'ok') ? CheckState.OK : CheckState.ERROR
 
   // API connection check
   status.apiConnection.isEnabled = true
-  status.apiConnection.isOk = apiHealth ? CheckState.OK : CheckState.ERROR
+  status.apiConnection.checkState = apiHealth ? CheckState.OK : CheckState.ERROR
 
   // Topology check
   if (nodeInfo && [BeeModes.FULL, BeeModes.LIGHT, BeeModes.ULTRA_LIGHT].includes(nodeInfo.beeMode)) {
     status.topology.isEnabled = true
-    status.topology.isOk = topology?.connected && topology?.connected > 0 ? CheckState.OK : CheckState.WARNING
+    status.topology.checkState = topology?.connected && topology?.connected > 0 ? CheckState.OK : CheckState.WARNING
   }
 
   // Chequebook check
@@ -160,15 +160,17 @@ function getStatus(
       chequebookBalance !== null &&
       chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0)
     ) {
-      status.chequebook.isOk = CheckState.OK
-    } else if (chequebookAddress?.chequebookAddress) status.chequebook.isOk = CheckState.WARNING
-    else status.chequebook.isOk = CheckState.OK
+      status.chequebook.checkState = CheckState.OK
+    } else if (chequebookAddress?.chequebookAddress) status.chequebook.checkState = CheckState.WARNING
+    else status.chequebook.checkState = CheckState.OK
   }
 
   // Determine overall status
-  if (Object.values(status).some(({ isEnabled, isOk }) => isEnabled && isOk === CheckState.ERROR)) {
+  if (Object.values(status).some(({ isEnabled, checkState }) => isEnabled && checkState === CheckState.ERROR)) {
     status.all = CheckState.ERROR
-  } else if (Object.values(status).some(({ isEnabled, isOk }) => isEnabled && isOk === CheckState.WARNING)) {
+  } else if (
+    Object.values(status).some(({ isEnabled, checkState }) => isEnabled && checkState === CheckState.WARNING)
+  ) {
     status.all = CheckState.WARNING
   } else {
     status.all = CheckState.OK

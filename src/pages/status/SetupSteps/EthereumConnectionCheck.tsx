@@ -7,7 +7,7 @@ import { CheckState, Context } from '../../../providers/Bee'
 
 export default function EthereumConnectionCheck(): ReactElement | null {
   const { status, isLoading, nodeAddresses } = useContext(Context)
-  const { isOk, isEnabled } = status.blockchainConnection
+  const { checkState, isEnabled } = status.blockchainConnection
 
   if (!isEnabled) return null
 
@@ -15,12 +15,12 @@ export default function EthereumConnectionCheck(): ReactElement | null {
     <ExpandableList
       label={
         <>
-          <StatusIcon isOk={isOk} isLoading={isLoading} /> Connection to Blockchain
+          <StatusIcon checkState={checkState} isLoading={isLoading} /> Connection to Blockchain
         </>
       }
     >
       <ExpandableListItemNote>
-        {isOk === CheckState.OK ? (
+        {checkState === CheckState.OK ? (
           'Your node is connected to the xDai blockchain'
         ) : (
           <>

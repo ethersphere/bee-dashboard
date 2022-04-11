@@ -10,13 +10,13 @@ import { CheckState, Context } from '../../../providers/Bee'
 
 const ChequebookDeployFund = (): ReactElement | null => {
   const { status, isLoading, chequebookAddress } = useContext(Context)
-  const { isOk, isEnabled } = status.chequebook
+  const { checkState, isEnabled } = status.chequebook
 
   if (!isEnabled) return null
 
   let text: ReactNode
 
-  switch (isOk) {
+  switch (checkState) {
     case CheckState.OK:
       text = 'Your chequebook is deployed and funded'
       break
@@ -49,7 +49,7 @@ const ChequebookDeployFund = (): ReactElement | null => {
     <ExpandableList
       label={
         <>
-          <StatusIcon isOk={isOk} isLoading={isLoading} /> Chequebook Deployment & Funding
+          <StatusIcon checkState={checkState} isLoading={isLoading} /> Chequebook Deployment & Funding
         </>
       }
     >
