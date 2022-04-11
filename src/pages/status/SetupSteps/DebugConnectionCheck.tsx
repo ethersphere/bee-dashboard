@@ -6,7 +6,7 @@ import ExpandableListItem from '../../../components/ExpandableListItem'
 import ExpandableListItemInput from '../../../components/ExpandableListItemInput'
 import ExpandableListItemNote from '../../../components/ExpandableListItemNote'
 import StatusIcon from '../../../components/StatusIcon'
-import { Context } from '../../../providers/Bee'
+import { CheckState, Context } from '../../../providers/Bee'
 import { Context as SettingsContext } from '../../../providers/Settings'
 
 export default function NodeConnectionCheck(): ReactElement | null {
@@ -25,13 +25,13 @@ export default function NodeConnectionCheck(): ReactElement | null {
       }
     >
       <ExpandableListItemNote>
-        {isOk
+        {isOk === CheckState.OK
           ? 'The connection to the Bee nodes debug API has been successful'
           : 'We cannot connect to your nodes debug API. Please check the following to troubleshoot your issue.'}
       </ExpandableListItemNote>
       <ExpandableListItemInput label="Bee Debug API" value={apiDebugUrl} onConfirm={setDebugApiUrl} />
 
-      {!isOk && (
+      {isOk === CheckState.ERROR && (
         <ExpandableList level={1} label="Troubleshoot">
           <ExpandableListItem
             label={

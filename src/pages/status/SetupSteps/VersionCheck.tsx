@@ -4,7 +4,7 @@ import ExpandableList from '../../../components/ExpandableList'
 import ExpandableListItem from '../../../components/ExpandableListItem'
 import ExpandableListItemNote from '../../../components/ExpandableListItemNote'
 import StatusIcon from '../../../components/StatusIcon'
-import { Context } from '../../../providers/Bee'
+import { CheckState, Context } from '../../../providers/Bee'
 
 export default function VersionCheck(): ReactElement | null {
   const { status, isLoading, latestUserVersion, latestPublishedVersion, latestBeeVersionUrl } = useContext(Context)
@@ -21,7 +21,7 @@ export default function VersionCheck(): ReactElement | null {
       }
     >
       <ExpandableListItemNote>
-        {isOk ? (
+        {isOk === CheckState.OK ? (
           'You are running the latest version of Bee.'
         ) : (
           <>
