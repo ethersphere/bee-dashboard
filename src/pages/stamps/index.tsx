@@ -5,7 +5,7 @@ import { PlusSquare } from 'react-feather'
 import { useNavigate } from 'react-router'
 import { SwarmButton } from '../../components/SwarmButton'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
-import { Context as BeeContext } from '../../providers/Bee'
+import { CheckState, Context as BeeContext } from '../../providers/Bee'
 import { Context as StampsContext } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
 import StampsTable from './StampsTable'
@@ -41,7 +41,7 @@ export default function Stamp(): ReactElement {
     return () => stop()
   }, [status]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!status.all) return <TroubleshootConnectionCard />
+  if (status.all === CheckState.ERROR) return <TroubleshootConnectionCard />
 
   function navigateToNewStamp() {
     navigate(ROUTES.STAMPS_NEW)

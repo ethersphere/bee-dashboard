@@ -17,13 +17,19 @@ import { Token } from '../models/Token'
 import type { Balance, ChequebookBalance, Settlements } from '../types'
 import { Context as SettingsContext } from './Settings'
 
+export enum CheckState {
+  OK = 'OK',
+  WARNING = 'Warning',
+  ERROR = 'Error',
+}
+
 interface StatusItem {
   isEnabled: boolean
-  isOk: boolean
+  isOk: CheckState
 }
 
 interface Status {
-  all: boolean
+  all: CheckState
   version: StatusItem
   blockchainConnection: StatusItem
   debugApiConnection: StatusItem
@@ -63,13 +69,13 @@ interface ContextInterface {
 
 const initialValues: ContextInterface = {
   status: {
-    all: false,
-    version: { isEnabled: false, isOk: false },
-    blockchainConnection: { isEnabled: false, isOk: false },
-    debugApiConnection: { isEnabled: false, isOk: false },
-    apiConnection: { isEnabled: false, isOk: false },
-    topology: { isEnabled: false, isOk: false },
-    chequebook: { isEnabled: false, isOk: false },
+    all: CheckState.ERROR,
+    version: { isEnabled: false, isOk: CheckState.ERROR },
+    blockchainConnection: { isEnabled: false, isOk: CheckState.ERROR },
+    debugApiConnection: { isEnabled: false, isOk: CheckState.ERROR },
+    apiConnection: { isEnabled: false, isOk: CheckState.ERROR },
+    topology: { isEnabled: false, isOk: CheckState.ERROR },
+    chequebook: { isEnabled: false, isOk: CheckState.ERROR },
   },
   latestPublishedVersion: undefined,
   latestUserVersion: undefined,
@@ -115,45 +121,60 @@ function getStatus(
   chequebookBalance: ChequebookBalance | null,
   error: Error | null,
 ): Status {
-  const status = {
-    version: {
-      isEnabled: true,
-      isOk: Boolean(
-        debugApiHealth &&
-          semver.satisfies(debugApiHealth.version, engines.bee, {
-            includePrerelease: true,
-          }),
-      ),
-    },
-    blockchainConnection: {
-      isEnabled: true,
-      isOk: Boolean(nodeAddresses?.ethereum),
-    },
-    debugApiConnection: {
-      isEnabled: true,
-      isOk: Boolean(debugApiHealth?.status === 'ok'),
-    },
-    apiConnection: {
-      isEnabled: true,
-      isOk: apiHealth,
-    },
-    topology: {
-      isEnabled: Boolean(nodeInfo && [BeeModes.FULL, BeeModes.LIGHT, BeeModes.ULTRA_LIGHT].includes(nodeInfo.beeMode)),
-      isOk: Boolean(topology?.connected && topology?.connected > 0),
-    },
-    chequebook: {
-      isEnabled: Boolean(nodeInfo && [BeeModes.FULL, BeeModes.LIGHT].includes(nodeInfo.beeMode)),
-      isOk:
-        Boolean(chequebookAddress?.chequebookAddress) &&
-        chequebookBalance !== null &&
-        chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0),
-    },
+  const status: Status = { ...initialValues.status }
+
+  // Version check
+  status.version.isEnabled = true
+  status.version.isOk =
+    debugApiHealth &&
+    semver.satisfies(debugApiHealth.version, engines.bee, {
+      includePrerelease: true,
+    })
+      ? CheckState.OK
+      : CheckState.ERROR
+
+  // Blockchain connection check
+  status.blockchainConnection.isEnabled = true
+  status.blockchainConnection.isOk = Boolean(debugApiHealth?.status === 'ok') ? CheckState.OK : CheckState.ERROR
+
+  // Debug API connection check
+  status.debugApiConnection.isEnabled = true
+  status.debugApiConnection.isOk = Boolean(debugApiHealth?.status === 'ok') ? CheckState.OK : CheckState.ERROR
+
+  // API connection check
+  status.apiConnection.isEnabled = true
+  status.apiConnection.isOk = apiHealth ? CheckState.OK : CheckState.ERROR
+
+  // Topology check
+  if (nodeInfo && [BeeModes.FULL, BeeModes.LIGHT, BeeModes.ULTRA_LIGHT].includes(nodeInfo.beeMode)) {
+    status.topology.isEnabled = true
+    status.topology.isOk = topology?.connected && topology?.connected > 0 ? CheckState.OK : CheckState.WARNING
   }
 
-  return {
-    ...status,
-    all: !error && Object.values(status).every(({ isEnabled, isOk }) => !isEnabled || (isEnabled && isOk)),
+  // Chequebook check
+  if (nodeInfo && [BeeModes.FULL, BeeModes.LIGHT].includes(nodeInfo.beeMode)) {
+    status.chequebook.isEnabled = true
+
+    if (
+      chequebookAddress?.chequebookAddress &&
+      chequebookBalance !== null &&
+      chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0)
+    ) {
+      status.chequebook.isOk = CheckState.OK
+    } else if (chequebookAddress?.chequebookAddress) status.chequebook.isOk = CheckState.WARNING
+    else status.chequebook.isOk = CheckState.OK
   }
+
+  // Determine overall status
+  if (Object.values(status).some(({ isEnabled, isOk }) => isEnabled && isOk === CheckState.ERROR)) {
+    status.all = CheckState.ERROR
+  } else if (Object.values(status).some(({ isEnabled, isOk }) => isEnabled && isOk === CheckState.WARNING)) {
+    status.all = CheckState.WARNING
+  } else {
+    status.all = CheckState.OK
+  }
+
+  return status
 }
 
 export function Provider({ children }: Props): ReactElement {
