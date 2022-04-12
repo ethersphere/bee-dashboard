@@ -21,7 +21,7 @@ export const useIsBeeDesktop = (): IsBeeDesktopHook => {
 
   useEffect(() => {
     axios
-      .get(`${window.location.origin}/info`)
+      .get(`${config.BEE_DESKTOP_URL}/info`)
       .then(res => {
         setIsBeeDesktop(true)
       })
