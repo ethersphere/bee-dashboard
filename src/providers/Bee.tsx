@@ -152,7 +152,7 @@ function getStatus(
   }
 
   // Chequebook check
-  if (nodeInfo && [BeeModes.FULL, BeeModes.LIGHT].includes(nodeInfo.beeMode)) {
+  if (error || (nodeInfo && [BeeModes.FULL, BeeModes.LIGHT].includes(nodeInfo.beeMode))) {
     status.chequebook.isEnabled = true
 
     if (
