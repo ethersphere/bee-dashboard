@@ -14,7 +14,7 @@ jobs:
       - uses: GoogleCloudPlatform/release-please-action@v2
         id: release
         with:
-          token: ${{ secrets.REPO_GHA_PAT }}
+          token: ${{ secrets.GHA_PAT_BASIC }}
           release-type: node
           package-name: bee-dashboard
           bump-minor-pre-major: true

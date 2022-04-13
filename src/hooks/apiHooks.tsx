@@ -8,6 +8,42 @@ export interface LatestBeeReleaseHook {
   error: Error | null
 }
 
+export interface IsBeeDesktopHook {
+  isBeeDesktop: boolean
+  isLoading: boolean
+}
+
+interface Config {
+  BEE_DESKTOP_URL: string
+}
+
+/**
+ * Detect if the dashboard is run within bee-desktop
+ *
+ * @returns isBeeDesktop true if this is run within bee-desktop
+ */
+export const useIsBeeDesktop = (conf: Config = config): IsBeeDesktopHook => {
+  const [isBeeDesktop, setIsBeeDesktop] = useState<boolean>(false)
+  const [isLoading, setLoading] = useState<boolean>(true)
+
+  useEffect(() => {
+    axios
+      .get(`${conf.BEE_DESKTOP_URL}/info`)
+      .then(res => {
+        if (res.data?.name === 'bee-desktop') setIsBeeDesktop(true)
+        else setIsBeeDesktop(false)
+      })
+      .catch(() => {
+        setIsBeeDesktop(false)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }, [conf])
+
+  return { isBeeDesktop, isLoading }
+}
+
 export const useLatestBeeRelease = (): LatestBeeReleaseHook => {
   const [latestBeeRelease, setLatestBeeRelease] = useState<LatestBeeRelease | null>(null)
   const [isLoadingLatestBeeRelease, setLoading] = useState<boolean>(false)

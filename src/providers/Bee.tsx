@@ -1,12 +1,13 @@
-import type {
+import {
   ChainState,
   ChequebookAddressResponse,
   Health,
   LastChequesResponse,
   NodeAddresses,
-  NodesInfo,
+  NodeInfo,
   Peer,
   Topology,
+  BeeModes,
 } from '@ethersphere/bee-js'
 import { createContext, ReactChild, ReactElement, useContext, useEffect, useState } from 'react'
 import semver from 'semver'
@@ -16,14 +17,25 @@ import { Token } from '../models/Token'
 import type { Balance, ChequebookBalance, Settlements } from '../types'
 import { Context as SettingsContext } from './Settings'
 
+export enum CheckState {
+  OK = 'OK',
+  WARNING = 'Warning',
+  ERROR = 'Error',
+}
+
+interface StatusItem {
+  isEnabled: boolean
+  checkState: CheckState
+}
+
 interface Status {
-  all: boolean
-  version: boolean
-  blockchainConnection: boolean
-  debugApiConnection: boolean
-  apiConnection: boolean
-  topology: boolean
-  chequebook: boolean
+  all: CheckState
+  version: StatusItem
+  blockchainConnection: StatusItem
+  debugApiConnection: StatusItem
+  apiConnection: StatusItem
+  topology: StatusItem
+  chequebook: StatusItem
 }
 
 interface ContextInterface {
@@ -37,7 +49,7 @@ interface ContextInterface {
   apiHealth: boolean
   debugApiHealth: Health | null
   nodeAddresses: NodeAddresses | null
-  nodeInfo: NodesInfo | null
+  nodeInfo: NodeInfo | null
   topology: Topology | null
   chequebookAddress: ChequebookAddressResponse | null
   peers: Peer[] | null
@@ -55,17 +67,15 @@ interface ContextInterface {
   refresh: () => Promise<void>
 }
 
-const startedInDevMode = window.location.search.includes('devMode=1')
-
 const initialValues: ContextInterface = {
   status: {
-    all: false,
-    version: false,
-    blockchainConnection: false,
-    debugApiConnection: false,
-    apiConnection: false,
-    topology: false,
-    chequebook: false,
+    all: CheckState.ERROR,
+    version: { isEnabled: false, checkState: CheckState.ERROR },
+    blockchainConnection: { isEnabled: false, checkState: CheckState.ERROR },
+    debugApiConnection: { isEnabled: false, checkState: CheckState.ERROR },
+    apiConnection: { isEnabled: false, checkState: CheckState.ERROR },
+    topology: { isEnabled: false, checkState: CheckState.ERROR },
+    chequebook: { isEnabled: false, checkState: CheckState.ERROR },
   },
   latestPublishedVersion: undefined,
   latestUserVersion: undefined,
@@ -104,34 +114,69 @@ interface Props {
 function getStatus(
   debugApiHealth: Health | null,
   nodeAddresses: NodeAddresses | null,
-  nodeInfo: NodesInfo | null,
+  nodeInfo: NodeInfo | null,
   apiHealth: boolean,
   topology: Topology | null,
   chequebookAddress: ChequebookAddressResponse | null,
   chequebookBalance: ChequebookBalance | null,
   error: Error | null,
 ): Status {
-  // FIXME: `devMode` is a temporary workaround to be able to develop with only one node
-  const devMode = startedInDevMode || Boolean(process.env.REACT_APP_DEV_MODE) || nodeInfo?.beeMode === 'dev'
-  const status = {
-    version: Boolean(
-      debugApiHealth &&
-        semver.satisfies(debugApiHealth.version, engines.bee, {
-          includePrerelease: true,
-        }),
-    ),
-    blockchainConnection: Boolean(nodeAddresses?.ethereum),
-    debugApiConnection: Boolean(debugApiHealth?.status === 'ok'),
-    apiConnection: apiHealth,
-    topology: Boolean(topology?.connected && topology?.connected > 0) || devMode,
-    chequebook:
-      (Boolean(chequebookAddress?.chequebookAddress) &&
-        chequebookBalance !== null &&
-        chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0)) ||
-      devMode,
+  const status: Status = { ...initialValues.status }
+
+  // Version check
+  status.version.isEnabled = true
+  status.version.checkState =
+    debugApiHealth &&
+    semver.satisfies(debugApiHealth.version, engines.bee, {
+      includePrerelease: true,
+    })
+      ? CheckState.OK
+      : CheckState.ERROR
+
+  // Blockchain connection check
+  status.blockchainConnection.isEnabled = true
+  status.blockchainConnection.checkState = Boolean(debugApiHealth?.status === 'ok') ? CheckState.OK : CheckState.ERROR
+
+  // Debug API connection check
+  status.debugApiConnection.isEnabled = true
+  status.debugApiConnection.checkState = Boolean(debugApiHealth?.status === 'ok') ? CheckState.OK : CheckState.ERROR
+
+  // API connection check
+  status.apiConnection.isEnabled = true
+  status.apiConnection.checkState = apiHealth ? CheckState.OK : CheckState.ERROR
+
+  // Topology check
+  if (nodeInfo && [BeeModes.FULL, BeeModes.LIGHT, BeeModes.ULTRA_LIGHT].includes(nodeInfo.beeMode)) {
+    status.topology.isEnabled = true
+    status.topology.checkState = topology?.connected && topology?.connected > 0 ? CheckState.OK : CheckState.WARNING
   }
 
-  return { ...status, all: !error && Object.values(status).every(v => v) }
+  // Chequebook check
+  if (error || (nodeInfo && [BeeModes.FULL, BeeModes.LIGHT].includes(nodeInfo.beeMode))) {
+    status.chequebook.isEnabled = true
+
+    if (
+      chequebookAddress?.chequebookAddress &&
+      chequebookBalance !== null &&
+      chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0)
+    ) {
+      status.chequebook.checkState = CheckState.OK
+    } else if (chequebookAddress?.chequebookAddress) status.chequebook.checkState = CheckState.WARNING
+    else status.chequebook.checkState = CheckState.OK
+  }
+
+  // Determine overall status
+  if (Object.values(status).some(({ isEnabled, checkState }) => isEnabled && checkState === CheckState.ERROR)) {
+    status.all = CheckState.ERROR
+  } else if (
+    Object.values(status).some(({ isEnabled, checkState }) => isEnabled && checkState === CheckState.WARNING)
+  ) {
+    status.all = CheckState.WARNING
+  } else {
+    status.all = CheckState.OK
+  }
+
+  return status
 }
 
 export function Provider({ children }: Props): ReactElement {
@@ -139,7 +184,7 @@ export function Provider({ children }: Props): ReactElement {
   const [apiHealth, setApiHealth] = useState<boolean>(false)
   const [debugApiHealth, setDebugApiHealth] = useState<Health | null>(null)
   const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses | null>(null)
-  const [nodeInfo, setNodeInfo] = useState<NodesInfo | null>(null)
+  const [nodeInfo, setNodeInfo] = useState<NodeInfo | null>(null)
   const [topology, setNodeTopology] = useState<Topology | null>(null)
   const [chequebookAddress, setChequebookAddress] = useState<ChequebookAddressResponse | null>(null)
   const [peers, setPeers] = useState<Peer[] | null>(null)

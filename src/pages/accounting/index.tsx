@@ -2,7 +2,7 @@ import { ReactElement, useContext } from 'react'
 
 import PeerBalances from './PeerBalances'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
-import { Context as BeeContext } from '../../providers/Bee'
+import { CheckState, Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { useAccounting } from '../../hooks/accounting'
 import ExpandableList from '../../components/ExpandableList'
@@ -19,7 +19,7 @@ export default function Accounting(): ReactElement {
 
   const { accounting, totalUncashed, isLoadingUncashed } = useAccounting(beeDebugApi, settlements, peerBalances)
 
-  if (!status.all) return <TroubleshootConnectionCard />
+  if (status.all === CheckState.ERROR) return <TroubleshootConnectionCard />
 
   return (
     <div>

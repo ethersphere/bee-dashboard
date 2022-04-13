@@ -52,6 +52,9 @@ jobs:
         env:
           CI: true
 
+      - name: Dependency check
+        run: npm run depcheck
+
       - name: Types check
         run: npm run check:types
 
@@ -62,7 +65,7 @@ jobs:
         uses: ethersphere/update-supported-bee-action@v1
         if: github.ref == 'refs/heads/master'
         with:
-          token: ${{ secrets.REPO_GHA_PAT }}
+          token: ${{ secrets.GHA_PAT_BASIC }}
 
       - name: Build
         run: npm run build
@@ -74,7 +77,7 @@ jobs:
         uses: ethersphere/swarm-actions/pr-preview@v0
         with:
           bee-url: https://unlimited.gateway.ethswarm.org
-          token: ${{ secrets.REPO_GHA_PAT }}
+          token: ${{ secrets.GHA_PAT_BASIC }}
           error-document: index.html
           headers: "${{ secrets.GATEWAY_AUTHORIZATION_HEADER }}"
 

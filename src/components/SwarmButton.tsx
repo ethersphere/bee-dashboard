@@ -10,6 +10,7 @@ interface Props {
   disabled?: boolean
   loading?: boolean
   cancel?: boolean
+  variant?: 'text' | 'contained' | 'outlined'
 }
 
 const useStyles = makeStyles(() =>
@@ -49,6 +50,7 @@ export function SwarmButton({
   disabled,
   loading,
   cancel,
+  variant = 'contained',
 }: Props): ReactElement {
   const classes = useStyles()
 
@@ -76,7 +78,7 @@ export function SwarmButton({
         onClick()
         event.currentTarget.blur()
       }}
-      variant="contained"
+      variant={variant}
       startIcon={icon}
       disabled={disabled}
     >
