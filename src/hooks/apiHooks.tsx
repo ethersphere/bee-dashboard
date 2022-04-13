@@ -13,18 +13,22 @@ export interface IsBeeDesktopHook {
   isLoading: boolean
 }
 
+interface Config {
+  BEE_DESKTOP_URL: string
+}
+
 /**
  * Detect if the dashboard is run within bee-desktop
  *
  * @returns isBeeDesktop true if this is run within bee-desktop
  */
-export const useIsBeeDesktop = (): IsBeeDesktopHook => {
+export const useIsBeeDesktop = (conf: Config = config): IsBeeDesktopHook => {
   const [isBeeDesktop, setIsBeeDesktop] = useState<boolean>(false)
-  const [isLoading, setLoading] = useState<boolean>(false)
+  const [isLoading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
     axios
-      .get(`${config.BEE_DESKTOP_URL}/info`)
+      .get(`${conf.BEE_DESKTOP_URL}/info`)
       .then(res => {
         if (res.data?.name === 'bee-desktop') setIsBeeDesktop(true)
         else setIsBeeDesktop(false)
@@ -35,7 +39,7 @@ export const useIsBeeDesktop = (): IsBeeDesktopHook => {
       .finally(() => {
         setLoading(false)
       })
-  }, [])
+  }, [conf])
 
   return { isBeeDesktop, isLoading }
 }
