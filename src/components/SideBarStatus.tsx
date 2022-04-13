@@ -66,11 +66,9 @@ export default function SideBarItem({ path }: Props): ReactElement {
       disableRipple
     >
       <ListItemIcon style={{ marginLeft: '30px' }}>
-        <StatusIcon isOk={status.all} isLoading={isLoading} />
+        <StatusIcon checkState={status.all} isLoading={isLoading} />
       </ListItemIcon>
-      <ListItemText
-        primary={<Typography className={classes.smallerText}>{`Node ${status.all ? 'OK' : 'Error'}`}</Typography>}
-      />
+      <ListItemText primary={<Typography className={classes.smallerText}>{`Node ${status.all}`}</Typography>} />
       <ListItemIcon className={classes.icon}>
         {status.all ? null : <ArrowRight className={classes.iconSmall} />}
       </ListItemIcon>

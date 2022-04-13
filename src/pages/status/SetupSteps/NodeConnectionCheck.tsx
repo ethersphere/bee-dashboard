@@ -7,12 +7,12 @@ import ExpandableListItem from '../../../components/ExpandableListItem'
 import ExpandableListItemNote from '../../../components/ExpandableListItemNote'
 import ExpandableListItemInput from '../../../components/ExpandableListItemInput'
 import StatusIcon from '../../../components/StatusIcon'
-import { Context } from '../../../providers/Bee'
+import { CheckState, Context } from '../../../providers/Bee'
 
 export default function NodeConnectionCheck(): ReactElement | null {
   const { setApiUrl, apiUrl } = useContext(SettingsContext)
   const { status, isLoading } = useContext(Context)
-  const { isEnabled, isOk } = status.apiConnection
+  const { isEnabled, checkState } = status.apiConnection
 
   if (!isEnabled) return null
 
@@ -20,17 +20,17 @@ export default function NodeConnectionCheck(): ReactElement | null {
     <ExpandableList
       label={
         <>
-          <StatusIcon isOk={isOk} isLoading={isLoading} /> Connection to Bee API
+          <StatusIcon checkState={checkState} isLoading={isLoading} /> Connection to Bee API
         </>
       }
     >
       <ExpandableListItemNote>
-        {isOk
+        {checkState === CheckState.OK
           ? 'The connection to the Bee nodes API has been successful'
           : 'Could not connect to your Bee nodes API. Please check the troubleshoot below on how you may resolve it.'}
       </ExpandableListItemNote>
       <ExpandableListItemInput label="Bee API" value={apiUrl} onConfirm={setApiUrl} />
-      {!isOk && (
+      {checkState === CheckState.ERROR && (
         <ExpandableList level={1} label="Troubleshoot">
           <ExpandableListItem
             label={

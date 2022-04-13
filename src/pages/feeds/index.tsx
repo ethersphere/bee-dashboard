@@ -8,7 +8,7 @@ import ExpandableListItemActions from '../../components/ExpandableListItemAction
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import { SwarmButton } from '../../components/SwarmButton'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
-import { Context as BeeContext } from '../../providers/Bee'
+import { CheckState, Context as BeeContext } from '../../providers/Bee'
 import { Context as IdentityContext, Identity } from '../../providers/Feeds'
 import { ROUTES } from '../../routes'
 import { formatEnum } from '../../utils'
@@ -60,7 +60,7 @@ export default function Feeds(): ReactElement {
     setShowDelete(true)
   }
 
-  if (!status.all) return <TroubleshootConnectionCard />
+  if (status.all === CheckState.ERROR) return <TroubleshootConnectionCard />
 
   return (
     <div>

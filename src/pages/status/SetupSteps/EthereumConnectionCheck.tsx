@@ -3,11 +3,11 @@ import ExpandableList from '../../../components/ExpandableList'
 import ExpandableListItemKey from '../../../components/ExpandableListItemKey'
 import ExpandableListItemNote from '../../../components/ExpandableListItemNote'
 import StatusIcon from '../../../components/StatusIcon'
-import { Context } from '../../../providers/Bee'
+import { CheckState, Context } from '../../../providers/Bee'
 
 export default function EthereumConnectionCheck(): ReactElement | null {
   const { status, isLoading, nodeAddresses } = useContext(Context)
-  const { isOk, isEnabled } = status.blockchainConnection
+  const { checkState, isEnabled } = status.blockchainConnection
 
   if (!isEnabled) return null
 
@@ -15,12 +15,12 @@ export default function EthereumConnectionCheck(): ReactElement | null {
     <ExpandableList
       label={
         <>
-          <StatusIcon isOk={isOk} isLoading={isLoading} /> Connection to Blockchain
+          <StatusIcon checkState={checkState} isLoading={isLoading} /> Connection to Blockchain
         </>
       }
     >
       <ExpandableListItemNote>
-        {isOk ? (
+        {checkState === CheckState.OK ? (
           'Your node is connected to the xDai blockchain'
         ) : (
           <>
