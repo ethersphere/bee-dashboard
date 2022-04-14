@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.14.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.13.0...v0.14.0) (2022-04-14)
+
+
+### Features
+
+* add hook that detects if the bee-dashboard is run within bee-desktop ([#334](https://www.github.com/ethersphere/bee-dashboard/issues/334)) ([eb9e309](https://www.github.com/ethersphere/bee-dashboard/commit/eb9e309c8bc0327d137f190d6873618cb215fece))
+* detect bee mode and enable/disable status checks accordingly ([#318](https://www.github.com/ethersphere/bee-dashboard/issues/318)) ([8baecb7](https://www.github.com/ethersphere/bee-dashboard/commit/8baecb783f1574af1cd1f17738efae4b0ac9f0c8))
+* optional status checks (e.g. connected peers > 0 or funded chequebook) ([#331](https://www.github.com/ethersphere/bee-dashboard/issues/331)) ([5d0fbf7](https://www.github.com/ethersphere/bee-dashboard/commit/5d0fbf705dfed6738980c751a9654199d60a3787))
+
+
+### Bug Fixes
+
+* postage stamp price and TTL calculation ([#305](https://www.github.com/ethersphere/bee-dashboard/issues/305)) ([d0b3f1a](https://www.github.com/ethersphere/bee-dashboard/commit/d0b3f1abee7ea017bdd05954d5fadafb67365efd))
+
 ## [0.13.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.12.0...v0.13.0) (2022-01-28)
 
 
