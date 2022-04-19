@@ -39,7 +39,7 @@ export default function UpgradePage(): ReactElement {
     if (chequebookAddress?.chequebookAddress) {
       setLoading(true)
       try {
-        await requestBzz(chequebookAddress?.chequebookAddress).finally(() => setLoading(false))
+        await requestBzz(chequebookAddress?.chequebookAddress)
         enqueueSnackbar('Successfully funded chequebook address', { variant: 'success' })
       } finally {
         setLoading(false)
@@ -51,7 +51,7 @@ export default function UpgradePage(): ReactElement {
     if (nodeAddresses?.ethereum) {
       setLoading(true)
       try {
-        await requestBzz(nodeAddresses?.ethereum).finally(() => setLoading(false))
+        await requestBzz(nodeAddresses?.ethereum)
         enqueueSnackbar('Successfully funded overlay address', { variant: 'success' })
       } finally {
         setLoading(false)
