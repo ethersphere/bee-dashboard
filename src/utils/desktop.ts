@@ -3,6 +3,7 @@ import { getJson, postJson } from './net'
 interface DesktopStatus {
   status: 0 | 1 | 2
   address: string | null
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   config: Record<string, any>
 }
 
