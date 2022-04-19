@@ -23,13 +23,14 @@ export function Provider({ children }: Props): ReactElement {
   const [bzz, setBzz] = useState<string>(initialValues.bzz)
   const [xdai, setXdai] = useState<string>(initialValues.xdai)
 
-  const refresh = () => {
-    getBeeEthereumAddress()
-      .then(address => Rpc.eth_getBalance(address))
-      .then(balance => setXdai(balance))
-    getBeeEthereumAddress()
-      .then(address => Rpc.eth_getBalanceERC20(address))
-      .then(balance => setBzz(balance))
+  const refresh = async () => {
+    try {
+      const address = await getBeeEthereumAddress()
+      Rpc.eth_getBalance(address).then(balance => setXdai(balance))
+      Rpc.eth_getBalanceERC20(address).then(balance => setBzz(balance))
+    } catch (error) {
+      console.error(error) // eslint-disable-line
+    }
   }
 
   useEffect(() => {
