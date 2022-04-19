@@ -1,6 +1,6 @@
 import { Contract, providers } from 'ethers'
 
-const PROVIDER = 'https://rpc.gnosischain.com/'
+const PROVIDER = 'https://xdai.fairdatasociety.org/'
 
 async function eth_getBalance(address: string): Promise<string> {
   const response = await fetch(PROVIDER, {

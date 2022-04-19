@@ -10,8 +10,10 @@ import { SwarmTextInput } from '../../components/SwarmTextInput'
 import { Token } from '../../models/Token'
 import { Context } from '../../providers/Bee'
 import { requestBzz } from '../../utils/bzz-faucet'
-import { getJson, postJson } from '../../utils/net'
+import { getBeeEthereumAddress, getGasFromFaucet, restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
 import { Rpc } from '../../utils/rpc'
+
+const DEFAULT_RPC_PROVIDER = 'https://xdai.fairdatasociety.org/'
 
 export default function UpgradePage(): ReactElement {
   const { nodeInfo, chequebookAddress, nodeAddresses } = useContext(Context)
@@ -21,27 +23,25 @@ export default function UpgradePage(): ReactElement {
   const [balance, setBalance] = useState<string | null>(null)
   const [balanceBzz, setBalanceBzz] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
-  const [rpcProvider, setRpcProvider] = useState<string>('https://rpc.gnosischain.com/')
+  const [rpcProvider, setRpcProvider] = useState<string>(DEFAULT_RPC_PROVIDER)
 
   const port = parseInt(window.location.host.split(':')[1], 10)
 
   useEffect(() => {
-    getJson(`http://localhost:${port}/status`)
-      .then(status => Rpc.eth_getBalance(status.address))
+    getBeeEthereumAddress()
+      .then(address => Rpc.eth_getBalance(address))
       .then(balance => setBalance(balance))
 
-    getJson(`http://localhost:${port}/status`)
-      .then(status => Rpc.eth_getBalanceERC20(status.address))
+    getBeeEthereumAddress()
+      .then(address => Rpc.eth_getBalanceERC20(address))
       .then(balanceBzz => setBalanceBzz(balanceBzz))
   }, [port])
 
   async function onFund() {
     setLoading(true)
     try {
-      const { address } = await getJson(`http://localhost:${port}/status`)
-      await fetch(`http://getxdai.co/${address}/0.1`, {
-        method: 'POST',
-      })
+      const address = await getBeeEthereumAddress()
+      await getGasFromFaucet(address)
       const balance = await Rpc.eth_getBalance(address)
       setBalance(balance)
       const balanceBzz = await Rpc.eth_getBalanceERC20(address)
@@ -71,12 +71,8 @@ export default function UpgradePage(): ReactElement {
   async function onUpgrade() {
     setLoading(true)
     try {
-      await postJson(`http://localhost:${port}/config`, {
-        'chain-enable': true,
-        'swap-enable': true,
-        'swap-endpoint': rpcProvider,
-      })
-      await postJson(`http://localhost:${port}/restart`)
+      await upgradeToLightNode(rpcProvider)
+      await restartBeeNode()
       enqueueSnackbar('Restarting Bee in Light Mode...', { variant: 'success' })
     } finally {
       setLoading(false)
@@ -142,7 +138,7 @@ export default function UpgradePage(): ReactElement {
               <SwarmTextInput
                 label="RPC Provider"
                 name="rpc-provider"
-                defaultValue="https://rpc.gnosischain.com/"
+                defaultValue={DEFAULT_RPC_PROVIDER}
                 onChange={event => {
                   setRpcProvider(event.target.value)
                 }}
