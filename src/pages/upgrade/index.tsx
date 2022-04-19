@@ -1,6 +1,6 @@
 import { Box, Card, Typography } from '@material-ui/core'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useContext, useEffect, useState } from 'react'
+import { ReactElement, useContext, useState } from 'react'
 import { ArrowUp, Send } from 'react-feather'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import { HistoryHeader } from '../../components/HistoryHeader'
@@ -8,42 +8,27 @@ import { Loading } from '../../components/Loading'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
 import { Token } from '../../models/Token'
-import { Context } from '../../providers/Bee'
+import { Context as BalanceContext } from '../../providers/Balance'
+import { Context as BeeContext } from '../../providers/Bee'
 import { requestBzz } from '../../utils/bzz-faucet'
 import { getBeeEthereumAddress, getGasFromFaucet, restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
-import { Rpc } from '../../utils/rpc'
 
 const DEFAULT_RPC_PROVIDER = 'https://xdai.fairdatasociety.org/'
 
 export default function UpgradePage(): ReactElement {
-  const { nodeInfo, chequebookAddress, nodeAddresses } = useContext(Context)
+  const { nodeInfo, chequebookAddress, nodeAddresses } = useContext(BeeContext)
+  const { bzz, xdai } = useContext(BalanceContext)
 
   const { enqueueSnackbar } = useSnackbar()
 
-  const [balance, setBalance] = useState<string | null>(null)
-  const [balanceBzz, setBalanceBzz] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [rpcProvider, setRpcProvider] = useState<string>(DEFAULT_RPC_PROVIDER)
-
-  useEffect(() => {
-    getBeeEthereumAddress()
-      .then(address => Rpc.eth_getBalance(address))
-      .then(balance => setBalance(balance))
-
-    getBeeEthereumAddress()
-      .then(address => Rpc.eth_getBalanceERC20(address))
-      .then(balanceBzz => setBalanceBzz(balanceBzz))
-  }, [])
 
   async function onFund() {
     setLoading(true)
     try {
       const address = await getBeeEthereumAddress()
       await getGasFromFaucet(address)
-      const balance = await Rpc.eth_getBalance(address)
-      setBalance(balance)
-      const balanceBzz = await Rpc.eth_getBalanceERC20(address)
-      setBalanceBzz(balanceBzz)
       enqueueSnackbar('Wallet funded successfully', { variant: 'success' })
     } finally {
       setLoading(false)
@@ -53,16 +38,24 @@ export default function UpgradePage(): ReactElement {
   async function onChequebookBzzFund() {
     if (chequebookAddress?.chequebookAddress) {
       setLoading(true)
-      await requestBzz(chequebookAddress?.chequebookAddress).finally(() => setLoading(false))
-      enqueueSnackbar('Successfully funded chequebook address', { variant: 'success' })
+      try {
+        await requestBzz(chequebookAddress?.chequebookAddress).finally(() => setLoading(false))
+        enqueueSnackbar('Successfully funded chequebook address', { variant: 'success' })
+      } finally {
+        setLoading(false)
+      }
     }
   }
 
   async function onOverlayBzzFund() {
     if (nodeAddresses?.ethereum) {
       setLoading(true)
-      await requestBzz(nodeAddresses?.ethereum).finally(() => setLoading(false))
-      enqueueSnackbar('Successfully funded overlay address', { variant: 'success' })
+      try {
+        await requestBzz(nodeAddresses?.ethereum).finally(() => setLoading(false))
+        enqueueSnackbar('Successfully funded overlay address', { variant: 'success' })
+      } finally {
+        setLoading(false)
+      }
     }
   }
 
@@ -92,9 +85,9 @@ export default function UpgradePage(): ReactElement {
             </Box>
             <Box mb={4}>
               <Typography>
-                Your current balance is {new Token(balance || '0', 18).toSignificantDigits(4)} xDAI and{' '}
-                {new Token(balanceBzz || '0', 16).toSignificantDigits(4)} xBZZ. Fund your node with xDAI so chequebook
-                can be deployed.
+                Your current balance is {new Token(xdai || '0', 18).toSignificantDigits(4)} xDAI and{' '}
+                {new Token(bzz || '0', 16).toSignificantDigits(4)} xBZZ. Fund your node with xDAI so chequebook can be
+                deployed.
               </Typography>
             </Box>
             <ExpandableListItemActions>
@@ -148,19 +141,8 @@ export default function UpgradePage(): ReactElement {
       <Card variant="outlined">
         <Box p={2}>
           <Typography variant="h1">Upgrade Node</Typography>
-          {!balance && (
-            <Box mt={2}>
-              <Typography>Fund your node to unlock upgrading.</Typography>
-            </Box>
-          )}
           <Box mt={4}>
-            <SwarmButton
-              onClick={onUpgrade}
-              iconType={ArrowUp}
-              loading={loading}
-              disabled={loading || !balance}
-              variant="outlined"
-            >
+            <SwarmButton onClick={onUpgrade} iconType={ArrowUp} loading={loading} disabled={loading} variant="outlined">
               Switch to Light Mode
             </SwarmButton>
           </Box>
