@@ -25,8 +25,6 @@ export default function UpgradePage(): ReactElement {
   const [loading, setLoading] = useState<boolean>(false)
   const [rpcProvider, setRpcProvider] = useState<string>(DEFAULT_RPC_PROVIDER)
 
-  const port = parseInt(window.location.host.split(':')[1], 10)
-
   useEffect(() => {
     getBeeEthereumAddress()
       .then(address => Rpc.eth_getBalance(address))
@@ -35,7 +33,7 @@ export default function UpgradePage(): ReactElement {
     getBeeEthereumAddress()
       .then(address => Rpc.eth_getBalanceERC20(address))
       .then(balanceBzz => setBalanceBzz(balanceBzz))
-  }, [port])
+  }, [])
 
   async function onFund() {
     setLoading(true)
