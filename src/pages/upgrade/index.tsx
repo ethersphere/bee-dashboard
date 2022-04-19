@@ -85,8 +85,8 @@ export default function UpgradePage(): ReactElement {
             </Box>
             <Box mb={4}>
               <Typography>
-                Your current balance is {new Token(xdai || '0', 18).toSignificantDigits(4)} xDAI and{' '}
-                {new Token(bzz || '0', 16).toSignificantDigits(4)} xBZZ. Fund your node with xDAI so chequebook can be
+                Your current balance is {new Token(xdai, 18).toSignificantDigits(4)} xDAI and{' '}
+                {new Token(bzz, 16).toSignificantDigits(4)} xBZZ. Fund your node with xDAI so chequebook can be
                 deployed.
               </Typography>
             </Box>
