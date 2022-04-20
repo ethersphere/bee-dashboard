@@ -14,11 +14,9 @@ import Settings from './pages/settings'
 import Stamps from './pages/stamps'
 import { CreatePostageStampPage } from './pages/stamps/CreatePostageStampPage'
 import Status from './pages/status'
-import Upgrade from './pages/upgrade'
 
 export enum ROUTES {
   INFO = '/',
-  UPGRADE = '/upgrade',
   FILES = '/files',
   UPLOAD = '/files/upload',
   UPLOAD_IN_PROGRESS = '/files/upload/workflow',
@@ -40,7 +38,6 @@ const BaseRouter = (): ReactElement => (
     <Route path={ROUTES.UPLOAD_IN_PROGRESS} element={<Upload />} />
     <Route path={ROUTES.UPLOAD} element={<UploadLander />} />
     <Route path={ROUTES.DOWNLOAD} element={<Download />} />
-    <Route path={ROUTES.UPGRADE} element={<Upgrade />} />
     <Route path={ROUTES.HASH} element={<Share />} />
     <Route path={ROUTES.ACCOUNTING} element={<Accounting />} />
     <Route path={ROUTES.SETTINGS} element={<Settings />} />
