@@ -5,6 +5,7 @@ import React, { ReactElement } from 'react'
 import { HashRouter as Router } from 'react-router-dom'
 import './App.css'
 import Dashboard from './layout/Dashboard'
+import { Provider as BalanceProvider } from './providers/Balance'
 import { Provider as BeeProvider } from './providers/Bee'
 import { Provider as FeedsProvider } from './providers/Feeds'
 import { Provider as FileProvider } from './providers/File'
@@ -30,14 +31,16 @@ const App = ({ beeApiUrl, beeDebugApiUrl, lockedApiSettings }: Props): ReactElem
               <FeedsProvider>
                 <PlatformProvider>
                   <SnackbarProvider>
-                    <Router>
-                      <>
-                        <CssBaseline />
-                        <Dashboard>
-                          <BaseRouter />
-                        </Dashboard>
-                      </>
-                    </Router>
+                    <BalanceProvider>
+                      <Router>
+                        <>
+                          <CssBaseline />
+                          <Dashboard>
+                            <BaseRouter />
+                          </Dashboard>
+                        </>
+                      </Router>
+                    </BalanceProvider>
                   </SnackbarProvider>
                 </PlatformProvider>
               </FeedsProvider>
