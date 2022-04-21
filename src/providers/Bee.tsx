@@ -1,4 +1,5 @@
 import {
+  BeeModes,
   ChainState,
   ChequebookAddressResponse,
   Health,
@@ -7,7 +8,6 @@ import {
   NodeInfo,
   Peer,
   Topology,
-  BeeModes,
 } from '@ethersphere/bee-js'
 import { createContext, ReactChild, ReactElement, useContext, useEffect, useState } from 'react'
 import semver from 'semver'
@@ -15,7 +15,13 @@ import { engines } from '../../package.json'
 import { useLatestBeeRelease } from '../hooks/apiHooks'
 import { Token } from '../models/Token'
 import type { Balance, ChequebookBalance, Settlements } from '../types'
+import { Rpc } from '../utils/rpc'
 import { Context as SettingsContext } from './Settings'
+
+interface RpcBalance {
+  bzz: Token
+  xdai: Token
+}
 
 export enum CheckState {
   OK = 'OK',
@@ -40,6 +46,7 @@ interface Status {
 
 interface ContextInterface {
   status: Status
+  balance: RpcBalance
   latestPublishedVersion?: string
   latestUserVersion?: string
   latestUserVersionExact?: string
@@ -76,6 +83,10 @@ const initialValues: ContextInterface = {
     apiConnection: { isEnabled: false, checkState: CheckState.ERROR },
     topology: { isEnabled: false, checkState: CheckState.ERROR },
     chequebook: { isEnabled: false, checkState: CheckState.ERROR },
+  },
+  balance: {
+    bzz: new Token('0', 16),
+    xdai: new Token('0', 18),
   },
   latestPublishedVersion: undefined,
   latestUserVersion: undefined,
@@ -193,6 +204,8 @@ export function Provider({ children }: Props): ReactElement {
   const [peerCheques, setPeerCheques] = useState<LastChequesResponse | null>(null)
   const [settlements, setSettlements] = useState<Settlements | null>(null)
   const [chainState, setChainState] = useState<ChainState | null>(null)
+  const [bzz, setBzz] = useState<Token>(initialValues.balance.bzz)
+  const [xdai, setXdai] = useState<Token>(initialValues.balance.xdai)
 
   const { latestBeeRelease } = useLatestBeeRelease()
 
@@ -231,6 +244,22 @@ export function Provider({ children }: Props): ReactElement {
 
     refresh()
   }, [beeDebugApi]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (nodeAddresses?.ethereum) {
+      // debounced calls
+      const xdai = Rpc.eth_getBalance(nodeAddresses.ethereum)
+      const bzz = Rpc.eth_getBalanceERC20(nodeAddresses.ethereum)
+
+      if (xdai?.then) {
+        xdai.then(balance => setXdai(new Token(balance, 18)))
+      }
+
+      if (bzz?.then) {
+        bzz.then(balance => setBzz(new Token(balance, 16)))
+      }
+    }
+  }, [nodeAddresses])
 
   const refresh = async () => {
     // Don't want to refresh when already refreshing
@@ -388,6 +417,10 @@ export function Provider({ children }: Props): ReactElement {
           chequebookBalance,
           error,
         ),
+        balance: {
+          xdai,
+          bzz,
+        },
         latestUserVersion,
         latestUserVersionExact,
         latestPublishedVersion,

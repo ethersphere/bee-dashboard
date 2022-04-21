@@ -10,6 +10,7 @@ interface ContextInterface {
   setApiUrl: (url: string) => void
   setDebugApiUrl: (url: string) => void
   lockedApiSettings: boolean
+  desktopApiKey: string
 }
 
 const initialValues: ContextInterface = {
@@ -20,6 +21,7 @@ const initialValues: ContextInterface = {
   setApiUrl: () => {}, // eslint-disable-line
   setDebugApiUrl: () => {}, // eslint-disable-line
   lockedApiSettings: false,
+  desktopApiKey: '',
 }
 
 export const Context = createContext<ContextInterface>(initialValues)
@@ -43,9 +45,21 @@ export function Provider({
   const [beeApi, setBeeApi] = useState<Bee | null>(null)
   const [beeDebugApi, setBeeDebugApi] = useState<BeeDebug | null>(null)
   const [lockedApiSettings] = useState<boolean>(Boolean(extLockedApiSettings))
+  const [desktopApiKey, setDesktopApiKey] = useState<string>(initialValues.desktopApiKey)
 
   const url = beeApiUrl || apiUrl
   const debugUrl = beeDebugApiUrl || apiDebugUrl
+
+  useEffect(() => {
+    const urlSearchParams = new URLSearchParams(window.location.search)
+    const newApiKey = urlSearchParams.get('v')
+
+    if (newApiKey) {
+      localStorage.setItem('apiKey', newApiKey)
+      window.location.search = ''
+      setDesktopApiKey(newApiKey)
+    }
+  }, [])
 
   useEffect(() => {
     try {
@@ -75,6 +89,7 @@ export function Provider({
         setApiUrl,
         setDebugApiUrl,
         lockedApiSettings,
+        desktopApiKey,
       }}
     >
       {children}
