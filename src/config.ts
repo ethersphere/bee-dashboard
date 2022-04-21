@@ -9,6 +9,7 @@ class Config {
   public readonly BEE_DOCS_HOST: string
   public readonly BEE_DISCORD_HOST: string
   public readonly GITHUB_REPO_URL: string
+  public readonly BEE_DESKTOP_URL: string
 
   constructor() {
     this.BEE_API_HOST =
@@ -21,6 +22,7 @@ class Config {
     this.BEE_DISCORD_HOST = getProcessEnv('REACT_APP_BEE_DISCORD_HOST') || 'https://discord.gg/eKr9XPv7'
     this.GITHUB_REPO_URL =
       getProcessEnv('REACT_APP_BEE_GITHUB_REPO_URL') || 'https://api.github.com/repos/ethersphere/bee'
+    this.BEE_DESKTOP_URL = getProcessEnv('REACT_APP_BEE_DESKTOP_URL') || window.location.origin
   }
 }
 
