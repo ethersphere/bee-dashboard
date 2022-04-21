@@ -1,9 +1,12 @@
-import { CircularProgress, Container } from '@material-ui/core'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import { ReactElement, useContext } from 'react'
-import AlertVersion from '../components/AlertVersion'
+import { useContext, ReactElement } from 'react'
 import ErrorBoundary from '../components/ErrorBoundary'
+import AlertVersion from '../components/AlertVersion'
+import { Container, CircularProgress } from '@material-ui/core'
+
+import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
+
 import SideBar from '../components/SideBar'
+
 import { Context } from '../providers/Bee'
 
 const useStyles = makeStyles((theme: Theme) =>
