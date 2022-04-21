@@ -13,16 +13,6 @@ export async function getDesktopStatus(): Promise<DesktopStatus> {
   return response as DesktopStatus
 }
 
-export async function getBeeEthereumAddress(): Promise<string> {
-  const status = await getDesktopStatus()
-
-  if (!status.address) {
-    throw Error('Bee node Ethereum address is not yet available')
-  }
-
-  return status.address
-}
-
 export async function getGasFromFaucet(address: string): Promise<void> {
   await fetch(`http://getxdai.co/${address}/0.1`, {
     method: 'POST',
