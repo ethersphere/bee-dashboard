@@ -1,6 +1,7 @@
 import { CircularProgress, Container } from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import { ReactElement, useContext } from 'react'
+import AlertVersion from '../components/AlertVersion'
 import ErrorBoundary from '../components/ErrorBoundary'
 import SideBar from '../components/SideBar'
 import { Context } from '../providers/Bee'
@@ -29,6 +30,7 @@ const Dashboard = (props: Props): ReactElement => {
       <Container className={classes.content}>
         <ErrorBoundary>
           <>
+            <AlertVersion />
             {isLoading ? (
               <div style={{ textAlign: 'center', width: '100%' }}>
                 <CircularProgress />

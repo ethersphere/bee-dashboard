@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import axios from 'axios'
+
 export function getJson(url: string): Promise<Record<string, any>> {
   return sendRequest(url, 'GET')
 }
@@ -11,7 +13,7 @@ export function postJson(url: string, data?: Record<string, any>): Promise<Recor
 async function sendRequest(
   url: string,
   method: 'GET' | 'POST',
-  body?: Record<string, unknown>,
+  data?: Record<string, unknown>,
 ): Promise<Record<string, any>> {
   const authorization = localStorage.getItem('apiKey')
 
@@ -19,15 +21,13 @@ async function sendRequest(
     throw Error('API key not found in local storage')
   }
   const headers = {
-    'content-type': 'application/json',
     authorization,
   }
-  const response = await fetch(url, {
+  const response = await axios(url, {
     method,
     headers,
-    body: body ? JSON.stringify(body) : undefined,
+    data,
   })
-  const json = await response.json()
 
-  return json
+  return response.data
 }

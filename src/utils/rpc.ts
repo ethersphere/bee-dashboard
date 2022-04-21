@@ -1,3 +1,5 @@
+import { debounce } from '@material-ui/core'
+import axios from 'axios'
 import { Contract, providers } from 'ethers'
 
 const PROVIDER = 'https://gno.getblock.io/mainnet/?api_key=d7b92d96-9784-49a8-a800-b3edd1647fc7'
@@ -6,21 +8,20 @@ async function eth_getBalance(address: string): Promise<string> {
   if (!address.startsWith('0x')) {
     address = `0x${address}`
   }
-  const response = await fetch(PROVIDER, {
+  const response = await axios(PROVIDER, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
     },
-    body: JSON.stringify({
+    data: {
       jsonrpc: '2.0',
       method: 'eth_getBalance',
       params: [address, 'latest'],
       id: 1,
-    }),
+    },
   })
-  const json = await response.json()
 
-  return json.result
+  return response.data.result
 }
 
 const partialERC20tokenABI = [
@@ -60,6 +61,6 @@ async function eth_getBalanceERC20(
 }
 
 export const Rpc = {
-  eth_getBalance,
-  eth_getBalanceERC20,
+  eth_getBalance: debounce(eth_getBalance, 1_000),
+  eth_getBalanceERC20: debounce(eth_getBalanceERC20, 1_000),
 }
