@@ -19,8 +19,8 @@ import { Rpc } from '../utils/rpc'
 import { Context as SettingsContext } from './Settings'
 
 interface RpcBalance {
-  bzz: string
-  xdai: string
+  bzz: Token
+  xdai: Token
 }
 
 interface StatusItem {
@@ -79,8 +79,8 @@ const initialValues: ContextInterface = {
     chequebook: { isEnabled: false, isOk: false },
   },
   balance: {
-    bzz: '0',
-    xdai: '0',
+    bzz: new Token('0', 16),
+    xdai: new Token('0', 18),
   },
   latestPublishedVersion: undefined,
   latestUserVersion: undefined,
@@ -181,8 +181,8 @@ export function Provider({ children }: Props): ReactElement {
   const [peerCheques, setPeerCheques] = useState<LastChequesResponse | null>(null)
   const [settlements, setSettlements] = useState<Settlements | null>(null)
   const [chainState, setChainState] = useState<ChainState | null>(null)
-  const [bzz, setBzz] = useState<string>(initialValues.balance.bzz)
-  const [xdai, setXdai] = useState<string>(initialValues.balance.xdai)
+  const [bzz, setBzz] = useState<Token>(initialValues.balance.bzz)
+  const [xdai, setXdai] = useState<Token>(initialValues.balance.xdai)
 
   const { latestBeeRelease } = useLatestBeeRelease()
 
@@ -229,11 +229,11 @@ export function Provider({ children }: Props): ReactElement {
       const bzz = Rpc.eth_getBalanceERC20(nodeAddresses.ethereum)
 
       if (xdai?.then) {
-        xdai.then(balance => setXdai(balance))
+        xdai.then(balance => setXdai(new Token(balance, 18)))
       }
 
       if (bzz?.then) {
-        bzz.then(balance => setBzz(balance))
+        bzz.then(balance => setBzz(new Token(balance, 16)))
       }
     }
   }, [nodeAddresses])
