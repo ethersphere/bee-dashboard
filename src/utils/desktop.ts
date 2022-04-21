@@ -1,3 +1,4 @@
+import axios from 'axios'
 import { getJson, postJson } from './net'
 
 interface DesktopStatus {
@@ -14,9 +15,7 @@ export async function getDesktopStatus(): Promise<DesktopStatus> {
 }
 
 export async function getGasFromFaucet(address: string): Promise<void> {
-  await fetch(`http://getxdai.co/${address}/0.1`, {
-    method: 'POST',
-  })
+  await axios.post(`http://getxdai.co/${address}/0.1`)
 }
 
 export async function upgradeToLightNode(rpcProvider: string): Promise<void> {
