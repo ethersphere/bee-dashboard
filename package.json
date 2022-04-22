@@ -35,7 +35,7 @@
     "axios": "0.24.0",
     "bignumber.js": "9.0.1",
     "ethereumjs-wallet": "^1.0.2",
-    "ethers": "^5.6.1",
+    "ethers": "^5.6.4",
     "file-saver": "^2.0.5",
     "formik": "2.2.9",
     "formik-material-ui": "3.0.1",
