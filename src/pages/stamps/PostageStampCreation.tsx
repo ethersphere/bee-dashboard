@@ -52,7 +52,9 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
 
     const pricePerBlock = Number.parseInt(chainState.currentPrice, 10)
 
-    return `${secondsToTimeString(convertAmountToSeconds(amount, pricePerBlock))} (with price of 0 per block)`
+    return `${secondsToTimeString(
+      convertAmountToSeconds(amount, pricePerBlock),
+    )} (with price of ${pricePerBlock.toFixed(0)} per block)`
   }
 
   function getPrice(depth: number, amount: bigint): string {
