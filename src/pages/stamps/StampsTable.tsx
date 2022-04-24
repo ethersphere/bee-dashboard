@@ -4,6 +4,7 @@ import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import { EnrichedPostageBatch } from '../../providers/Stamps'
+import { secondsToTimeString } from '../../utils'
 import { getHumanReadableFileSize } from '../../utils/file'
 import { PostageStamp } from './PostageStamp'
 
@@ -30,6 +31,14 @@ function StampsTable({ postageStamps }: Props): ReactElement | null {
                 )}`}
               />
               <ExpandableListItem label="Amount" value={parseInt(stamp.amount, 10).toLocaleString()} />
+              <ExpandableListItem
+                label="Expires in"
+                value={stamp.batchTTL === -1 ? 'does not expire' : `${secondsToTimeString(stamp.batchTTL)}`}
+              />
+              <ExpandableListItem label="Label" value={stamp.label} />
+              <ExpandableListItem label="Usable" value={stamp.usable ? 'yes' : 'no'} />
+              <ExpandableListItem label="Exists" value={stamp.exists ? 'yes' : 'no'} />
+              <ExpandableListItem label="Purchase Block Number" value={stamp.blockNumber} />
             </>
           }
         >
