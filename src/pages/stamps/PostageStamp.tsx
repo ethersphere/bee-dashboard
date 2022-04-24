@@ -9,10 +9,13 @@ interface Props {
 }
 
 export function PostageStamp({ stamp, shorten }: Props): ReactElement {
+  const batchId = shorten ? stamp.batchID.slice(0, 8) : stamp.batchID
+  const label = `${batchId}${stamp.label ? ` - ${stamp.label}` : ''}`
+
   return (
     <Box p={2} width="100%">
       <Grid container justifyContent="space-between" alignItems="center" direction="row">
-        <Typography variant="subtitle2">{shorten ? stamp.batchID.slice(0, 8) : stamp.batchID}</Typography>
+        <Typography variant="subtitle2">{label}</Typography>
         <Capacity width="100px" usage={stamp.usage} />
       </Grid>
     </Box>
