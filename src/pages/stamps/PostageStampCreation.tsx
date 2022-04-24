@@ -119,14 +119,14 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
         return errors
       }}
     >
-      {({ submitForm, isValid, isSubmitting, values }) => (
+      {({ submitForm, isValid, isSubmitting, values, errors }) => (
         <Form>
           <Box mb={2}>
             <SwarmTextInput name="depth" label="Depth" formik />
             <Box mt={0.25} sx={{ bgcolor: '#f6f6f6' }} p={2}>
               <Grid container justifyContent="space-between">
                 <Typography>Corresponding file size</Typography>
-                <Typography>{getFileSize(parseInt(values.depth || '0', 10))}</Typography>
+                <Typography>{!errors.depth && values.depth ? getFileSize(parseInt(values.depth, 10)) : '-'}</Typography>
               </Grid>
             </Box>
           </Box>
@@ -135,7 +135,9 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
             <Box mt={0.25} sx={{ bgcolor: '#f6f6f6' }} p={2}>
               <Grid container justifyContent="space-between">
                 <Typography>Corresponding TTL (Time to live)</Typography>
-                <Typography>{getTtl(Number.parseInt(values.amount || '0', 10))}</Typography>
+                <Typography>
+                  {!errors.amount && values.amount ? getTtl(Number.parseInt(values.amount, 10)) : '-'}
+                </Typography>
               </Grid>
             </Box>
           </Box>
@@ -145,7 +147,11 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
           <Box mb={4} sx={{ bgcolor: '#fcf2e8' }} p={2}>
             <Grid container justifyContent="space-between">
               <Typography>Indicative Price</Typography>
-              <Typography>{getPrice(parseInt(values.depth || '0', 10), BigInt(values.amount || '0'))}</Typography>
+              <Typography>
+                {!errors.amount && !errors.depth && values.amount && values.depth
+                  ? getPrice(parseInt(values.depth, 10), BigInt(values.amount))
+                  : '-'}
+              </Typography>
             </Grid>
           </Box>
           <SwarmButton
