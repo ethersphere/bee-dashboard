@@ -1,4 +1,4 @@
-import { extractSwarmHash, extractSwarmCid, recognizeSwarmHash } from './index'
+import { extractSwarmHash, extractSwarmCid, recognizeSwarmHash, recognizeEns } from './index'
 
 interface TestObject {
   input: string
@@ -131,6 +131,42 @@ describe('recognizeSwarmHash', () => {
   })
   test('should not extract hash from incorrect inputs but instead return them', () => {
     ;[...wrongHashes, ...wrongCids].forEach(url => {
+      const hash = recognizeSwarmHash(url)
+      expect(hash).toBe(url)
+    })
+  })
+})
+
+const correctEns: TestObject[] = [
+  {
+    input: 'test.eth',
+    expectedOutput: 'test.eth',
+  },
+  {
+    input: 't-est.eth',
+    expectedOutput: 't-est.eth',
+  },
+  {
+    input: 'http://test.eth/whatever',
+    expectedOutput: 'test.eth',
+  },
+  {
+    input: 'https://alice.test.eth?whatever',
+    expectedOutput: 'alice.test.eth',
+  },
+]
+
+const wrongEns: string[] = ['http://test.ethereum/whatever']
+
+describe('recognizeEns', () => {
+  test('should correctly extract ens domain', () => {
+    correctEns.forEach(({ input, expectedOutput }) => {
+      const hash = recognizeEns(input)
+      expect(hash).toBe(expectedOutput)
+    })
+  })
+  test('should not extract hash from incorrect inputs but instead return them', () => {
+    wrongEns.forEach(url => {
       const hash = recognizeSwarmHash(url)
       expect(hash).toBe(url)
     })

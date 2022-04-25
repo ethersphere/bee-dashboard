@@ -148,6 +148,14 @@ export function recognizeSwarmHash(value: string): string {
   return extractSwarmHash(value) || extractSwarmCid(value) || value
 }
 
+const regexpEns = /((?:(?!-)[a-z0-9-]{1,63}(?<!-)\.)+eth)(?:$|[/?:#].*)/i
+
+export function recognizeEns(value: string): string {
+  const matches = value.match(regexpEns)
+
+  return (matches && matches[1]) || value
+}
+
 export function uuidV4(): string {
   const pattern = '10000000-1000-4000-8000-100000000000'
 
