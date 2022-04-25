@@ -1,5 +1,7 @@
 import { BigNumber } from 'bignumber.js'
 import { Token } from '../models/Token'
+import { decodeCid } from '@ethersphere/swarm-cid'
+import { BZZ_LINK_DOMAIN } from '../constants'
 
 /**
  * Test if value is an integer
@@ -108,10 +110,41 @@ export function makeRetriablePromise<T>(fn: () => Promise<T>, maxRetries = 3, de
   })
 }
 
-export function extractSwarmHash(string: string): string | null {
-  const matches = string.match(/[a-fA-F0-9]{64,128}/)
+// Matches exactly 64 or 128 caracters alphanumeric characters that are surrounded by non-alpha num characters
+const regexpMatchHash = /(?:^|[^a-f0-9]+)([a-f0-9]{64}|[a-f0-9]{128})(?:$|[^a-f0-9]+)/i
 
-  return (matches && matches[0]) || null
+export function extractSwarmHash(string: string): string | undefined {
+  const matches = string.match(regexpMatchHash)
+
+  return (matches && matches[1]) || undefined
+}
+
+// Matches the CID from bzz-link subdomain
+const regexpMatchCID = new RegExp(`https://(bah5acgza[a-z0-9]{52})\\.${BZZ_LINK_DOMAIN}`, 'i')
+
+export function extractSwarmCid(s: string): string | undefined {
+  const matches = s.match(regexpMatchCID)
+
+  if (!matches || !matches[1]) {
+    return
+  }
+
+  const cid = matches[1]
+  try {
+    const decodeResult = decodeCid(cid)
+
+    if (!decodeResult.type) {
+      return
+    }
+
+    return decodeResult.reference
+  } catch (e) {
+    return
+  }
+}
+
+export function recognizeSwarmHash(value: string): string {
+  return extractSwarmHash(value) || extractSwarmCid(value) || value
 }
 
 export function uuidV4(): string {

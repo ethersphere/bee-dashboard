@@ -8,7 +8,7 @@ import { History } from '../../components/History'
 import { Context, defaultUploadOrigin } from '../../providers/File'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
-import { extractSwarmHash } from '../../utils'
+import { recognizeSwarmHash } from '../../utils'
 import { determineHistoryName, HISTORY_KEYS, putHistory } from '../../utils/local-storage'
 import { FileNavigation } from './FileNavigation'
 
@@ -69,20 +69,6 @@ export function Download(): ReactElement {
     } finally {
       setLoading(false)
     }
-  }
-
-  function recognizeSwarmHash(value: string) {
-    if (value.length < 64) {
-      return value
-    }
-
-    const hash = extractSwarmHash(value)
-
-    if (hash) {
-      return hash
-    }
-
-    return value
   }
 
   return (
