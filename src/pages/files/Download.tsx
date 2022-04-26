@@ -8,7 +8,7 @@ import { History } from '../../components/History'
 import { Context, defaultUploadOrigin } from '../../providers/File'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
-import { recognizeSwarmHash } from '../../utils'
+import { recognizeEnsOrSwarmHash } from '../../utils'
 import { determineHistoryName, HISTORY_KEYS, putHistory } from '../../utils/local-storage'
 import { FileNavigation } from './FileNavigation'
 
@@ -83,7 +83,7 @@ export function Download(): ReactElement {
         confirmLabelDisabled={Boolean(referenceError) || loading}
         placeholder="e.g. 31fb0362b1a42536134c86bc58b97ac0244e5c6630beec3e27c2d1cecb38c605"
         expandedOnly
-        mapperFn={value => recognizeSwarmHash(value)}
+        mapperFn={value => recognizeEnsOrSwarmHash(value)}
         loading={loading}
       />
       <History title="Download History" localStorageKey={HISTORY_KEYS.DOWNLOAD_HISTORY} />
