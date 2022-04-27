@@ -8,7 +8,7 @@ import { History } from '../../components/History'
 import { Context, defaultUploadOrigin } from '../../providers/File'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
-import { recognizeEnsOrSwarmHash } from '../../utils'
+import { recognizeEnsOrSwarmHash, regexpEns } from '../../utils'
 import { determineHistoryName, HISTORY_KEYS, putHistory } from '../../utils/local-storage'
 import { FileNavigation } from './FileNavigation'
 
@@ -23,10 +23,17 @@ export function Download(): ReactElement {
   const navigate = useNavigate()
 
   const validateChange = (value: string) => {
-    if (Utils.isHexString(value, 64) || Utils.isHexString(value, 128) || !value.trim().length) {
+    if (
+      Utils.isHexString(value, 64) ||
+      Utils.isHexString(value, 128) ||
+      !value.trim().length ||
+      regexpEns.test(value)
+    ) {
       setReferenceError(undefined)
     } else {
-      setReferenceError('Incorrect format of swarm hash. Expected 64 or 128 hexstring characters.')
+      setReferenceError(
+        'Incorrect format of swarm hash. Expected 64 or 128 hexstring characters, bzz.link url or ENS domain.',
+      )
     }
   }
 
