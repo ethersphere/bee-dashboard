@@ -55,7 +55,7 @@ interface Props {
   confirmLabelDisabled?: boolean
   loading?: boolean
   onChange?: (value: string) => void
-  onConfirm: (value: string) => void
+  onConfirm?: (value: string) => void
   mapperFn?: (value: string) => string
   locked?: boolean
 }
@@ -138,7 +138,9 @@ export default function ExpandableListItemKey({
             }
             loading={loading}
             iconType={Search}
-            onClick={() => onConfirm(inputValue)}
+            onClick={() => {
+              if (onConfirm) onConfirm(inputValue)
+            }}
           >
             {confirmLabel || 'Save'}
           </SwarmButton>

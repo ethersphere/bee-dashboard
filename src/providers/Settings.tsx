@@ -1,6 +1,7 @@
 import { Bee, BeeDebug } from '@ethersphere/bee-js'
 import { createContext, ReactChild, ReactElement, useEffect, useState } from 'react'
 import { config } from '../config'
+import { BeeConfig, useGetBeeConfig } from '../hooks/apiHooks'
 
 interface ContextInterface {
   apiUrl: string
@@ -11,6 +12,9 @@ interface ContextInterface {
   setDebugApiUrl: (url: string) => void
   lockedApiSettings: boolean
   desktopApiKey: string
+  config: BeeConfig | null
+  isLoading: boolean
+  error: Error | null
 }
 
 const initialValues: ContextInterface = {
@@ -22,6 +26,9 @@ const initialValues: ContextInterface = {
   setDebugApiUrl: () => {}, // eslint-disable-line
   lockedApiSettings: false,
   desktopApiKey: '',
+  config: null,
+  isLoading: true,
+  error: null,
 }
 
 export const Context = createContext<ContextInterface>(initialValues)
@@ -46,9 +53,10 @@ export function Provider({
   const [beeDebugApi, setBeeDebugApi] = useState<BeeDebug | null>(null)
   const [lockedApiSettings] = useState<boolean>(Boolean(extLockedApiSettings))
   const [desktopApiKey, setDesktopApiKey] = useState<string>(initialValues.desktopApiKey)
+  const { config, isLoading, error } = useGetBeeConfig()
 
-  const url = beeApiUrl || apiUrl
-  const debugUrl = beeDebugApiUrl || apiDebugUrl
+  const url = config?.['api-addr'] || beeApiUrl || apiUrl
+  const debugUrl = config?.['debug-api-addr'] || beeDebugApiUrl || apiDebugUrl
 
   useEffect(() => {
     const urlSearchParams = new URLSearchParams(window.location.search)
@@ -90,6 +98,9 @@ export function Provider({
         setDebugApiUrl,
         lockedApiSettings,
         desktopApiKey,
+        config,
+        isLoading,
+        error,
       }}
     >
       {children}
