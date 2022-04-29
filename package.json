@@ -87,7 +87,7 @@
     "cors": "^2.8.5",
     "depcheck": "^1.4.3",
     "eslint": "7.24.0",
-    "eslint-config-prettier": "8.2.0",
+    "eslint-config-prettier": "8.5.0",
     "eslint-config-react-app": "6.0.0",
     "eslint-plugin-flowtype": "5.10.0",
     "eslint-plugin-import": "2.25.2",
