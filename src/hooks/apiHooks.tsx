@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { config } from '../config'
+import { getJson } from '../utils/net'
 
 export interface LatestBeeReleaseHook {
   latestBeeRelease: LatestBeeRelease | null
@@ -75,9 +76,8 @@ export const useGetBeeConfig = (conf: Config = config): GetBeeConfig => {
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
-    axios
-      .get<BeeConfig>(`${conf.BEE_DESKTOP_URL}/config`)
-      .then(res => setBeeConfig(res.data))
+    getJson<BeeConfig>(`${conf.BEE_DESKTOP_URL}/config`)
+      .then(setBeeConfig)
       .catch((err: Error) => {
         setError(err)
       })
