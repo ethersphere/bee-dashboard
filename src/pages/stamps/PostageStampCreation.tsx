@@ -113,9 +113,6 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
           else if (amount.isLessThanOrEqualTo(0)) errors.amount = 'Amount must be greater than 0'
         }
 
-        // Label
-        if (values.label && !/^[0-9a-z]*$/i.test(values.label)) errors.label = 'Label must be an alphanumeric string'
-
         return errors
       }}
     >
