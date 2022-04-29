@@ -226,28 +226,20 @@ interface Options {
   timeout?: number
 }
 
-export function waitUntilStampUsable(batchId: BatchId, beeDebug: BeeDebug, options?: Options): Promise<PostageBatch> {
+export async function waitUntilStampUsable(
+  batchId: BatchId,
+  beeDebug: BeeDebug,
+  options?: Options,
+): Promise<PostageBatch> {
   const timeout = options?.timeout || DEFAULT_STAMP_USABLE_TIMEOUT
   const pollingFrequency = options?.pollingFrequency || DEFAULT_POLLING_FREQUENCY
-  let timeoutReached = false
 
-  const timeoutPromise = (): Promise<never> =>
-    new Promise((_, reject) =>
-      setTimeout(() => {
-        timeoutReached = true
-        reject(new Error('Wait until stamp usable timeout has been reached'))
-      }, timeout),
-    )
+  for (let i = 0; i < timeout; i += pollingFrequency) {
+    const stamp = await beeDebug.getPostageBatch(batchId)
 
-  const stampWaitPromise = async (): Promise<PostageBatch | undefined> => {
-    while (!timeoutReached) {
-      const stamp = await beeDebug.getPostageBatch(batchId)
-
-      if (stamp.usable) return stamp
-      await sleepMs(pollingFrequency)
-    }
+    if (stamp.usable) return stamp
+    await sleepMs(pollingFrequency)
   }
 
-  // The typecasting is needed because technically stampWaitPromise can return undefined but the timeoutPromise would already throw exception
-  return Promise.race([stampWaitPromise(), timeoutPromise()]) as Promise<PostageBatch> | never
+  throw new Error('Wait until stamp usable timeout has been reached')
 }
