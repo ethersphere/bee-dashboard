@@ -77,9 +77,13 @@ export const useGetBeeConfig = (conf: Config = config): GetBeeConfig => {
 
   useEffect(() => {
     getJson<BeeConfig>(`${conf.BEE_DESKTOP_URL}/config`)
-      .then(setBeeConfig)
+      .then(beeConf => {
+        setBeeConfig(beeConf)
+        setError(null)
+      })
       .catch((err: Error) => {
         setError(err)
+        setBeeConfig(null)
       })
       .finally(() => {
         setLoading(false)
