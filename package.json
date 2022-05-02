@@ -51,7 +51,7 @@
     "react-identicons": "1.2.5",
     "react-router": "6.2.1",
     "react-router-dom": "6.2.1",
-    "react-syntax-highlighter": "15.4.4",
+    "react-syntax-highlighter": "15.5.0",
     "semver": "7.3.5",
     "serve-handler": "6.1.3"
   },
