@@ -6,6 +6,7 @@ import { DocumentationText } from '../../components/DocumentationText'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { ProgressIndicator } from '../../components/ProgressIndicator'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
+import { META_FILE_NAME, PREVIEW_FILE_NAME } from '../../constants'
 import { CheckState, Context as BeeContext } from '../../providers/Bee'
 import { Context as IdentityContext, Identity } from '../../providers/Feeds'
 import { Context as FileContext } from '../../providers/File'
@@ -21,7 +22,6 @@ import { PostageStampSelector } from '../stamps/PostageStampSelector'
 import { AssetPreview } from './AssetPreview'
 import { StampPreview } from './StampPreview'
 import { UploadActionBar } from './UploadActionBar'
-import { META_FILE_NAME, PREVIEW_FILE_NAME } from '../../constants'
 
 export function Upload(): ReactElement {
   const [step, setStep] = useState(0)
@@ -83,9 +83,9 @@ export function Upload(): ReactElement {
         // The website is in some directory, remove it
         if (idx.commonPrefix) {
           const substrStart = idx.commonPrefix.length
-          indexDocument = idx.indexPath.substr(substrStart)
+          indexDocument = idx.indexPath.slice(substrStart)
           fls = fls.map(f => {
-            const path = (f.path as string).substr(substrStart)
+            const path = (f.path as string).slice(substrStart)
 
             return { ...f, path, webkitRelativePath: path, fullPath: path }
           })

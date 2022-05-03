@@ -11,6 +11,7 @@ import { Provider as FileProvider } from './providers/File'
 import { Provider as PlatformProvider } from './providers/Platform'
 import { Provider as SettingsProvider } from './providers/Settings'
 import { Provider as StampsProvider } from './providers/Stamps'
+import { Provider as TopUpProvider } from './providers/TopUp'
 import BaseRouter from './routes'
 import { theme } from './theme'
 
@@ -29,16 +30,18 @@ const App = ({ beeApiUrl, beeDebugApiUrl, lockedApiSettings }: Props): ReactElem
             <FileProvider>
               <FeedsProvider>
                 <PlatformProvider>
-                  <SnackbarProvider>
-                    <Router>
-                      <>
-                        <CssBaseline />
-                        <Dashboard>
-                          <BaseRouter />
-                        </Dashboard>
-                      </>
-                    </Router>
-                  </SnackbarProvider>
+                  <TopUpProvider>
+                    <SnackbarProvider>
+                      <Router>
+                        <>
+                          <CssBaseline />
+                          <Dashboard>
+                            <BaseRouter />
+                          </Dashboard>
+                        </>
+                      </Router>
+                    </SnackbarProvider>
+                  </TopUpProvider>
                 </PlatformProvider>
               </FeedsProvider>
             </FileProvider>

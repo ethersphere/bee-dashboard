@@ -10,10 +10,16 @@ import { Share } from './pages/files/Share'
 import { Upload } from './pages/files/Upload'
 import { UploadLander } from './pages/files/UploadLander'
 import Info from './pages/info'
+import Wallet from './pages/rpc'
+import Confirmation from './pages/rpc/Confirmation'
 import Settings from './pages/settings'
 import Stamps from './pages/stamps'
 import { CreatePostageStampPage } from './pages/stamps/CreatePostageStampPage'
 import Status from './pages/status'
+import { BankCardTopUpIndex } from './pages/top-up/BankCardTopUpIndex'
+import { CryptoTopUpIndex } from './pages/top-up/CryptoTopUpIndex'
+import { Fund } from './pages/top-up/Fund'
+import { Swap } from './pages/top-up/Swap'
 
 export enum ROUTES {
   INFO = '/',
@@ -31,6 +37,14 @@ export enum ROUTES {
   FEEDS_NEW = '/feeds/new',
   FEEDS_UPDATE = '/feeds/update/:hash',
   FEEDS_PAGE = '/feeds/:uuid',
+  WALLET = '/wallet',
+  CONFIRMATION = '/wallet/confirmation',
+  TOP_UP_CRYPTO = '/top-up/crypto',
+  TOP_UP_CRYPTO_SWAP = '/top-up/crypto/swap',
+  TOP_UP_CRYPTO_FUND = '/top-up/crypto/fund',
+  TOP_UP_BANK_CARD = '/top-up/bank-card',
+  TOP_UP_BANK_CARD_SWAP = '/top-up/bank-card/swap',
+  TOP_UP_BANK_CARD_FUND = '/top-up/bank-card/fund',
 }
 
 const BaseRouter = (): ReactElement => (
@@ -49,6 +63,20 @@ const BaseRouter = (): ReactElement => (
     <Route path={ROUTES.FEEDS_UPDATE} element={<UpdateFeed />} />
     <Route path={ROUTES.FEEDS_PAGE} element={<FeedSubpage />} />
     <Route path={ROUTES.INFO} element={<Info />} />
+    <Route path={ROUTES.WALLET} element={<Wallet />} />
+    <Route path={ROUTES.CONFIRMATION} element={<Confirmation />} />
+    <Route path={ROUTES.TOP_UP_CRYPTO} element={<CryptoTopUpIndex />} />
+    <Route
+      path={ROUTES.TOP_UP_CRYPTO_SWAP}
+      element={<Swap header="Top-up with cryptocurrencies" next={ROUTES.TOP_UP_CRYPTO_FUND} />}
+    />
+    <Route path={ROUTES.TOP_UP_CRYPTO_FUND} element={<Fund header="Top-up with cryptocurrencies" />} />
+    <Route path={ROUTES.TOP_UP_BANK_CARD} element={<BankCardTopUpIndex />} />
+    <Route
+      path={ROUTES.TOP_UP_BANK_CARD_SWAP}
+      element={<Swap header="Top-up with bank card" next={ROUTES.TOP_UP_BANK_CARD_FUND} />}
+    />
+    <Route path={ROUTES.TOP_UP_BANK_CARD_FUND} element={<Fund header="Top-up with bank card" />} />
   </Routes>
 )
 

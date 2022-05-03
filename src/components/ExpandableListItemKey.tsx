@@ -38,6 +38,7 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   label: string
   value: string
+  expanded?: boolean
 }
 
 const lengthWithoutPrefix = (s: string) => s.replace(/^0x/i, '').length
@@ -54,9 +55,9 @@ const split = (s: string): string[] => {
   return s.match(/(0x|.{1,8})/gi) || []
 }
 
-export default function ExpandableListItemKey({ label, value }: Props): ReactElement | null {
+export default function ExpandableListItemKey({ label, value, expanded }: Props): ReactElement | null {
   const classes = useStyles()
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(expanded || false)
   const [copied, setCopied] = useState(false)
   const toggleOpen = () => setOpen(!open)
 

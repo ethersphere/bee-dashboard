@@ -2,7 +2,18 @@ import { Divider, Drawer, Grid, Link as MUILink, List } from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import { OpenInNewSharp } from '@material-ui/icons'
 import type { ReactElement } from 'react'
-import { Bookmark, BookOpen, DollarSign, FileText, Home, Layers, Settings } from 'react-feather'
+import {
+  Battery,
+  BatteryCharging,
+  Bookmark,
+  BookOpen,
+  Briefcase,
+  DollarSign,
+  FileText,
+  Home,
+  Layers,
+  Settings,
+} from 'react-feather'
 import { Link } from 'react-router-dom'
 import Logo from '../assets/logo.svg'
 import { config } from '../config'
@@ -40,6 +51,21 @@ const navBarItems = [
     label: 'Settings',
     path: ROUTES.SETTINGS,
     icon: Settings,
+  },
+  {
+    label: 'Wallet',
+    path: ROUTES.WALLET,
+    icon: Briefcase,
+  },
+  {
+    label: 'Crypto',
+    path: ROUTES.TOP_UP_CRYPTO,
+    icon: Battery,
+  },
+  {
+    label: 'Bank Card',
+    path: ROUTES.TOP_UP_BANK_CARD,
+    icon: BatteryCharging,
   },
 ]
 

@@ -79,9 +79,11 @@ function getWalletFromIdentity(identity: Identity, password?: string): Promise<W
 }
 
 async function getWallet(type: IdentityType, data: string, password?: string): Promise<Wallet> {
-  return type === 'PRIVATE_KEY'
-    ? Wallet.fromPrivateKey(Buffer.from(trimHexString(data), 'hex'))
-    : await Wallet.fromV3(data, password as string)
+  return type === 'PRIVATE_KEY' ? getWalletFromPrivateKeyString(data) : await Wallet.fromV3(data, password as string)
+}
+
+export function getWalletFromPrivateKeyString(privateKey: string): Wallet {
+  return Wallet.fromPrivateKey(Buffer.from(trimHexString(privateKey), 'hex'))
 }
 
 export async function updateFeed(

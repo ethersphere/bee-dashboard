@@ -1,5 +1,5 @@
+import { Button, ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core'
 import React, { ReactElement } from 'react'
-import { Button, ListItemIcon, Typography, Menu, MenuItem } from '@material-ui/core'
 import { EnrichedPostageBatch } from '../../providers/Stamps'
 
 interface Props {
@@ -35,7 +35,7 @@ export default function SimpleMenu({ stamps, selectedStamp, setSelected }: Props
             selected={stamp.batchID === selectedStamp?.batchID}
           >
             <ListItemIcon>{stamp.usageText}</ListItemIcon>
-            <Typography variant="body2">{stamp.batchID.substr(0, 8)}[…]</Typography>
+            <Typography variant="body2">{stamp.batchID.slice(0, 8)}[…]</Typography>
           </MenuItem>
         ))}
       </Menu>
