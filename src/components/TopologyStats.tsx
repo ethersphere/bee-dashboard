@@ -11,6 +11,7 @@ const TopologyStats = (props: Props): ReactElement => {
   const thresholds: ThresholdValues = {
     connectedPeers: pickThreshold('connectedPeers', props.topology?.connected || 0),
     population: pickThreshold('population', props.topology?.population || 0),
+    depth: pickThreshold('depth', props.topology?.depth || 0),
   }
 
   const maximumTotalScore = Object.values(thresholds).reduce((sum, item) => sum + item.maximumScore, 0)
@@ -29,6 +30,11 @@ const TopologyStats = (props: Props): ReactElement => {
         label="Population"
         value={props.topology?.population.toString()}
         tooltip={thresholds.population.explanation}
+      />
+      <ExpandableListItem
+        label="Depth"
+        value={props.topology?.depth.toString()}
+        tooltip={thresholds.depth.explanation}
       />
     </>
   )

@@ -1,5 +1,6 @@
 const OPTIMAL_CONNECTED_PEERS = 200
-const OPTIMAL_POPULATION = 1500
+const OPTIMAL_POPULATION = 2000
+const OPTIMAL_DEPTH = 12
 
 interface Threshold {
   minimumValue: number
@@ -10,6 +11,7 @@ interface Threshold {
 type Thresholds = {
   connectedPeers: Threshold[]
   population: Threshold[]
+  depth: Threshold[]
 }
 
 type ThresholdValue = {
@@ -21,6 +23,7 @@ type ThresholdValue = {
 export type ThresholdValues = {
   connectedPeers: ThresholdValue
   population: ThresholdValue
+  depth: ThresholdValue
 }
 
 const GENERIC_ERROR = 'There may be issues with your Bee node or connection.'
@@ -58,6 +61,23 @@ const THRESHOLDS: Thresholds = {
     {
       minimumValue: 0,
       explanation: 'Your Bee node has no information on the network population. ' + GENERIC_ERROR,
+      score: 0,
+    },
+  ],
+  depth: [
+    {
+      minimumValue: OPTIMAL_DEPTH,
+      explanation: 'Perfect! Your Bee node has the highest available depth.',
+      score: 2,
+    },
+    {
+      minimumValue: 1,
+      explanation: `Your Bee node is supposed to reach a depth of ${OPTIMAL_DEPTH} eventually. Stagnation or decrease in this number may indicate problems with your Bee node.`,
+      score: 1,
+    },
+    {
+      minimumValue: 0,
+      explanation: 'Your Bee node has not started building its topology yet. ' + GENERIC_ERROR,
       score: 0,
     },
   ],
