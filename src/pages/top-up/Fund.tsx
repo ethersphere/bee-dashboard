@@ -29,8 +29,6 @@ export function Fund({ header }: Props): ReactElement {
     if (!nodeAddresses?.ethereum || !wallet) {
       return
     }
-    // eslint-disable-next-line no-console
-    console.log(xBzzBalance.toBigNumber.minus(DUMMY_GAS_PRICE).toString())
     setLoading(true)
     try {
       if (xBzzBalance.toBigNumber.gt(DUMMY_GAS_PRICE)) {
