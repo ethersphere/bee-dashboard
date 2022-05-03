@@ -1,6 +1,6 @@
-const OPTIMAL_CONNECTED_PEERS = 200
-const OPTIMAL_POPULATION = 2000
-const OPTIMAL_DEPTH = 12
+const OPTIMAL_CONNECTED_PEERS = 100
+const OPTIMAL_POPULATION = 1000
+const OPTIMAL_DEPTH = 4
 
 interface Threshold {
   minimumValue: number
