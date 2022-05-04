@@ -22,7 +22,7 @@ export function Ramp({ address }: Props): ReactElement {
     if (!ref.current || !address) {
       return
     }
-    new RampInstantSDK({
+    const widget = new RampInstantSDK({
       hostAppName: 'Swarm',
       hostLogoUrl: 'https://avatars.githubusercontent.com/u/6946989?s=200&v=4',
       //   variant: 'embedded-mobile',
@@ -31,7 +31,12 @@ export function Ramp({ address }: Props): ReactElement {
       fiatCurrency: 'EUR',
       userAddress: address,
       swapAsset: 'XDAI',
-    }).show()
+    })
+    widget.show()
+
+    if (widget.domNodes?.overlay) {
+      widget.domNodes.overlay.style.zIndex = '10000000'
+    }
   }, [address])
 
   return <div ref={ref} className={styles.containerNode}></div>
