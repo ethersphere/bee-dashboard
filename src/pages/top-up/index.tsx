@@ -7,6 +7,7 @@ import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { SwarmButton } from '../../components/SwarmButton'
 import { Context } from '../../providers/TopUp'
+import { Ramp } from './Ramp'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
 
 interface Props {
@@ -32,6 +33,9 @@ export default function Index({ header, title, p, next }: Props): ReactElement {
         <Typography style={{ fontWeight: 'bold' }}>{title}</Typography>
       </Box>
       <Box mb={4}>{p}</Box>
+      <Box mb={4}>
+        <Ramp address={wallet?.getAddressString()} />
+      </Box>
       <Box mb={0.25}>
         <ExpandableListItemKey label="Funding wallet address" value={wallet?.getAddressString() || 'N/A'} expanded />
       </Box>
