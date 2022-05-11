@@ -87,8 +87,8 @@ export function getPath(file: FilePath): string {
 /**
  * Utility function that is needed to have correct directory structure as webkitRelativePath is read only
  */
-export function packageFile(file: FilePath): FilePath {
-  const path = getPath(file)
+export function packageFile(file: FilePath, pathOverwrite?: string): FilePath {
+  const path = pathOverwrite || getPath(file)
 
   return {
     path: path,
