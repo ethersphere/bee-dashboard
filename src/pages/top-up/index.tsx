@@ -25,6 +25,7 @@ export default function Index({ header, title, p, next }: Props): ReactElement {
 
   return (
     <>
+      {header === 'Top-up with bank card' && <Ramp address={wallet?.getAddressString()} />}
       <HistoryHeader>{header}</HistoryHeader>
       <Box mb={4}>
         <TopUpProgressIndicator index={0} />

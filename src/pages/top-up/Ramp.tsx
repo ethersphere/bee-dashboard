@@ -1,17 +1,12 @@
 import { RampInstantSDK } from '@ramp-network/ramp-instant-sdk'
-import { ReactElement, useEffect, useRef } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 interface Props {
   address?: string
 }
 
 export function Ramp({ address }: Props): ReactElement {
-  const ref = useRef(null)
-
   useEffect(() => {
-    if (!ref.current || !address) {
-      return
-    }
     const widget = new RampInstantSDK({
       hostAppName: 'Swarm',
       hostLogoUrl: 'https://avatars.githubusercontent.com/u/6946989?s=200&v=4',
