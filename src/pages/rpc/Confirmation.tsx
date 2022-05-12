@@ -48,7 +48,7 @@ export default function Confirmation(): ReactElement {
           <SwarmButton iconType={Battery} onClick={() => navigate(ROUTES.TOP_UP_BANK_CARD)}>
             Get started with bank card
           </SwarmButton>
-          <SwarmButton iconType={BatteryCharging} onClick={() => navigate(ROUTES.TOP_UP_BANK_CARD)}>
+          <SwarmButton iconType={BatteryCharging} onClick={() => navigate(ROUTES.TOP_UP_CRYPTO)}>
             Use DAI
           </SwarmButton>
         </ExpandableListItemActions>
