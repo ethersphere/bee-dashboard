@@ -26,6 +26,12 @@ export async function upgradeToLightNode(rpcProvider: string): Promise<void> {
   })
 }
 
+export async function setJsonRpcInDesktop(value: string): Promise<void> {
+  await updateDesktopConfiguration({
+    'swap-endpoint': value,
+  })
+}
+
 async function updateDesktopConfiguration(values: Record<string, unknown>): Promise<void> {
   await postJson(`http://${getDesktopHost()}/config`, values)
 }

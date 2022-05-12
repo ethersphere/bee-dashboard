@@ -1,6 +1,7 @@
 import Wallet from 'ethereumjs-wallet'
 import { createContext, ReactElement, useEffect, useState } from 'react'
 import { Token } from '../models/Token'
+import { setJsonRpcInDesktop } from '../utils/desktop'
 import { generateWallet, getWalletFromPrivateKeyString } from '../utils/identity'
 import { Rpc } from '../utils/rpc'
 
@@ -50,6 +51,8 @@ export function Provider({ children }: Props): ReactElement {
   function setAndPersistJsonRpcProvider(jsonRpcProvider: string) {
     localStorage.setItem(LocalStorageKeys.jsonRpcProvider, jsonRpcProvider)
     setJsonRpcProvider(jsonRpcProvider)
+    // eslint-disable-next-line no-console
+    setJsonRpcInDesktop(jsonRpcProvider).catch(console.error)
   }
 
   useEffect(() => {

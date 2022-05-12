@@ -2,12 +2,14 @@ import { Box, Typography } from '@material-ui/core'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { ArrowDown, Check } from 'react-feather'
+import { useNavigate } from 'react-router'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { SwarmButton } from '../../components/SwarmButton'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as TopUpContext } from '../../providers/TopUp'
+import { ROUTES } from '../../routes'
 import { Rpc } from '../../utils/rpc'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
 
@@ -22,6 +24,7 @@ export function Fund({ header }: Props): ReactElement {
   const { nodeAddresses, balance } = useContext(BeeContext)
 
   const { enqueueSnackbar } = useSnackbar()
+  const navigate = useNavigate()
 
   const [loading, setLoading] = useState(false)
 
@@ -48,6 +51,7 @@ export function Fund({ header }: Props): ReactElement {
           jsonRpcProvider,
         )
       }
+      navigate(ROUTES.INFO)
       enqueueSnackbar('Successfully funded node', { variant: 'success' })
     } catch (error) {
       enqueueSnackbar(`Failed to fund node: ${error}`, { variant: 'error' })
