@@ -71,7 +71,7 @@ export function Upload(): ReactElement {
       return
     }
 
-    let fls = files.map(packageFile) // Apart from packaging, this is needed to not modify the original files array as it can trigger effects
+    let fls: FilePath[] = files.map(f => packageFile(f)) // Apart from packaging, this is needed to not modify the original files array as it can trigger effects
     let indexDocument: string | undefined = undefined // This means we assume it's folder
 
     if (files.length === 1) indexDocument = files[0].name
@@ -84,10 +84,10 @@ export function Upload(): ReactElement {
         if (idx.commonPrefix) {
           const substrStart = idx.commonPrefix.length
           indexDocument = idx.indexPath.substr(substrStart)
-          fls = fls.map(f => {
+          fls = files.map(f => {
             const path = (f.path as string).substr(substrStart)
 
-            return { ...f, path, webkitRelativePath: path, fullPath: path }
+            return packageFile(f, path)
           })
         } else {
           // The website is not packed in a directory
