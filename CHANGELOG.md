@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.15.0](https://github.com/ethersphere/bee-dashboard/compare/v0.14.0...v0.15.0) (2022-05-16)
+
+
+### Features
+
+* add aditional information to the stamps overview ([#349](https://github.com/ethersphere/bee-dashboard/issues/349)) ([23dea07](https://github.com/ethersphere/bee-dashboard/commit/23dea07f6e53da91f87078749f07bd95c9e65983))
+* add bee desktop toolkit ([#311](https://github.com/ethersphere/bee-dashboard/issues/311)) ([ecaf205](https://github.com/ethersphere/bee-dashboard/commit/ecaf2054fc5aaa5fa4f1d0b3fb2753af9d9b233e))
+* add bee-desktop settings capabilities ([#323](https://github.com/ethersphere/bee-dashboard/issues/323)) ([87b0b71](https://github.com/ethersphere/bee-dashboard/commit/87b0b71cc63098a5d886ff47d52715c250d1b659))
+* support for bzz.link cids when downloading files ([#350](https://github.com/ethersphere/bee-dashboard/issues/350)) ([3784b29](https://github.com/ethersphere/bee-dashboard/commit/3784b29f148b706d5bc40b69b5ae898efa2c1990))
+* wait for postage stamp to be usable when bying it ([#352](https://github.com/ethersphere/bee-dashboard/issues/352)) ([1e2face](https://github.com/ethersphere/bee-dashboard/commit/1e2face10e93818f281526d8245f84834e5ecb86))
+
+
+### Bug Fixes
+
+* app crash caused by inputing non-number characters ([#347](https://github.com/ethersphere/bee-dashboard/issues/347)) ([a67be7a](https://github.com/ethersphere/bee-dashboard/commit/a67be7a31ec88e9ce9c7764ec4523496c157d08a))
+* connection health indicator values to reflect the current network conditions ([#353](https://github.com/ethersphere/bee-dashboard/issues/353)) ([07561aa](https://github.com/ethersphere/bee-dashboard/commit/07561aaed2ce7f7ffd7ecfd8ae8b5190cc9893bc))
+* nested directory upload preserves the directory structure ([#365](https://github.com/ethersphere/bee-dashboard/issues/365)) ([86978b7](https://github.com/ethersphere/bee-dashboard/commit/86978b7e999584173b082eef86074af698523752))
+* remove restrictions on postage stamp label ([#354](https://github.com/ethersphere/bee-dashboard/issues/354)) ([b6b9914](https://github.com/ethersphere/bee-dashboard/commit/b6b9914548a0ac00ed293ea35490ce38e9d6adaa))
+* show current postage stamp price per block ([#348](https://github.com/ethersphere/bee-dashboard/issues/348)) ([906a457](https://github.com/ethersphere/bee-dashboard/commit/906a457ae5a8683f82d218759fd66dc1b7c9a220))
+
 ## [0.14.0](https://www.github.com/ethersphere/bee-dashboard/compare/v0.13.0...v0.14.0) (2022-04-14)
 
 
