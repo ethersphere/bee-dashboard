@@ -13,6 +13,8 @@ import { createContext, ReactChild, ReactElement, useContext, useEffect, useStat
 import semver from 'semver'
 import { engines } from '../../package.json'
 import { useLatestBeeRelease } from '../hooks/apiHooks'
+import { BzzToken } from '../models/BzzToken'
+import { DaiToken } from '../models/DaiToken'
 import { Token } from '../models/Token'
 import type { Balance, ChequebookBalance, Settlements } from '../types'
 import { Rpc } from '../utils/rpc'
@@ -85,8 +87,8 @@ const initialValues: ContextInterface = {
     chequebook: { isEnabled: false, checkState: CheckState.ERROR },
   },
   balance: {
-    bzz: new Token('0', 16),
-    xdai: new Token('0', 18),
+    bzz: new BzzToken('0'),
+    xdai: new DaiToken('0'),
   },
   latestPublishedVersion: undefined,
   latestUserVersion: undefined,
@@ -252,11 +254,11 @@ export function Provider({ children }: Props): ReactElement {
       const bzz = Rpc.eth_getBalanceERC20(nodeAddresses.ethereum)
 
       if (xdai?.then) {
-        xdai.then(balance => setXdai(new Token(balance, 18)))
+        xdai.then(balance => setXdai(new DaiToken(balance)))
       }
 
       if (bzz?.then) {
-        bzz.then(balance => setBzz(new Token(balance, 16)))
+        bzz.then(balance => setBzz(new BzzToken(balance)))
       }
     }
   }, [nodeAddresses])

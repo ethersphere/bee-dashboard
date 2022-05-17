@@ -40,6 +40,10 @@ export async function restartBeeNode(): Promise<void> {
   await postJson(`http://${getDesktopHost()}/restart`)
 }
 
+export async function createGiftWallet(address: string): Promise<void> {
+  await postJson(`http://${getDesktopHost()}/gift-wallet/${address}`)
+}
+
 function getDesktopHost(): string {
   return window.location.host
 }

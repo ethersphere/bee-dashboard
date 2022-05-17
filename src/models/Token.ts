@@ -59,7 +59,7 @@ export class Token {
   }
 
   toSignificantDigits(digits = 4): string {
-    const asString = this.toDecimal.toFixed(16)
+    const asString = this.toDecimal.toFixed(this.decimals)
 
     let indexOfSignificantDigit = -1
     let reachedDecimalPoint = false
