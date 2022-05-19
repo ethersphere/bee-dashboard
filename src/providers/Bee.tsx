@@ -15,13 +15,8 @@ import { engines } from '../../package.json'
 import { useLatestBeeRelease } from '../hooks/apiHooks'
 import { Token } from '../models/Token'
 import type { Balance, ChequebookBalance, Settlements } from '../types'
-import { Rpc } from '../utils/rpc'
+import { WalletAddress } from '../utils/wallet'
 import { Context as SettingsContext } from './Settings'
-
-interface RpcBalance {
-  bzz: Token
-  xdai: Token
-}
 
 export enum CheckState {
   OK = 'OK',
@@ -46,7 +41,7 @@ interface Status {
 
 interface ContextInterface {
   status: Status
-  balance: RpcBalance
+  balance: WalletAddress | null
   latestPublishedVersion?: string
   latestUserVersion?: string
   latestUserVersionExact?: string
@@ -84,10 +79,7 @@ const initialValues: ContextInterface = {
     topology: { isEnabled: false, checkState: CheckState.ERROR },
     chequebook: { isEnabled: false, checkState: CheckState.ERROR },
   },
-  balance: {
-    bzz: new Token('0', 16),
-    xdai: new Token('0', 18),
-  },
+  balance: null,
   latestPublishedVersion: undefined,
   latestUserVersion: undefined,
   latestUserVersionExact: undefined,
@@ -204,8 +196,7 @@ export function Provider({ children }: Props): ReactElement {
   const [peerCheques, setPeerCheques] = useState<LastChequesResponse | null>(null)
   const [settlements, setSettlements] = useState<Settlements | null>(null)
   const [chainState, setChainState] = useState<ChainState | null>(null)
-  const [bzz, setBzz] = useState<Token>(initialValues.balance.bzz)
-  const [xdai, setXdai] = useState<Token>(initialValues.balance.xdai)
+  const [walletAddress, setWalletAddress] = useState<WalletAddress | null>(initialValues.balance)
 
   const { latestBeeRelease } = useLatestBeeRelease()
 
@@ -247,19 +238,15 @@ export function Provider({ children }: Props): ReactElement {
 
   useEffect(() => {
     if (nodeAddresses?.ethereum) {
-      // debounced calls
-      const xdai = Rpc.eth_getBalance(nodeAddresses.ethereum)
-      const bzz = Rpc.eth_getBalanceERC20(nodeAddresses.ethereum)
-
-      if (xdai?.then) {
-        xdai.then(balance => setXdai(new Token(balance, 18)))
-      }
-
-      if (bzz?.then) {
-        bzz.then(balance => setBzz(new Token(balance, 16)))
-      }
+      WalletAddress.make(nodeAddresses.ethereum).then(setWalletAddress)
     }
   }, [nodeAddresses])
+
+  useEffect(() => {
+    const interval = setInterval(() => walletAddress?.refresh().then(setWalletAddress), 30_000)
+
+    return () => clearInterval(interval)
+  }, [walletAddress])
 
   const refresh = async () => {
     // Don't want to refresh when already refreshing
@@ -417,10 +404,7 @@ export function Provider({ children }: Props): ReactElement {
           chequebookBalance,
           error,
         ),
-        balance: {
-          xdai,
-          bzz,
-        },
+        balance: walletAddress,
         latestUserVersion,
         latestUserVersionExact,
         latestPublishedVersion,

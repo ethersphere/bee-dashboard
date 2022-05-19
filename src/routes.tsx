@@ -9,6 +9,7 @@ import { Download } from './pages/files/Download'
 import { Share } from './pages/files/Share'
 import { Upload } from './pages/files/Upload'
 import { UploadLander } from './pages/files/UploadLander'
+import GiftCards from './pages/gift-code'
 import Info from './pages/info'
 import Wallet from './pages/rpc'
 import Confirmation from './pages/rpc/Confirmation'
@@ -19,6 +20,8 @@ import Status from './pages/status'
 import { BankCardTopUpIndex } from './pages/top-up/BankCardTopUpIndex'
 import { CryptoTopUpIndex } from './pages/top-up/CryptoTopUpIndex'
 import { Fund } from './pages/top-up/Fund'
+import { GiftCardFund } from './pages/top-up/GiftCardFund'
+import { GiftCardTopUpIndex } from './pages/top-up/GiftCardTopUpIndex'
 import { Swap } from './pages/top-up/Swap'
 
 export enum ROUTES {
@@ -45,6 +48,9 @@ export enum ROUTES {
   TOP_UP_BANK_CARD = '/top-up/bank-card',
   TOP_UP_BANK_CARD_SWAP = '/top-up/bank-card/swap',
   TOP_UP_BANK_CARD_FUND = '/top-up/bank-card/fund',
+  TOP_UP_GIFT_CODE = '/top-up/gift-code',
+  TOP_UP_GIFT_CODE_FUND = '/top-up/gift-code/fund/:privateKeyString',
+  GIFT_CODES = '/gift-codes',
 }
 
 const BaseRouter = (): ReactElement => (
@@ -65,6 +71,7 @@ const BaseRouter = (): ReactElement => (
     <Route path={ROUTES.INFO} element={<Info />} />
     <Route path={ROUTES.WALLET} element={<Wallet />} />
     <Route path={ROUTES.CONFIRMATION} element={<Confirmation />} />
+    <Route path={ROUTES.GIFT_CODES} element={<GiftCards />} />
     <Route path={ROUTES.TOP_UP_CRYPTO} element={<CryptoTopUpIndex />} />
     <Route
       path={ROUTES.TOP_UP_CRYPTO_SWAP}
@@ -77,6 +84,8 @@ const BaseRouter = (): ReactElement => (
       element={<Swap header="Top-up with bank card" next={ROUTES.TOP_UP_BANK_CARD_FUND} />}
     />
     <Route path={ROUTES.TOP_UP_BANK_CARD_FUND} element={<Fund header="Top-up with bank card" />} />
+    <Route path={ROUTES.TOP_UP_GIFT_CODE} element={<GiftCardTopUpIndex />} />
+    <Route path={ROUTES.TOP_UP_GIFT_CODE_FUND} element={<GiftCardFund />} />
   </Routes>
 )
 

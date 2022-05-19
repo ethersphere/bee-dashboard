@@ -5,7 +5,9 @@ import { useNavigate } from 'react-router'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import { HistoryHeader } from '../../components/HistoryHeader'
+import { Loading } from '../../components/Loading'
 import { SwarmButton } from '../../components/SwarmButton'
+import { SwarmDivider } from '../../components/SwarmDivider'
 import { Context } from '../../providers/TopUp'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
 
@@ -17,10 +19,14 @@ interface Props {
 }
 
 export default function Index({ header, title, p, next }: Props): ReactElement {
-  const { wallet, xDaiBalance } = useContext(Context)
+  const { wallet } = useContext(Context)
   const navigate = useNavigate()
 
-  const disabled = xDaiBalance.toBigNumber.eq(0)
+  if (!wallet) {
+    return <Loading />
+  }
+
+  const disabled = wallet.dai.toDecimal.lte(1)
 
   return (
     <>
@@ -32,11 +38,12 @@ export default function Index({ header, title, p, next }: Props): ReactElement {
         <Typography style={{ fontWeight: 'bold' }}>{title}</Typography>
       </Box>
       <Box mb={4}>{p}</Box>
+      <SwarmDivider mb={4} />
       <Box mb={0.25}>
-        <ExpandableListItemKey label="Funding wallet address" value={wallet?.getAddressString() || 'N/A'} expanded />
+        <ExpandableListItemKey label="Funding wallet address" value={wallet.address} expanded />
       </Box>
       <Box mb={4}>
-        <ExpandableListItem label="xDAI balance" value={xDaiBalance.toSignificantDigits(4)} />
+        <ExpandableListItem label="xDAI balance" value={wallet.dai.toSignificantDigits(4)} />
       </Box>
       <Grid container direction="row" justifyContent="space-between">
         <SwarmButton iconType={Check} onClick={() => navigate(next)} disabled={disabled}>

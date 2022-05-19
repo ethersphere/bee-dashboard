@@ -1,29 +1,30 @@
 import Wallet from 'ethereumjs-wallet'
 import { createContext, ReactElement, useEffect, useState } from 'react'
-import { Token } from '../models/Token'
 import { setJsonRpcInDesktop } from '../utils/desktop'
 import { generateWallet, getWalletFromPrivateKeyString } from '../utils/identity'
-import { Rpc } from '../utils/rpc'
+import { ResolvedWallet } from '../utils/wallet'
 
 const LocalStorageKeys = {
   jsonRpcProvider: 'json-rpc-provider',
   depositWallet: 'deposit-wallet',
+  giftWallets: 'gift-wallets',
+  invitation: 'invitation',
 }
 
 interface ContextInterface {
   jsonRpcProvider: string
-  wallet: Wallet | null
-  xDaiBalance: Token
-  xBzzBalance: Token
+  wallet: ResolvedWallet | null
+  giftWallets: Wallet[]
   setJsonRpcProvider: (jsonRpcProvider: string) => void
+  addGiftWallet: (wallet: Wallet) => void
 }
 
 const initialValues: ContextInterface = {
   jsonRpcProvider: '',
-  xDaiBalance: new Token('0'),
-  xBzzBalance: new Token('0'),
   wallet: null,
+  giftWallets: [],
   setJsonRpcProvider: () => {}, // eslint-disable-line
+  addGiftWallet: () => {}, // eslint-disable-line
 }
 
 export const Context = createContext<ContextInterface>(initialValues)
@@ -37,15 +38,22 @@ export function Provider({ children }: Props): ReactElement {
   const [jsonRpcProvider, setJsonRpcProvider] = useState(
     localStorage.getItem('json-rpc-provider') || initialValues.jsonRpcProvider,
   )
-  const [xDaiBalance, setXDaiBalance] = useState(initialValues.xDaiBalance)
-  const [xBzzBalance, setXBzzBalance] = useState(initialValues.xBzzBalance)
   const [wallet, setWallet] = useState(initialValues.wallet)
+  const [giftWallets, setGiftWallets] = useState(initialValues.giftWallets)
 
   useEffect(() => {
     const existingWallet = localStorage.getItem(LocalStorageKeys.depositWallet)
     const wallet: Wallet = existingWallet ? getWalletFromPrivateKeyString(existingWallet) : generateWallet()
     localStorage.setItem(LocalStorageKeys.depositWallet, wallet.getPrivateKeyString())
-    setWallet(wallet)
+    ResolvedWallet.make(wallet).then(setWallet)
+  }, [])
+
+  useEffect(() => {
+    const existingGiftWallets = localStorage.getItem(LocalStorageKeys.giftWallets)
+
+    if (existingGiftWallets) {
+      setGiftWallets(JSON.parse(existingGiftWallets).map(getWalletFromPrivateKeyString))
+    }
   }, [])
 
   function setAndPersistJsonRpcProvider(jsonRpcProvider: string) {
@@ -55,28 +63,21 @@ export function Provider({ children }: Props): ReactElement {
     setJsonRpcInDesktop(jsonRpcProvider).catch(console.error)
   }
 
+  function addGiftWallet(wallet: Wallet) {
+    const newArray = [...giftWallets, wallet]
+    localStorage.setItem(LocalStorageKeys.giftWallets, JSON.stringify(newArray.map(x => x.getPrivateKeyString())))
+    setGiftWallets(newArray)
+  }
+
   useEffect(() => {
     if (!wallet) {
       return
     }
 
-    function refreshBalances() {
-      if (!wallet) {
-        return
-      }
-      Rpc._eth_getBalance(wallet.getAddressString()).then(balance => {
-        setXDaiBalance(new Token(balance, 18))
-      })
-      Rpc._eth_getBalanceERC20(wallet.getAddressString()).then(balance => {
-        setXBzzBalance(new Token(balance, 16))
-      })
-    }
-
-    refreshBalances()
-    const interval = setInterval(refreshBalances, 10_000)
+    const timeout = setTimeout(wallet.refresh.bind(wallet), 30_000)
 
     return () => {
-      clearInterval(interval)
+      clearTimeout(timeout)
     }
   }, [wallet])
 
@@ -84,10 +85,10 @@ export function Provider({ children }: Props): ReactElement {
     <Context.Provider
       value={{
         jsonRpcProvider,
-        xDaiBalance,
-        xBzzBalance,
         wallet,
+        giftWallets,
         setJsonRpcProvider: setAndPersistJsonRpcProvider,
+        addGiftWallet,
       }}
     >
       {children}

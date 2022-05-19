@@ -1,6 +1,6 @@
 import { Box, createStyles, Grid, makeStyles, Typography } from '@material-ui/core'
 import { ReactElement } from 'react'
-import { Battery, BatteryCharging, Check } from 'react-feather'
+import { Battery, BatteryCharging, Check, Gift } from 'react-feather'
 import { useNavigate } from 'react-router'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import { HistoryHeader } from '../../components/HistoryHeader'
@@ -50,6 +50,9 @@ export default function Confirmation(): ReactElement {
           </SwarmButton>
           <SwarmButton iconType={BatteryCharging} onClick={() => navigate(ROUTES.TOP_UP_CRYPTO)}>
             Use DAI
+          </SwarmButton>
+          <SwarmButton iconType={Gift} onClick={() => navigate(ROUTES.TOP_UP_GIFT_CODE)}>
+            Use a gift code
           </SwarmButton>
         </ExpandableListItemActions>
       </Grid>

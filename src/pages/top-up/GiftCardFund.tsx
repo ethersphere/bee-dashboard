@@ -1,44 +1,54 @@
 import { Box, Typography } from '@material-ui/core'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useContext, useState } from 'react'
+import { ReactElement, useContext, useEffect, useState } from 'react'
 import { ArrowDown, Check } from 'react-feather'
-import { useNavigate } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { Loading } from '../../components/Loading'
+import { ProgressIndicator } from '../../components/ProgressIndicator'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmDivider } from '../../components/SwarmDivider'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as TopUpContext } from '../../providers/TopUp'
 import { ROUTES } from '../../routes'
 import { restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
-import { TopUpProgressIndicator } from './TopUpProgressIndicator'
+import { ResolvedWallet } from '../../utils/wallet'
 
-interface Props {
-  header: string
-}
-
-export function Fund({ header }: Props): ReactElement {
-  const { wallet, jsonRpcProvider } = useContext(TopUpContext)
+export function GiftCardFund(): ReactElement {
   const { nodeAddresses, balance } = useContext(BeeContext)
+  const { jsonRpcProvider } = useContext(TopUpContext)
+
+  const [loading, setLoading] = useState(false)
+  const [wallet, setWallet] = useState<ResolvedWallet | null>(null)
+
+  const { privateKeyString } = useParams()
 
   const { enqueueSnackbar } = useSnackbar()
   const navigate = useNavigate()
 
-  const [loading, setLoading] = useState(false)
+  useEffect(() => {
+    if (!privateKeyString) {
+      return
+    }
+
+    ResolvedWallet.make(privateKeyString).then(setWallet)
+  }, [privateKeyString])
 
   if (!wallet || !balance) {
     return <Loading />
   }
 
   async function onFund() {
-    if (!nodeAddresses?.ethereum || !wallet) {
+    if (!wallet || !nodeAddresses) {
       return
     }
+
     setLoading(true)
+
     try {
-      await wallet.transfer(nodeAddresses.ethereum, jsonRpcProvider)
+      await wallet.transfer(nodeAddresses.ethereum)
       await upgradeToLightNode(jsonRpcProvider)
       await restartBeeNode()
       navigate(ROUTES.INFO)
@@ -52,22 +62,22 @@ export function Fund({ header }: Props): ReactElement {
 
   return (
     <>
-      <HistoryHeader>{header}</HistoryHeader>
+      <HistoryHeader>Top-up with gift code</HistoryHeader>
       <Box mb={4}>
-        <TopUpProgressIndicator index={2} />
+        <ProgressIndicator index={1} steps={['Paste gift code', 'Fund your node']} />
       </Box>
       <Box mb={2}>
         <Typography style={{ fontWeight: 'bold' }}>Send funds to your Bee node</Typography>
       </Box>
       <Box mb={4}>
         <Typography>
-          Lastly, deposit all the funds from the funding wallet to your node wallet address. You can use the button
-          below to transfer all funds to your node.
+          Deposit all the funds from the gift wallet to your node wallet address. You can use the button below to
+          transfer all funds to your node.
         </Typography>
       </Box>
       <SwarmDivider mb={4} />
       <Box mb={0.25}>
-        <ExpandableListItemKey label="Funding wallet address" value={wallet.address || 'N/A'} />
+        <ExpandableListItemKey label="Gift wallet address" value={wallet.address || 'N/A'} />
       </Box>
       <Box mb={0.25}>
         <ExpandableListItem label="XDAI balance" value={`${wallet.dai.toSignificantDigits(4)} XDAI`} />
