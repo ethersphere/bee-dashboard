@@ -5,7 +5,7 @@ const handler = require('serve-handler')
 const http = require('http')
 const opener = require('opener')
 
-const port = process.env.PORT
+const port = process.env.PORT || 8080
 
 const serverConfig = {
   public: path.join(__dirname, 'build'),
