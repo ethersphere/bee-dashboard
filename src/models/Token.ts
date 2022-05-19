@@ -13,7 +13,9 @@ export class Token {
   constructor(amount: BigNumber | string | BigInt, decimals: digits = BZZ_DECIMALS) {
     const a = makeBigNumber(amount)
 
-    if (!isInteger(a) || !POSSIBLE_DECIMALS.includes(decimals)) throw new TypeError('Not a valid token values')
+    if (!isInteger(a) || !POSSIBLE_DECIMALS.includes(decimals)) {
+      throw new TypeError(`Not a valid token values: ${amount} ${decimals}`)
+    }
 
     this.amount = a
     this.decimals = decimals
@@ -77,5 +79,12 @@ export class Token {
     }
 
     return asString.slice(0, indexOfSignificantDigit + digits)
+  }
+
+  minusEther(amount: string): Token {
+    return new Token(
+      this.toBigNumber.minus(new BigNumber(amount).multipliedBy(new BigNumber(10).pow(this.decimals))),
+      this.decimals,
+    )
   }
 }

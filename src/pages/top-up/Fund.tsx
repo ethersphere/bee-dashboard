@@ -28,7 +28,7 @@ export function Fund({ header }: Props): ReactElement {
 
   const [loading, setLoading] = useState(false)
 
-  if (!wallet) {
+  if (!wallet || !balance) {
     return <Loading />
   }
 
@@ -82,7 +82,7 @@ export function Fund({ header }: Props): ReactElement {
         <ExpandableListItemKey label="Node wallet address" value={nodeAddresses?.ethereum || 'N/A'} expanded />
       </Box>
       <Box mb={0.25}>
-        <ExpandableListItem label="XDAI balance" value={`${balance.xdai.toSignificantDigits(4)} XDAI`} />
+        <ExpandableListItem label="XDAI balance" value={`${balance.dai.toSignificantDigits(4)} XDAI`} />
       </Box>
       <Box mb={2}>
         <ExpandableListItem label="BZZ balance" value={`${balance.bzz.toSignificantDigits(4)} BZZ`} />

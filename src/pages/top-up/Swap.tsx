@@ -34,10 +34,10 @@ export function Swap({ header, next }: Props): ReactElement {
     return <Loading />
   }
 
-  const daiToSwap = DaiToken.fromDecimal(wallet.dai.toDecimal.minus(1))
+  const daiToSwap = wallet.dai.minusEther('1')
 
   const daiAfterSwap = new DaiToken(wallet.dai.toBigNumber.minus(daiToSwap.toBigNumber))
-  const bzzAfterSwap = BzzToken.fromDecimal(daiAfterSwap.toDecimal.dividedBy(2))
+  const bzzAfterSwap = new BzzToken(daiToSwap.toBigNumber.dividedToIntegerBy(200))
 
   async function onSwap() {
     if (!wallet || hasSwapped) {
@@ -46,7 +46,7 @@ export function Swap({ header, next }: Props): ReactElement {
     setLoading(true)
     setSwapped(true)
     try {
-      await swap(wallet.privateKey, daiToSwap.toString, '0.1')
+      await swap(wallet.privateKey, daiToSwap.toString, '10000')
       enqueueSnackbar('Successfully swapped', { variant: 'success' })
     } catch (error) {
       enqueueSnackbar(`Failed to swap: ${error}`, { variant: 'error' })

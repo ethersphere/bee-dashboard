@@ -7,6 +7,7 @@ import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import { HistoryHeader } from '../../components/HistoryHeader'
+import { Loading } from '../../components/Loading'
 import { SwarmButton } from '../../components/SwarmButton'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as TopUpContext } from '../../providers/TopUp'
@@ -55,6 +56,10 @@ export default function Index(): ReactElement {
     navigate(-1)
   }
 
+  if (!balance) {
+    return <Loading />
+  }
+
   return (
     <>
       <HistoryHeader>Invite to Swarm...</HistoryHeader>
@@ -65,7 +70,7 @@ export default function Index(): ReactElement {
         </Typography>
       </Box>
       <Box mb={0.25}>
-        <ExpandableListItem label="XDAI balance" value={`${balance.xdai.toSignificantDigits(4)} XDAI`} />
+        <ExpandableListItem label="XDAI balance" value={`${balance.dai.toSignificantDigits(4)} XDAI`} />
       </Box>
       <Box mb={2}>
         <ExpandableListItem label="BZZ balance" value={`${balance.bzz.toSignificantDigits(4)} BZZ`} />
@@ -73,7 +78,8 @@ export default function Index(): ReactElement {
       <Box mb={4}>
         {balances.map((x, i) => (
           <Box mb={2} key={i}>
-            <ExpandableListItemKey label={`swarm${String(i).padStart(3, '0')}`} value={x.address} />
+            <ExpandableListItemKey label={`swarm${String(i).padStart(3, '0')}`} value={x.privateKey} />
+            <ExpandableListItemKey label="Address" value={x.address} />
             <ExpandableListItem label="XDAI balance" value={`${x.dai.toSignificantDigits(4)} XDAI`} />
             <ExpandableListItem label="BZZ balance" value={`${x.bzz.toSignificantDigits(4)} BZZ`} />
           </Box>

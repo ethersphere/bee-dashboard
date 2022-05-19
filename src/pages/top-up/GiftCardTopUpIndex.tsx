@@ -28,10 +28,10 @@ export function GiftCardTopUpIndex(): ReactElement {
       const dai = new DaiToken(await Rpc._eth_getBalance(wallet.getAddressString()))
       const bzz = new BzzToken(await Rpc._eth_getBalanceERC20(wallet.getAddressString()))
 
-      if (dai.toDecimal.lt(0.1) || bzz.toDecimal.lt(0.1)) {
-        throw Error('Gift wallet does not enough funds')
+      if (dai.toDecimal.lt(0.001) || bzz.toDecimal.lt(0.001)) {
+        throw Error('Gift wallet does not have enough funds')
       }
-      enqueueSnackbar('Successfully verified gift wallet')
+      enqueueSnackbar('Successfully verified gift wallet', { variant: 'success' })
       navigate(ROUTES.TOP_UP_GIFT_CODE_FUND.replace(':privateKeyString', giftCode))
     } catch (error) {
       enqueueSnackbar(`Gift wallet could not be verified: ${error}`, { variant: 'error' })

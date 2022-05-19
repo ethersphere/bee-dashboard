@@ -4,6 +4,24 @@ import { DaiToken } from '../models/DaiToken'
 import { getWalletFromPrivateKeyString } from './identity'
 import { Rpc } from './rpc'
 
+export class WalletAddress {
+  private constructor(public address: string, public bzz: BzzToken, public dai: DaiToken) {}
+
+  static async make(address: string): Promise<WalletAddress> {
+    const bzz = new BzzToken(await Rpc._eth_getBalanceERC20(address))
+    const dai = new DaiToken(await Rpc._eth_getBalance(address))
+
+    return new WalletAddress(address, bzz, dai)
+  }
+
+  public async refresh(): Promise<WalletAddress> {
+    this.bzz = new BzzToken(await Rpc._eth_getBalanceERC20(this.address))
+    this.dai = new DaiToken(await Rpc._eth_getBalance(this.address))
+
+    return this
+  }
+}
+
 export class ResolvedWallet {
   public address: string
   public privateKey: string
