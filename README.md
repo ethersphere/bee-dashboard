@@ -60,6 +60,15 @@ bee-dashboard
 
 This should open the webpage on [`http://localhost:8080`](http://localhost:8080)
 
+You can also define your own port with the `PORT` environment variable. E.g.
+
+```sh
+export PORT=3005
+bee-dashboard
+```
+
+Will start the bee-dashboard on [`http://localhost:3005`](http://localhost:3005)
+
 ### Docker
 
 To build Docker image and run it, execute the following from inside project directory:
