@@ -19,7 +19,6 @@ import { CreatePostageStampPage } from './pages/stamps/CreatePostageStampPage'
 import Status from './pages/status'
 import { BankCardTopUpIndex } from './pages/top-up/BankCardTopUpIndex'
 import { CryptoTopUpIndex } from './pages/top-up/CryptoTopUpIndex'
-import { Fund } from './pages/top-up/Fund'
 import { GiftCardFund } from './pages/top-up/GiftCardFund'
 import { GiftCardTopUpIndex } from './pages/top-up/GiftCardTopUpIndex'
 import { Swap } from './pages/top-up/Swap'
@@ -44,10 +43,8 @@ export enum ROUTES {
   CONFIRMATION = '/wallet/confirmation',
   TOP_UP_CRYPTO = '/top-up/crypto',
   TOP_UP_CRYPTO_SWAP = '/top-up/crypto/swap',
-  TOP_UP_CRYPTO_FUND = '/top-up/crypto/fund',
   TOP_UP_BANK_CARD = '/top-up/bank-card',
   TOP_UP_BANK_CARD_SWAP = '/top-up/bank-card/swap',
-  TOP_UP_BANK_CARD_FUND = '/top-up/bank-card/fund',
   TOP_UP_GIFT_CODE = '/top-up/gift-code',
   TOP_UP_GIFT_CODE_FUND = '/top-up/gift-code/fund/:privateKeyString',
   GIFT_CODES = '/gift-codes',
@@ -73,17 +70,9 @@ const BaseRouter = (): ReactElement => (
     <Route path={ROUTES.CONFIRMATION} element={<Confirmation />} />
     <Route path={ROUTES.GIFT_CODES} element={<GiftCards />} />
     <Route path={ROUTES.TOP_UP_CRYPTO} element={<CryptoTopUpIndex />} />
-    <Route
-      path={ROUTES.TOP_UP_CRYPTO_SWAP}
-      element={<Swap header="Top-up with cryptocurrencies" next={ROUTES.TOP_UP_CRYPTO_FUND} />}
-    />
-    <Route path={ROUTES.TOP_UP_CRYPTO_FUND} element={<Fund header="Top-up with cryptocurrencies" />} />
+    <Route path={ROUTES.TOP_UP_CRYPTO_SWAP} element={<Swap header="Top-up with cryptocurrencies" />} />
     <Route path={ROUTES.TOP_UP_BANK_CARD} element={<BankCardTopUpIndex />} />
-    <Route
-      path={ROUTES.TOP_UP_BANK_CARD_SWAP}
-      element={<Swap header="Top-up with bank card" next={ROUTES.TOP_UP_BANK_CARD_FUND} />}
-    />
-    <Route path={ROUTES.TOP_UP_BANK_CARD_FUND} element={<Fund header="Top-up with bank card" />} />
+    <Route path={ROUTES.TOP_UP_BANK_CARD_SWAP} element={<Swap header="Top-up with bank card" />} />
     <Route path={ROUTES.TOP_UP_GIFT_CODE} element={<GiftCardTopUpIndex />} />
     <Route path={ROUTES.TOP_UP_GIFT_CODE_FUND} element={<GiftCardFund />} />
   </Routes>

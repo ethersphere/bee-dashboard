@@ -44,6 +44,10 @@ export async function createGiftWallet(address: string): Promise<void> {
   await postJson(`http://${getDesktopHost()}/gift-wallet/${address}`)
 }
 
+export async function performSwap(daiAmount: string): Promise<void> {
+  await postJson(`http://${getDesktopHost()}/swap`, { dai: daiAmount })
+}
+
 function getDesktopHost(): string {
   return window.location.host
 }

@@ -13,41 +13,48 @@ import { SwarmDivider } from '../../components/SwarmDivider'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
 import { BzzToken } from '../../models/BzzToken'
 import { DaiToken } from '../../models/DaiToken'
-import { Context } from '../../providers/TopUp'
-import { swap } from '../../utils/swap'
+import { Context as BeeContext } from '../../providers/Bee'
+import { Context as TopUpContext } from '../../providers/TopUp'
+import { ROUTES } from '../../routes'
+import { performSwap, restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
 
 interface Props {
   header: string
-  next: string
 }
 
-export function Swap({ header, next }: Props): ReactElement {
+export function Swap({ header }: Props): ReactElement {
   const [loading, setLoading] = useState(false)
   const [hasSwapped, setSwapped] = useState(false)
 
-  const { wallet } = useContext(Context)
+  const { jsonRpcProvider } = useContext(TopUpContext)
+  const { balance } = useContext(BeeContext)
+
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
 
-  if (!wallet) {
+  if (!balance) {
     return <Loading />
   }
 
-  const daiToSwap = wallet.dai.minusEther('1')
+  const daiToSwap = balance.dai.minusEther('1')
 
-  const daiAfterSwap = new DaiToken(wallet.dai.toBigNumber.minus(daiToSwap.toBigNumber))
+  const daiAfterSwap = new DaiToken(balance.dai.toBigNumber.minus(daiToSwap.toBigNumber))
   const bzzAfterSwap = new BzzToken(daiToSwap.toBigNumber.dividedToIntegerBy(200))
 
   async function onSwap() {
-    if (!wallet || hasSwapped) {
+    if (hasSwapped) {
       return
     }
     setLoading(true)
     setSwapped(true)
     try {
-      await swap(wallet.privateKey, daiToSwap.toString, '10000')
+      await performSwap(daiToSwap.toString)
       enqueueSnackbar('Successfully swapped', { variant: 'success' })
+      await upgradeToLightNode(jsonRpcProvider)
+      await restartBeeNode()
+      navigate(ROUTES.INFO)
+      enqueueSnackbar('Upgraded to light node', { variant: 'success' })
     } catch (error) {
       enqueueSnackbar(`Failed to swap: ${error}`, { variant: 'error' })
     } finally {
@@ -73,7 +80,8 @@ export function Swap({ header, next }: Props): ReactElement {
       <SwarmDivider mb={4} />
       <Box mb={4}>
         <Typography>
-          Your current balance is {wallet.dai.toSignificantDigits(4)} xDAI and {wallet.bzz.toSignificantDigits(4)} BZZ.
+          Your current balance is {balance.dai.toSignificantDigits(4)} xDAI and {balance.bzz.toSignificantDigits(4)}{' '}
+          BZZ.
         </Typography>
       </Box>
       <Box mb={4}>
@@ -88,7 +96,7 @@ export function Swap({ header, next }: Props): ReactElement {
         <ArrowDown size={24} color="#aaaaaa" />
       </Box>
       <Box mb={0.25}>
-        <ExpandableListItemKey label="Funding wallet address" value={wallet.address} expanded />
+        <ExpandableListItemKey label="Funding wallet address" value={balance.address} expanded />
       </Box>
       <Box mb={0.25}>
         <ExpandableListItem
@@ -106,19 +114,10 @@ export function Swap({ header, next }: Props): ReactElement {
         <SwarmButton
           iconType={Check}
           onClick={onSwap}
-          disabled={hasSwapped || loading || wallet.dai.toDecimal.lte(1)}
+          disabled={hasSwapped || loading || balance.dai.toDecimal.lte(1)}
           loading={loading}
         >
           Swap Now
-        </SwarmButton>
-        <SwarmButton
-          iconType={Check}
-          onClick={() => {
-            navigate(next)
-          }}
-          disabled={loading || wallet.bzz.toDecimal.lte(0.1)}
-        >
-          Proceed
         </SwarmButton>
       </ExpandableListItemActions>
     </>

@@ -8,7 +8,7 @@ import { HistoryHeader } from '../../components/HistoryHeader'
 import { Loading } from '../../components/Loading'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmDivider } from '../../components/SwarmDivider'
-import { Context } from '../../providers/TopUp'
+import { Context } from '../../providers/Bee'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
 
 interface Props {
@@ -19,14 +19,14 @@ interface Props {
 }
 
 export default function Index({ header, title, p, next }: Props): ReactElement {
-  const { wallet } = useContext(Context)
+  const { nodeAddresses, balance } = useContext(Context)
   const navigate = useNavigate()
 
-  if (!wallet) {
+  if (!balance || !nodeAddresses) {
     return <Loading />
   }
 
-  const disabled = wallet.dai.toDecimal.lte(1)
+  const disabled = balance.dai.toDecimal.lte(1)
 
   return (
     <>
@@ -40,10 +40,10 @@ export default function Index({ header, title, p, next }: Props): ReactElement {
       <Box mb={4}>{p}</Box>
       <SwarmDivider mb={4} />
       <Box mb={0.25}>
-        <ExpandableListItemKey label="Funding wallet address" value={wallet.address} expanded />
+        <ExpandableListItemKey label="Funding wallet address" value={balance.address} expanded />
       </Box>
       <Box mb={4}>
-        <ExpandableListItem label="xDAI balance" value={wallet.dai.toSignificantDigits(4)} />
+        <ExpandableListItem label="xDAI balance" value={balance.dai.toSignificantDigits(4)} />
       </Box>
       <Grid container direction="row" justifyContent="space-between">
         <SwarmButton iconType={Check} onClick={() => navigate(next)} disabled={disabled}>

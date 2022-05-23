@@ -1,8 +1,7 @@
 import Wallet from 'ethereumjs-wallet'
 import { createContext, ReactElement, useEffect, useState } from 'react'
 import { setJsonRpcInDesktop } from '../utils/desktop'
-import { generateWallet, getWalletFromPrivateKeyString } from '../utils/identity'
-import { ResolvedWallet } from '../utils/wallet'
+import { getWalletFromPrivateKeyString } from '../utils/identity'
 
 const LocalStorageKeys = {
   jsonRpcProvider: 'json-rpc-provider',
@@ -13,7 +12,6 @@ const LocalStorageKeys = {
 
 interface ContextInterface {
   jsonRpcProvider: string
-  wallet: ResolvedWallet | null
   giftWallets: Wallet[]
   setJsonRpcProvider: (jsonRpcProvider: string) => void
   addGiftWallet: (wallet: Wallet) => void
@@ -21,7 +19,6 @@ interface ContextInterface {
 
 const initialValues: ContextInterface = {
   jsonRpcProvider: '',
-  wallet: null,
   giftWallets: [],
   setJsonRpcProvider: () => {}, // eslint-disable-line
   addGiftWallet: () => {}, // eslint-disable-line
@@ -38,15 +35,7 @@ export function Provider({ children }: Props): ReactElement {
   const [jsonRpcProvider, setJsonRpcProvider] = useState(
     localStorage.getItem('json-rpc-provider') || initialValues.jsonRpcProvider,
   )
-  const [wallet, setWallet] = useState(initialValues.wallet)
   const [giftWallets, setGiftWallets] = useState(initialValues.giftWallets)
-
-  useEffect(() => {
-    const existingWallet = localStorage.getItem(LocalStorageKeys.depositWallet)
-    const wallet: Wallet = existingWallet ? getWalletFromPrivateKeyString(existingWallet) : generateWallet()
-    localStorage.setItem(LocalStorageKeys.depositWallet, wallet.getPrivateKeyString())
-    ResolvedWallet.make(wallet).then(setWallet)
-  }, [])
 
   useEffect(() => {
     const existingGiftWallets = localStorage.getItem(LocalStorageKeys.giftWallets)
@@ -69,23 +58,10 @@ export function Provider({ children }: Props): ReactElement {
     setGiftWallets(newArray)
   }
 
-  useEffect(() => {
-    if (!wallet) {
-      return
-    }
-
-    const timeout = setTimeout(wallet.refresh.bind(wallet), 30_000)
-
-    return () => {
-      clearTimeout(timeout)
-    }
-  }, [wallet])
-
   return (
     <Context.Provider
       value={{
         jsonRpcProvider,
-        wallet,
         giftWallets,
         setJsonRpcProvider: setAndPersistJsonRpcProvider,
         addGiftWallet,
