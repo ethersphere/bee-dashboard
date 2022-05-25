@@ -16,6 +16,7 @@ import { DaiToken } from '../../models/DaiToken'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as TopUpContext } from '../../providers/TopUp'
 import { ROUTES } from '../../routes'
+import { sleepMs } from '../../utils'
 import { performSwap, restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
 
@@ -50,10 +51,11 @@ export function Swap({ header }: Props): ReactElement {
     setSwapped(true)
     try {
       await performSwap(daiToSwap.toString)
-      enqueueSnackbar('Successfully swapped', { variant: 'success' })
+      enqueueSnackbar('Successfully swapped, restarting...', { variant: 'success' })
+      await sleepMs(5_000)
       await upgradeToLightNode(jsonRpcProvider)
       await restartBeeNode()
-      navigate(ROUTES.INFO)
+      navigate(ROUTES.RESTART_LIGHT)
       enqueueSnackbar('Upgraded to light node', { variant: 'success' })
     } catch (error) {
       enqueueSnackbar(`Failed to swap: ${error}`, { variant: 'error' })

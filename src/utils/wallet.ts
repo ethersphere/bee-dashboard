@@ -1,4 +1,5 @@
 import Wallet from 'ethereumjs-wallet'
+import { sleepMs } from '.'
 import { BzzToken } from '../models/BzzToken'
 import { DaiToken } from '../models/DaiToken'
 import { getWalletFromPrivateKeyString } from './identity'
@@ -56,6 +57,7 @@ export class ResolvedWallet {
 
     if (this.bzz.toDecimal.gt(0.1)) {
       await Rpc.sendBzzTransaction(this.privateKey, destination, this.bzz.toString, jsonRpcProvider)
+      await sleepMs(5_000)
     }
 
     if (this.dai.toBigNumber.gt(DUMMY_GAS_PRICE)) {

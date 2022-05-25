@@ -13,6 +13,7 @@ import { SwarmDivider } from '../../components/SwarmDivider'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as TopUpContext } from '../../providers/TopUp'
 import { ROUTES } from '../../routes'
+import { sleepMs } from '../../utils'
 import { restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
 import { ResolvedWallet } from '../../utils/wallet'
 
@@ -49,12 +50,13 @@ export function GiftCardFund(): ReactElement {
 
     try {
       await wallet.transfer(nodeAddresses.ethereum)
+      enqueueSnackbar('Successfully funded node, restarting...', { variant: 'success' })
+      await sleepMs(5_000)
       await upgradeToLightNode(jsonRpcProvider)
       await restartBeeNode()
-      navigate(ROUTES.INFO)
-      enqueueSnackbar('Successfully funded node', { variant: 'success' })
+      navigate(ROUTES.RESTART_LIGHT)
     } catch (error) {
-      enqueueSnackbar(`Failed to fund node: ${error}`, { variant: 'error' })
+      enqueueSnackbar(`Failed to fund/restart node: ${error}`, { variant: 'error' })
     } finally {
       setLoading(false)
     }
