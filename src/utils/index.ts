@@ -144,9 +144,9 @@ export function extractSwarmCid(s: string): string | undefined {
   }
 }
 
-// Matches any number of subdomains ending with .eth
+// Matches any number of subdomain with .eth
 // e.g. this.is.just-a-test.eth
-export const regexpEns = /((?:(?!-)[a-z0-9-]{1,63}(?<!-)\.)+eth)(?:$|[/?:#].*)/i
+export const regexpEns = /((?:(?:[^-./?:\s][^./?:\s]{0,61}[^-./?:\s]|[^-./?:\s]{1,2})\.)+eth)(?:$|[/?:#].*)/i
 
 export function extractEns(value: string): string | undefined {
   const matches = value.match(regexpEns)
