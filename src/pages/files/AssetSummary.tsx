@@ -1,25 +1,32 @@
 import * as swarmCid from '@ethersphere/swarm-cid'
 import { Box } from '@material-ui/core'
 import { ReactElement } from 'react'
+import { Utils } from '@ethersphere/bee-js'
 import { DocumentationText } from '../../components/DocumentationText'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import ExpandableListItemLink from '../../components/ExpandableListItemLink'
 
 interface Props {
   isWebsite?: boolean
-  hash: string
+  reference: string
 }
 
-export function AssetSummary({ isWebsite, hash }: Props): ReactElement {
+export function AssetSummary({ isWebsite, reference }: Props): ReactElement {
+  const isHash = Utils.isHexString(reference) && reference.length === 64
+
   return (
     <>
       <Box mb={4}>
-        <ExpandableListItemKey label="Swarm hash" value={hash} />
-        <ExpandableListItemLink label="Share on Swarm Gateway" value={`https://gateway.ethswarm.org/access/${hash}`} />
-        {isWebsite && (
+        {isHash && <ExpandableListItemKey label="Swarm hash" value={reference} />}
+        {!isHash && <ExpandableListItemLink label="ENS" value={reference} />}
+        <ExpandableListItemLink
+          label="Share on Swarm Gateway"
+          value={`https://gateway.ethswarm.org/access/${reference}`}
+        />
+        {isWebsite && isHash && (
           <ExpandableListItemLink
             label="BZZ Link"
-            value={`https://${swarmCid.encodeManifestReference(hash).toString()}.bzz.link`}
+            value={`https://${swarmCid.encodeManifestReference(reference).toString()}.bzz.link`}
           />
         )}
       </Box>

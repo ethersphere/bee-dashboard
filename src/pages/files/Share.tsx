@@ -151,7 +151,7 @@ export function Share(): ReactElement {
         <AssetPreview metadata={metadata} previewUri={preview} />
       </Box>
       <Box mb={4}>
-        <AssetSummary isWebsite={metadata?.isWebsite} hash={reference} />
+        <AssetSummary isWebsite={metadata?.isWebsite} reference={reference} />
       </Box>
       <DownloadActionBar
         onOpen={onOpen}

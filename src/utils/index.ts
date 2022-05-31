@@ -144,8 +144,18 @@ export function extractSwarmCid(s: string): string | undefined {
   }
 }
 
-export function recognizeSwarmHash(value: string): string {
-  return extractSwarmHash(value) || extractSwarmCid(value) || value
+// Matches any number of subdomain with .eth
+// e.g. this.is.just-a-test.eth
+export const regexpEns = /((?:(?:[^-./?:\s][^./?:\s]{0,61}[^-./?:\s]|[^-./?:\s]{1,2})\.)+eth)(?:$|[/?:#].*)/i
+
+export function extractEns(value: string): string | undefined {
+  const matches = value.match(regexpEns)
+
+  return (matches && matches[1]) || undefined
+}
+
+export function recognizeEnsOrSwarmHash(value: string): string {
+  return extractEns(value) || extractSwarmHash(value) || extractSwarmCid(value) || value
 }
 
 export function uuidV4(): string {

@@ -1,4 +1,4 @@
-import { extractSwarmHash, extractSwarmCid, recognizeSwarmHash } from './index'
+import { extractSwarmHash, extractSwarmCid, extractEns, recognizeEnsOrSwarmHash } from './index'
 
 interface TestObject {
   input: string
@@ -122,16 +122,64 @@ describe('extractSwarmCid', () => {
   })
 })
 
-describe('recognizeSwarmHash', () => {
-  test('should correctly extract hash', () => {
-    ;[...correctHashes, ...correctCids].forEach(({ input, expectedOutput }) => {
-      const hash = recognizeSwarmHash(input)
+const correctEns: TestObject[] = [
+  {
+    input: 'test.eth',
+    expectedOutput: 'test.eth',
+  },
+  {
+    input: 't-est.eth',
+    expectedOutput: 't-est.eth',
+  },
+  {
+    input: 'http://test.eth/whatever',
+    expectedOutput: 'test.eth',
+  },
+  {
+    input: 'https://alice.test.eth?whatever',
+    expectedOutput: 'alice.test.eth',
+  },
+  {
+    input: 'swarm.example.eth/?id=1&page=2',
+    expectedOutput: 'swarm.example.eth',
+  },
+  {
+    input: 'http://swarm.example.eth#up',
+    expectedOutput: 'swarm.example.eth',
+  },
+  {
+    input: 'http://site.eth:8008',
+    expectedOutput: 'site.eth',
+  },
+]
+
+const wrongEns: string[] = ['http://test.ethereum/whatever']
+
+describe('extractEns', () => {
+  test('should correctly extract ens domain', () => {
+    correctEns.forEach(({ input, expectedOutput }) => {
+      const hash = extractEns(input)
       expect(hash).toBe(expectedOutput)
     })
   })
-  test('should not extract hash from incorrect inputs but instead return them', () => {
-    ;[...wrongHashes, ...wrongCids].forEach(url => {
-      const hash = recognizeSwarmHash(url)
+  test('should not extract ens from incorrect inputs', () => {
+    wrongEns.forEach(url => {
+      const hash = extractEns(url)
+      expect(hash).toBe(undefined)
+    })
+  })
+})
+
+describe('recognizeEnsOrSwarmHash', () => {
+  test('should correctly extract hash or ens', () => {
+    ;[...correctHashes, ...correctCids, ...correctEns].forEach(({ input, expectedOutput }) => {
+      const hash = recognizeEnsOrSwarmHash(input)
+      expect(hash).toBe(expectedOutput)
+    })
+  })
+  test('should not extract hash or ens from incorrect inputs but instead return them', () => {
+    ;[...wrongHashes, ...wrongCids, ...wrongEns].forEach(url => {
+      const hash = recognizeEnsOrSwarmHash(url)
       expect(hash).toBe(url)
     })
   })
