@@ -55,8 +55,16 @@ export function Provider({
   const [desktopApiKey, setDesktopApiKey] = useState<string>(initialValues.desktopApiKey)
   const { config, isLoading, error } = useGetBeeConfig()
 
-  const url = config?.['api-addr'] || beeApiUrl || apiUrl
-  const debugUrl = config?.['debug-api-addr'] || beeDebugApiUrl || apiDebugUrl
+  function makeHttpUrl(string: string): string {
+    if (!string.startsWith('http')) {
+      return `http://${string}`
+    }
+
+    return string
+  }
+
+  const url = makeHttpUrl(config?.['api-addr'] || beeApiUrl || apiUrl)
+  const debugUrl = makeHttpUrl(config?.['debug-api-addr'] || beeDebugApiUrl || apiDebugUrl)
 
   useEffect(() => {
     const urlSearchParams = new URLSearchParams(window.location.search)
