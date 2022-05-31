@@ -2,8 +2,8 @@
 
 import axios from 'axios'
 
-export function getJson(url: string): Promise<Record<string, any>> {
-  return sendRequest(url, 'GET')
+export function getJson<T extends Record<string, any>>(url: string): Promise<T> {
+  return sendRequest(url, 'GET') as Promise<T>
 }
 
 export function postJson(url: string, data?: Record<string, any>): Promise<Record<string, unknown>> {

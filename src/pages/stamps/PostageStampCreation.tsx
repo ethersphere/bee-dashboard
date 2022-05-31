@@ -9,7 +9,13 @@ import { SwarmTextInput } from '../../components/SwarmTextInput'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as StampsContext } from '../../providers/Stamps'
-import { calculateStampPrice, convertAmountToSeconds, convertDepthToBytes, secondsToTimeString } from '../../utils'
+import {
+  calculateStampPrice,
+  convertAmountToSeconds,
+  convertDepthToBytes,
+  secondsToTimeString,
+  waitUntilStampUsable,
+} from '../../utils'
 import { getHumanReadableFileSize } from '../../utils/file'
 
 interface FormValues {
@@ -82,7 +88,8 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
           const amount = BigInt(values.amount)
           const depth = Number.parseInt(values.depth)
           const options = values.label ? { label: values.label } : undefined
-          await beeDebugApi.createPostageBatch(amount.toString(), depth, options)
+          const batch = await beeDebugApi.createPostageBatch(amount.toString(), depth, options)
+          await waitUntilStampUsable(batch, beeDebugApi)
           actions.resetForm()
           await refresh()
           onFinished()
@@ -112,9 +119,6 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
           if (!amount.isInteger()) errors.amount = 'Amount must be an integer'
           else if (amount.isLessThanOrEqualTo(0)) errors.amount = 'Amount must be greater than 0'
         }
-
-        // Label
-        if (values.label && !/^[0-9a-z]*$/i.test(values.label)) errors.label = 'Label must be an alphanumeric string'
 
         return errors
       }}

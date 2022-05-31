@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { config } from '../config'
+import { getJson } from '../utils/net'
 
 export interface LatestBeeReleaseHook {
   latestBeeRelease: LatestBeeRelease | null
@@ -42,6 +43,54 @@ export const useIsBeeDesktop = (conf: Config = config): IsBeeDesktopHook => {
   }, [conf])
 
   return { isBeeDesktop, isLoading }
+}
+
+export interface BeeConfig {
+  'api-addr': string
+  'debug-api-addr': string
+  'debug-api-enable': boolean
+  password: string
+  'swap-enable': boolean
+  'swap-initial-deposit': bigint
+  mainnet: boolean
+  'full-node': boolean
+  'chain-enable': boolean
+  'cors-allowed-origins': string
+  'resolver-options': string
+  'use-postage-snapshot': boolean
+  'data-dir': string
+  transaction: string
+  'block-hash': string
+  'swap-endpoint'?: string
+}
+
+export interface GetBeeConfig {
+  config: BeeConfig | null
+  isLoading: boolean
+  error: Error | null
+}
+
+export const useGetBeeConfig = (conf: Config = config): GetBeeConfig => {
+  const [beeConfig, setBeeConfig] = useState<BeeConfig | null>(null)
+  const [isLoading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<Error | null>(null)
+
+  useEffect(() => {
+    getJson<BeeConfig>(`${conf.BEE_DESKTOP_URL}/config`)
+      .then(beeConf => {
+        setBeeConfig(beeConf)
+        setError(null)
+      })
+      .catch((err: Error) => {
+        setError(err)
+        setBeeConfig(null)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }, [conf])
+
+  return { config: beeConfig, isLoading, error }
 }
 
 export const useLatestBeeRelease = (): LatestBeeReleaseHook => {
