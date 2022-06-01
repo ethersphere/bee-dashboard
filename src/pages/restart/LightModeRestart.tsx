@@ -7,7 +7,7 @@ import { Context } from '../../providers/Bee'
 import { ROUTES } from '../../routes'
 
 export default function Settings(): ReactElement {
-  const [startedAt, setStartedAt] = useState(Date.now())
+  const [startedAt] = useState(Date.now())
   const { apiHealth, nodeInfo } = useContext(Context)
   const navigate = useNavigate()
 
