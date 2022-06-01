@@ -84,7 +84,7 @@ export function Upload(): ReactElement {
         if (idx.commonPrefix) {
           const substrStart = idx.commonPrefix.length
           indexDocument = idx.indexPath.slice(substrStart)
-          fls = fls.map(f => {
+          fls = files.map(f => {
             const path = (f.path as string).slice(substrStart)
 
             return packageFile(f, path)
