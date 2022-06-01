@@ -81,7 +81,7 @@ export class Token {
     return asString.slice(0, indexOfSignificantDigit + digits)
   }
 
-  minusEther(amount: string): Token {
+  minusBaseUnits(amount: string): Token {
     return new Token(
       this.toBigNumber.minus(new BigNumber(amount).multipliedBy(new BigNumber(10).pow(this.decimals))),
       this.decimals,

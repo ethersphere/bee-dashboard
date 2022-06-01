@@ -38,7 +38,7 @@ export function Swap({ header }: Props): ReactElement {
     return <Loading />
   }
 
-  const daiToSwap = balance.dai.minusEther('1')
+  const daiToSwap = balance.dai.minusBaseUnits('1')
 
   const daiAfterSwap = new DaiToken(balance.dai.toBigNumber.minus(daiToSwap.toBigNumber))
   const bzzAfterSwap = new BzzToken(daiToSwap.toBigNumber.dividedToIntegerBy(200))
