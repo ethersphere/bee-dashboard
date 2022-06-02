@@ -1,11 +1,9 @@
 import type { ReactElement } from 'react'
-
+import CashoutModal from '../../components/CashoutModal'
 import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
-
-import CashoutModal from '../../components/CashoutModal'
 import { Accounting } from '../../hooks/accounting'
 import type { Token } from '../../models/Token'
 
@@ -25,7 +23,7 @@ export default function PeerBalances({ accounting, isLoadingUncashed, totalUncas
       {accounting?.map(({ peer, balance, received, sent, uncashedAmount, total }) => (
         <ExpandableList
           key={peer}
-          label={`Peer ${peer.substr(0, 8)}[…]`}
+          label={`Peer ${peer.slice(0, 8)}[…]`}
           level={1}
           info={`${uncashedAmount.toFixedDecimal()} BZZ (uncashed)`}
         >

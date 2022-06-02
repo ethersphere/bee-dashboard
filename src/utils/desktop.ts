@@ -26,12 +26,26 @@ export async function upgradeToLightNode(rpcProvider: string): Promise<void> {
   })
 }
 
+export async function setJsonRpcInDesktop(value: string): Promise<void> {
+  await updateDesktopConfiguration({
+    'swap-endpoint': value,
+  })
+}
+
 async function updateDesktopConfiguration(values: Record<string, unknown>): Promise<void> {
   await postJson(`http://${getDesktopHost()}/config`, values)
 }
 
 export async function restartBeeNode(): Promise<void> {
   await postJson(`http://${getDesktopHost()}/restart`)
+}
+
+export async function createGiftWallet(address: string): Promise<void> {
+  await postJson(`http://${getDesktopHost()}/gift-wallet/${address}`)
+}
+
+export async function performSwap(daiAmount: string): Promise<void> {
+  await postJson(`http://${getDesktopHost()}/swap`, { dai: daiAmount })
 }
 
 function getDesktopHost(): string {
