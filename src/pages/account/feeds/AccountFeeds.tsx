@@ -1,25 +1,24 @@
-import { Box, Typography } from '@material-ui/core'
+import { Box } from '@material-ui/core'
 import { ReactElement, useContext, useState } from 'react'
 import { Download, Info, PlusSquare, Trash } from 'react-feather'
 import { useNavigate } from 'react-router'
-import ExpandableList from '../../components/ExpandableList'
-import ExpandableListItem from '../../components/ExpandableListItem'
-import ExpandableListItemActions from '../../components/ExpandableListItemActions'
-import ExpandableListItemKey from '../../components/ExpandableListItemKey'
-import { SwarmButton } from '../../components/SwarmButton'
-import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
-import { CheckState, Context as BeeContext } from '../../providers/Bee'
-import { Context as IdentityContext, Identity } from '../../providers/Feeds'
-import { ROUTES } from '../../routes'
-import { formatEnum } from '../../utils'
-import { persistIdentitiesWithoutUpdate } from '../../utils/identity'
-import { DeleteFeedDialog } from './DeleteFeedDialog'
-import { ExportFeedDialog } from './ExportFeedDialog'
-import { ImportFeedDialog } from './ImportFeedDialog'
+import ExpandableList from '../../../components/ExpandableList'
+import ExpandableListItem from '../../../components/ExpandableListItem'
+import ExpandableListItemActions from '../../../components/ExpandableListItemActions'
+import ExpandableListItemKey from '../../../components/ExpandableListItemKey'
+import { SwarmButton } from '../../../components/SwarmButton'
+import { Context as IdentityContext, Identity } from '../../../providers/Feeds'
+import { ROUTES } from '../../../routes'
+import { formatEnum } from '../../../utils'
+import { persistIdentitiesWithoutUpdate } from '../../../utils/identity'
+import { DeleteFeedDialog } from '../../feeds/DeleteFeedDialog'
+import { ExportFeedDialog } from '../../feeds/ExportFeedDialog'
+import { ImportFeedDialog } from '../../feeds/ImportFeedDialog'
+import { AccountNavigation } from '../AccountNavigation'
+import { Header } from '../Header'
 
-export default function Feeds(): ReactElement {
+export function AccountFeeds(): ReactElement {
   const { identities, setIdentities } = useContext(IdentityContext)
-  const { status } = useContext(BeeContext)
 
   const navigate = useNavigate()
 
@@ -60,10 +59,10 @@ export default function Feeds(): ReactElement {
     setShowDelete(true)
   }
 
-  if (status.all === CheckState.ERROR) return <TroubleshootConnectionCard />
-
   return (
-    <div>
+    <>
+      <Header />
+      <AccountNavigation active="FEEDS" />
       {showImport && <ImportFeedDialog onClose={() => setShowImport(false)} />}
       {showExport && selectedIdentity && <ExportFeedDialog identity={selectedIdentity} onClose={onDialogClose} />}
       {showDelete && selectedIdentity && (
@@ -73,9 +72,6 @@ export default function Feeds(): ReactElement {
           onConfirm={(identity: Identity) => onDelete(identity)}
         />
       )}
-      <Box mb={4}>
-        <Typography variant="h1">Feeds</Typography>
-      </Box>
       <Box mb={4}>
         <ExpandableListItemActions>
           <SwarmButton iconType={PlusSquare} onClick={createNewFeed}>
@@ -111,6 +107,6 @@ export default function Feeds(): ReactElement {
           </Box>
         </ExpandableList>
       ))}
-    </div>
+    </>
   )
 }

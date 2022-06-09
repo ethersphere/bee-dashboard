@@ -133,7 +133,7 @@ export function Upload(): ReactElement {
           updateFeed(beeApi, identity as Identity, hash.reference, stamp.batchID, password as string).then(() => {
             persistIdentity(identities, identity as Identity)
             setIdentities([...identities])
-            navigate(ROUTES.FEEDS_PAGE.replace(':uuid', uploadOrigin.uuid as string), { replace: true })
+            navigate(ROUTES.ACCOUNT_FEEDS_VIEW.replace(':uuid', uploadOrigin.uuid as string), { replace: true })
           })
         }
       })

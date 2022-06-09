@@ -2,7 +2,7 @@ import * as swarmCid from '@ethersphere/swarm-cid'
 import { Box } from '@material-ui/core'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { X } from 'react-feather'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { DocumentationText } from '../../components/DocumentationText'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
@@ -40,13 +40,13 @@ export function FeedSubpage(): ReactElement {
   }, [beeApi, uuid, identity])
 
   if (!identity || !status.all) {
-    navigate(ROUTES.FEEDS, { replace: true })
+    navigate(ROUTES.ACCOUNT_FEEDS, { replace: true })
 
     return <></>
   }
 
   function onClose() {
-    navigate(ROUTES.FEEDS)
+    navigate(ROUTES.ACCOUNT_FEEDS)
   }
 
   return (

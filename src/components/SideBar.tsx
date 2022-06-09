@@ -2,7 +2,7 @@ import { Divider, Drawer, Grid, Link as MUILink, List } from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import { OpenInNewSharp } from '@material-ui/icons'
 import type { ReactElement } from 'react'
-import { Bookmark, BookOpen, Briefcase, DollarSign, FileText, Gift, Home, Layers, Settings } from 'react-feather'
+import { BookOpen, Briefcase, DollarSign, FileText, Gift, Home, Settings } from 'react-feather'
 import { Link } from 'react-router-dom'
 import Logo from '../assets/logo.svg'
 import { config } from '../config'
@@ -22,34 +22,25 @@ const navBarItems = [
     icon: FileText,
   },
   {
-    label: 'Feeds',
-    path: ROUTES.FEEDS,
-    icon: Bookmark,
-  },
-  {
-    label: 'Stamps',
-    path: ROUTES.STAMPS,
-    icon: Layers,
-  },
-  {
-    label: 'Accounting',
-    path: ROUTES.ACCOUNTING,
-    icon: DollarSign,
-  },
-  {
     label: 'Settings',
     path: ROUTES.SETTINGS,
     icon: Settings,
   },
   {
-    label: 'Account',
-    path: ROUTES.WALLET,
-    icon: Briefcase,
+    label: 'Account (old)',
+    path: ROUTES.ACCOUNTING,
+    icon: DollarSign,
   },
   {
-    label: 'Gift Wallets',
-    path: ROUTES.GIFT_CODES,
+    label: 'Account (New)',
+    path: ROUTES.ACCOUNT_WALLET,
     icon: Gift,
+    pathMatcherSubstring: '/account/',
+  },
+  {
+    label: 'Top Up',
+    path: ROUTES.WALLET,
+    icon: Briefcase,
   },
 ]
 
@@ -120,6 +111,7 @@ export default function SideBar(): ReactElement {
                   key={p.path}
                   iconStart={<p.icon className={classes.icon} />}
                   path={p.path}
+                  pathMatcherSubstring={p.pathMatcherSubstring}
                   label={p.label}
                 />
               </Link>
