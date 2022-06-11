@@ -4,7 +4,6 @@ import { AccountFeeds } from './pages/account/feeds/AccountFeeds'
 import { AccountNetwork } from './pages/account/network/AccountNetwork'
 import { AccountStamps } from './pages/account/stamps/AccountStamps'
 import { AccountWallet } from './pages/account/wallet/AccountWallet'
-import Accounting from './pages/accounting'
 import CreateNewFeed from './pages/feeds/CreateNewFeed'
 import { FeedSubpage } from './pages/feeds/FeedSubpage'
 import UpdateFeed from './pages/feeds/UpdateFeed'
@@ -34,7 +33,6 @@ export enum ROUTES {
   UPLOAD_IN_PROGRESS = '/files/upload/workflow',
   DOWNLOAD = '/files/download',
   HASH = '/files/hash/:hash',
-  ACCOUNTING = '/accounting',
   SETTINGS = '/settings',
   STATUS = '/status',
   WALLET = '/wallet',
@@ -64,7 +62,6 @@ const BaseRouter = (): ReactElement => (
     <Route path={ROUTES.UPLOAD} element={<UploadLander />} />
     <Route path={ROUTES.DOWNLOAD} element={<Download />} />
     <Route path={ROUTES.HASH} element={<Share />} />
-    <Route path={ROUTES.ACCOUNTING} element={<Accounting />} />
     <Route path={ROUTES.SETTINGS} element={<Settings />} />
     <Route path={ROUTES.STATUS} element={<Status />} />
     <Route path={ROUTES.INFO} element={<Info />} />

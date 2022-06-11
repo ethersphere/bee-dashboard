@@ -2,7 +2,7 @@ import { Divider, Drawer, Grid, Link as MUILink, List } from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import { OpenInNewSharp } from '@material-ui/icons'
 import type { ReactElement } from 'react'
-import { BookOpen, Briefcase, DollarSign, FileText, Gift, Home, Settings } from 'react-feather'
+import { BookOpen, Briefcase, FileText, Gift, Home, Settings } from 'react-feather'
 import { Link } from 'react-router-dom'
 import Logo from '../assets/logo.svg'
 import { config } from '../config'
@@ -27,12 +27,7 @@ const navBarItems = [
     icon: Settings,
   },
   {
-    label: 'Account (old)',
-    path: ROUTES.ACCOUNTING,
-    icon: DollarSign,
-  },
-  {
-    label: 'Account (New)',
+    label: 'Account',
     path: ROUTES.ACCOUNT_WALLET,
     icon: Gift,
     pathMatcherSubstring: '/account/',
