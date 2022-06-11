@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.16.0](https://github.com/ethersphere/bee-dashboard/compare/v0.15.0...v0.16.0) (2022-06-02)
+
+
+### Features
+
+* add light node upgrade top up methods ([#372](https://github.com/ethersphere/bee-dashboard/issues/372)) ([a768b4e](https://github.com/ethersphere/bee-dashboard/commit/a768b4ea0675596f6fe49771ef9d0755af00db56))
+* allow for the port to be configured ([#370](https://github.com/ethersphere/bee-dashboard/issues/370)) ([b6f138b](https://github.com/ethersphere/bee-dashboard/commit/b6f138b423cbe18b078fd38ea64b4c7a839d4e6e))
+* recognize ens domains ([#351](https://github.com/ethersphere/bee-dashboard/issues/351)) ([5917a13](https://github.com/ethersphere/bee-dashboard/commit/5917a133172c9e2fc0a81fb2fa19ea29ff976d03))
+
 ## [0.15.0](https://github.com/ethersphere/bee-dashboard/compare/v0.14.0...v0.15.0) (2022-05-16)
 
 
