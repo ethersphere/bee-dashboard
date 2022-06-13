@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react'
 import { Route, Routes } from 'react-router-dom'
+import { AccountChequebook } from './pages/account/chequebook/AccountChequebook'
 import { AccountFeeds } from './pages/account/feeds/AccountFeeds'
-import { AccountNetwork } from './pages/account/network/AccountNetwork'
 import { AccountStamps } from './pages/account/stamps/AccountStamps'
 import { AccountWallet } from './pages/account/wallet/AccountWallet'
 import CreateNewFeed from './pages/feeds/CreateNewFeed'
@@ -46,7 +46,7 @@ export enum ROUTES {
   RESTART = '/restart',
   RESTART_LIGHT = '/light-mode-restart',
   ACCOUNT_WALLET = '/account/wallet',
-  ACCOUNT_NETWORK = '/account/network',
+  ACCOUNT_CHEQUEBOOK = '/account/chequebook',
   ACCOUNT_STAMPS = '/account/stamps',
   ACCOUNT_STAMPS_NEW = '/account/stamps/new',
   ACCOUNT_FEEDS = '/account/feeds',
@@ -76,7 +76,7 @@ const BaseRouter = (): ReactElement => (
     <Route path={ROUTES.RESTART} element={<Restart />} />
     <Route path={ROUTES.RESTART_LIGHT} element={<LightModeRestart />} />
     <Route path={ROUTES.ACCOUNT_WALLET} element={<AccountWallet />} />
-    <Route path={ROUTES.ACCOUNT_NETWORK} element={<AccountNetwork />} />
+    <Route path={ROUTES.ACCOUNT_CHEQUEBOOK} element={<AccountChequebook />} />
     <Route path={ROUTES.ACCOUNT_STAMPS} element={<AccountStamps />} />
     <Route path={ROUTES.ACCOUNT_STAMPS_NEW} element={<CreatePostageStampPage />} />
     <Route path={ROUTES.ACCOUNT_FEEDS} element={<AccountFeeds />} />

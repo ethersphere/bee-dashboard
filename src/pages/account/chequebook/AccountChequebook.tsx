@@ -13,7 +13,7 @@ import PeerBalances from '../../accounting/PeerBalances'
 import { AccountNavigation } from '../AccountNavigation'
 import { Header } from '../Header'
 
-export function AccountNetwork(): ReactElement {
+export function AccountChequebook(): ReactElement {
   const { status, nodeAddresses, chequebookAddress, chequebookBalance, settlements, peerBalances } =
     useContext(BeeContext)
   const { beeDebugApi } = useContext(SettingsContext)
@@ -25,7 +25,7 @@ export function AccountNetwork(): ReactElement {
   return (
     <>
       <Header />
-      <AccountNavigation active="NETWORK" />
+      <AccountNavigation active="CHEQUEBOOK" />
       <div>
         <ExpandableList label="Chequebook" defaultOpen>
           <ExpandableListItem label="Total Balance" value={`${chequebookBalance?.totalBalance.toFixedDecimal()} BZZ`} />

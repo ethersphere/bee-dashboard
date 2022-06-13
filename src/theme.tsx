@@ -1,5 +1,5 @@
-import { createTheme, Theme } from '@material-ui/core/styles'
 import { orange } from '@material-ui/core/colors'
+import { createTheme, Theme } from '@material-ui/core/styles'
 
 declare module '@material-ui/core/styles/createPalette' {
   interface TypeBackground {
@@ -186,7 +186,7 @@ export const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: ['Work Sans', 'Montserrat', 'Nunito', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'].join(','),
+    fontFamily: ['iAWriterQuattroV', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'].join(','),
     h1: {
       fontSize: '1.3rem',
       fontWeight: 500,
@@ -200,9 +200,12 @@ export const theme = createTheme({
       fontWeight: 500,
     },
     body2: {
-      fontFamily: '"IBM Plex Mono", monospace',
+      fontFamily: '"iAWriterMonoV", monospace',
       fontWeight: 500,
       fontSize: '1rem',
+    },
+    button: {
+      textTransform: 'none',
     },
   },
 })

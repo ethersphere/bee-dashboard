@@ -1,63 +1,28 @@
 @font-face {
-  font-family: 'Work Sans';
+  font-family: 'iAWriterQuattroV';
   font-style: normal;
   font-weight: 300;
   font-display: swap;
-  src: url(assets/fonts/WorkSans/WorkSans-Light.ttf) format('truetype');
+  src: url(assets/fonts/iAWriterQuattroV.ttf) format('truetype');
 }
+
 @font-face {
-  font-family: 'Work Sans';
+  font-family: 'iAWriterMonoV';
   font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(assets/fonts/WorkSans/WorkSans-Regular.ttf) format('truetype');
-}
-@font-face {
-  font-family: 'Work Sans';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url(assets/fonts/WorkSans/WorkSans-Medium.ttf) format('truetype');
-}
-@font-face {
-  font-family: 'Work Sans';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url(assets/fonts/WorkSans/WorkSans-SemiBold.ttf) format('truetype');
-}
-@font-face {
-  font-family: 'IBMPlexMono500';
-  src: url(assets/fonts/IBMPlexMono500.ttf) format('truetype');
-  font-weight: 500;
-}
-@font-face {
-  font-family: 'IBMPlexMono600';
-  src: url(assets/fonts/IBMPlexMono600.ttf) format('truetype');
-  font-weight: 600;
-}
-@font-face {
-  font-family: 'IBMPlexMonoregular';
-  src: url(assets/fonts/IBMPlexMonoregular.ttf) format('truetype');
   font-weight: 300;
-}
-@font-face {
-  font-family: 'WorkSans-Italic-VariableFont_wght';
-  src: url(assets/fonts/WorkSans-Italic-VariableFont_wght.ttf) format('truetype');
-  font-weight: 700;
-}
-@font-face {
-  font-family: 'WorkSans-VariableFont_wght';
-  src: url(assets/fonts/WorkSans-VariableFont_wght.ttf) format('truetype');
-  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/iAWriterMonoV.ttf) format('truetype');
 }
 
 .App {
-  font-family: 'Work Sans', 'Helvetica Neue', HelveticaNeue, Helvetica, Arial, sans-serif;
+  font-family: 'iAWriterQuattroV', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a,
 button {
-  font-family: 'IBMPlexMono500' !important;
+  font-family: 'iAWriterMonoV' !important;
   color: #dd7700;
 }
