@@ -23,7 +23,6 @@
     "sourceType": "module",
     "ecmaVersion": 2018
   },
-  "plugins": ["jest"],
   "rules": {
     "array-bracket-newline": ["error", "consistent"],
     "strict": ["error", "safe"],

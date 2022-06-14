@@ -11,7 +11,7 @@ import {
 } from '@ethersphere/bee-js'
 import { createContext, ReactChild, ReactElement, useContext, useEffect, useState } from 'react'
 import semver from 'semver'
-import { engines } from '../../package.json'
+import PackageJson from '../../package.json'
 import { useLatestBeeRelease } from '../hooks/apiHooks'
 import { Token } from '../models/Token'
 import type { Balance, ChequebookBalance, Settlements } from '../types'
@@ -130,7 +130,7 @@ function getStatus(
   status.version.isEnabled = true
   status.version.checkState =
     debugApiHealth &&
-    semver.satisfies(debugApiHealth.version, engines.bee, {
+    semver.satisfies(debugApiHealth.version, PackageJson.engines.bee, {
       includePrerelease: true,
     })
       ? CheckState.OK
