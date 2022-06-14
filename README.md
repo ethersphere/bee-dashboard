@@ -5,7 +5,7 @@
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fethersphere%2Fbee-dashboard.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fethersphere%2Fbee-dashboard?ref=badge_shield)
 ![](https://img.shields.io/badge/npm-%3E%3D6.9.0-orange.svg?style=flat-square)
-![](https://img.shields.io/badge/Node.js-%3E%3D10.0.0-orange.svg?style=flat-square)
+![](https://img.shields.io/badge/Node.js-%3E%3D14.0.0-orange.svg?style=flat-square)
 
 > An app which helps users to setup their Bee node and do actions like cash out cheques, upload and download files or
 > manage your postage stamps.
