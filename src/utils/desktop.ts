@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { getJson, postJson } from './net'
+import { getJson, postJson, sendRequest } from './net'
 
 interface DesktopStatus {
   status: 0 | 1 | 2
@@ -9,7 +9,7 @@ interface DesktopStatus {
 }
 
 export async function getDesktopStatus(): Promise<DesktopStatus> {
-  const response = await getJson(`http://${getDesktopHost()}/status`)
+  const response = await getJson(`${getDesktopHost()}/status`)
 
   return response as DesktopStatus
 }
@@ -33,21 +33,37 @@ export async function setJsonRpcInDesktop(value: string): Promise<void> {
 }
 
 async function updateDesktopConfiguration(values: Record<string, unknown>): Promise<void> {
-  await postJson(`http://${getDesktopHost()}/config`, values)
+  await postJson(`${getDesktopHost()}/config`, values)
 }
 
 export async function restartBeeNode(): Promise<void> {
-  await postJson(`http://${getDesktopHost()}/restart`)
+  await postJson(`${getDesktopHost()}/restart`)
 }
 
 export async function createGiftWallet(address: string): Promise<void> {
-  await postJson(`http://${getDesktopHost()}/gift-wallet/${address}`)
+  await postJson(`${getDesktopHost()}/gift-wallet/${address}`)
 }
 
 export async function performSwap(daiAmount: string): Promise<void> {
-  await postJson(`http://${getDesktopHost()}/swap`, { dai: daiAmount })
+  await postJson(`${getDesktopHost()}/swap`, { dai: daiAmount })
+}
+
+export async function getBeeDesktopLogs(): Promise<string> {
+  const response = await sendRequest(`${getDesktopHost()}/logs/bee-desktop`, 'GET')
+
+  return response as unknown as string
+}
+
+export async function getBeeLogs(): Promise<string> {
+  const response = await sendRequest(`${getDesktopHost()}/logs/bee`, 'GET')
+
+  return response as unknown as string
 }
 
 function getDesktopHost(): string {
-  return window.location.host
+  if (process.env.REACT_APP_BEE_DESKTOP_URL) {
+    return process.env.REACT_APP_BEE_DESKTOP_URL
+  }
+
+  return `http://${window.location.host}`
 }

@@ -10,7 +10,7 @@ export function postJson(url: string, data?: Record<string, any>): Promise<Recor
   return sendRequest(url, 'POST', data)
 }
 
-async function sendRequest(
+export async function sendRequest(
   url: string,
   method: 'GET' | 'POST',
   data?: Record<string, unknown>,
