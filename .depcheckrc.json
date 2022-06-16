@@ -11,6 +11,8 @@
     "assert",
     "buffer",
     "crypto*",
-    "stream*"
+    "stream*",
+    "env-paths",
+    "open"
   ]
 }

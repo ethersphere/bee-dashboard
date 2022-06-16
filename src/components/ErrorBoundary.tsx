@@ -1,4 +1,5 @@
 import { Component, ErrorInfo, ReactElement } from 'react'
+import ItsBroken from '../layout/ItsBroken'
 
 interface Props {
   children: ReactElement
@@ -26,8 +27,7 @@ export default class ErrorBoundary extends Component<Props, State> {
 
   render(): ReactElement {
     if (this.state.error) {
-      // You can render any custom fallback UI
-      return <h1>Something went wrong. Error: {this.state.error.message}</h1>
+      return <ItsBroken message={this.state.error.message} />
     }
 
     return this.props.children

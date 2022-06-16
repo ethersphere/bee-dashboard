@@ -96,6 +96,16 @@ The Bee Dashboard runs in development mode on [http://localhost:3031/](http://lo
 
 > Setting the `REACT_APP_DEV_MODE=1` environment variable, or opening Bee Dashboard with the query string `?devMode=1` loosens some checks. This makes it possible to develop Bee Dashboard without having connected peers and chequebook properly set up, effectively supporting the dev mode of Bee itself.
 
+#### Bee Desktop development
+
+If you want to develop Bee Dashboard in the Bee Desktop mode, then spin up `bee-desktop` to the point where you see Bee Dashboard (eq. install Bee etc.) and:
+
+```sh
+echo "REACT_APP_BEE_DESKTOP_URL=http://localhost:3000" > .env.development.local
+npm start
+npm run desktop # This will inject the API key to the Dashboard 
+```
+
 ## Contribute
 
 There are some ways you can make this module better:
