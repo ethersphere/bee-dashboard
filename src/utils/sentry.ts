@@ -21,6 +21,7 @@ export async function initSentry(): Promise<void> {
   Sentry.init({
     dsn: config.SENTRY_KEY,
     release: packageJson.version,
+    environment: config.SENTRY_ENVIRONMENT,
     tunnel: tunnelAvailable ? `${config.BEE_DESKTOP_URL}/sentry` : undefined,
     integrations: [new BrowserTracing({ tracingOrigins: ['localhost'] })],
     tracesSampleRate: 0.3,

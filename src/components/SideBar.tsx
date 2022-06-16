@@ -11,6 +11,7 @@ import { Context } from '../providers/Bee'
 import { ROUTES } from '../routes'
 import SideBarItem from './SideBarItem'
 import SideBarStatus from './SideBarStatus'
+import Feedback from './Feedback'
 
 const navBarItems = [
   {
@@ -51,7 +52,7 @@ const useStyles = makeStyles((theme: Theme) =>
       flexWrap: 'nowrap',
       minHeight: '100vh',
       paddingTop: theme.spacing(8),
-      paddingBottom: theme.spacing(8),
+      paddingBottom: theme.spacing(1),
     },
     drawer: {
       width: drawerWidth,
@@ -60,6 +61,7 @@ const useStyles = makeStyles((theme: Theme) =>
     drawerPaper: {
       width: drawerWidth,
       backgroundColor: '#212121',
+      zIndex: 988,
     },
     logo: {
       marginLeft: theme.spacing(8),
@@ -88,12 +90,22 @@ const useStyles = makeStyles((theme: Theme) =>
         },
       },
     },
+    statusLink: {
+      marginBottom: theme.spacing(7),
+      display: 'block',
+    },
   }),
 )
 
 export default function SideBar(): ReactElement {
   const classes = useStyles()
   const { nodeInfo } = useContext(Context)
+
+  let feedbackLink
+
+  if (config.SENTRY_KEY) {
+    feedbackLink = <Feedback />
+  }
 
   return (
     <Drawer className={classes.drawer} variant="permanent" anchor="left" classes={{ paper: classes.drawerPaper }}>
@@ -131,9 +143,10 @@ export default function SideBar(): ReactElement {
           </List>
         </Grid>
         <Grid>
-          <Link to={ROUTES.STATUS} className={classes.link}>
+          <Link to={ROUTES.STATUS} className={`${classes.link} ${classes.statusLink}`}>
             <SideBarStatus path={ROUTES.STATUS} />
           </Link>
+          {feedbackLink}
         </Grid>
       </Grid>
     </Drawer>
