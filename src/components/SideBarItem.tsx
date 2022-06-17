@@ -1,8 +1,7 @@
+import { ListItem, ListItemIcon, ListItemText } from '@material-ui/core'
+import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core/styles'
 import type { ReactElement, ReactNode } from 'react'
-import { useLocation, matchPath } from 'react-router-dom'
-
-import { createStyles, Theme, makeStyles, withStyles } from '@material-ui/core/styles'
-import { ListItemText, ListItemIcon, ListItem } from '@material-ui/core'
+import { matchPath, useLocation } from 'react-router-dom'
 
 const StyledListItem = withStyles((theme: Theme) => ({
   root: {
@@ -45,12 +44,15 @@ interface Props {
   iconEnd?: ReactNode
   path?: string
   label: ReactNode
+  pathMatcherSubstring?: string
 }
 
-export default function SideBarItem({ iconStart, iconEnd, path, label }: Props): ReactElement {
+export default function SideBarItem({ iconStart, iconEnd, path, label, pathMatcherSubstring }: Props): ReactElement {
   const classes = useStyles()
   const location = useLocation()
-  const isSelected = Boolean(path && matchPath(location.pathname, path))
+  const isSelected = pathMatcherSubstring
+    ? location.pathname.startsWith(pathMatcherSubstring)
+    : Boolean(path && matchPath(location.pathname, path))
 
   return (
     <StyledListItem button selected={isSelected} disableRipple>

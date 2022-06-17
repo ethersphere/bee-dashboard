@@ -1,6 +1,6 @@
-import { Bee, Reference } from '@ethersphere/bee-js'
+import { BatchId, Bee, BeeDebug, Reference } from '@ethersphere/bee-js'
 import Wallet from 'ethereumjs-wallet'
-import { uuidV4 } from '.'
+import { uuidV4, waitUntilStampUsable } from '.'
 import { Identity, IdentityType } from '../providers/Feeds'
 
 export function generateWallet(): Wallet {
@@ -88,6 +88,7 @@ export function getWalletFromPrivateKeyString(privateKey: string): Wallet {
 
 export async function updateFeed(
   beeApi: Bee,
+  beeDebugApi: BeeDebug | null,
   identity: Identity,
   hash: string,
   stamp: string,
@@ -100,6 +101,10 @@ export async function updateFeed(
   }
 
   const writer = beeApi.makeFeedWriter('sequence', '00'.repeat(32), wallet.getPrivateKeyString())
+
+  if (beeDebugApi) {
+    await waitUntilStampUsable(stamp as BatchId, beeDebugApi)
+  }
   await writer.upload(stamp, hash as Reference)
 }
 

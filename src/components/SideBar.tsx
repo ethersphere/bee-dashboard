@@ -1,11 +1,13 @@
+import { BeeModes } from '@ethersphere/bee-js'
 import { Divider, Drawer, Grid, Link as MUILink, List } from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import { OpenInNewSharp } from '@material-ui/icons'
-import type { ReactElement } from 'react'
-import { Bookmark, BookOpen, Briefcase, DollarSign, FileText, Gift, Home, Layers, Settings } from 'react-feather'
+import { ReactElement, useContext } from 'react'
+import { BookOpen, Briefcase, DollarSign, FileText, Home, Settings } from 'react-feather'
 import { Link } from 'react-router-dom'
 import Logo from '../assets/logo.svg'
 import { config } from '../config'
+import { Context } from '../providers/Bee'
 import { ROUTES } from '../routes'
 import SideBarItem from './SideBarItem'
 import SideBarStatus from './SideBarStatus'
@@ -22,34 +24,21 @@ const navBarItems = [
     icon: FileText,
   },
   {
-    label: 'Feeds',
-    path: ROUTES.FEEDS,
-    icon: Bookmark,
+    label: 'Account',
+    path: ROUTES.ACCOUNT_WALLET,
+    icon: Briefcase,
+    pathMatcherSubstring: '/account/',
   },
   {
-    label: 'Stamps',
-    path: ROUTES.STAMPS,
-    icon: Layers,
-  },
-  {
-    label: 'Accounting',
-    path: ROUTES.ACCOUNTING,
+    label: 'Top Up',
+    path: ROUTES.WALLET,
     icon: DollarSign,
+    requiresMode: BeeModes.ULTRA_LIGHT,
   },
   {
     label: 'Settings',
     path: ROUTES.SETTINGS,
     icon: Settings,
-  },
-  {
-    label: 'Account',
-    path: ROUTES.WALLET,
-    icon: Briefcase,
-  },
-  {
-    label: 'Gift Wallets',
-    path: ROUTES.GIFT_CODES,
-    icon: Gift,
   },
 ]
 
@@ -103,6 +92,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function SideBar(): ReactElement {
   const classes = useStyles()
+  const { nodeInfo } = useContext(Context)
 
   return (
     <Drawer className={classes.drawer} variant="permanent" anchor="left" classes={{ paper: classes.drawerPaper }}>
@@ -114,16 +104,19 @@ export default function SideBar(): ReactElement {
         </Grid>
         <Grid>
           <List>
-            {navBarItems.map(p => (
-              <Link to={p.path} key={p.path} className={classes.link}>
-                <SideBarItem
-                  key={p.path}
-                  iconStart={<p.icon className={classes.icon} />}
-                  path={p.path}
-                  label={p.label}
-                />
-              </Link>
-            ))}
+            {navBarItems
+              .filter(p => !p.requiresMode || nodeInfo?.beeMode === p.requiresMode)
+              .map(p => (
+                <Link to={p.path} key={p.path} className={classes.link}>
+                  <SideBarItem
+                    key={p.path}
+                    iconStart={<p.icon className={classes.icon} />}
+                    path={p.path}
+                    pathMatcherSubstring={p.pathMatcherSubstring}
+                    label={p.label}
+                  />
+                </Link>
+              ))}
           </List>
           <Divider className={classes.divider} />
           <List>

@@ -65,7 +65,7 @@ export default function CreateNewFeed(): ReactElement {
     const identity = await convertWalletToIdentity(wallet, values.type, values.identityName, values.password)
     persistIdentity(identities, identity)
     setIdentities(identities)
-    navigate(ROUTES.FEEDS)
+    navigate(ROUTES.ACCOUNT_FEEDS)
     setLoading(false)
   }
 

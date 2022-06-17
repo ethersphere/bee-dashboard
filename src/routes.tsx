@@ -1,7 +1,9 @@
 import type { ReactElement } from 'react'
 import { Route, Routes } from 'react-router-dom'
-import Accounting from './pages/accounting'
-import Feeds from './pages/feeds'
+import { AccountChequebook } from './pages/account/chequebook/AccountChequebook'
+import { AccountFeeds } from './pages/account/feeds/AccountFeeds'
+import { AccountStamps } from './pages/account/stamps/AccountStamps'
+import { AccountWallet } from './pages/account/wallet/AccountWallet'
 import CreateNewFeed from './pages/feeds/CreateNewFeed'
 import { FeedSubpage } from './pages/feeds/FeedSubpage'
 import UpdateFeed from './pages/feeds/UpdateFeed'
@@ -16,7 +18,6 @@ import Restart from './pages/restart/Restart'
 import Wallet from './pages/rpc'
 import Confirmation from './pages/rpc/Confirmation'
 import Settings from './pages/settings'
-import Stamps from './pages/stamps'
 import { CreatePostageStampPage } from './pages/stamps/CreatePostageStampPage'
 import Status from './pages/status'
 import { BankCardTopUpIndex } from './pages/top-up/BankCardTopUpIndex'
@@ -32,15 +33,8 @@ export enum ROUTES {
   UPLOAD_IN_PROGRESS = '/files/upload/workflow',
   DOWNLOAD = '/files/download',
   HASH = '/files/hash/:hash',
-  ACCOUNTING = '/accounting',
   SETTINGS = '/settings',
-  STAMPS = '/stamps',
-  STAMPS_NEW = '/stamps/new',
   STATUS = '/status',
-  FEEDS = '/feeds',
-  FEEDS_NEW = '/feeds/new',
-  FEEDS_UPDATE = '/feeds/update/:hash',
-  FEEDS_PAGE = '/feeds/:uuid',
   WALLET = '/wallet',
   CONFIRMATION = '/wallet/confirmation',
   TOP_UP_CRYPTO = '/top-up/crypto',
@@ -49,10 +43,25 @@ export enum ROUTES {
   TOP_UP_BANK_CARD_SWAP = '/top-up/bank-card/swap',
   TOP_UP_GIFT_CODE = '/top-up/gift-code',
   TOP_UP_GIFT_CODE_FUND = '/top-up/gift-code/fund/:privateKeyString',
-  GIFT_CODES = '/gift-codes',
   RESTART = '/restart',
   RESTART_LIGHT = '/light-mode-restart',
+  ACCOUNT_WALLET = '/account/wallet',
+  ACCOUNT_CHEQUEBOOK = '/account/chequebook',
+  ACCOUNT_STAMPS = '/account/stamps',
+  ACCOUNT_STAMPS_NEW = '/account/stamps/new',
+  ACCOUNT_FEEDS = '/account/feeds',
+  ACCOUNT_FEEDS_NEW = '/account/feeds/new',
+  ACCOUNT_FEEDS_UPDATE = '/account/feeds/update/:hash',
+  ACCOUNT_FEEDS_VIEW = '/account/feeds/:uuid',
+  ACCOUNT_INVITATIONS = '/account/invitations',
 }
+
+export const ACCOUNT_TABS = [
+  ROUTES.ACCOUNT_WALLET,
+  ROUTES.ACCOUNT_CHEQUEBOOK,
+  ROUTES.ACCOUNT_STAMPS,
+  ROUTES.ACCOUNT_FEEDS,
+]
 
 const BaseRouter = (): ReactElement => (
   <Routes>
@@ -60,19 +69,11 @@ const BaseRouter = (): ReactElement => (
     <Route path={ROUTES.UPLOAD} element={<UploadLander />} />
     <Route path={ROUTES.DOWNLOAD} element={<Download />} />
     <Route path={ROUTES.HASH} element={<Share />} />
-    <Route path={ROUTES.ACCOUNTING} element={<Accounting />} />
     <Route path={ROUTES.SETTINGS} element={<Settings />} />
-    <Route path={ROUTES.STAMPS} element={<Stamps />} />
-    <Route path={ROUTES.STAMPS_NEW} element={<CreatePostageStampPage />} />
     <Route path={ROUTES.STATUS} element={<Status />} />
-    <Route path={ROUTES.FEEDS} element={<Feeds />} />
-    <Route path={ROUTES.FEEDS_NEW} element={<CreateNewFeed />} />
-    <Route path={ROUTES.FEEDS_UPDATE} element={<UpdateFeed />} />
-    <Route path={ROUTES.FEEDS_PAGE} element={<FeedSubpage />} />
     <Route path={ROUTES.INFO} element={<Info />} />
     <Route path={ROUTES.WALLET} element={<Wallet />} />
     <Route path={ROUTES.CONFIRMATION} element={<Confirmation />} />
-    <Route path={ROUTES.GIFT_CODES} element={<GiftCards />} />
     <Route path={ROUTES.TOP_UP_CRYPTO} element={<CryptoTopUpIndex />} />
     <Route path={ROUTES.TOP_UP_CRYPTO_SWAP} element={<Swap header="Top-up with cryptocurrencies" />} />
     <Route path={ROUTES.TOP_UP_BANK_CARD} element={<BankCardTopUpIndex />} />
@@ -81,6 +82,15 @@ const BaseRouter = (): ReactElement => (
     <Route path={ROUTES.TOP_UP_GIFT_CODE_FUND} element={<GiftCardFund />} />
     <Route path={ROUTES.RESTART} element={<Restart />} />
     <Route path={ROUTES.RESTART_LIGHT} element={<LightModeRestart />} />
+    <Route path={ROUTES.ACCOUNT_WALLET} element={<AccountWallet />} />
+    <Route path={ROUTES.ACCOUNT_CHEQUEBOOK} element={<AccountChequebook />} />
+    <Route path={ROUTES.ACCOUNT_STAMPS} element={<AccountStamps />} />
+    <Route path={ROUTES.ACCOUNT_STAMPS_NEW} element={<CreatePostageStampPage />} />
+    <Route path={ROUTES.ACCOUNT_FEEDS} element={<AccountFeeds />} />
+    <Route path={ROUTES.ACCOUNT_FEEDS_NEW} element={<CreateNewFeed />} />
+    <Route path={ROUTES.ACCOUNT_FEEDS_UPDATE} element={<UpdateFeed />} />
+    <Route path={ROUTES.ACCOUNT_FEEDS_VIEW} element={<FeedSubpage />} />
+    <Route path={ROUTES.ACCOUNT_INVITATIONS} element={<GiftCards />} />
   </Routes>
 )
 

@@ -13,6 +13,7 @@ import { Context as FileContext } from '../../providers/File'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as StampsContext, EnrichedPostageBatch } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
+import { waitUntilStampUsable } from '../../utils'
 import { detectIndexHtml, getAssetNameFromFiles, packageFile } from '../../utils/file'
 import { persistIdentity, updateFeed } from '../../utils/identity'
 import { HISTORY_KEYS, putHistory } from '../../utils/local-storage'
@@ -31,7 +32,7 @@ export function Upload(): ReactElement {
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
 
   const { refresh } = useContext(StampsContext)
-  const { beeApi } = useContext(SettingsContext)
+  const { beeApi, beeDebugApi } = useContext(SettingsContext)
   const { files, setFiles, uploadOrigin, metadata, previewUri, previewBlob } = useContext(FileContext)
   const { identities, setIdentities } = useContext(IdentityContext)
   const { status } = useContext(BeeContext)
@@ -66,7 +67,7 @@ export function Upload(): ReactElement {
     }
   }
 
-  const uploadFiles = (password?: string) => {
+  const uploadFiles = async (password?: string) => {
     if (!beeApi || !files.length || !stamp || !metadata) {
       return
     }
@@ -122,6 +123,10 @@ export function Upload(): ReactElement {
 
     setUploading(true)
 
+    if (beeDebugApi) {
+      await waitUntilStampUsable(stamp.batchID, beeDebugApi)
+    }
+
     beeApi
       .uploadFiles(stamp.batchID, fls, { indexDocument })
       .then(hash => {
@@ -130,11 +135,13 @@ export function Upload(): ReactElement {
         if (uploadOrigin.origin === 'UPLOAD') {
           navigate(ROUTES.HASH.replace(':hash', hash.reference), { replace: true })
         } else {
-          updateFeed(beeApi, identity as Identity, hash.reference, stamp.batchID, password as string).then(() => {
-            persistIdentity(identities, identity as Identity)
-            setIdentities([...identities])
-            navigate(ROUTES.FEEDS_PAGE.replace(':uuid', uploadOrigin.uuid as string), { replace: true })
-          })
+          updateFeed(beeApi, beeDebugApi, identity as Identity, hash.reference, stamp.batchID, password as string).then(
+            () => {
+              persistIdentity(identities, identity as Identity)
+              setIdentities([...identities])
+              navigate(ROUTES.ACCOUNT_FEEDS_VIEW.replace(':uuid', uploadOrigin.uuid as string), { replace: true })
+            },
+          )
         }
       })
       .catch(e => {

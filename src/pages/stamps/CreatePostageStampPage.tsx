@@ -8,7 +8,7 @@ export function CreatePostageStampPage(): ReactElement {
   const navigate = useNavigate()
 
   function onFinished() {
-    navigate(ROUTES.STAMPS)
+    navigate(ROUTES.ACCOUNT_STAMPS)
   }
 
   return (

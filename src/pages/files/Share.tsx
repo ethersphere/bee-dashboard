@@ -99,7 +99,7 @@ export function Share(): ReactElement {
   }
 
   function onUpdateFeed() {
-    navigate(ROUTES.FEEDS_UPDATE.replace(':hash', reference))
+    navigate(ROUTES.ACCOUNT_FEEDS_UPDATE.replace(':hash', reference))
   }
 
   useEffect(() => {

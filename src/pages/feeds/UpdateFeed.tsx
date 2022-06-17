@@ -2,7 +2,7 @@ import { Box, Grid, Typography } from '@material-ui/core'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { Bookmark, X } from 'react-feather'
-import { useParams, useNavigate } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { SwarmButton } from '../../components/SwarmButton'
@@ -73,10 +73,10 @@ export default function UpdateFeed(): ReactElement {
     }
 
     try {
-      await updateFeed(beeApi, identity, hash!, selectedStamp, password as string) // eslint-disable-line
+      await updateFeed(beeApi, beeDebugApi, identity, hash!, selectedStamp, password as string) // eslint-disable-line
       persistIdentity(identities, identity)
       setIdentities([...identities])
-      navigate(ROUTES.FEEDS_PAGE.replace(':uuid', identity.uuid))
+      navigate(ROUTES.ACCOUNT_FEEDS_VIEW.replace(':uuid', identity.uuid))
     } catch (error: unknown) {
       setLoading(false)
 
