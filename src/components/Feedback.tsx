@@ -25,7 +25,7 @@ function showFeedbackForm(): void {
     title: 'Provide us feedback!',
     subtitle: 'Share with us what you like and/or dislike.',
     subtitle2: 'We will be very happy.',
-    labelComments: 'What is your impression this application? What would you improve?',
+    labelComments: 'What is your impression about this app?',
     labelSubmit: 'Send Feedback',
   })
 }
