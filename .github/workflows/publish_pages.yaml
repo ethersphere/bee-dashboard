@@ -1,0 +1,28 @@
+# After new release is published on github, publish it to npmjs
+name: Publish the project to Github Pages
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
+      - run: npm run build
+        env:
+          REACT_APP_SENTRY_KEY: ${{ secrets.SENTRY_KEY }}
+          REACT_APP_SENTRY_ENVIRONMENT: 'pages'
+      - run: echo "dashboard.ethswarm.org" > ./build/CNAME
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
