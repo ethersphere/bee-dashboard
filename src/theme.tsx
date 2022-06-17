@@ -188,21 +188,24 @@ export const theme = createTheme({
   typography: {
     fontFamily: ['iAWriterQuattroV', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'].join(','),
     h1: {
-      fontSize: '1.3rem',
-      fontWeight: 500,
+      fontSize: '1.1rem',
+      fontWeight: 600,
     },
     h2: {
-      fontSize: '1rem',
-      fontWeight: 500,
+      fontSize: '0.9rem',
+      fontWeight: 600,
     },
     h3: {
       fontSize: '0.8rem',
       fontWeight: 500,
     },
+    body1: {
+      fontSize: '0.85rem',
+    },
     body2: {
       fontFamily: '"iAWriterMonoV", monospace',
       fontWeight: 500,
-      fontSize: '1rem',
+      fontSize: '0.85rem',
     },
     button: {
       textTransform: 'none',

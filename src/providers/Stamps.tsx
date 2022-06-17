@@ -34,7 +34,7 @@ interface Props {
   children: ReactChild
 }
 
-function enrichStamp(postageBatch: PostageBatch): EnrichedPostageBatch {
+export function enrichStamp(postageBatch: PostageBatch): EnrichedPostageBatch {
   const { depth, bucketDepth, utilization } = postageBatch
 
   const usage = utilization / Math.pow(2, depth - bucketDepth)

@@ -1,6 +1,7 @@
 import { createStyles, makeStyles, Tab, Tabs, Theme } from '@material-ui/core'
 import { ReactElement } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ACCOUNT_TABS } from '../../routes'
 
 const tabMap = {
   WALLET: 0,
@@ -8,8 +9,6 @@ const tabMap = {
   STAMPS: 2,
   FEEDS: 3,
 }
-
-const tabMapReverse = ['/account/wallet', '/account/chequebook', '/account/stamps', '/account/feeds']
 
 interface Props {
   active: 'WALLET' | 'CHEQUEBOOK' | 'STAMPS' | 'FEEDS'
@@ -40,7 +39,7 @@ export function AccountNavigation({ active }: Props): ReactElement {
   const navigate = useNavigate()
 
   function onChange(event: React.ChangeEvent<Record<string, never>>, newValue: number) {
-    navigate(tabMapReverse[newValue])
+    navigate(ACCOUNT_TABS[newValue])
   }
 
   return (

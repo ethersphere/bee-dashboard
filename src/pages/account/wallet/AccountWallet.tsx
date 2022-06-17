@@ -1,6 +1,6 @@
-import { Box, Typography } from '@material-ui/core'
+import { Box, Grid, Typography } from '@material-ui/core'
 import { ReactElement, useContext } from 'react'
-import { Gift, Link } from 'react-feather'
+import { Download, Gift, Link } from 'react-feather'
 import { useNavigate } from 'react-router'
 import ExpandableListItem from '../../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../../components/ExpandableListItemActions'
@@ -29,12 +29,21 @@ export function AccountWallet(): ReactElement {
     navigate(ROUTES.ACCOUNT_INVITATIONS)
   }
 
+  function onDeposit() {
+    navigate(ROUTES.WALLET)
+  }
+
   return (
     <>
       <Header />
       <AccountNavigation active="WALLET" />
       <Box mb={4}>
-        <Typography variant="h2">Wallet balance</Typography>
+        <Grid container direction="row" justifyContent="space-between" alignItems="center">
+          <Typography variant="h2">Wallet balance</Typography>
+          <SwarmButton onClick={onDeposit} iconType={Download}>
+            Deposit
+          </SwarmButton>
+        </Grid>
       </Box>
       <Box mb={0.25}>
         <ExpandableListItemKey label="Node wallet address" value={balance.address} expanded />

@@ -16,7 +16,7 @@ interface Props {
 const useStyles = makeStyles(() =>
   createStyles({
     button: {
-      height: '52px',
+      height: '42px',
       position: 'relative',
       whiteSpace: 'nowrap',
       color: '#242424',

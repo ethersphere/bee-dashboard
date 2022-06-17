@@ -56,6 +56,13 @@ export enum ROUTES {
   ACCOUNT_INVITATIONS = '/account/invitations',
 }
 
+export const ACCOUNT_TABS = [
+  ROUTES.ACCOUNT_WALLET,
+  ROUTES.ACCOUNT_CHEQUEBOOK,
+  ROUTES.ACCOUNT_STAMPS,
+  ROUTES.ACCOUNT_FEEDS,
+]
+
 const BaseRouter = (): ReactElement => (
   <Routes>
     <Route path={ROUTES.UPLOAD_IN_PROGRESS} element={<Upload />} />

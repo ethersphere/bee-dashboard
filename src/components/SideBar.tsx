@@ -24,11 +24,6 @@ const navBarItems = [
     icon: FileText,
   },
   {
-    label: 'Settings',
-    path: ROUTES.SETTINGS,
-    icon: Settings,
-  },
-  {
     label: 'Account',
     path: ROUTES.ACCOUNT_WALLET,
     icon: Briefcase,
@@ -39,6 +34,11 @@ const navBarItems = [
     path: ROUTES.WALLET,
     icon: DollarSign,
     requiresMode: BeeModes.ULTRA_LIGHT,
+  },
+  {
+    label: 'Settings',
+    path: ROUTES.SETTINGS,
+    icon: Settings,
   },
 ]
 
