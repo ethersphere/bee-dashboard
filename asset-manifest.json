@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "./static/css/main.aa7ada24.css",
+    "main.js": "./static/js/main.db0f1632.js",
+    "static/js/651.5091c046.chunk.js": "./static/js/651.5091c046.chunk.js",
+    "static/media/WorkSans-VariableFont_wght.ttf": "./static/media/WorkSans-VariableFont_wght.7655b042135598d8cc8d.ttf",
+    "static/media/WorkSans-Italic-VariableFont_wght.ttf": "./static/media/WorkSans-Italic-VariableFont_wght.613db76c3b3f2632d411.ttf",
+    "static/media/WorkSans-Medium.ttf": "./static/media/WorkSans-Medium.d7a9738056a6ecbd02c2.ttf",
+    "static/media/WorkSans-SemiBold.ttf": "./static/media/WorkSans-SemiBold.3cdc6dedee87cb16aa3a.ttf",
+    "static/media/WorkSans-Light.ttf": "./static/media/WorkSans-Light.485b5eb04cfd73857343.ttf",
+    "static/media/WorkSans-Regular.ttf": "./static/media/WorkSans-Regular.1cafe0d5298ed68180c8.ttf",
+    "static/media/IBMPlexMono600.ttf": "./static/media/IBMPlexMono600.0331e38c586e81dc50fe.ttf",
+    "static/media/IBMPlexMono500.ttf": "./static/media/IBMPlexMono500.a79f8a2f12d9357a6abd.ttf",
+    "static/media/IBMPlexMonoregular.ttf": "./static/media/IBMPlexMonoregular.bee53c8c025f42f7ad88.ttf",
+    "static/media/logo.svg": "./static/media/logo.3d1155fe4ceade0f70818bb814ac8f2e.svg",
+    "index.html": "./index.html",
+    "main.aa7ada24.css.map": "./static/css/main.aa7ada24.css.map",
+    "main.db0f1632.js.map": "./static/js/main.db0f1632.js.map",
+    "651.5091c046.chunk.js.map": "./static/js/651.5091c046.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.aa7ada24.css",
+    "static/js/main.db0f1632.js"
+  ]
+}
