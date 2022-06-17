@@ -1,13 +1,9 @@
-import { Button, CircularProgress, createStyles, makeStyles } from '@material-ui/core'
+import { Button, ButtonProps, CircularProgress, createStyles, makeStyles } from '@material-ui/core'
 import React, { ReactElement } from 'react'
 import { IconProps } from 'react-feather'
 
-interface Props {
-  onClick: () => void
+export interface SwarmButtonProps extends ButtonProps {
   iconType: React.ComponentType<IconProps>
-  children: string
-  className?: string
-  disabled?: boolean
   loading?: boolean
   cancel?: boolean
   variant?: 'text' | 'contained' | 'outlined'
@@ -51,7 +47,9 @@ export function SwarmButton({
   loading,
   cancel,
   variant = 'contained',
-}: Props): ReactElement {
+  style,
+  ...other
+}: SwarmButtonProps): ReactElement {
   const classes = useStyles()
 
   function getIconColor() {
@@ -73,14 +71,18 @@ export function SwarmButton({
 
   return (
     <Button
+      style={style}
       className={getButtonClassName()}
       onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
-        onClick()
-        event.currentTarget.blur()
+        if (onClick) {
+          onClick(event)
+          event.currentTarget.blur()
+        }
       }}
       variant={variant}
       startIcon={icon}
       disabled={disabled}
+      {...other}
     >
       {children}
       {loading && (

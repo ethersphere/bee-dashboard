@@ -1,62 +1,84 @@
 import { ReactElement, useContext } from 'react'
 import { Button } from '@material-ui/core'
+import { Globe, Briefcase, Search, Settings, ArrowUp } from 'react-feather'
 
-import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
-import { CheckState, Context as BeeContext } from '../../providers/Bee'
-import ExpandableList from '../../components/ExpandableList'
+import { Context as BeeContext } from '../../providers/Bee'
+import Card from '../../components/Card'
+import Map from '../../components/Map'
 import ExpandableListItem from '../../components/ExpandableListItem'
-import ExpandableListItemKey from '../../components/ExpandableListItemKey'
-import TopologyStats from '../../components/TopologyStats'
 
 export default function Status(): ReactElement {
-  const {
-    status,
-    latestUserVersion,
-    isLatestBeeVersion,
-    latestBeeVersionUrl,
-    topology,
-    nodeAddresses,
-    chequebookAddress,
-    nodeInfo,
-  } = useContext(BeeContext)
-
-  if (status.all === CheckState.ERROR) return <TroubleshootConnectionCard />
+  const { status, latestUserVersion, isLatestBeeVersion, latestBeeVersionUrl, topology, nodeInfo, balance } =
+    useContext(BeeContext)
 
   return (
     <div>
-      <ExpandableList label="Bee Node" defaultOpen>
-        <ExpandableListItem label="Mode" value={nodeInfo?.beeMode} />
-        <ExpandableListItem
-          label="Agent"
-          value={
-            <div>
-              <a href="https://github.com/ethersphere/bee" rel="noreferrer" target="_blank">
-                Bee
-              </a>
-              {` ${latestUserVersion || '-'} `}
-              <Button size="small" variant="outlined" href={latestBeeVersionUrl} target="_blank">
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        {status.all ? (
+          <Card
+            buttonProps={{ iconType: Search, children: 'Access Content' }}
+            icon={<Globe />}
+            title="Your node is connected."
+            subtitle="You can now access content hosted on Swarm."
+            status="ok"
+          />
+        ) : (
+          <Card
+            buttonProps={{ iconType: Settings, children: 'Open node setup' }}
+            icon={<Globe />}
+            title="Your node is not connected…"
+            subtitle="You’re not connected to Swarm."
+            status="error"
+          />
+        )}
+        <div style={{ width: '8px' }}></div>
+        {balance?.bzz !== undefined ? (
+          <Card
+            buttonProps={{ iconType: Briefcase, children: 'Manage your wallet' }}
+            icon={<Briefcase />}
+            title={`${balance.bzz.toSignificantDigits(8)} BZZ`}
+            subtitle="Current wallet balance."
+            status="ok"
+          />
+        ) : (
+          <Card
+            buttonProps={{ iconType: Settings, children: 'Setup wallet' }}
+            icon={<ArrowUp />}
+            title="Your wallet is not setup."
+            subtitle="To share content on Swarm, please setup your wallet."
+            status="error"
+          />
+        )}
+      </div>
+      <div style={{ height: '16px' }} />
+      <Map />
+      <div style={{ height: '2px' }} />
+      <ExpandableListItem label="Connected peers" value={topology?.connected ?? '-'} />
+      <ExpandableListItem label="Depth" value={topology?.depth ?? '-'} />
+      <div style={{ height: '16px' }} />
+      <ExpandableListItem
+        label="Bee version"
+        value={
+          <div>
+            <a href="https://github.com/ethersphere/bee" rel="noreferrer" target="_blank">
+              Bee
+            </a>
+            {` ${latestUserVersion ?? '-'} `}
+            {latestUserVersion && (
+              <Button
+                size="small"
+                variant="outlined"
+                href={latestBeeVersionUrl}
+                target="_blank"
+                style={{ height: '26px' }}
+              >
                 {isLatestBeeVersion ? 'latest' : 'update'}
               </Button>
-            </div>
-          }
-        />
-        <ExpandableListItemKey label="Public key" value={nodeAddresses?.publicKey || ''} />
-        <ExpandableListItemKey label="PSS public key" value={nodeAddresses?.pssPublicKey || ''} />
-        <ExpandableListItemKey label="Overlay address (Peer ID)" value={nodeAddresses?.overlay || ''} />
-
-        <ExpandableList level={1} label="Underlay addresses">
-          {nodeAddresses?.underlay.map(addr => (
-            <ExpandableListItem key={addr} value={addr} />
-          ))}
-        </ExpandableList>
-      </ExpandableList>
-      <ExpandableList label="Blockchain" defaultOpen>
-        <ExpandableListItemKey label="Ethereum address" value={nodeAddresses?.ethereum || ''} />
-        <ExpandableListItemKey label="Chequebook contract address" value={chequebookAddress?.chequebookAddress || ''} />
-      </ExpandableList>
-      <ExpandableList label="Connectivity" defaultOpen>
-        <TopologyStats topology={topology} />
-      </ExpandableList>
+            )}
+          </div>
+        }
+      />
+      <ExpandableListItem label="Mode" value={nodeInfo?.beeMode} />
     </div>
   )
 }

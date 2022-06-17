@@ -174,7 +174,7 @@ export const theme = createTheme({
   palette: {
     type: 'light',
     background: {
-      default: '#efefef',
+      default: '#ededed',
     },
     primary: {
       light: '#fcf2e8',
