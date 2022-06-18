@@ -1,22 +1,33 @@
 import { ReactElement, useContext } from 'react'
 import { Button } from '@material-ui/core'
-import { Globe, Briefcase, Search, Settings, ArrowUp } from 'react-feather'
+import { Globe, Briefcase, Search, Settings, ArrowUp, RefreshCcw } from 'react-feather'
 
 import { Context as BeeContext } from '../../providers/Bee'
 import Card from '../../components/Card'
 import Map from '../../components/Map'
 import ExpandableListItem from '../../components/ExpandableListItem'
+import { useNavigate } from 'react-router'
+import { ROUTES } from '../../routes'
 
 export default function Status(): ReactElement {
-  const { status, latestUserVersion, isLatestBeeVersion, latestBeeVersionUrl, topology, nodeInfo, balance } =
-    useContext(BeeContext)
+  const {
+    status,
+    latestUserVersion,
+    isLatestBeeVersion,
+    latestBeeVersionUrl,
+    topology,
+    nodeInfo,
+    balance,
+    chequebookBalance,
+  } = useContext(BeeContext)
+  const navigate = useNavigate()
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'stretch', alignContent: 'stretch' }}>
         {status.all ? (
           <Card
-            buttonProps={{ iconType: Search, children: 'Access Content' }}
+            buttonProps={{ iconType: Search, children: 'Access Content', onClick: () => navigate(ROUTES.DOWNLOAD) }}
             icon={<Globe />}
             title="Your node is connected."
             subtitle="You can now access content hosted on Swarm."
@@ -24,7 +35,7 @@ export default function Status(): ReactElement {
           />
         ) : (
           <Card
-            buttonProps={{ iconType: Settings, children: 'Open node setup' }}
+            buttonProps={{ iconType: Settings, children: 'Open node setup', onClick: () => navigate(ROUTES.STATUS) }}
             icon={<Globe />}
             title="Your node is not connected…"
             subtitle="You’re not connected to Swarm."
@@ -32,22 +43,65 @@ export default function Status(): ReactElement {
           />
         )}
         <div style={{ width: '8px' }}></div>
-        {balance?.bzz !== undefined ? (
+        {nodeInfo?.beeMode && ['light', 'full', 'dev'].includes(nodeInfo.beeMode) ? (
           <Card
-            buttonProps={{ iconType: Briefcase, children: 'Manage your wallet' }}
+            buttonProps={{
+              iconType: Briefcase,
+              children: 'Manage your wallet',
+              onClick: () => navigate(ROUTES.ACCOUNT_WALLET),
+            }}
             icon={<Briefcase />}
-            title={`${balance.bzz.toSignificantDigits(8)} BZZ`}
+            title={`${balance?.bzz.toSignificantDigits(4)} xBZZ | ${balance?.dai.toSignificantDigits(4)} xDAI`}
             subtitle="Current wallet balance."
             status="ok"
           />
         ) : (
           <Card
-            buttonProps={{ iconType: Settings, children: 'Setup wallet' }}
+            buttonProps={{
+              iconType: Settings,
+              children: 'Setup wallet',
+              onClick: () => navigate(ROUTES.WALLET),
+            }}
             icon={<ArrowUp />}
             title="Your wallet is not setup."
             subtitle="To share content on Swarm, please setup your wallet."
             status="error"
           />
+        )}
+        {nodeInfo?.beeMode && ['light', 'full', 'dev'].includes(nodeInfo.beeMode) && (
+          <>
+            <div style={{ width: '8px' }} />
+            {chequebookBalance?.availableBalance !== undefined &&
+            chequebookBalance?.availableBalance.toBigNumber.isGreaterThan(0) ? (
+              <Card
+                buttonProps={{
+                  iconType: RefreshCcw,
+                  children: 'View chequebook',
+                  onClick: () => navigate(ROUTES.ACCOUNT_CHEQUEBOOK),
+                }}
+                icon={<RefreshCcw />}
+                title={`${chequebookBalance?.availableBalance.toSignificantDigits(4)} xBZZ`}
+                subtitle="Your chequebook is setup and has balance"
+                status="ok"
+              />
+            ) : (
+              <Card
+                buttonProps={{
+                  iconType: RefreshCcw,
+                  children: 'View chequebook',
+                  onClick: () => navigate(ROUTES.ACCOUNT_CHEQUEBOOK),
+                }}
+                icon={<RefreshCcw />}
+                title={
+                  chequebookBalance?.availableBalance
+                    ? `${chequebookBalance.availableBalance.toFixedDecimal(4)} xBZZ`
+                    : 'No available balance'
+                }
+                subtitle="Your chequebook is not setup or has no balance."
+                status="error"
+              />
+            )}
+          </>
         )}
       </div>
       <div style={{ height: '16px' }} />

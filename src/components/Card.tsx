@@ -15,7 +15,8 @@ const useStyles = (backgroundColor: string) =>
   makeStyles((theme: Theme) =>
     createStyles({
       root: {
-        width: '50%',
+        flexGrow: 1,
+        flexBasis: '100px',
       },
       wrapper: {
         backgroundColor,
@@ -23,6 +24,7 @@ const useStyles = (backgroundColor: string) =>
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        textAlign: 'center',
       },
       iconWrapper: {
         display: 'flex',
