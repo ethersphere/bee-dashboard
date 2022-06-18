@@ -58,12 +58,12 @@ const App = ({ beeApiUrl, beeDebugApiUrl, lockedApiSettings }: Props): ReactElem
     <div className="App">
       <ThemeProvider theme={theme}>
         <SettingsProvider beeApiUrl={beeApiUrl} beeDebugApiUrl={beeDebugApiUrl} lockedApiSettings={lockedApiSettings}>
-          <BeeProvider>
-            <StampsProvider>
-              <FileProvider>
-                <FeedsProvider>
-                  <PlatformProvider>
-                    <TopUpProvider>
+          <TopUpProvider>
+            <BeeProvider>
+              <StampsProvider>
+                <FileProvider>
+                  <FeedsProvider>
+                    <PlatformProvider>
                       <SnackbarProvider>
                         <Router>
                           <>
@@ -74,12 +74,12 @@ const App = ({ beeApiUrl, beeDebugApiUrl, lockedApiSettings }: Props): ReactElem
                           </>
                         </Router>
                       </SnackbarProvider>
-                    </TopUpProvider>
-                  </PlatformProvider>
-                </FeedsProvider>
-              </FileProvider>
-            </StampsProvider>
-          </BeeProvider>
+                    </PlatformProvider>
+                  </FeedsProvider>
+                </FileProvider>
+              </StampsProvider>
+            </BeeProvider>
+          </TopUpProvider>
         </SettingsProvider>
       </ThemeProvider>
     </div>

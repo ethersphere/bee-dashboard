@@ -13,16 +13,11 @@ import { createContext, ReactChild, ReactElement, useContext, useEffect, useStat
 import semver from 'semver'
 import PackageJson from '../../package.json'
 import { useLatestBeeRelease } from '../hooks/apiHooks'
-import { BzzToken } from '../models/BzzToken'
-import { DaiToken } from '../models/DaiToken'
 import { Token } from '../models/Token'
 import type { Balance, ChequebookBalance, Settlements } from '../types'
+import { WalletAddress } from '../utils/wallet'
 import { Context as SettingsContext } from './Settings'
-
-interface WalletBalance {
-  bzz: BzzToken
-  dai: DaiToken
-}
+import { Context as TopUpContext } from './TopUp'
 
 export enum CheckState {
   OK = 'OK',
@@ -47,7 +42,7 @@ interface Status {
 
 interface ContextInterface {
   status: Status
-  balance: WalletBalance | null
+  balance: WalletAddress | null
   latestPublishedVersion?: string
   latestUserVersion?: string
   latestUserVersionExact?: string
@@ -190,6 +185,7 @@ function getStatus(
 
 export function Provider({ children }: Props): ReactElement {
   const { beeApi, beeDebugApi } = useContext(SettingsContext)
+  const { provider } = useContext(TopUpContext)
   const [apiHealth, setApiHealth] = useState<boolean>(false)
   const [debugApiHealth, setDebugApiHealth] = useState<Health | null>(null)
   const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses | null>(null)
@@ -202,7 +198,7 @@ export function Provider({ children }: Props): ReactElement {
   const [peerCheques, setPeerCheques] = useState<LastChequesResponse | null>(null)
   const [settlements, setSettlements] = useState<Settlements | null>(null)
   const [chainState, setChainState] = useState<ChainState | null>(null)
-  const [walletAddress, setWalletAddress] = useState<WalletBalance | null>(initialValues.balance)
+  const [walletAddress, setWalletAddress] = useState<WalletAddress | null>(initialValues.balance)
 
   const { latestBeeRelease } = useLatestBeeRelease()
 
@@ -241,6 +237,18 @@ export function Provider({ children }: Props): ReactElement {
 
     refresh()
   }, [beeDebugApi]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (nodeAddresses?.ethereum) {
+      WalletAddress.make(nodeAddresses.ethereum, provider).then(setWalletAddress)
+    }
+  }, [nodeAddresses, provider])
+
+  useEffect(() => {
+    const interval = setInterval(() => walletAddress?.refresh().then(setWalletAddress), 30_000)
+
+    return () => clearInterval(interval)
+  }, [walletAddress])
 
   const refresh = async () => {
     // Don't want to refresh when already refreshing
@@ -358,16 +366,6 @@ export function Provider({ children }: Props): ReactElement {
         settlementsWrapper()
           .then(setSettlements)
           .catch(() => setSettlements(null)),
-
-        beeDebugApi
-          .getWalletBalance()
-          .then(values => {
-            const bzz = new BzzToken(values.bzz)
-            const dai = new DaiToken(values.xDai)
-
-            setWalletAddress({ bzz, dai })
-          })
-          .catch(() => setWalletAddress(null)),
       ]
 
       await Promise.allSettled(promises)
