@@ -17,6 +17,7 @@ import { Token } from '../models/Token'
 import type { Balance, ChequebookBalance, Settlements } from '../types'
 import { WalletAddress } from '../utils/wallet'
 import { Context as SettingsContext } from './Settings'
+import { Context as TopUpContext } from './TopUp'
 
 export enum CheckState {
   OK = 'OK',
@@ -184,6 +185,7 @@ function getStatus(
 
 export function Provider({ children }: Props): ReactElement {
   const { beeApi, beeDebugApi } = useContext(SettingsContext)
+  const { provider } = useContext(TopUpContext)
   const [apiHealth, setApiHealth] = useState<boolean>(false)
   const [debugApiHealth, setDebugApiHealth] = useState<Health | null>(null)
   const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses | null>(null)
@@ -238,9 +240,9 @@ export function Provider({ children }: Props): ReactElement {
 
   useEffect(() => {
     if (nodeAddresses?.ethereum) {
-      WalletAddress.make(nodeAddresses.ethereum).then(setWalletAddress)
+      WalletAddress.make(nodeAddresses.ethereum, provider).then(setWalletAddress)
     }
-  }, [nodeAddresses])
+  }, [nodeAddresses, provider])
 
   useEffect(() => {
     const interval = setInterval(() => walletAddress?.refresh().then(setWalletAddress), 30_000)

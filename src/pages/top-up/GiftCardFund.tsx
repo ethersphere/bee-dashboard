@@ -19,7 +19,7 @@ import { ResolvedWallet } from '../../utils/wallet'
 
 export function GiftCardFund(): ReactElement {
   const { nodeAddresses, balance } = useContext(BeeContext)
-  const { jsonRpcProvider } = useContext(TopUpContext)
+  const { provider, providerUrl } = useContext(TopUpContext)
 
   const [loading, setLoading] = useState(false)
   const [wallet, setWallet] = useState<ResolvedWallet | null>(null)
@@ -34,8 +34,8 @@ export function GiftCardFund(): ReactElement {
       return
     }
 
-    ResolvedWallet.make(privateKeyString).then(setWallet)
-  }, [privateKeyString])
+    ResolvedWallet.make(privateKeyString, provider).then(setWallet)
+  }, [privateKeyString, provider])
 
   if (!wallet || !balance) {
     return <Loading />
@@ -49,10 +49,10 @@ export function GiftCardFund(): ReactElement {
     setLoading(true)
 
     try {
-      await wallet.transfer(nodeAddresses.ethereum)
+      await wallet.transfer(nodeAddresses.ethereum, providerUrl)
       enqueueSnackbar('Successfully funded node, restarting...', { variant: 'success' })
       await sleepMs(5_000)
-      await upgradeToLightNode(jsonRpcProvider)
+      await upgradeToLightNode(providerUrl)
       await restartBeeNode()
       navigate(ROUTES.RESTART_LIGHT)
     } catch (error) {

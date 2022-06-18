@@ -3,6 +3,7 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { Check } from 'react-feather'
 import { useNavigate } from 'react-router'
+import { providers } from 'ethers'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
@@ -11,18 +12,17 @@ import { ROUTES } from '../../routes'
 import { Rpc } from '../../utils/rpc'
 
 export default function Index(): ReactElement {
-  const { jsonRpcProvider, setJsonRpcProvider } = useContext(Context)
-
-  const [provider, setProvider] = useState(jsonRpcProvider)
+  const { providerUrl, setProviderUrl } = useContext(Context)
+  const [localProviderUrl, setLocalProviderUrl] = useState(providerUrl)
 
   const { enqueueSnackbar } = useSnackbar()
   const navigate = useNavigate()
 
   async function onSubmit() {
     try {
-      await Rpc.eth_getBlockByNumber(provider)
+      await Rpc.eth_getBlockByNumber(new providers.JsonRpcProvider(localProviderUrl))
       enqueueSnackbar('Connected to RPC provider successfully.', { variant: 'success' })
-      setJsonRpcProvider(provider)
+      setProviderUrl(localProviderUrl)
       navigate(ROUTES.CONFIRMATION)
     } catch (error) {
       enqueueSnackbar('Could not connect to RPC provider.', { variant: 'error' })
@@ -49,8 +49,8 @@ export default function Index(): ReactElement {
         <SwarmTextInput
           name="rpc-endpoint"
           label="RPC Endpoint"
-          onChange={event => setProvider(event.target.value)}
-          defaultValue={jsonRpcProvider}
+          onChange={event => setLocalProviderUrl(event.target.value)}
+          defaultValue={providerUrl}
         />
       </Box>
       <SwarmButton iconType={Check} onClick={onSubmit}>

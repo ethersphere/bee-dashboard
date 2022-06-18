@@ -13,16 +13,16 @@ import { AccountNavigation } from '../AccountNavigation'
 import { Header } from '../Header'
 
 export function AccountWallet(): ReactElement {
-  const { balance } = useContext(Context)
+  const { balance, nodeAddresses } = useContext(Context)
 
   const navigate = useNavigate()
 
-  if (!balance) {
+  if (!balance || !nodeAddresses) {
     return <Loading />
   }
 
   function onCheckTransactions() {
-    window.open(`https://blockscout.com/xdai/mainnet/address/${balance?.address}/transactions`, '_blank')
+    window.open(`https://blockscout.com/xdai/mainnet/address/${nodeAddresses?.ethereum}/transactions`, '_blank')
   }
 
   function onInvite() {
@@ -46,7 +46,7 @@ export function AccountWallet(): ReactElement {
         </Grid>
       </Box>
       <Box mb={0.25}>
-        <ExpandableListItemKey label="Node wallet address" value={balance.address} expanded />
+        <ExpandableListItemKey label="Node wallet address" value={nodeAddresses.ethereum} expanded />
       </Box>
       <Box mb={0.25}>
         <ExpandableListItem label="XDAI balance" value={`${balance.dai.toSignificantDigits(4)} XDAI`} />

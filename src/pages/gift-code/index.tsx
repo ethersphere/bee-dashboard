@@ -3,6 +3,7 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { Check, X } from 'react-feather'
 import { useNavigate } from 'react-router'
+import { Wallet } from 'ethers'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
@@ -12,11 +13,10 @@ import { SwarmButton } from '../../components/SwarmButton'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as TopUpContext } from '../../providers/TopUp'
 import { createGiftWallet } from '../../utils/desktop'
-import { generateWallet } from '../../utils/identity'
 import { ResolvedWallet } from '../../utils/wallet'
 
 export default function Index(): ReactElement {
-  const { giftWallets, addGiftWallet } = useContext(TopUpContext)
+  const { giftWallets, addGiftWallet, provider } = useContext(TopUpContext)
   const { balance } = useContext(BeeContext)
 
   const [loading, setLoading] = useState(false)
@@ -26,13 +26,13 @@ export default function Index(): ReactElement {
     async function mapGiftWallets() {
       const results = []
       for (const giftWallet of giftWallets) {
-        results.push(await ResolvedWallet.make(giftWallet))
+        results.push(await ResolvedWallet.make(giftWallet, provider))
       }
       setBalances(results)
     }
 
     mapGiftWallets()
-  }, [giftWallets])
+  }, [giftWallets, provider])
 
   const { enqueueSnackbar } = useSnackbar()
   const navigate = useNavigate()
@@ -41,9 +41,9 @@ export default function Index(): ReactElement {
     enqueueSnackbar('Sending funds to gift wallet...')
     setLoading(true)
     try {
-      const wallet = generateWallet()
+      const wallet = Wallet.createRandom()
       addGiftWallet(wallet)
-      await createGiftWallet(wallet.getAddressString())
+      await createGiftWallet(wallet.address)
       enqueueSnackbar('Succesfully funded gift wallet', { variant: 'success' })
     } catch (error) {
       enqueueSnackbar(`Failed to fund gift wallet: ${error}`, { variant: 'error' })

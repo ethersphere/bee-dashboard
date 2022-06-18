@@ -1,8 +1,10 @@
 import { Box, Typography } from '@material-ui/core'
+import { Wallet } from 'ethers'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useContext, useState } from 'react'
 import { ArrowRight } from 'react-feather'
 import { useNavigate } from 'react-router'
+import { Context as TopUpContext } from '../../providers/TopUp'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { ProgressIndicator } from '../../components/ProgressIndicator'
 import { SwarmButton } from '../../components/SwarmButton'
@@ -11,10 +13,10 @@ import { SwarmTextInput } from '../../components/SwarmTextInput'
 import { BzzToken } from '../../models/BzzToken'
 import { DaiToken } from '../../models/DaiToken'
 import { ROUTES } from '../../routes'
-import { getWalletFromPrivateKeyString } from '../../utils/identity'
 import { Rpc } from '../../utils/rpc'
 
 export function GiftCardTopUpIndex(): ReactElement {
+  const { provider } = useContext(TopUpContext)
   const [loading, setLoading] = useState(false)
   const [giftCode, setGiftCode] = useState('')
 
@@ -24,9 +26,9 @@ export function GiftCardTopUpIndex(): ReactElement {
   async function onProceed() {
     setLoading(true)
     try {
-      const wallet = getWalletFromPrivateKeyString(giftCode)
-      const dai = new DaiToken(await Rpc._eth_getBalance(wallet.getAddressString()))
-      const bzz = new BzzToken(await Rpc._eth_getBalanceERC20(wallet.getAddressString()))
+      const wallet = new Wallet(giftCode, provider)
+      const dai = new DaiToken(await Rpc._eth_getBalance(wallet.address, provider))
+      const bzz = new BzzToken(await Rpc._eth_getBalanceERC20(wallet.address, provider))
 
       if (dai.toDecimal.lt(0.001) || bzz.toDecimal.lt(0.001)) {
         throw Error('Gift wallet does not have enough funds')
