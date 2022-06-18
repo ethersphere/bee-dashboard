@@ -1,12 +1,13 @@
 import { ReactElement, useContext } from 'react'
 import { Button } from '@material-ui/core'
+import { Globe, Briefcase, Search, Settings, ArrowUp, RefreshCcw } from 'react-feather'
 
-import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
-import { CheckState, Context as BeeContext } from '../../providers/Bee'
-import ExpandableList from '../../components/ExpandableList'
+import { Context as BeeContext } from '../../providers/Bee'
+import Card from '../../components/Card'
+import Map from '../../components/Map'
 import ExpandableListItem from '../../components/ExpandableListItem'
-import ExpandableListItemKey from '../../components/ExpandableListItemKey'
-import TopologyStats from '../../components/TopologyStats'
+import { useNavigate } from 'react-router'
+import { ROUTES } from '../../routes'
 
 export default function Status(): ReactElement {
   const {
@@ -15,48 +16,123 @@ export default function Status(): ReactElement {
     isLatestBeeVersion,
     latestBeeVersionUrl,
     topology,
-    nodeAddresses,
-    chequebookAddress,
     nodeInfo,
+    balance,
+    chequebookBalance,
   } = useContext(BeeContext)
-
-  if (status.all === CheckState.ERROR) return <TroubleshootConnectionCard />
+  const navigate = useNavigate()
 
   return (
     <div>
-      <ExpandableList label="Bee Node" defaultOpen>
-        <ExpandableListItem label="Mode" value={nodeInfo?.beeMode} />
-        <ExpandableListItem
-          label="Agent"
-          value={
-            <div>
-              <a href="https://github.com/ethersphere/bee" rel="noreferrer" target="_blank">
-                Bee
-              </a>
-              {` ${latestUserVersion || '-'} `}
-              <Button size="small" variant="outlined" href={latestBeeVersionUrl} target="_blank">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'stretch', alignContent: 'stretch' }}>
+        {status.all ? (
+          <Card
+            buttonProps={{ iconType: Search, children: 'Access Content', onClick: () => navigate(ROUTES.DOWNLOAD) }}
+            icon={<Globe />}
+            title="Your node is connected."
+            subtitle="You can now access content hosted on Swarm."
+            status="ok"
+          />
+        ) : (
+          <Card
+            buttonProps={{ iconType: Settings, children: 'Open node setup', onClick: () => navigate(ROUTES.STATUS) }}
+            icon={<Globe />}
+            title="Your node is not connected…"
+            subtitle="You’re not connected to Swarm."
+            status="error"
+          />
+        )}
+        <div style={{ width: '8px' }}></div>
+        {nodeInfo?.beeMode && ['light', 'full', 'dev'].includes(nodeInfo.beeMode) ? (
+          <Card
+            buttonProps={{
+              iconType: Briefcase,
+              children: 'Manage your wallet',
+              onClick: () => navigate(ROUTES.ACCOUNT_WALLET),
+            }}
+            icon={<Briefcase />}
+            title={`${balance?.bzz.toSignificantDigits(4)} xBZZ | ${balance?.dai.toSignificantDigits(4)} xDAI`}
+            subtitle="Current wallet balance."
+            status="ok"
+          />
+        ) : (
+          <Card
+            buttonProps={{
+              iconType: Settings,
+              children: 'Setup wallet',
+              onClick: () => navigate(ROUTES.WALLET),
+            }}
+            icon={<ArrowUp />}
+            title="Your wallet is not setup."
+            subtitle="To share content on Swarm, please setup your wallet."
+            status="error"
+          />
+        )}
+        {nodeInfo?.beeMode && ['light', 'full', 'dev'].includes(nodeInfo.beeMode) && (
+          <>
+            <div style={{ width: '8px' }} />
+            {chequebookBalance?.availableBalance !== undefined &&
+            chequebookBalance?.availableBalance.toBigNumber.isGreaterThan(0) ? (
+              <Card
+                buttonProps={{
+                  iconType: RefreshCcw,
+                  children: 'View chequebook',
+                  onClick: () => navigate(ROUTES.ACCOUNT_CHEQUEBOOK),
+                }}
+                icon={<RefreshCcw />}
+                title={`${chequebookBalance?.availableBalance.toSignificantDigits(4)} xBZZ`}
+                subtitle="Your chequebook is setup and has balance"
+                status="ok"
+              />
+            ) : (
+              <Card
+                buttonProps={{
+                  iconType: RefreshCcw,
+                  children: 'View chequebook',
+                  onClick: () => navigate(ROUTES.ACCOUNT_CHEQUEBOOK),
+                }}
+                icon={<RefreshCcw />}
+                title={
+                  chequebookBalance?.availableBalance
+                    ? `${chequebookBalance.availableBalance.toFixedDecimal(4)} xBZZ`
+                    : 'No available balance'
+                }
+                subtitle="Your chequebook is not setup or has no balance."
+                status="error"
+              />
+            )}
+          </>
+        )}
+      </div>
+      <div style={{ height: '16px' }} />
+      <Map />
+      <div style={{ height: '2px' }} />
+      <ExpandableListItem label="Connected peers" value={topology?.connected ?? '-'} />
+      <ExpandableListItem label="Depth" value={topology?.depth ?? '-'} />
+      <div style={{ height: '16px' }} />
+      <ExpandableListItem
+        label="Bee version"
+        value={
+          <div>
+            <a href="https://github.com/ethersphere/bee" rel="noreferrer" target="_blank">
+              Bee
+            </a>
+            {` ${latestUserVersion ?? '-'} `}
+            {latestUserVersion && (
+              <Button
+                size="small"
+                variant="outlined"
+                href={latestBeeVersionUrl}
+                target="_blank"
+                style={{ height: '26px' }}
+              >
                 {isLatestBeeVersion ? 'latest' : 'update'}
               </Button>
-            </div>
-          }
-        />
-        <ExpandableListItemKey label="Public key" value={nodeAddresses?.publicKey || ''} />
-        <ExpandableListItemKey label="PSS public key" value={nodeAddresses?.pssPublicKey || ''} />
-        <ExpandableListItemKey label="Overlay address (Peer ID)" value={nodeAddresses?.overlay || ''} />
-
-        <ExpandableList level={1} label="Underlay addresses">
-          {nodeAddresses?.underlay.map(addr => (
-            <ExpandableListItem key={addr} value={addr} />
-          ))}
-        </ExpandableList>
-      </ExpandableList>
-      <ExpandableList label="Blockchain" defaultOpen>
-        <ExpandableListItemKey label="Ethereum address" value={nodeAddresses?.ethereum || ''} />
-        <ExpandableListItemKey label="Chequebook contract address" value={chequebookAddress?.chequebookAddress || ''} />
-      </ExpandableList>
-      <ExpandableList label="Connectivity" defaultOpen>
-        <TopologyStats topology={topology} />
-      </ExpandableList>
+            )}
+          </div>
+        }
+      />
+      <ExpandableListItem label="Mode" value={nodeInfo?.beeMode} />
     </div>
   )
 }
