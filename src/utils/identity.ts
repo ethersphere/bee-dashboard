@@ -1,14 +1,10 @@
 import { BatchId, Bee, BeeDebug, Reference } from '@ethersphere/bee-js'
-import Wallet from 'ethereumjs-wallet'
+import { Wallet } from 'ethers'
 import { uuidV4, waitUntilStampUsable } from '.'
 import { Identity, IdentityType } from '../providers/Feeds'
 
 export function generateWallet(): Wallet {
-  const buffer = new Uint8Array(32)
-  crypto.getRandomValues(buffer)
-  const wallet = new Wallet(Buffer.from(buffer))
-
-  return wallet
+  return Wallet.createRandom()
 }
 
 export function persistIdentity(identities: Identity[], identity: Identity): void {
@@ -35,14 +31,13 @@ export async function convertWalletToIdentity(
     throw Error('V3 passwords require password')
   }
 
-  const identityString =
-    type === 'PRIVATE_KEY' ? identity.getPrivateKeyString() : await identity.toV3String(password as string)
+  const identityString = type === 'PRIVATE_KEY' ? identity.privateKey : await identity.encrypt(password as string)
 
   return {
     uuid: uuidV4(),
     name,
     type: password ? 'V3' : 'PRIVATE_KEY',
-    address: identity.getAddressString(),
+    address: identity.address,
     identity: identityString,
   }
 }
@@ -56,14 +51,14 @@ export async function importIdentity(name: string, data: string): Promise<Identi
       name,
       type: 'PRIVATE_KEY',
       identity: data,
-      address: wallet.getAddressString(),
+      address: wallet.address,
     }
   }
 
   if (data.length === 66 && data.toLowerCase().startsWith('0x')) {
     const wallet = await getWallet('PRIVATE_KEY', data.slice(2))
 
-    return { uuid: uuidV4(), name, type: 'PRIVATE_KEY', identity: data, address: wallet.getAddressString() }
+    return { uuid: uuidV4(), name, type: 'PRIVATE_KEY', identity: data, address: wallet.address }
   }
   try {
     const { address } = JSON.parse(data)
@@ -79,11 +74,7 @@ function getWalletFromIdentity(identity: Identity, password?: string): Promise<W
 }
 
 async function getWallet(type: IdentityType, data: string, password?: string): Promise<Wallet> {
-  return type === 'PRIVATE_KEY' ? getWalletFromPrivateKeyString(data) : await Wallet.fromV3(data, password as string)
-}
-
-export function getWalletFromPrivateKeyString(privateKey: string): Wallet {
-  return Wallet.fromPrivateKey(Buffer.from(trimHexString(privateKey), 'hex'))
+  return type === 'PRIVATE_KEY' ? new Wallet(data) : await Wallet.fromEncryptedJson(data, password as string)
 }
 
 export async function updateFeed(
@@ -97,21 +88,13 @@ export async function updateFeed(
   const wallet = await getWalletFromIdentity(identity, password)
 
   if (!identity.feedHash) {
-    identity.feedHash = await beeApi.createFeedManifest(stamp, 'sequence', '00'.repeat(32), wallet.getAddressString())
+    identity.feedHash = await beeApi.createFeedManifest(stamp, 'sequence', '00'.repeat(32), wallet.address)
   }
 
-  const writer = beeApi.makeFeedWriter('sequence', '00'.repeat(32), wallet.getPrivateKeyString())
+  const writer = beeApi.makeFeedWriter('sequence', '00'.repeat(32), wallet.privateKey)
 
   if (beeDebugApi) {
     await waitUntilStampUsable(stamp as BatchId, beeDebugApi)
   }
   await writer.upload(stamp, hash as Reference)
-}
-
-function trimHexString(string: string): string {
-  if (string.toLowerCase().startsWith('0x')) {
-    return string.slice(2)
-  }
-
-  return string
 }
