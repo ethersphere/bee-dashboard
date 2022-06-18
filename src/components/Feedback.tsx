@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import * as Sentry from '@sentry/react'
 import { Link } from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
@@ -24,10 +24,8 @@ const useStyles = makeStyles((theme: Theme) =>
  * Sentry DNS like https://1asfasdf2312asdf3@o132123.ingest.sentry.io/13123123
  */
 const SENTRY_PARSING_REGEX = /^https:\/\/(?<key>\w+)@(?<sub>\w+)\.ingest\.sentry\.io\/(?<path>\d+)$/gm
-let SENTRY_ACCESS_VERIFIED = false
 
 async function isSentryReachable(): Promise<boolean> {
-  SENTRY_ACCESS_VERIFIED = true
   const key = config.SENTRY_KEY
 
   if (!key) {
@@ -69,11 +67,12 @@ export default function Feedback(): ReactElement {
   const [sentryEnabled, setSentryEnabled] = useState(false)
   const classes = useStyles()
 
-  if (!SENTRY_ACCESS_VERIFIED) {
+  // Run this only on component mount to verify once that Sentry is reachable
+  useEffect(() => {
     isSentryReachable().then(result => {
       setSentryEnabled(result)
     })
-  }
+  }, [])
 
   if (sentryEnabled) {
     return (
