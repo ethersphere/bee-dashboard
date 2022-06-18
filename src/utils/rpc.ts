@@ -1,45 +1,20 @@
 import { debounce } from '@material-ui/core'
-import axios from 'axios'
 import { Contract, providers, Wallet } from 'ethers'
 import { bzzContractInterface } from './bzz-contract-interface'
 
-export const JSON_RPC_PROVIDER = 'https://gno.getblock.io/mainnet/?api_key=d7b92d96-9784-49a8-a800-b3edd1647fc7'
-
-async function eth_getBalance(address: string): Promise<string> {
+async function eth_getBalance(address: string, provider: providers.JsonRpcProvider): Promise<string> {
   if (!address.startsWith('0x')) {
     address = `0x${address}`
   }
-  const response = await axios(JSON_RPC_PROVIDER, {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-    },
-    data: {
-      jsonrpc: '2.0',
-      method: 'eth_getBalance',
-      params: [address, 'latest'],
-      id: 1,
-    },
-  })
+  const balance = await provider.getBalance(address)
 
-  return response.data.result
+  return balance.toString()
 }
 
-async function eth_getBlockByNumber(provider = JSON_RPC_PROVIDER): Promise<string> {
-  const response = await axios(provider, {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-    },
-    data: {
-      jsonrpc: '2.0',
-      method: 'eth_getBlockByNumber',
-      params: ['latest', false],
-      id: 1,
-    },
-  })
+async function eth_getBlockByNumber(provider: providers.JsonRpcProvider): Promise<string> {
+  const blockNumber = await provider.getBlockNumber()
 
-  return response.data.result
+  return blockNumber.toString()
 }
 
 const partialERC20tokenABI = [
@@ -63,10 +38,9 @@ const partialERC20tokenABI = [
   },
 ]
 
-const provider = new providers.JsonRpcProvider(JSON_RPC_PROVIDER)
-
 async function eth_getBalanceERC20(
   address: string,
+  provider: providers.JsonRpcProvider,
   tokenAddress = '0xdbf3ea6f5bee45c02255b2c26a16f300502f68da',
 ): Promise<string> {
   if (!address.startsWith('0x')) {

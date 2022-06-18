@@ -1,26 +1,27 @@
-import Wallet from 'ethereumjs-wallet'
+import { providers, Wallet } from 'ethers'
 import { createContext, ReactElement, useEffect, useState } from 'react'
 import { setJsonRpcInDesktop } from '../utils/desktop'
-import { getWalletFromPrivateKeyString } from '../utils/identity'
 
 const LocalStorageKeys = {
-  jsonRpcProvider: 'json-rpc-provider',
+  providerUrl: 'json-rpc-provider',
   depositWallet: 'deposit-wallet',
   giftWallets: 'gift-wallets',
   invitation: 'invitation',
 }
 
 interface ContextInterface {
-  jsonRpcProvider: string
+  providerUrl: string
+  provider: providers.JsonRpcProvider
   giftWallets: Wallet[]
-  setJsonRpcProvider: (jsonRpcProvider: string) => void
+  setProviderUrl: (providerUrl: string) => void
   addGiftWallet: (wallet: Wallet) => void
 }
 
 const initialValues: ContextInterface = {
-  jsonRpcProvider: '',
+  providerUrl: '',
+  provider: new providers.JsonRpcProvider(),
   giftWallets: [],
-  setJsonRpcProvider: () => {}, // eslint-disable-line
+  setProviderUrl: () => {}, // eslint-disable-line
   addGiftWallet: () => {}, // eslint-disable-line
 }
 
@@ -32,38 +33,39 @@ interface Props {
 }
 
 export function Provider({ children }: Props): ReactElement {
-  const [jsonRpcProvider, setJsonRpcProvider] = useState(
-    localStorage.getItem('json-rpc-provider') || initialValues.jsonRpcProvider,
-  )
+  const [providerUrl, setProviderUrl] = useState(localStorage.getItem('json-rpc-provider') || initialValues.providerUrl)
+  const [provider, setProvider] = useState(new providers.JsonRpcProvider(providerUrl))
   const [giftWallets, setGiftWallets] = useState(initialValues.giftWallets)
 
   useEffect(() => {
     const existingGiftWallets = localStorage.getItem(LocalStorageKeys.giftWallets)
 
     if (existingGiftWallets) {
-      setGiftWallets(JSON.parse(existingGiftWallets).map(getWalletFromPrivateKeyString))
+      setGiftWallets(JSON.parse(existingGiftWallets).map((privateKey: string) => new Wallet(privateKey, provider)))
     }
-  }, [])
+  }, [provider])
 
-  function setAndPersistJsonRpcProvider(jsonRpcProvider: string) {
-    localStorage.setItem(LocalStorageKeys.jsonRpcProvider, jsonRpcProvider)
-    setJsonRpcProvider(jsonRpcProvider)
+  function setAndPersistJsonRpcProvider(providerUrl: string) {
+    localStorage.setItem(LocalStorageKeys.providerUrl, providerUrl)
+    setProviderUrl(providerUrl)
+    setProvider(new providers.JsonRpcProvider(providerUrl))
     // eslint-disable-next-line no-console
-    setJsonRpcInDesktop(jsonRpcProvider).catch(console.error)
+    setJsonRpcInDesktop(providerUrl).catch(console.error)
   }
 
   function addGiftWallet(wallet: Wallet) {
     const newArray = [...giftWallets, wallet]
-    localStorage.setItem(LocalStorageKeys.giftWallets, JSON.stringify(newArray.map(x => x.getPrivateKeyString())))
+    localStorage.setItem(LocalStorageKeys.giftWallets, JSON.stringify(newArray.map(x => x.privateKey)))
     setGiftWallets(newArray)
   }
 
   return (
     <Context.Provider
       value={{
-        jsonRpcProvider,
+        providerUrl,
+        provider,
         giftWallets,
-        setJsonRpcProvider: setAndPersistJsonRpcProvider,
+        setProviderUrl: setAndPersistJsonRpcProvider,
         addGiftWallet,
       }}
     >

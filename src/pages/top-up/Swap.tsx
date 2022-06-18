@@ -28,13 +28,13 @@ export function Swap({ header }: Props): ReactElement {
   const [loading, setLoading] = useState(false)
   const [hasSwapped, setSwapped] = useState(false)
 
-  const { jsonRpcProvider } = useContext(TopUpContext)
-  const { balance } = useContext(BeeContext)
+  const { providerUrl } = useContext(TopUpContext)
+  const { balance, nodeAddresses } = useContext(BeeContext)
 
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
 
-  if (!balance) {
+  if (!balance || !nodeAddresses) {
     return <Loading />
   }
 
@@ -53,7 +53,7 @@ export function Swap({ header }: Props): ReactElement {
       await performSwap(daiToSwap.toString)
       enqueueSnackbar('Successfully swapped, restarting...', { variant: 'success' })
       await sleepMs(5_000)
-      await upgradeToLightNode(jsonRpcProvider)
+      await upgradeToLightNode(providerUrl)
       await restartBeeNode()
       navigate(ROUTES.RESTART_LIGHT)
       enqueueSnackbar('Upgraded to light node', { variant: 'success' })
@@ -98,7 +98,7 @@ export function Swap({ header }: Props): ReactElement {
         <ArrowDown size={24} color="#aaaaaa" />
       </Box>
       <Box mb={0.25}>
-        <ExpandableListItemKey label="Funding wallet address" value={balance.address} expanded />
+        <ExpandableListItemKey label="Funding wallet address" value={nodeAddresses.ethereum} expanded />
       </Box>
       <Box mb={0.25}>
         <ExpandableListItem

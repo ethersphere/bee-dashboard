@@ -40,7 +40,7 @@ export default function Index({ header, title, p, next }: Props): ReactElement {
       <Box mb={4}>{p}</Box>
       <SwarmDivider mb={4} />
       <Box mb={0.25}>
-        <ExpandableListItemKey label="Funding wallet address" value={balance.address} expanded />
+        <ExpandableListItemKey label="Funding wallet address" value={nodeAddresses.ethereum} expanded />
       </Box>
       <Box mb={4}>
         <ExpandableListItem label="xDAI balance" value={balance.dai.toSignificantDigits(4)} />
