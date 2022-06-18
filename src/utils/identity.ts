@@ -83,7 +83,13 @@ async function getWallet(type: IdentityType, data: string, password?: string): P
 }
 
 export function getWalletFromPrivateKeyString(privateKey: string): Wallet {
-  return Wallet.fromPrivateKey(Buffer.from(trimHexString(privateKey), 'hex'))
+  return Wallet.fromPrivateKey(hexStringToUint8Array(trimHexString(privateKey)))
+}
+
+function hexStringToUint8Array(string: string): Buffer {
+  const segments = string.match(/.{1,2}/g) as string[]
+
+  return new Uint8Array(segments.map(x => parseInt(x, 16))) as Buffer
 }
 
 export async function updateFeed(
