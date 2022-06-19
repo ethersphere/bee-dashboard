@@ -7,7 +7,6 @@ const getMapJSON = require('dotted-map').getMapJSON
 const DATA_SOURCE = 'https://swarmscan-api.resenje.org/v1/network/dump'
 const DATA_DESTINATION = './src/assets/data/nodes-db.json'
 const MAP_HEIGHT = 50
-const COLOR = '#dd7200'
 const MAP_DESTINATION = './src/assets/data/map-data.json'
 
 async function getData(url) {
@@ -17,12 +16,12 @@ async function getData(url) {
 }
 
 function processData(data) {
-  const db = {}
+  const db = new Map()
   data.nodes.forEach(node => {
-    db[node.overlay] = { lat: node.location.latitude, lng: node.location.longitude }
+    db.set(node.overlay, { lat: node.location.latitude, lng: node.location.longitude })
   })
 
-  return db
+  return Object.fromEntries([...db.entries()].sort())
 }
 
 function saveFile(db, path) {
