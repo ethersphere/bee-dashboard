@@ -132,7 +132,8 @@
     "depcheck": "depcheck .",
     "lint": "eslint --fix \"src/**/*.ts\" \"src/**/*.tsx\" && prettier --write \"src/**/*.ts\" \"src/**/*.tsx\"",
     "lint:check": "eslint \"src/**/*.ts\" \"src/**/*.tsx\" && prettier --check \"src/**/*.ts\" \"src/**/*.tsx\"",
-    "check:types": "tsc --project tsconfig.lib.json"
+    "check:types": "tsc --project tsconfig.lib.json",
+    "update-map-data": "node ./utils/update-map-data.js"
   },
   "files": [
     "lib",
