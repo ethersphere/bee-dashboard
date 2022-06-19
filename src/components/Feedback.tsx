@@ -2,19 +2,28 @@ import { ReactElement, useEffect, useState } from 'react'
 import * as Sentry from '@sentry/react'
 import { Link } from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import { MessageSquare } from 'react-feather'
+
 import config from '../config'
+import SideBarItem from './SideBarItem'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      textAlign: 'center',
-      fontSize: theme.typography.fontSize - 2,
-      color: 'rgb(159, 159, 159)',
-      cursor: 'pointer',
-
+    link: {
+      color: '#9f9f9f',
+      textDecoration: 'none',
       '&:hover': {
-        textDecorationColor: 'rgb(159, 159, 159)',
+        textDecoration: 'none',
+
+        // https://github.com/mui-org/material-ui/issues/22543
+        '@media (hover: none)': {
+          textDecoration: 'none',
+        },
       },
+    },
+
+    icon: {
+      height: theme.spacing(4),
     },
   }),
 )
@@ -76,8 +85,8 @@ export default function Feedback(): ReactElement {
 
   if (sentryEnabled) {
     return (
-      <Link onClick={showFeedbackForm}>
-        <div className={classes.root}>Give us feedback!</div>
+      <Link onClick={showFeedbackForm} className={classes.link}>
+        <SideBarItem iconStart={<MessageSquare className={classes.icon} />} label={<span>Send feedback</span>} />
       </Link>
     )
   }

@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme: Theme) =>
       flexWrap: 'nowrap',
       minHeight: '100vh',
       paddingTop: theme.spacing(8),
-      paddingBottom: theme.spacing(1),
+      paddingBottom: theme.spacing(8),
     },
     drawer: {
       width: drawerWidth,
@@ -90,22 +90,12 @@ const useStyles = makeStyles((theme: Theme) =>
         },
       },
     },
-    statusLink: {
-      marginBottom: theme.spacing(7),
-      display: 'block',
-    },
   }),
 )
 
 export default function SideBar(): ReactElement {
   const classes = useStyles()
   const { nodeInfo } = useContext(Context)
-
-  let feedbackLink
-
-  if (config.SENTRY_KEY) {
-    feedbackLink = <Feedback />
-  }
 
   return (
     <Drawer className={classes.drawer} variant="permanent" anchor="left" classes={{ paper: classes.drawerPaper }}>
@@ -143,10 +133,12 @@ export default function SideBar(): ReactElement {
           </List>
         </Grid>
         <Grid>
-          <Link to={ROUTES.STATUS} className={`${classes.link} ${classes.statusLink}`}>
-            <SideBarStatus path={ROUTES.STATUS} />
-          </Link>
-          {feedbackLink}
+          <List>
+            <Link to={ROUTES.STATUS} className={classes.link}>
+              <SideBarStatus path={ROUTES.STATUS} />
+            </Link>
+            <Feedback />
+          </List>
         </Grid>
       </Grid>
     </Drawer>
