@@ -1,0 +1,162 @@
+/*
+object-assign
+(c) Sindre Sorhus
+@license MIT
+*/
+
+/*!
+
+JSZip v3.7.1 - A JavaScript class for generating and reading zip files
+<http://stuartk.com/jszip>
+
+(c) 2009-2016 Stuart Knightley <stuart [at] stuartk.com>
+Dual licenced under the MIT license or GPLv3. See https://raw.github.com/Stuk/jszip/master/LICENSE.markdown.
+
+JSZip uses the library pako released under the MIT license :
+https://github.com/nodeca/pako/blob/master/LICENSE
+*/
+
+/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
+
+/**
+ * @license
+ * web-streams-polyfill v4.0.0-beta.3
+ * Copyright 2021 Mattias Buelens, Diwank Singh Tomer and other contributors.
+ * This code is released under the MIT license.
+ * SPDX-License-Identifier: MIT
+ */
+
+/**
+ * A better abstraction over CSS.
+ *
+ * @copyright Oleg Isonen (Slobodskoi) / Isonen 2014-present
+ * @website https://github.com/cssinjs/jss
+ * @license MIT
+ */
+
+/**
+ * Function that converts Node's Readable into WHATWG ReadableStream
+ *
+ * Taken over from https://github.com/gwicke/node-web-streams/blob/master/lib/conversions.js
+ * Because it uses forked web-streams-polyfill that are outdated.
+ *
+ * @author https://github.com/gwicke
+ * @licence Apache License 2.0 https://github.com/gwicke/node-web-streams/blob/master/LICENSE
+ * @param nodeStream
+ */
+
+/**
+ * Function that converts WHATWG ReadableStream into Node's Readable
+ *
+ * Taken over from https://github.com/gwicke/node-web-streams/blob/master/lib/conversions.js
+ * Because it uses forked web-streams-polyfill that is outdated.
+ *
+ * **Warning!**
+ * If you want to use this function in browser you have to polyfill `stream` package with your bundler.
+ *
+ * @author https://github.com/gwicke
+ * @licence Apache License 2.0 https://github.com/gwicke/node-web-streams/blob/master/LICENSE
+ * @param webStream
+ * @param options
+ */
+
+/**
+ * Function that deep merges objects
+ *
+ * @copyright https://github.com/sindresorhus/ky/blob/b3c9e88fa49d50150dbb6e6b771b4af56cb40c98/source/utils/merge.ts
+ * @licence MIT
+ * @param sources
+ */
+
+/**
+ * React Router DOM v6.2.1
+ *
+ * Copyright (c) Remix Software Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE.md file in the root directory of this source tree.
+ *
+ * @license MIT
+ */
+
+/**
+ * React Router v6.2.1
+ *
+ * Copyright (c) Remix Software Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE.md file in the root directory of this source tree.
+ *
+ * @license MIT
+ */
+
+/**
+ * Taken over from https://github.com/gwicke/node-web-streams/blob/master/lib/conversions.js
+ * Because it uses forked web-streams-polyfill that are outdated.
+ *
+ * @author https://github.com/gwicke
+ * @licence Apache License 2.0 https://github.com/gwicke/node-web-streams/blob/master/LICENSE
+ */
+
+/**
+ * [js-sha3]{@link https://github.com/emn178/js-sha3}
+ *
+ * @version 0.8.0
+ * @author Chen, Yi-Cyuan [emn178@gmail.com]
+ * @copyright Chen, Yi-Cyuan 2015-2018
+ * @license MIT
+ */
+
+/** @license React v0.20.2
+ * scheduler.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/** @license React v16.13.1
+ * react-is.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/** @license React v17.0.2
+ * react-dom.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/** @license React v17.0.2
+ * react-is.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/** @license React v17.0.2
+ * react-jsx-runtime.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/** @license React v17.0.2
+ * react.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
