@@ -2,13 +2,14 @@ import { Grid, IconButton, InputBase, ListItem, Typography } from '@material-ui/
 import Collapse from '@material-ui/core/Collapse'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import { ChangeEvent, ReactElement, useState } from 'react'
-import Search from 'remixicon-react/SearchLineIcon'
+import Check from 'remixicon-react/CheckLineIcon'
 import Edit from 'remixicon-react/PencilLineIcon'
 import Minus from 'remixicon-react/SubtractLineIcon'
 import X from 'remixicon-react/CloseLineIcon'
 import ExpandableListItemActions from './ExpandableListItemActions'
 import ExpandableListItemNote from './ExpandableListItemNote'
 import { SwarmButton } from './SwarmButton'
+import type { RemixiconReactIconProps } from 'remixicon-react'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -56,6 +57,7 @@ interface Props {
   expandedOnly?: boolean
   confirmLabel?: string
   confirmLabelDisabled?: boolean
+  confirmIcon?: React.ComponentType<RemixiconReactIconProps>
   loading?: boolean
   onChange?: (value: string) => void
   onConfirm?: (value: string) => void
@@ -70,6 +72,7 @@ export default function ExpandableListItemKey({
   onChange,
   confirmLabel,
   confirmLabelDisabled,
+  confirmIcon,
   expandedOnly,
   helperText,
   placeholder,
@@ -140,7 +143,7 @@ export default function ExpandableListItemKey({
               (inputValue === '' && value === undefined) // Disable if no initial value was not provided and the field is empty. The undefined check is improtant so that it is possible to submit with empty input in other cases
             }
             loading={loading}
-            iconType={Search}
+            iconType={confirmIcon ?? Check}
             onClick={() => {
               if (onConfirm) onConfirm(inputValue)
             }}
