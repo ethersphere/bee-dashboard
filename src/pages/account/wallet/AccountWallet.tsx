@@ -30,7 +30,7 @@ export function AccountWallet(): ReactElement {
   }
 
   function onDeposit() {
-    navigate(ROUTES.WALLET)
+    navigate(ROUTES.CONFIRMATION)
   }
 
   return (
