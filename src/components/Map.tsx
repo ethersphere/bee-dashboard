@@ -47,7 +47,7 @@ function addPins(map: DottedMap, pins: MapRecord[], color: string) {
 }
 
 const mapPrecomputed = new DottedMap({ map: JSON.parse(mapData) })
-addPins(mapPrecomputed, deduplicatedRecords, '#dd7200')
+addPins(mapPrecomputed, deduplicatedRecords, '#303030')
 
 const mapSvgOptions: DottedMapWithoutCountriesLib.SvgSettings = { shape: 'hexagon', radius: 0.21, color: '#dadada' }
 
@@ -60,7 +60,7 @@ export default function Card({ style }: Props): ReactElement {
 
     const points = findIntersection(fullMapDb, peers)
     const mapNew = Object.create(mapPrecomputed)
-    addPins(mapNew, points, '#67BE68')
+    addPins(mapNew, points, '#09CA6C')
     setMap(mapNew.getSVG(mapSvgOptions))
   }, [peers])
 

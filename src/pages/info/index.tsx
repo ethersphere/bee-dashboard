@@ -108,7 +108,7 @@ export default function Status(): ReactElement {
       <Map />
       <div style={{ height: '2px' }} />
       <ExpandableListItem label="Connected peers" value={topology?.connected ?? '-'} />
-      <ExpandableListItem label="Depth" value={topology?.depth ?? '-'} />
+      <ExpandableListItem label="Population" value={topology?.population ?? '-'} />
       <div style={{ height: '16px' }} />
       <ExpandableListItem
         label="Bee version"
