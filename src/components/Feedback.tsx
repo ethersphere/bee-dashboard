@@ -41,6 +41,13 @@ async function isSentryReachable(): Promise<boolean> {
     return false
   }
 
+  // We try if we are running in Bee Desktop that provide's Sentry tunnelling
+  const tunnelResult = await fetch(`${config.BEE_DESKTOP_URL}/sentry`, { method: 'OPTIONS' })
+
+  if (tunnelResult.status === 204) {
+    return true
+  }
+
   const match = SENTRY_PARSING_REGEX.exec(key)
 
   if (!match) {
