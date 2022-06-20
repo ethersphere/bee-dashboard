@@ -79,7 +79,7 @@ export default function Card({ style }: Props): ReactElement {
       <img
         alt="world map"
         src={`data:image/svg+xml;utf8,${encodeURIComponent(map)}`}
-        style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+        style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', flex: 1 }}
       />
     </div>
   )
