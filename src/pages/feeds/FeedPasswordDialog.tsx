@@ -1,6 +1,7 @@
 import { Box, Typography } from '@material-ui/core'
 import { ReactElement, useState } from 'react'
-import { Check, X } from 'react-feather'
+import Check from 'remixicon-react/CheckLineIcon'
+import X from 'remixicon-react/CloseLineIcon'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmDialog } from '../../components/SwarmDialog'

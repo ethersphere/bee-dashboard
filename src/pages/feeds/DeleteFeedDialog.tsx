@@ -1,6 +1,7 @@
 import { Box, Typography } from '@material-ui/core'
 import { ReactElement } from 'react'
-import { Trash, X } from 'react-feather'
+import X from 'remixicon-react/CloseLineIcon'
+import Trash from 'remixicon-react/DeleteBin7LineIcon'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmDialog } from '../../components/SwarmDialog'

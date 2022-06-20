@@ -1,6 +1,11 @@
 import { ReactElement, useContext } from 'react'
 import { Button } from '@material-ui/core'
-import { Globe, Briefcase, Search, Settings, ArrowUp, RefreshCcw } from 'react-feather'
+import Wallet from 'remixicon-react/Wallet3LineIcon'
+import ExchangeFunds from 'remixicon-react/ExchangeFundsLineIcon'
+import Search from 'remixicon-react/SearchLineIcon'
+import Globe from 'remixicon-react/GlobalLineIcon'
+import Settings from 'remixicon-react/Settings2LineIcon'
+import Upload from 'remixicon-react/UploadLineIcon'
 
 import { Context as BeeContext } from '../../providers/Bee'
 import Card from '../../components/Card'
@@ -46,11 +51,11 @@ export default function Status(): ReactElement {
         {nodeInfo?.beeMode && ['light', 'full', 'dev'].includes(nodeInfo.beeMode) ? (
           <Card
             buttonProps={{
-              iconType: Briefcase,
-              children: 'Manage your wallet.',
+              iconType: Wallet,
+              children: 'Manage your wallet',
               onClick: () => navigate(ROUTES.ACCOUNT_WALLET),
             }}
-            icon={<Briefcase />}
+            icon={<Wallet />}
             title={`${balance?.bzz.toSignificantDigits(4)} xBZZ | ${balance?.dai.toSignificantDigits(4)} xDAI`}
             subtitle="Current wallet balance."
             status="ok"
@@ -58,11 +63,11 @@ export default function Status(): ReactElement {
         ) : (
           <Card
             buttonProps={{
-              iconType: Settings,
+              iconType: Wallet,
               children: 'Setup wallet',
               onClick: () => navigate(ROUTES.WALLET),
             }}
-            icon={<ArrowUp />}
+            icon={<Upload />}
             title="Your wallet is not setup."
             subtitle="To share content on Swarm, please setup your wallet."
             status="error"
@@ -75,11 +80,11 @@ export default function Status(): ReactElement {
             chequebookBalance?.availableBalance.toBigNumber.isGreaterThan(0) ? (
               <Card
                 buttonProps={{
-                  iconType: RefreshCcw,
+                  iconType: ExchangeFunds,
                   children: 'View chequebook',
                   onClick: () => navigate(ROUTES.ACCOUNT_CHEQUEBOOK),
                 }}
-                icon={<RefreshCcw />}
+                icon={<ExchangeFunds />}
                 title={`${chequebookBalance?.availableBalance.toSignificantDigits(4)} xBZZ`}
                 subtitle="Current chequebook balance."
                 status="ok"
@@ -87,11 +92,11 @@ export default function Status(): ReactElement {
             ) : (
               <Card
                 buttonProps={{
-                  iconType: RefreshCcw,
+                  iconType: ExchangeFunds,
                   children: 'View chequebook',
                   onClick: () => navigate(ROUTES.ACCOUNT_CHEQUEBOOK),
                 }}
-                icon={<RefreshCcw />}
+                icon={<ExchangeFunds />}
                 title={
                   chequebookBalance?.availableBalance
                     ? `${chequebookBalance.availableBalance.toFixedDecimal(4)} xBZZ`

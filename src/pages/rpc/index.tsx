@@ -1,7 +1,7 @@
 import { Box, Typography } from '@material-ui/core'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
-import { Check } from 'react-feather'
+import Check from 'remixicon-react/CheckLineIcon'
 import { useNavigate } from 'react-router'
 import { providers } from 'ethers'
 import { HistoryHeader } from '../../components/HistoryHeader'

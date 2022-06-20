@@ -1,6 +1,6 @@
 import { Box, Grid, Typography } from '@material-ui/core'
 import { ReactElement, useContext } from 'react'
-import { Check } from 'react-feather'
+import Check from 'remixicon-react/CheckLineIcon'
 import { useNavigate } from 'react-router'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
