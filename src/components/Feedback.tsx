@@ -2,7 +2,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import * as Sentry from '@sentry/react'
 import { Link } from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import { MessageSquare } from 'react-feather'
+import MessageSquare from 'remixicon-react/Chat4LineIcon'
 
 import config from '../config'
 import SideBarItem from './SideBarItem'

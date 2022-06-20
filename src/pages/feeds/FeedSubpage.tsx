@@ -1,7 +1,7 @@
 import * as swarmCid from '@ethersphere/swarm-cid'
 import { Box } from '@material-ui/core'
 import { ReactElement, useContext, useEffect, useState } from 'react'
-import { X } from 'react-feather'
+import X from 'remixicon-react/CloseLineIcon'
 import { useNavigate, useParams } from 'react-router-dom'
 import { DocumentationText } from '../../components/DocumentationText'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'

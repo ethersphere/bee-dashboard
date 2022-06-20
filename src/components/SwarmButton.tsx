@@ -1,9 +1,9 @@
 import { Button, ButtonProps, CircularProgress, createStyles, makeStyles } from '@material-ui/core'
 import React, { ReactElement } from 'react'
-import { IconProps } from 'react-feather'
+import type { RemixiconReactIconProps } from 'remixicon-react'
 
 export interface SwarmButtonProps extends ButtonProps {
-  iconType: React.ComponentType<IconProps>
+  iconType: React.ComponentType<RemixiconReactIconProps>
   loading?: boolean
   cancel?: boolean
   variant?: 'text' | 'contained' | 'outlined'
@@ -18,7 +18,7 @@ const useStyles = makeStyles(() =>
       color: '#242424',
       '&:hover, &:focus': {
         '& svg': {
-          stroke: '#fff',
+          fill: '#fff',
           transition: '0.1s',
         },
       },

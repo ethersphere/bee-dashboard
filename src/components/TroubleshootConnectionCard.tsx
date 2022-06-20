@@ -1,7 +1,7 @@
 import { Button, Grid, Link as MuiLink, Typography } from '@material-ui/core/'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import type { ReactElement } from 'react'
-import { Activity } from 'react-feather'
+import Activity from 'remixicon-react/PulseLineIcon'
 import { Link } from 'react-router-dom'
 import { config } from '../config'
 import { ROUTES } from '../routes'

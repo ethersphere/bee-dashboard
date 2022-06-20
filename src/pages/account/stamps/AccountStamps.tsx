@@ -1,6 +1,6 @@
 import { CircularProgress, Container, createStyles, makeStyles } from '@material-ui/core'
 import { ReactElement, useContext, useEffect } from 'react'
-import { PlusSquare } from 'react-feather'
+import PlusSquare from 'remixicon-react/AddBoxLineIcon'
 import { useNavigate } from 'react-router'
 import { SwarmButton } from '../../../components/SwarmButton'
 import TroubleshootConnectionCard from '../../../components/TroubleshootConnectionCard'

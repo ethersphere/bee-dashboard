@@ -1,6 +1,9 @@
 import { Box, createStyles, Grid, makeStyles, Typography } from '@material-ui/core'
 import { ReactElement } from 'react'
-import { Battery, BatteryCharging, Check, Gift } from 'react-feather'
+import Check from 'remixicon-react/CheckLineIcon'
+import BankCard from 'remixicon-react/BankCard2LineIcon'
+import MoneyDollarCircle from 'remixicon-react/MoneyDollarCircleLineIcon'
+import Gift from 'remixicon-react/GiftLineIcon'
 import { useNavigate } from 'react-router'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import { HistoryHeader } from '../../components/HistoryHeader'
@@ -45,10 +48,10 @@ export default function Confirmation(): ReactElement {
           </Typography>
         </Box>
         <ExpandableListItemActions>
-          <SwarmButton iconType={Battery} onClick={() => navigate(ROUTES.TOP_UP_BANK_CARD)}>
+          <SwarmButton iconType={BankCard} onClick={() => navigate(ROUTES.TOP_UP_BANK_CARD)}>
             Get started with bank card
           </SwarmButton>
-          <SwarmButton iconType={BatteryCharging} onClick={() => navigate(ROUTES.TOP_UP_CRYPTO)}>
+          <SwarmButton iconType={MoneyDollarCircle} onClick={() => navigate(ROUTES.TOP_UP_CRYPTO)}>
             Use DAI
           </SwarmButton>
           <SwarmButton iconType={Gift} onClick={() => navigate(ROUTES.TOP_UP_GIFT_CODE)}>

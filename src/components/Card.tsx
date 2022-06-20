@@ -1,6 +1,7 @@
 import { createStyles, makeStyles, Theme, Typography } from '@material-ui/core'
 import { ReactElement } from 'react'
-import { AlertCircle, Check } from 'react-feather'
+import Check from 'remixicon-react/CheckLineIcon'
+import AlertCircle from 'remixicon-react/ErrorWarningFillIcon'
 import { SwarmButton, SwarmButtonProps } from './SwarmButton'
 
 interface Props {
@@ -60,11 +61,7 @@ export default function Card({ buttonProps, icon, title, subtitle, status }: Pro
       <div className={classes.wrapper}>
         <div className={classes.iconWrapper}>
           {icon}
-          {status === 'ok' ? (
-            <Check size="13" stroke="#09ca6c" />
-          ) : (
-            <AlertCircle size="13" fill="#f44336" stroke="white" />
-          )}
+          {status === 'ok' ? <Check size="13" color="#09ca6c" /> : <AlertCircle size="13" color="#f44336" />}
         </div>
         <Typography variant="h2" style={{ marginBottom: '8px' }}>
           {title}

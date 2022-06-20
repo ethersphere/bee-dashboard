@@ -7,7 +7,7 @@ import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
-import { Zap } from 'react-feather'
+import Zap from 'remixicon-react/FlashlightLineIcon'
 import { Context as SettingsContext } from '../providers/Settings'
 import EthereumAddress from './EthereumAddress'
 

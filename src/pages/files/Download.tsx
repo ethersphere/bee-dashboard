@@ -3,6 +3,7 @@ import { ManifestJs } from '@ethersphere/manifest-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Search from 'remixicon-react/SearchLineIcon'
 import ExpandableListItemInput from '../../components/ExpandableListItemInput'
 import { History } from '../../components/History'
 import { Context, defaultUploadOrigin } from '../../providers/File'
@@ -88,6 +89,7 @@ export function Download(): ReactElement {
         helperText={referenceError}
         confirmLabel={'Find'}
         confirmLabelDisabled={Boolean(referenceError) || loading}
+        confirmIcon={Search}
         placeholder="e.g. 31fb0362b1a42536134c86bc58b97ac0244e5c6630beec3e27c2d1cecb38c605"
         expandedOnly
         mapperFn={value => recognizeEnsOrSwarmHash(value)}
