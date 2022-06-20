@@ -1,8 +1,8 @@
 import { BeeModes } from '@ethersphere/bee-js'
-import { Box, Typography } from '@material-ui/core'
+import { Box, Grid, Typography } from '@material-ui/core'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { Loading } from '../../components/Loading'
+import { Waiting } from '../../components/Waiting'
 import { Context } from '../../providers/Bee'
 import { ROUTES } from '../../routes'
 
@@ -22,11 +22,18 @@ export default function Settings(): ReactElement {
   }, [startedAt, navigate, nodeInfo, apiHealth])
 
   return (
-    <>
-      <Box mb={4}>
-        <Loading />
+    <Grid container direction="column" justifyContent="center" alignItems="center">
+      <Box mb={9}>
+        <Waiting />
       </Box>
-      <Typography>Your node is being upgraded to light mode... postage syncing may take up to 10 minutes.</Typography>
-    </>
+      <Box mb={1}>
+        <Typography>
+          <strong>Upgrading Bee</strong>
+        </Typography>
+      </Box>
+      <Typography>
+        You will be redirected automatically once your node is up and running. This may take up to 10 minutes.
+      </Typography>
+    </Grid>
   )
 }
