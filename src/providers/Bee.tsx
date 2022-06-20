@@ -19,6 +19,9 @@ import { WalletAddress } from '../utils/wallet'
 import { Context as SettingsContext } from './Settings'
 import { Context as TopUpContext } from './TopUp'
 
+const REFRESH_WHEN_OK = 30_000
+const REFRESH_WHEN_ERROR = 5_000
+
 export enum CheckState {
   OK = 'OK',
   WARNING = 'Warning',
@@ -217,7 +220,7 @@ export function Provider({ children }: Props): ReactElement {
 
     setApiHealth(false)
 
-    refresh()
+    if (beeApi !== null) refresh()
   }, [beeApi]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -235,7 +238,7 @@ export function Provider({ children }: Props): ReactElement {
     setSettlements(null)
     setChainState(null)
 
-    refresh()
+    if (beeDebugApi !== null) refresh()
   }, [beeDebugApi]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -245,7 +248,7 @@ export function Provider({ children }: Props): ReactElement {
   }, [nodeAddresses, provider])
 
   useEffect(() => {
-    const interval = setInterval(() => walletAddress?.refresh().then(setWalletAddress), 30_000)
+    const interval = setInterval(() => walletAddress?.refresh().then(setWalletAddress), REFRESH_WHEN_OK)
 
     return () => clearInterval(interval)
   }, [walletAddress])
@@ -378,13 +381,33 @@ export function Provider({ children }: Props): ReactElement {
     }
   }
 
-  const start = (freq = 30000) => setFrequency(freq)
+  const start = (freq = REFRESH_WHEN_OK) => {
+    refresh()
+    setFrequency(freq)
+  }
   const stop = () => setFrequency(null)
+
+  const status = getStatus(
+    debugApiHealth,
+    nodeAddresses,
+    nodeInfo,
+    apiHealth,
+    topology,
+    chequebookAddress,
+    chequebookBalance,
+    error,
+  )
+
+  useEffect(() => {
+    let newFrequency = REFRESH_WHEN_OK
+
+    if (status.all !== 'OK') newFrequency = REFRESH_WHEN_ERROR
+
+    if (newFrequency !== frequency) setFrequency(newFrequency)
+  }, [status.all, frequency])
 
   // Start the update loop
   useEffect(() => {
-    refresh()
-
     // Start autorefresh only if the frequency is set
     if (frequency) {
       const interval = setInterval(refresh, frequency)
@@ -396,16 +419,7 @@ export function Provider({ children }: Props): ReactElement {
   return (
     <Context.Provider
       value={{
-        status: getStatus(
-          debugApiHealth,
-          nodeAddresses,
-          nodeInfo,
-          apiHealth,
-          topology,
-          chequebookAddress,
-          chequebookBalance,
-          error,
-        ),
+        status,
         balance: walletAddress,
         latestUserVersion,
         latestUserVersionExact,
