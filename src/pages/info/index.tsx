@@ -25,7 +25,7 @@ export default function Status(): ReactElement {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'stretch', alignContent: 'stretch' }}>
-        {status.all ? (
+        {status.all === 'OK' ? (
           <Card
             buttonProps={{ iconType: Search, children: 'Access Content', onClick: () => navigate(ROUTES.DOWNLOAD) }}
             icon={<Globe />}
@@ -105,7 +105,7 @@ export default function Status(): ReactElement {
         )}
       </div>
       <div style={{ height: '16px' }} />
-      <Map />
+      <Map error={status.topology.checkState !== 'OK'} />
       <div style={{ height: '2px' }} />
       <ExpandableListItem label="Connected peers" value={topology?.connected ?? '-'} />
       <ExpandableListItem label="Population" value={topology?.population ?? '-'} />
