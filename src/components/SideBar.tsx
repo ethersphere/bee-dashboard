@@ -5,8 +5,10 @@ import { OpenInNewSharp } from '@material-ui/icons'
 import { ReactElement, useContext } from 'react'
 import { BookOpen, Briefcase, DollarSign, FileText, Home, Settings } from 'react-feather'
 import { Link } from 'react-router-dom'
-import Logo from '../assets/logo.svg'
+import DashboardLogo from '../assets/dashboard-logo.svg'
+import DesktopLogo from '../assets/desktop-logo.svg'
 import { config } from '../config'
+import { useIsBeeDesktop } from '../hooks/apiHooks'
 import { Context } from '../providers/Bee'
 import { ROUTES } from '../routes'
 import SideBarItem from './SideBarItem'
@@ -96,13 +98,14 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function SideBar(): ReactElement {
   const classes = useStyles()
   const { nodeInfo } = useContext(Context)
+  const { isBeeDesktop } = useIsBeeDesktop()
 
   return (
     <Drawer className={classes.drawer} variant="permanent" anchor="left" classes={{ paper: classes.drawerPaper }}>
       <Grid container direction="column" justifyContent="space-between" className={classes.root}>
         <Grid className={classes.logo}>
           <Link to={ROUTES.INFO}>
-            <img alt="swarm" src={Logo} />
+            <img alt="swarm" src={isBeeDesktop ? DesktopLogo : DashboardLogo} />
           </Link>
         </Grid>
         <Grid>

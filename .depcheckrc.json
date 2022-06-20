@@ -1,5 +1,6 @@
 {
   "ignores": [
+    "@testing-library/react",
     "@types/*",
     "@commitlint/config-conventional",
     "@babel/*",
