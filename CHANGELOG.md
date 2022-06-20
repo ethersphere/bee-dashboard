@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.17.0](https://github.com/ethersphere/bee-dashboard/compare/v0.16.0...v0.17.0) (2022-06-20)
+
+
+### Features
+
+* add account tabs ([#378](https://github.com/ethersphere/bee-dashboard/issues/378)) ([41432bc](https://github.com/ethersphere/bee-dashboard/commit/41432bc346b1b89f87489a0b38a5383b834edd62))
+* add map with peers to info page ([#398](https://github.com/ethersphere/bee-dashboard/issues/398)) ([2be9735](https://github.com/ethersphere/bee-dashboard/commit/2be9735e0c98f066afbd8c1fda27c8365b80f489))
+* gh pages deployment ([#389](https://github.com/ethersphere/bee-dashboard/issues/389)) ([2b58b30](https://github.com/ethersphere/bee-dashboard/commit/2b58b301225dba5809f0afb3849f97007123c61a))
+* improve stamp selector ([#400](https://github.com/ethersphere/bee-dashboard/issues/400)) ([0f0d72e](https://github.com/ethersphere/bee-dashboard/commit/0f0d72e7c5848559962b3020575d1b5f2d18a60e))
+* info page redesign ([#390](https://github.com/ethersphere/bee-dashboard/issues/390)) ([caea5ae](https://github.com/ethersphere/bee-dashboard/commit/caea5ae309028fef12c5cd036dcd1d264dd451e6))
+* sentry feedback form ([#388](https://github.com/ethersphere/bee-dashboard/issues/388)) ([b3028d7](https://github.com/ethersphere/bee-dashboard/commit/b3028d7893790010e417ccf091b7eb4981ed21d6))
+* sentry integration ([#385](https://github.com/ethersphere/bee-dashboard/issues/385)) ([109e07b](https://github.com/ethersphere/bee-dashboard/commit/109e07b0972309b9260db2e26a643be8562a9386))
+* sentry proxy ([#399](https://github.com/ethersphere/bee-dashboard/issues/399)) ([e966663](https://github.com/ethersphere/bee-dashboard/commit/e9666639b2df3b1586121df61a7eda24bc57766d))
+* update logo ([#401](https://github.com/ethersphere/bee-dashboard/issues/401)) ([36fc4bf](https://github.com/ethersphere/bee-dashboard/commit/36fc4bfe982b03589478acb36e5bb6ec5aff9b44))
+
+
+### Bug Fixes
+
+* all wallet flows to use ethers ([#395](https://github.com/ethersphere/bee-dashboard/issues/395)) ([80d684c](https://github.com/ethersphere/bee-dashboard/commit/80d684c1e5c74b3bdae6eca974ed3a0b7408be93))
+* change color of pins and show population instead of depth ([#402](https://github.com/ethersphere/bee-dashboard/issues/402)) ([127d44f](https://github.com/ethersphere/bee-dashboard/commit/127d44fd7ac763fd78d1eab99f10f952ba6bb1b6))
+* download preview ([#397](https://github.com/ethersphere/bee-dashboard/issues/397)) ([f38e8e1](https://github.com/ethersphere/bee-dashboard/commit/f38e8e11d6814e5246b0a7a25e32a009581a76a9))
+* map size in safari ([#404](https://github.com/ethersphere/bee-dashboard/issues/404)) ([ee864bd](https://github.com/ethersphere/bee-dashboard/commit/ee864bdbe9029184cc905f36af08fdea9431b4a8))
+
 ## [0.16.0](https://github.com/ethersphere/bee-dashboard/compare/v0.15.0...v0.16.0) (2022-06-02)
 
 
