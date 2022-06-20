@@ -3,7 +3,8 @@ import Collapse from '@material-ui/core/Collapse'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import { ReactElement, useState } from 'react'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
-import { Eye, Minus } from 'react-feather'
+import Eye from 'remixicon-react/Eye2LineIcon'
+import Minus from 'remixicon-react/SubtractLineIcon'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

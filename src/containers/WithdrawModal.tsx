@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js'
 import { ReactElement, useContext } from 'react'
-import { Upload } from 'react-feather'
+import Upload from 'remixicon-react/UploadLineIcon'
 import WithdrawDepositModal from '../components/WithdrawDepositModal'
 import { Context as SettingsContext } from '../providers/Settings'
 

@@ -1,6 +1,6 @@
 import { ReactElement, useContext } from 'react'
 import { useLocation, matchPath } from 'react-router-dom'
-import { ArrowRight } from 'react-feather'
+import ArrowRight from 'remixicon-react/ArrowRightLineIcon'
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
 import { ListItemText, ListItemIcon, ListItem, Typography } from '@material-ui/core'

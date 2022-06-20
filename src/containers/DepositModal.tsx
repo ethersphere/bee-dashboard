@@ -1,5 +1,5 @@
 import { ReactElement, useContext } from 'react'
-import { Download } from 'react-feather'
+import Download from 'remixicon-react/DownloadLineIcon'
 import { Context as SettingsContext } from '../providers/Settings'
 
 import WithdrawDepositModal from '../components/WithdrawDepositModal'

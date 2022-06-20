@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react'
 import IconButton from '@material-ui/core/IconButton'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
-import { Clipboard } from 'react-feather'
+import Clipboard from 'remixicon-react/ClipboardLineIcon'
 import { useSnackbar } from 'notistack'
 
 interface Props {

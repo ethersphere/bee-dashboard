@@ -1,7 +1,7 @@
 import { ReactElement, ReactNode } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Typography, Grid, IconButton, Tooltip } from '@material-ui/core'
-import { Info } from 'react-feather'
+import Info from 'remixicon-react/InformationLineIcon'
 import ListItem from '@material-ui/core/ListItem'
 
 const useStyles = makeStyles((theme: Theme) =>
