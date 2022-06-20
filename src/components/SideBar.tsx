@@ -11,6 +11,7 @@ import { Context } from '../providers/Bee'
 import { ROUTES } from '../routes'
 import SideBarItem from './SideBarItem'
 import SideBarStatus from './SideBarStatus'
+import Feedback from './Feedback'
 
 const navBarItems = [
   {
@@ -60,6 +61,7 @@ const useStyles = makeStyles((theme: Theme) =>
     drawerPaper: {
       width: drawerWidth,
       backgroundColor: '#212121',
+      zIndex: 988,
     },
     logo: {
       marginLeft: theme.spacing(8),
@@ -131,9 +133,12 @@ export default function SideBar(): ReactElement {
           </List>
         </Grid>
         <Grid>
-          <Link to={ROUTES.STATUS} className={classes.link}>
-            <SideBarStatus path={ROUTES.STATUS} />
-          </Link>
+          <List>
+            <Link to={ROUTES.STATUS} className={classes.link}>
+              <SideBarStatus path={ROUTES.STATUS} />
+            </Link>
+            <Feedback />
+          </List>
         </Grid>
       </Grid>
     </Drawer>

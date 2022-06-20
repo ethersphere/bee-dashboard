@@ -7,10 +7,12 @@ class Config {
   public readonly GITHUB_REPO_URL: string
   public readonly BEE_DESKTOP_URL: string
   public readonly SENTRY_KEY: string | undefined
+  public readonly SENTRY_ENVIRONMENT: string | undefined
 
   constructor() {
     this.BEE_API_HOST = sessionStorage.getItem('api_host') ?? process.env.REACT_APP_BEE_HOST ?? 'http://localhost:1633'
     this.SENTRY_KEY = process.env.REACT_APP_SENTRY_KEY
+    this.SENTRY_ENVIRONMENT = process.env.REACT_APP_SENTRY_ENVIRONMENT
     this.BEE_DEBUG_API_HOST =
       sessionStorage.getItem('debug_api_host') ?? process.env.REACT_APP_BEE_DEBUG_HOST ?? 'http://localhost:1635'
     this.BLOCKCHAIN_EXPLORER_URL =
