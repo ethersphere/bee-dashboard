@@ -28,29 +28,45 @@ interface Props {
 }
 
 if (config.SENTRY_KEY) {
-  Sentry.init({
-    dsn: config.SENTRY_KEY,
-    release: packageJson.version,
-    integrations: [new BrowserTracing({ tracingOrigins: ['localhost'] })],
-    tracesSampleRate: 1.0,
-    beforeSend: async (event, hint) => {
-      hint.attachments = []
+  ;(async () => {
+    let tunnelAvailable = false
 
-      try {
-        // This will fail if we are not running in Bee Desktop, but that is alright
-        hint.attachments.push({ filename: 'bee-desktop.log', data: await getBeeDesktopLogs() })
-        // eslint-disable-next-line no-empty
-      } catch (e) {}
+    try {
+      const result = await fetch(`${config.BEE_DESKTOP_URL}/sentry`, { method: 'OPTIONS' })
 
-      try {
-        // This will fail if we are not running in Bee Desktop, but that is alright
-        hint.attachments.push({ filename: 'bee.log', data: await getBeeLogs() })
-        // eslint-disable-next-line no-empty
-      } catch (e) {}
+      if (result.status === 204) {
+        tunnelAvailable = true
+      }
+    } catch (e) {
+      // There was an error, so tunnel is not available ==> NOOP
+    }
 
-      return event
-    },
-  })
+    Sentry.init({
+      dsn: config.SENTRY_KEY,
+      release: packageJson.version,
+      tunnel: tunnelAvailable ? `${config.BEE_DESKTOP_URL}/sentry` : undefined,
+      integrations: [new BrowserTracing({ tracingOrigins: ['localhost'] })],
+      tracesSampleRate: 1.0,
+      beforeSend: async (event, hint) => {
+        hint.attachments = []
+
+        try {
+          // This will fail if we are not running in Bee Desktop, but that is alright
+          hint.attachments.push({ filename: 'bee-desktop.log', data: await getBeeDesktopLogs() })
+          // eslint-disable-next-line no-empty
+        } catch (e) {}
+
+        try {
+          // This will fail if we are not running in Bee Desktop, but that is alright
+          hint.attachments.push({ filename: 'bee.log', data: await getBeeLogs() })
+          // eslint-disable-next-line no-empty
+        } catch (e) {}
+
+        return event
+      },
+    })
+    // eslint-disable-next-line no-console
+  })().catch(e => console.error(`Sentry init error `, e))
 }
 
 const App = ({ beeApiUrl, beeDebugApiUrl, lockedApiSettings }: Props): ReactElement => {
