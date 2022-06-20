@@ -1,48 +1,44 @@
-import { BeeModes } from '@ethersphere/bee-js'
 import { Divider, Drawer, Grid, Link as MUILink, List } from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import { OpenInNewSharp } from '@material-ui/icons'
-import { ReactElement, useContext } from 'react'
-import { BookOpen, Briefcase, DollarSign, FileText, Home, Settings } from 'react-feather'
+import { ReactElement } from 'react'
 import { Link } from 'react-router-dom'
+import FilesIcon from 'remixicon-react/ArrowUpDownLineIcon'
+import DocsIcon from 'remixicon-react/BookOpenLineIcon'
+import ExternalLinkIcon from 'remixicon-react/ExternalLinkLineIcon'
+import HomeIcon from 'remixicon-react/Home3LineIcon'
+import SettingsIcon from 'remixicon-react/Settings2LineIcon'
+import AccountIcon from 'remixicon-react/Wallet3LineIcon'
 import DashboardLogo from '../assets/dashboard-logo.svg'
 import DesktopLogo from '../assets/desktop-logo.svg'
 import { config } from '../config'
 import { useIsBeeDesktop } from '../hooks/apiHooks'
-import { Context } from '../providers/Bee'
 import { ROUTES } from '../routes'
+import Feedback from './Feedback'
 import SideBarItem from './SideBarItem'
 import SideBarStatus from './SideBarStatus'
-import Feedback from './Feedback'
 
 const navBarItems = [
   {
     label: 'Info',
     path: ROUTES.INFO,
-    icon: Home,
+    icon: HomeIcon,
   },
   {
     label: 'Files',
     path: ROUTES.UPLOAD,
-    icon: FileText,
+    icon: FilesIcon,
     pathMatcherSubstring: '/files/',
   },
   {
     label: 'Account',
     path: ROUTES.ACCOUNT_WALLET,
-    icon: Briefcase,
+    icon: AccountIcon,
     pathMatcherSubstring: '/account/',
-  },
-  {
-    label: 'Top Up',
-    path: ROUTES.WALLET,
-    icon: DollarSign,
-    requiresMode: BeeModes.ULTRA_LIGHT,
   },
   {
     label: 'Settings',
     path: ROUTES.SETTINGS,
-    icon: Settings,
+    icon: SettingsIcon,
   },
 ]
 
@@ -72,9 +68,6 @@ const useStyles = makeStyles((theme: Theme) =>
     icon: {
       height: theme.spacing(4),
     },
-    iconSmall: {
-      height: theme.spacing(2),
-    },
     divider: {
       backgroundColor: '#2c2c2c',
       marginLeft: theme.spacing(4),
@@ -97,7 +90,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function SideBar(): ReactElement {
   const classes = useStyles()
-  const { nodeInfo } = useContext(Context)
   const { isBeeDesktop } = useIsBeeDesktop()
 
   return (
@@ -110,26 +102,24 @@ export default function SideBar(): ReactElement {
         </Grid>
         <Grid>
           <List>
-            {navBarItems
-              .filter(p => !p.requiresMode || nodeInfo?.beeMode === p.requiresMode)
-              .map(p => (
-                <Link to={p.path} key={p.path} className={classes.link}>
-                  <SideBarItem
-                    key={p.path}
-                    iconStart={<p.icon className={classes.icon} />}
-                    path={p.path}
-                    pathMatcherSubstring={p.pathMatcherSubstring}
-                    label={p.label}
-                  />
-                </Link>
-              ))}
+            {navBarItems.map(p => (
+              <Link to={p.path} key={p.path} className={classes.link}>
+                <SideBarItem
+                  key={p.path}
+                  iconStart={<p.icon className={classes.icon} />}
+                  path={p.path}
+                  pathMatcherSubstring={p.pathMatcherSubstring}
+                  label={p.label}
+                />
+              </Link>
+            ))}
           </List>
           <Divider className={classes.divider} />
           <List>
             <MUILink href={config.BEE_DOCS_HOST} target="_blank" className={classes.link}>
               <SideBarItem
-                iconStart={<BookOpen className={classes.icon} />}
-                iconEnd={<OpenInNewSharp className={classes.iconSmall} />}
+                iconStart={<DocsIcon className={classes.icon} />}
+                iconEnd={<ExternalLinkIcon className={classes.icon} color="#595959" />}
                 label={<span>Docs</span>}
               />
             </MUILink>
