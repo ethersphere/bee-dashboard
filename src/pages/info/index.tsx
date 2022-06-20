@@ -30,7 +30,7 @@ export default function Status(): ReactElement {
             buttonProps={{ iconType: Search, children: 'Access Content', onClick: () => navigate(ROUTES.DOWNLOAD) }}
             icon={<Globe />}
             title="Your node is connected."
-            subtitle="You can now access content hosted on Swarm."
+            subtitle="You are connected to Swarm."
             status="ok"
           />
         ) : (
@@ -38,7 +38,7 @@ export default function Status(): ReactElement {
             buttonProps={{ iconType: Settings, children: 'Open node setup', onClick: () => navigate(ROUTES.STATUS) }}
             icon={<Globe />}
             title="Your node is not connected…"
-            subtitle="You’re not connected to Swarm."
+            subtitle="You are not connected to Swarm."
             status="error"
           />
         )}
@@ -47,7 +47,7 @@ export default function Status(): ReactElement {
           <Card
             buttonProps={{
               iconType: Briefcase,
-              children: 'Manage your wallet',
+              children: 'Manage your wallet.',
               onClick: () => navigate(ROUTES.ACCOUNT_WALLET),
             }}
             icon={<Briefcase />}
@@ -81,7 +81,7 @@ export default function Status(): ReactElement {
                 }}
                 icon={<RefreshCcw />}
                 title={`${chequebookBalance?.availableBalance.toSignificantDigits(4)} xBZZ`}
-                subtitle="Your chequebook is setup and has balance"
+                subtitle="Current chequebook balance."
                 status="ok"
               />
             ) : (
@@ -95,9 +95,9 @@ export default function Status(): ReactElement {
                 title={
                   chequebookBalance?.availableBalance
                     ? `${chequebookBalance.availableBalance.toFixedDecimal(4)} xBZZ`
-                    : 'No available balance'
+                    : 'No available balance.'
                 }
-                subtitle="Your chequebook is not setup or has no balance."
+                subtitle="Chequebook not setup."
                 status="error"
               />
             )}
