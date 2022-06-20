@@ -14,7 +14,6 @@ import { UploadLander } from './pages/files/UploadLander'
 import GiftCards from './pages/gift-code'
 import Info from './pages/info'
 import LightModeRestart from './pages/restart/LightModeRestart'
-import Restart from './pages/restart/Restart'
 import Wallet from './pages/rpc'
 import Confirmation from './pages/rpc/Confirmation'
 import Settings from './pages/settings'
@@ -80,7 +79,6 @@ const BaseRouter = (): ReactElement => (
     <Route path={ROUTES.TOP_UP_BANK_CARD_SWAP} element={<Swap header="Top-up with bank card" />} />
     <Route path={ROUTES.TOP_UP_GIFT_CODE} element={<GiftCardTopUpIndex />} />
     <Route path={ROUTES.TOP_UP_GIFT_CODE_FUND} element={<GiftCardFund />} />
-    <Route path={ROUTES.RESTART} element={<Restart />} />
     <Route path={ROUTES.RESTART_LIGHT} element={<LightModeRestart />} />
     <Route path={ROUTES.ACCOUNT_WALLET} element={<AccountWallet />} />
     <Route path={ROUTES.ACCOUNT_CHEQUEBOOK} element={<AccountChequebook />} />
