@@ -7,6 +7,7 @@ import mapData from '../assets/data/map-data.json'
 
 interface Props {
   style?: CSSProperties
+  error?: boolean
 }
 
 interface MapRecord {
@@ -47,22 +48,27 @@ function addPins(map: DottedMap, pins: MapRecord[], color: string) {
 }
 
 const mapPrecomputed = new DottedMap({ map: JSON.parse(mapData) })
+const mapNoPins = new DottedMap({ map: JSON.parse(mapData) })
 addPins(mapPrecomputed, deduplicatedRecords, '#303030')
 
 const mapSvgOptions: DottedMapWithoutCountriesLib.SvgSettings = { shape: 'hexagon', radius: 0.21, color: '#dadada' }
 
-export default function Card({ style }: Props): ReactElement {
+export default function Card({ style, error }: Props): ReactElement {
   const { peers } = useContext(Context)
   const [map, setMap] = useState<string>(mapPrecomputed.getSVG(mapSvgOptions))
 
   useEffect(() => {
+    // Display error map
+    if (error) setMap(mapNoPins.getSVG({ ...mapSvgOptions, color: '#eaeaea' }))
+
+    // Display just the base map without any connections
     if (!peers) return
 
     const points = findIntersection(fullMapDb, peers)
     const mapNew = Object.create(mapPrecomputed)
     addPins(mapNew, points, '#09CA6C')
     setMap(mapNew.getSVG(mapSvgOptions))
-  }, [peers])
+  }, [peers, error])
 
   return (
     <div
@@ -74,6 +80,7 @@ export default function Card({ style }: Props): ReactElement {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        position: 'relative',
       })}
     >
       <img
@@ -81,6 +88,23 @@ export default function Card({ style }: Props): ReactElement {
         src={`data:image/svg+xml;utf8,${encodeURIComponent(map)}`}
         style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', flex: 1 }}
       />
+      {error && (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="60"
+          height="60"
+          viewBox="0 0 24 24"
+          fill="#f44336"
+          strokeWidth="0"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', opacity: 0.25 }}
+        >
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line stroke="#f3f3f3" strokeWidth="2" x1="12" y1="9" x2="12" y2="13"></line>
+          <line stroke="#f3f3f3" strokeWidth="2" x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      )}
     </div>
   )
 }
