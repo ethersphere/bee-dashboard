@@ -22,6 +22,7 @@ const navBarItems = [
     label: 'Files',
     path: ROUTES.UPLOAD,
     icon: FileText,
+    pathMatcherSubstring: '/files/',
   },
   {
     label: 'Account',

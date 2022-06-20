@@ -13,6 +13,7 @@ interface Props {
   onProceed: () => void
   isUploading: boolean
   hasStamp: boolean
+  hasAnyStamps: boolean
   uploadLabel: string
   stampMode: 'BUY' | 'SELECT'
   setStampMode: (mode: 'BUY' | 'SELECT') => void
@@ -26,6 +27,7 @@ export function UploadActionBar({
   onProceed,
   isUploading,
   hasStamp,
+  hasAnyStamps,
   uploadLabel,
   stampMode,
   setStampMode,
@@ -62,6 +64,7 @@ export function UploadActionBar({
           </SwarmButton>
         </ExpandableListItemActions>
         <SwarmButton
+          disabled={stampMode === 'BUY' && !hasAnyStamps}
           onClick={() => setStampMode(stampMode === 'BUY' ? 'SELECT' : 'BUY')}
           iconType={stampMode === 'BUY' ? Layers : PlusSquare}
         >

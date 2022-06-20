@@ -31,7 +31,7 @@ export function Upload(): ReactElement {
   const [isUploading, setUploading] = useState(false)
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
 
-  const { refresh } = useContext(StampsContext)
+  const { stamps, refresh } = useContext(StampsContext)
   const { beeApi, beeDebugApi } = useContext(SettingsContext)
   const { files, setFiles, uploadOrigin, metadata, previewUri, previewBlob } = useContext(FileContext)
   const { identities, setIdentities } = useContext(IdentityContext)
@@ -39,6 +39,8 @@ export function Upload(): ReactElement {
 
   const { enqueueSnackbar } = useSnackbar()
   const navigate = useNavigate()
+
+  const hasAnyStamps = stamps !== null && stamps.length > 0
 
   useEffect(() => {
     refresh()
@@ -180,7 +182,7 @@ export function Upload(): ReactElement {
       {step === 1 && (
         <>
           <Box mb={2}>
-            {stampMode === 'SELECT' ? (
+            {hasAnyStamps && stampMode === 'SELECT' ? (
               <PostageStampSelector onSelect={stamp => setStamp(stamp)} defaultValue={stamp?.batchID} />
             ) : (
               <PostageStampCreation onFinished={() => setStampMode('SELECT')} />
@@ -210,6 +212,7 @@ export function Upload(): ReactElement {
         onUpload={onUpload}
         isUploading={isUploading}
         hasStamp={Boolean(stamp)}
+        hasAnyStamps={hasAnyStamps}
         uploadLabel={identity ? 'Update Feed' : 'Upload To Your Node'}
         stampMode={stampMode}
         setStampMode={setStampMode}
