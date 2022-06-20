@@ -1,12 +1,26 @@
-import { createStyles, FormHelperText, makeStyles, MenuItem, Select as SimpleSelect, Theme } from '@material-ui/core'
+import { createStyles, FormHelperText, makeStyles, MenuItem, Select as MuiSelect, Theme } from '@material-ui/core'
 import { Field } from 'formik'
 import { Select } from 'formik-material-ui'
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 
 export type SelectEvent = React.ChangeEvent<{
   name?: string | undefined
   value: unknown
 }>
+
+function renderValue(value: unknown): ReactNode {
+  if (typeof value === 'string') {
+    return value
+  }
+
+  const label = Reflect.get(value as object, 'label')
+
+  if (label) {
+    return label
+  }
+
+  return value as ReactNode
+}
 
 interface Props {
   label?: string
@@ -15,6 +29,7 @@ interface Props {
   onChange?: (event: SelectEvent) => void
   formik?: boolean
   defaultValue?: string
+  placeholder?: string
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -37,7 +52,15 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-export function SwarmSelect({ defaultValue, formik, name, options, onChange, label }: Props): ReactElement {
+export function SwarmSelect({
+  defaultValue,
+  formik,
+  name,
+  options,
+  onChange,
+  label,
+  placeholder,
+}: Props): ReactElement {
   const classes = useStyles()
 
   if (formik) {
@@ -50,9 +73,10 @@ export function SwarmSelect({ defaultValue, formik, name, options, onChange, lab
           name={name}
           fullWidth
           variant="outlined"
-          defaultValue={defaultValue || ''}
+          defaultValue={defaultValue}
           className={classes.select}
-          placeholder={label}
+          displayEmpty
+          renderValue={(value: unknown) => (value ? renderValue(value) : placeholder)}
           MenuProps={{ MenuListProps: { disablePadding: true }, PaperProps: { square: true } }}
         >
           {options.map((x, i) => (
@@ -68,15 +92,16 @@ export function SwarmSelect({ defaultValue, formik, name, options, onChange, lab
   return (
     <>
       {label && <FormHelperText>{label}</FormHelperText>}
-      <SimpleSelect
+      <MuiSelect
         required
         name={name}
         fullWidth
         variant="outlined"
         className={classes.select}
-        defaultValue={defaultValue || ''}
+        defaultValue={defaultValue}
         onChange={onChange}
-        placeholder={label}
+        displayEmpty
+        renderValue={(value: unknown) => (value ? renderValue(value) : placeholder)}
         MenuProps={{ MenuListProps: { disablePadding: true }, PaperProps: { square: true } }}
       >
         {options.map((x, i) => (
@@ -84,7 +109,7 @@ export function SwarmSelect({ defaultValue, formik, name, options, onChange, lab
             {x.label}
           </MenuItem>
         ))}
-      </SimpleSelect>
+      </MuiSelect>
     </>
   )
 }

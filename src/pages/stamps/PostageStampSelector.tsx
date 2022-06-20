@@ -1,4 +1,4 @@
-import React, { ReactElement, useContext } from 'react'
+import { ReactElement, useContext } from 'react'
 import { SwarmSelect } from '../../components/SwarmSelect'
 import { Context, EnrichedPostageBatch } from '../../providers/Stamps'
 
@@ -26,6 +26,7 @@ export function PostageStampSelector({ onSelect, defaultValue }: Props): ReactEl
       options={(stamps || []).map(x => ({ label: x.batchID.slice(0, 8), value: x.batchID }))}
       onChange={event => onChange(event.target.value as string)}
       defaultValue={defaultValue}
+      placeholder="Please select a postage stamp..."
     />
   )
 }
