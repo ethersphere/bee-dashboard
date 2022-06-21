@@ -67,13 +67,15 @@ export function UploadActionBar({
             Back To Preview
           </SwarmButton>
         </ExpandableListItemActions>
-        <SwarmButton
-          disabled={stampMode === 'BUY' && !hasAnyStamps}
-          onClick={() => setStampMode(stampMode === 'BUY' ? 'SELECT' : 'BUY')}
-          iconType={stampMode === 'BUY' ? Layers : PlusSquare}
-        >
-          {stampMode === 'BUY' ? 'Use Existing Stamp' : 'Buy New Stamp'}
-        </SwarmButton>
+        {hasAnyStamps && (
+          <SwarmButton
+            disabled={stampMode === 'BUY' && !hasAnyStamps}
+            onClick={() => setStampMode(stampMode === 'BUY' ? 'SELECT' : 'BUY')}
+            iconType={stampMode === 'BUY' ? Layers : PlusSquare}
+          >
+            {stampMode === 'BUY' ? 'Use Existing Stamp' : 'Buy New Stamp'}
+          </SwarmButton>
+        )}
       </Grid>
     )
   }
