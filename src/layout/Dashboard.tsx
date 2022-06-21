@@ -1,12 +1,16 @@
-import { CircularProgress, Container } from '@material-ui/core'
+import { Button, CircularProgress, Container, IconButton } from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import React, { ReactElement, useContext } from 'react'
+import { useSnackbar } from 'notistack'
+import CloseIcon from 'remixicon-react/CloseCircleLineIcon'
 import ErrorBoundary from '../components/ErrorBoundary'
 import SideBar from '../components/SideBar'
 import { Context } from '../providers/Bee'
 import config from '../config'
 import * as Sentry from '@sentry/react'
 import ItsBroken from './ItsBroken'
+import { useIsBeeDesktop, useNewBeeDesktopVersion } from '../hooks/apiHooks'
+import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../utils/desktop'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -25,6 +29,38 @@ const Dashboard = (props: Props): ReactElement => {
   const classes = useStyles()
 
   const { isLoading } = useContext(Context)
+  const { isBeeDesktop } = useIsBeeDesktop()
+  const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isBeeDesktop)
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+
+  if (newBeeDesktopVersion !== '') {
+    enqueueSnackbar(`There is new Swarm Dashboard version ${newBeeDesktopVersion}!`, {
+      variant: 'warning',
+      preventDuplicate: true,
+      key: 'desktopNewVersion',
+      persist: true,
+      action: key => (
+        <React.Fragment>
+          <Button
+            onClick={() => {
+              window.open(BEE_DESKTOP_LATEST_RELEASE_PAGE)
+              closeSnackbar(key)
+            }}
+          >
+            Download release
+          </Button>
+          <IconButton
+            onClick={() => {
+              closeSnackbar(key)
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </React.Fragment>
+      ),
+    })
+  }
+
   const content = (
     <>
       {isLoading ? (

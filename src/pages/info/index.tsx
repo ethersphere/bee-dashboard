@@ -13,6 +13,8 @@ import Map from '../../components/Map'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import { useNavigate } from 'react-router'
 import { ROUTES } from '../../routes'
+import { useIsBeeDesktop, useNewBeeDesktopVersion } from '../../hooks/apiHooks'
+import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../../utils/desktop'
 
 export default function Status(): ReactElement {
   const {
@@ -25,6 +27,8 @@ export default function Status(): ReactElement {
     balance,
     chequebookBalance,
   } = useContext(BeeContext)
+  const { isBeeDesktop, beeDesktopVersion } = useIsBeeDesktop()
+  const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isBeeDesktop)
   const navigate = useNavigate()
 
   return (
@@ -115,6 +119,25 @@ export default function Status(): ReactElement {
       <ExpandableListItem label="Connected peers" value={topology?.connected ?? '-'} />
       <ExpandableListItem label="Population" value={topology?.population ?? '-'} />
       <div style={{ height: '16px' }} />
+      {isBeeDesktop && (
+        <ExpandableListItem
+          label="Desktop version"
+          value={
+            <div>
+              {`${beeDesktopVersion} `}
+              <Button
+                size="small"
+                variant="outlined"
+                href={BEE_DESKTOP_LATEST_RELEASE_PAGE}
+                target="_blank"
+                style={{ height: '26px' }}
+              >
+                {newBeeDesktopVersion === '' ? 'latest' : 'update'}
+              </Button>
+            </div>
+          }
+        />
+      )}
       <ExpandableListItem
         label="Bee version"
         value={

@@ -2,6 +2,7 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { config } from '../config'
 import { getJson } from '../utils/net'
+import { getLatestBeeDesktopVersion } from '../utils/desktop'
 
 export interface LatestBeeReleaseHook {
   latestBeeRelease: LatestBeeRelease | null
@@ -12,6 +13,11 @@ export interface LatestBeeReleaseHook {
 export interface IsBeeDesktopHook {
   isBeeDesktop: boolean
   isLoading: boolean
+  beeDesktopVersion: string
+}
+
+export interface NewDesktopVersionHook {
+  newBeeDesktopVersion: string
 }
 
 interface Config {
@@ -25,14 +31,17 @@ interface Config {
  */
 export const useIsBeeDesktop = (conf: Config = config): IsBeeDesktopHook => {
   const [isBeeDesktop, setIsBeeDesktop] = useState<boolean>(false)
+  const [beeDesktopVersion, setBeeDesktopVersion] = useState<string>('')
   const [isLoading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
     axios
       .get(`${conf.BEE_DESKTOP_URL}/info`)
       .then(res => {
-        if (res.data?.name === 'bee-desktop') setIsBeeDesktop(true)
-        else setIsBeeDesktop(false)
+        if (res.data?.name === 'bee-desktop') {
+          setIsBeeDesktop(true)
+          setBeeDesktopVersion(res.data?.version)
+        } else setIsBeeDesktop(false)
       })
       .catch(() => {
         setIsBeeDesktop(false)
@@ -42,7 +51,37 @@ export const useIsBeeDesktop = (conf: Config = config): IsBeeDesktopHook => {
       })
   }, [conf])
 
-  return { isBeeDesktop, isLoading }
+  return { isBeeDesktop, isLoading, beeDesktopVersion }
+}
+
+async function checkNewVersion(conf: Config): Promise<string> {
+  const resJson = await (await fetch(`${conf.BEE_DESKTOP_URL}/info`)).json()
+  const currentVersion = resJson.version
+  const latestVersion = await getLatestBeeDesktopVersion()
+
+  if (currentVersion !== latestVersion) {
+    return latestVersion
+  }
+
+  return ''
+}
+
+export function useNewBeeDesktopVersion(isBeeDesktop: boolean, conf: Config = config): NewDesktopVersionHook {
+  const [newBeeDesktopVersion, setNewNewBeeDesktopVersion] = useState<string>('')
+
+  useEffect(() => {
+    if (!isBeeDesktop) {
+      return
+    }
+
+    checkNewVersion(conf).then(version => {
+      if (version !== '') {
+        setNewNewBeeDesktopVersion(version)
+      }
+    })
+  }, [isBeeDesktop, conf])
+
+  return { newBeeDesktopVersion }
 }
 
 export interface BeeConfig {
