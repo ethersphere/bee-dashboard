@@ -22,30 +22,37 @@ export function AccountChequebook(): ReactElement {
 
   if (status.all === CheckState.ERROR) return <TroubleshootConnectionCard />
 
+  const showChequebook = chequebookBalance?.totalBalance !== undefined
+
   return (
     <>
       <Header />
       <AccountNavigation active="CHEQUEBOOK" />
       <div>
-        <ExpandableList label="Chequebook" defaultOpen>
-          <ExpandableListItem label="Total Balance" value={`${chequebookBalance?.totalBalance.toFixedDecimal()} BZZ`} />
-          <ExpandableListItem
-            label="Available Uncommitted Balance"
-            value={`${chequebookBalance?.availableBalance.toFixedDecimal()} BZZ`}
-          />
-          <ExpandableListItem
-            label="Total Cheques Amount Sent"
-            value={`${settlements?.totalSent.toFixedDecimal()} BZZ`}
-          />
-          <ExpandableListItem
-            label="Total Cheques Amount Received"
-            value={`${settlements?.totalReceived.toFixedDecimal()} BZZ`}
-          />
-          <ExpandableListItemActions>
-            <WithdrawModal />
-            <DepositModal />
-          </ExpandableListItemActions>
-        </ExpandableList>
+        {showChequebook && (
+          <ExpandableList label="Chequebook" defaultOpen>
+            <ExpandableListItem
+              label="Total Balance"
+              value={`${chequebookBalance?.totalBalance.toFixedDecimal()} BZZ`}
+            />
+            <ExpandableListItem
+              label="Available Uncommitted Balance"
+              value={`${chequebookBalance?.availableBalance.toFixedDecimal()} BZZ`}
+            />
+            <ExpandableListItem
+              label="Total Cheques Amount Sent"
+              value={`${settlements?.totalSent.toFixedDecimal()} BZZ`}
+            />
+            <ExpandableListItem
+              label="Total Cheques Amount Received"
+              value={`${settlements?.totalReceived.toFixedDecimal()} BZZ`}
+            />
+            <ExpandableListItemActions>
+              <WithdrawModal />
+              <DepositModal />
+            </ExpandableListItemActions>
+          </ExpandableList>
+        )}
         <ExpandableList label="Blockchain" defaultOpen>
           <ExpandableListItemKey label="Ethereum address" value={nodeAddresses?.ethereum || ''} />
           <ExpandableListItemKey
