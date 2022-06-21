@@ -23,8 +23,8 @@ export async function initSentry(): Promise<void> {
     release: packageJson.version,
     environment: config.SENTRY_ENVIRONMENT,
     tunnel: tunnelAvailable ? `${config.BEE_DESKTOP_URL}/sentry` : undefined,
-    integrations: [new BrowserTracing({ tracingOrigins: ['localhost'] })],
-    tracesSampleRate: 0.3,
+    integrations: [new BrowserTracing({ tracingOrigins: [config.BEE_DESKTOP_URL] })],
+    tracesSampleRate: 0.4,
     beforeSend: async (event, hint) => {
       hint.attachments = []
 
