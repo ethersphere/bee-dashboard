@@ -41,7 +41,7 @@ const App = ({ beeApiUrl, beeDebugApiUrl, lockedApiSettings }: Props): ReactElem
                 <FileProvider>
                   <FeedsProvider>
                     <PlatformProvider>
-                      <SnackbarProvider>
+                      <SnackbarProvider anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
                         <Router>
                           <>
                             <CssBaseline />

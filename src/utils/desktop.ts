@@ -8,6 +8,8 @@ interface DesktopStatus {
   config: Record<string, any>
 }
 
+export const BEE_DESKTOP_LATEST_RELEASE_PAGE = 'https://github.com/ethersphere/bee-desktop/releases/latest'
+
 export async function getDesktopStatus(): Promise<DesktopStatus> {
   const response = await getJson(`${getDesktopHost()}/status`)
 
@@ -58,6 +60,12 @@ export async function getBeeLogs(): Promise<string> {
   const response = await sendRequest(`${getDesktopHost()}/logs/bee`, 'GET')
 
   return response as unknown as string
+}
+
+export async function getLatestBeeDesktopVersion(): Promise<string> {
+  const response = await (await fetch('https://api.github.com/repos/ethersphere/bee-desktop/releases/latest')).json()
+
+  return response.tag_name.replace('v', '') // We get for example "v0.12.1"
 }
 
 function getDesktopHost(): string {
