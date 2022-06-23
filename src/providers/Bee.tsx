@@ -66,7 +66,6 @@ interface ContextInterface {
   chainState: ChainState | null
   latestBeeRelease: LatestBeeRelease | null
   isLoading: boolean
-  isRefreshing: boolean
   lastUpdate: number | null
   start: (frequency?: number) => void
   stop: () => void
@@ -104,7 +103,6 @@ const initialValues: ContextInterface = {
   chainState: null,
   latestBeeRelease: null,
   isLoading: true,
-  isRefreshing: false,
   lastUpdate: null,
   start: () => {}, // eslint-disable-line
   stop: () => {}, // eslint-disable-line
@@ -186,6 +184,9 @@ function getStatus(
   return status
 }
 
+// This does not need to be exposed and works much better as variable than state variable which may trigger some unnecessary re-renders
+let isRefreshing = false
+
 export function Provider({ children }: Props): ReactElement {
   const { beeApi, beeDebugApi } = useContext(SettingsContext)
   const { provider } = useContext(TopUpContext)
@@ -207,7 +208,6 @@ export function Provider({ children }: Props): ReactElement {
 
   const [error, setError] = useState<Error | null>(initialValues.error)
   const [isLoading, setIsLoading] = useState<boolean>(initialValues.isLoading)
-  const [isRefreshing, setIsRefreshing] = useState<boolean>(initialValues.isRefreshing)
   const [lastUpdate, setLastUpdate] = useState<number | null>(initialValues.lastUpdate)
   const [frequency, setFrequency] = useState<number | null>(30000)
 
@@ -265,7 +265,7 @@ export function Provider({ children }: Props): ReactElement {
     }
 
     try {
-      setIsRefreshing(true)
+      isRefreshing = true
       setError(null)
 
       // Wrap the chequebook balance call to return BZZ values as Token object
@@ -374,11 +374,11 @@ export function Provider({ children }: Props): ReactElement {
       await Promise.allSettled(promises)
     } catch (e) {
       setError(e as Error)
-    } finally {
-      setIsLoading(false)
-      setIsRefreshing(false)
-      setLastUpdate(Date.now())
     }
+
+    setIsLoading(false)
+    isRefreshing = false
+    setLastUpdate(Date.now())
   }
 
   const start = (freq = REFRESH_WHEN_OK) => {
@@ -447,7 +447,6 @@ export function Provider({ children }: Props): ReactElement {
         chainState,
         latestBeeRelease,
         isLoading,
-        isRefreshing,
         lastUpdate,
         start,
         stop,

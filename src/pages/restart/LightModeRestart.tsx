@@ -6,10 +6,16 @@ import { Waiting } from '../../components/Waiting'
 import { Context } from '../../providers/Bee'
 import { ROUTES } from '../../routes'
 
-export default function Settings(): ReactElement {
-  const [startedAt] = useState(Date.now())
+const STARTED_UPGRADE_AT = 'started-upgrade-at'
+
+export default function LightModeRestart(): ReactElement {
+  const [startedAt] = useState(Number.parseInt(localStorage.getItem(STARTED_UPGRADE_AT) ?? Date.now().toFixed()))
   const { apiHealth, nodeInfo } = useContext(Context)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    localStorage.setItem(STARTED_UPGRADE_AT, startedAt.toFixed())
+  }, [startedAt])
 
   useEffect(() => {
     if (Date.now() - startedAt < 45_000) {
@@ -17,6 +23,7 @@ export default function Settings(): ReactElement {
     }
 
     if (apiHealth && nodeInfo?.beeMode === BeeModes.LIGHT) {
+      localStorage.removeItem(STARTED_UPGRADE_AT)
       navigate(ROUTES.INFO)
     }
   }, [startedAt, navigate, nodeInfo, apiHealth])
