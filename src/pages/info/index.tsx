@@ -7,7 +7,7 @@ import Globe from 'remixicon-react/GlobalLineIcon'
 import Settings from 'remixicon-react/Settings2LineIcon'
 import Upload from 'remixicon-react/UploadLineIcon'
 
-import { Context as BeeContext } from '../../providers/Bee'
+import { CheckState, Context as BeeContext } from '../../providers/Bee'
 import Card from '../../components/Card'
 import Map from '../../components/Map'
 import ExpandableListItem from '../../components/ExpandableListItem'
@@ -34,7 +34,7 @@ export default function Status(): ReactElement {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'stretch', alignContent: 'stretch' }}>
-        {status.all === 'OK' ? (
+        {status.all !== CheckState.ERROR ? (
           <Card
             buttonProps={{ iconType: Search, children: 'Access Content', onClick: () => navigate(ROUTES.DOWNLOAD) }}
             icon={<Globe />}
