@@ -39,7 +39,11 @@ export default function Index(): ReactElement {
         <Typography>
           To connect to and retrieve data from the blockchain, you&apos;ll need to connect to a publicly-provided node
           via the node&apos;s RPC endpoint. If you&apos;re not familiar with this, please read{' '}
-          <a href="https://medium.com/ethereum-swarm/upgrading-swarm-deskotp-app-beta-from-an-ultra-light-to-a-light-node-65d52cab7f2c" target="_blank" rel="noreferrer">
+          <a
+            href="https://medium.com/ethereum-swarm/upgrading-swarm-deskotp-app-beta-from-an-ultra-light-to-a-light-node-65d52cab7f2c"
+            target="_blank"
+            rel="noreferrer"
+          >
             this guide.
           </a>
           .
