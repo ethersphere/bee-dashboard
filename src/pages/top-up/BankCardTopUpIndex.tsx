@@ -10,10 +10,14 @@ export function BankCardTopUpIndex(): ReactElement {
       title={'Use a bank card to buy xDAI to the funding wallet address below'}
       p={
         <Typography>
-          It&apos;s recommended to buy an amount equivalent to 5 to 10 EUR maximum. If you&apos;re not familiar with
+          It is recommended to buy an amount equivalent to 10 EUR maximum. If you&apos;re not familiar with
           cryptocurrencies, you may use{' '}
-          <a href="https://ramp.network/buy/" rel="noreferrer" target="_blank">
-            https://ramp.network/buy/
+          <a
+            href="https://medium.com/ethereum-swarm/upgrading-swarm-deskotp-app-beta-from-an-ultra-light-to-a-light-node-65d52cab7f2c"
+            rel="noreferrer"
+            target="_blank"
+          >
+            this guide
           </a>
           .
         </Typography>
