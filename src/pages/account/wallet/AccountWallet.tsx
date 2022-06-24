@@ -1,3 +1,4 @@
+import { BeeModes } from '@ethersphere/bee-js'
 import { Box, Grid, Typography } from '@material-ui/core'
 import { ReactElement, useContext } from 'react'
 import { useNavigate } from 'react-router'
@@ -15,7 +16,7 @@ import { AccountNavigation } from '../AccountNavigation'
 import { Header } from '../Header'
 
 export function AccountWallet(): ReactElement {
-  const { balance, nodeAddresses } = useContext(Context)
+  const { balance, nodeAddresses, nodeInfo } = useContext(Context)
 
   const navigate = useNavigate()
 
@@ -34,7 +35,7 @@ export function AccountWallet(): ReactElement {
   return (
     <>
       <Header />
-      <AccountNavigation active="WALLET" />
+      {nodeInfo?.beeMode !== BeeModes.ULTRA_LIGHT && <AccountNavigation active="WALLET" />}
       <Box mb={4}>
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="h2">Wallet balance</Typography>
