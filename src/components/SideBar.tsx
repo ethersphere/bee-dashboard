@@ -8,6 +8,7 @@ import ExternalLinkIcon from 'remixicon-react/ExternalLinkLineIcon'
 import HomeIcon from 'remixicon-react/Home3LineIcon'
 import SettingsIcon from 'remixicon-react/Settings2LineIcon'
 import AccountIcon from 'remixicon-react/Wallet3LineIcon'
+import { Context as BeeContext } from '../providers/Bee'
 import { Context as TopUpContext } from '../providers/TopUp'
 import DashboardLogo from '../assets/dashboard-logo.svg'
 import DesktopLogo from '../assets/desktop-logo.svg'
@@ -17,6 +18,7 @@ import { ROUTES } from '../routes'
 import Feedback from './Feedback'
 import SideBarItem from './SideBarItem'
 import SideBarStatus from './SideBarStatus'
+import { BeeModes } from '@ethersphere/bee-js'
 
 const drawerWidth = 300
 
@@ -68,6 +70,7 @@ export default function SideBar(): ReactElement {
   const classes = useStyles()
   const { isBeeDesktop } = useIsBeeDesktop()
   const { providerUrl } = useContext(TopUpContext)
+  const { nodeInfo } = useContext(BeeContext)
 
   const navBarItems = [
     {
@@ -77,7 +80,7 @@ export default function SideBar(): ReactElement {
     },
     {
       label: 'Files',
-      path: ROUTES.UPLOAD,
+      path: nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT ? ROUTES.DOWNLOAD : ROUTES.UPLOAD,
       icon: FilesIcon,
       pathMatcherSubstring: '/files/',
     },

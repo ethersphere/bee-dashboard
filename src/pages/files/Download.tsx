@@ -1,4 +1,4 @@
-import { Utils } from '@ethersphere/bee-js'
+import { BeeModes, Utils } from '@ethersphere/bee-js'
 import { ManifestJs } from '@ethersphere/manifest-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
@@ -6,8 +6,9 @@ import { useNavigate } from 'react-router-dom'
 import Search from 'remixicon-react/SearchLineIcon'
 import ExpandableListItemInput from '../../components/ExpandableListItemInput'
 import { History } from '../../components/History'
-import { Context, defaultUploadOrigin } from '../../providers/File'
+import { Context as FileContext, defaultUploadOrigin } from '../../providers/File'
 import { Context as SettingsContext } from '../../providers/Settings'
+import { Context as BeeContext } from '../../providers/Bee'
 import { ROUTES } from '../../routes'
 import { recognizeEnsOrSwarmHash, regexpEns } from '../../utils'
 import { determineHistoryName, HISTORY_KEYS, putHistory } from '../../utils/local-storage'
@@ -17,8 +18,9 @@ export function Download(): ReactElement {
   const [loading, setLoading] = useState(false)
   const { beeApi } = useContext(SettingsContext)
   const [referenceError, setReferenceError] = useState<string | undefined>(undefined)
+  const { nodeInfo } = useContext(BeeContext)
 
-  const { setUploadOrigin } = useContext(Context)
+  const { setUploadOrigin } = useContext(FileContext)
 
   const { enqueueSnackbar } = useSnackbar()
   const navigate = useNavigate()
@@ -81,7 +83,7 @@ export function Download(): ReactElement {
 
   return (
     <>
-      <FileNavigation active="DOWNLOAD" />
+      {nodeInfo?.beeMode !== BeeModes.ULTRA_LIGHT && <FileNavigation active="DOWNLOAD" />}
       <ExpandableListItemInput
         label="Swarm Hash"
         onConfirm={value => onSwarmIdentifier(value)}
