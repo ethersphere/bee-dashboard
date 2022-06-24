@@ -19,9 +19,12 @@ import { ExportFeedDialog } from '../../feeds/ExportFeedDialog'
 import { ImportFeedDialog } from '../../feeds/ImportFeedDialog'
 import { AccountNavigation } from '../AccountNavigation'
 import { Header } from '../Header'
+import TroubleshootConnectionCard from '../../../components/TroubleshootConnectionCard'
+import { CheckState, Context as BeeContext } from '../../../providers/Bee'
 
 export function AccountFeeds(): ReactElement {
   const { identities, setIdentities } = useContext(IdentityContext)
+  const { status } = useContext(BeeContext)
 
   const navigate = useNavigate()
 
@@ -61,6 +64,8 @@ export function AccountFeeds(): ReactElement {
     setSelectedIdentity(identity)
     setShowDelete(true)
   }
+
+  if (status.all === CheckState.ERROR) return <TroubleshootConnectionCard />
 
   return (
     <>

@@ -2,9 +2,6 @@ import { ReactElement, useContext } from 'react'
 import { Button } from '@material-ui/core'
 import Wallet from 'remixicon-react/Wallet3LineIcon'
 import ExchangeFunds from 'remixicon-react/ExchangeFundsLineIcon'
-import Search from 'remixicon-react/SearchLineIcon'
-import Globe from 'remixicon-react/GlobalLineIcon'
-import Settings from 'remixicon-react/Settings2LineIcon'
 import Upload from 'remixicon-react/UploadLineIcon'
 
 import { Context as BeeContext } from '../../providers/Bee'
@@ -15,6 +12,7 @@ import { useNavigate } from 'react-router'
 import { ROUTES } from '../../routes'
 import { useIsBeeDesktop, useNewBeeDesktopVersion } from '../../hooks/apiHooks'
 import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../../utils/desktop'
+import NodeInfoCard from './NodeInfoCard'
 
 export default function Status(): ReactElement {
   const {
@@ -34,23 +32,7 @@ export default function Status(): ReactElement {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'stretch', alignContent: 'stretch' }}>
-        {status.all === 'OK' ? (
-          <Card
-            buttonProps={{ iconType: Search, children: 'Access Content', onClick: () => navigate(ROUTES.DOWNLOAD) }}
-            icon={<Globe />}
-            title="Your node is connected."
-            subtitle="You are connected to Swarm."
-            status="ok"
-          />
-        ) : (
-          <Card
-            buttonProps={{ iconType: Settings, children: 'Open node setup', onClick: () => navigate(ROUTES.STATUS) }}
-            icon={<Globe />}
-            title="Your node is not connected…"
-            subtitle="You are not connected to Swarm."
-            status="error"
-          />
-        )}
+        <NodeInfoCard />
         <div style={{ width: '8px' }}></div>
         {nodeInfo?.beeMode && ['light', 'full', 'dev'].includes(nodeInfo.beeMode) ? (
           <Card
