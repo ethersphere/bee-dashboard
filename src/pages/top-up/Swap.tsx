@@ -45,7 +45,7 @@ export function Swap({ header }: Props): ReactElement {
   const bzzAfterSwap = new BzzToken(daiToSwap.toBigNumber.dividedToIntegerBy(200))
 
   async function onSwap() {
-    if (hasSwapped) {
+    if (hasSwapped || !providerUrl) {
       return
     }
     setLoading(true)

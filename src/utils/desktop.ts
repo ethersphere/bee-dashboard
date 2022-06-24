@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { getJson, postJson, sendRequest } from './net'
 
 interface DesktopStatus {
@@ -14,10 +13,6 @@ export async function getDesktopStatus(): Promise<DesktopStatus> {
   const response = await getJson(`${getDesktopHost()}/status`)
 
   return response as DesktopStatus
-}
-
-export async function getGasFromFaucet(address: string): Promise<void> {
-  await axios.post(`http://getxdai.co/${address}/0.1`)
 }
 
 export async function upgradeToLightNode(rpcProvider: string): Promise<void> {

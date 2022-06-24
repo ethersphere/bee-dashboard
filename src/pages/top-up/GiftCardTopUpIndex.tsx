@@ -24,6 +24,8 @@ export function GiftCardTopUpIndex(): ReactElement {
   const navigate = useNavigate()
 
   async function onProceed() {
+    if (!provider) return
+
     setLoading(true)
     try {
       const wallet = new Wallet(giftCode, provider)

@@ -10,16 +10,18 @@ const LocalStorageKeys = {
 }
 
 interface ContextInterface {
-  providerUrl: string
-  provider: providers.JsonRpcProvider
+  providerUrl: string | null
+  provider: providers.JsonRpcProvider | null
   giftWallets: Wallet[]
   setProviderUrl: (providerUrl: string) => void
   addGiftWallet: (wallet: Wallet) => void
 }
 
+const providerUrl = localStorage.getItem('json-rpc-provider') || null
+
 const initialValues: ContextInterface = {
-  providerUrl: '',
-  provider: new providers.JsonRpcProvider(),
+  providerUrl,
+  provider: providerUrl ? new providers.JsonRpcProvider(providerUrl) : null,
   giftWallets: [],
   setProviderUrl: () => {}, // eslint-disable-line
   addGiftWallet: () => {}, // eslint-disable-line
@@ -33,11 +35,13 @@ interface Props {
 }
 
 export function Provider({ children }: Props): ReactElement {
-  const [providerUrl, setProviderUrl] = useState(localStorage.getItem('json-rpc-provider') || initialValues.providerUrl)
-  const [provider, setProvider] = useState(new providers.JsonRpcProvider(providerUrl))
+  const [providerUrl, setProviderUrl] = useState(initialValues.providerUrl)
+  const [provider, setProvider] = useState(initialValues.provider)
   const [giftWallets, setGiftWallets] = useState(initialValues.giftWallets)
 
   useEffect(() => {
+    if (provider === null) return
+
     const existingGiftWallets = localStorage.getItem(LocalStorageKeys.giftWallets)
 
     if (existingGiftWallets) {

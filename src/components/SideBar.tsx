@@ -1,6 +1,6 @@
 import { Divider, Drawer, Grid, Link as MUILink, List } from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import { ReactElement } from 'react'
+import { ReactElement, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import FilesIcon from 'remixicon-react/ArrowUpDownLineIcon'
 import DocsIcon from 'remixicon-react/BookOpenLineIcon'
@@ -8,6 +8,7 @@ import ExternalLinkIcon from 'remixicon-react/ExternalLinkLineIcon'
 import HomeIcon from 'remixicon-react/Home3LineIcon'
 import SettingsIcon from 'remixicon-react/Settings2LineIcon'
 import AccountIcon from 'remixicon-react/Wallet3LineIcon'
+import { Context as TopUpContext } from '../providers/TopUp'
 import DashboardLogo from '../assets/dashboard-logo.svg'
 import DesktopLogo from '../assets/desktop-logo.svg'
 import { config } from '../config'
@@ -16,31 +17,6 @@ import { ROUTES } from '../routes'
 import Feedback from './Feedback'
 import SideBarItem from './SideBarItem'
 import SideBarStatus from './SideBarStatus'
-
-const navBarItems = [
-  {
-    label: 'Info',
-    path: ROUTES.INFO,
-    icon: HomeIcon,
-  },
-  {
-    label: 'Files',
-    path: ROUTES.UPLOAD,
-    icon: FilesIcon,
-    pathMatcherSubstring: '/files/',
-  },
-  {
-    label: 'Account',
-    path: ROUTES.ACCOUNT_WALLET,
-    icon: AccountIcon,
-    pathMatcherSubstring: '/account/',
-  },
-  {
-    label: 'Settings',
-    path: ROUTES.SETTINGS,
-    icon: SettingsIcon,
-  },
-]
 
 const drawerWidth = 300
 
@@ -91,6 +67,32 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function SideBar(): ReactElement {
   const classes = useStyles()
   const { isBeeDesktop } = useIsBeeDesktop()
+  const { providerUrl } = useContext(TopUpContext)
+
+  const navBarItems = [
+    {
+      label: 'Info',
+      path: ROUTES.INFO,
+      icon: HomeIcon,
+    },
+    {
+      label: 'Files',
+      path: ROUTES.UPLOAD,
+      icon: FilesIcon,
+      pathMatcherSubstring: '/files/',
+    },
+    {
+      label: 'Account',
+      path: providerUrl === null ? ROUTES.WALLET : ROUTES.ACCOUNT_WALLET,
+      icon: AccountIcon,
+      pathMatcherSubstring: '/account/',
+    },
+    {
+      label: 'Settings',
+      path: ROUTES.SETTINGS,
+      icon: SettingsIcon,
+    },
+  ]
 
   return (
     <Drawer className={classes.drawer} variant="permanent" anchor="left" classes={{ paper: classes.drawerPaper }}>
