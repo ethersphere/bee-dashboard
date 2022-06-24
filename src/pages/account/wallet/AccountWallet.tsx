@@ -39,7 +39,7 @@ export function AccountWallet(): ReactElement {
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="h2">Wallet balance</Typography>
           <SwarmButton onClick={onDeposit} iconType={Download}>
-            Deposit
+            Top up wallet
           </SwarmButton>
         </Grid>
       </Box>
