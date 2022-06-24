@@ -31,7 +31,7 @@ export function GiftCardFund(): ReactElement {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (!privateKeyString) {
+    if (!privateKeyString || !provider) {
       return
     }
 
@@ -43,7 +43,7 @@ export function GiftCardFund(): ReactElement {
   }
 
   async function onFund() {
-    if (!wallet || !nodeAddresses) {
+    if (!wallet || !nodeAddresses || !providerUrl) {
       return
     }
 

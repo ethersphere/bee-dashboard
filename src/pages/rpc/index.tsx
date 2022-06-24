@@ -19,6 +19,8 @@ export default function Index(): ReactElement {
   const navigate = useNavigate()
 
   async function onSubmit() {
+    if (!localProviderUrl) return
+
     try {
       await Rpc.eth_getBlockByNumber(new providers.JsonRpcProvider(localProviderUrl))
       enqueueSnackbar('Connected to RPC provider successfully.', { variant: 'success' })
@@ -54,7 +56,7 @@ export default function Index(): ReactElement {
           name="rpc-endpoint"
           label="RPC Endpoint"
           onChange={event => setLocalProviderUrl(event.target.value)}
-          defaultValue={providerUrl}
+          defaultValue={providerUrl || ''}
         />
       </Box>
       <SwarmButton iconType={Check} onClick={onSubmit}>

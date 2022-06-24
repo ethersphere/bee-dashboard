@@ -25,6 +25,7 @@ export default function Index(): ReactElement {
 
   useEffect(() => {
     async function mapGiftWallets() {
+      if (!provider) return
       const results = []
       for (const giftWallet of giftWallets) {
         results.push(await ResolvedWallet.make(giftWallet, provider))

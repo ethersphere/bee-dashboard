@@ -242,7 +242,7 @@ export function Provider({ children }: Props): ReactElement {
   }, [beeDebugApi]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (nodeAddresses?.ethereum) {
+    if (nodeAddresses?.ethereum && provider) {
       WalletAddress.make(nodeAddresses.ethereum, provider).then(setWalletAddress)
     }
   }, [nodeAddresses, provider])
