@@ -46,7 +46,7 @@ export default function Index(): ReactElement {
             target="_blank"
             rel="noreferrer"
           >
-            this guide.
+            this guide
           </a>
           .
         </Typography>
