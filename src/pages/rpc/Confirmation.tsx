@@ -48,14 +48,14 @@ export default function Confirmation(): ReactElement {
           </Typography>
         </Box>
         <ExpandableListItemActions>
-          <SwarmButton iconType={BankCard} onClick={() => navigate(ROUTES.TOP_UP_BANK_CARD)}>
-            Get started with bank card
+          <SwarmButton iconType={Gift} onClick={() => navigate(ROUTES.TOP_UP_GIFT_CODE)}>
+            Use a gift code
           </SwarmButton>
           <SwarmButton iconType={MoneyDollarCircle} onClick={() => navigate(ROUTES.TOP_UP_CRYPTO)}>
             Use DAI
           </SwarmButton>
-          <SwarmButton iconType={Gift} onClick={() => navigate(ROUTES.TOP_UP_GIFT_CODE)}>
-            Use a gift code
+          <SwarmButton iconType={BankCard} onClick={() => navigate(ROUTES.TOP_UP_BANK_CARD)}>
+            Get started with bank card
           </SwarmButton>
         </ExpandableListItemActions>
       </Grid>
