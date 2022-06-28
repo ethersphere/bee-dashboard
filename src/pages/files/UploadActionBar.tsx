@@ -49,7 +49,17 @@ export function UploadActionBar({
             </SwarmButton>
           </ExpandableListItemActions>
         </Box>
-        <DocumentationText>You need a postage stamp to upload.</DocumentationText>
+        <DocumentationText>
+          You need a postage stamp to upload. Find out more in{' '}
+          <a
+            href="https://medium.com/ethereum-swarm/how-to-upload-data-to-the-swarm-network-c0766c3ae381"
+            target="_blank"
+            rel="noreferrer"
+          >
+            this guide
+          </a>
+          .
+        </DocumentationText>
       </>
     )
   }
