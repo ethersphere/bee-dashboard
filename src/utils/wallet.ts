@@ -59,9 +59,9 @@ export class ResolvedWallet {
   }
 
   public async transfer(destination: string, jsonRpcProvider: string): Promise<void> {
-    const DUMMY_GAS_PRICE = '300000000000000'
+    const DUMMY_GAS_PRICE = '50000000000000'
 
-    if (this.bzz.toDecimal.gt(0.1)) {
+    if (this.bzz.toDecimal.gt(0.05)) {
       await Rpc.sendBzzTransaction(this.privateKey, destination, this.bzz.toString, jsonRpcProvider)
       await sleepMs(5_000)
     }
