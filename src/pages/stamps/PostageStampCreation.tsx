@@ -66,7 +66,7 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
 
     const price = calculateStampPrice(depth, amount)
 
-    return `${price.toSignificantDigits()} BZZ`
+    return `${price.toSignificantDigits()} xBZZ`
   }
 
   return (

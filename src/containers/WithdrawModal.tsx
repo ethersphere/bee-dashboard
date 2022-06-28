@@ -11,7 +11,7 @@ export default function WithdrawModal(): ReactElement {
     <WithdrawDepositModal
       successMessage="Successful withdrawal."
       errorMessage="Error with withdrawing."
-      dialogMessage="Specify the amount of BZZ you would like to withdraw from your node."
+      dialogMessage="Specify the amount of xBZZ you would like to withdraw from your node."
       label="Withdraw"
       icon={<Upload size="1rem" />}
       min={new BigNumber(0)}

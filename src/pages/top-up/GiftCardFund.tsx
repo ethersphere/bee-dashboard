@@ -83,10 +83,10 @@ export function GiftCardFund(): ReactElement {
         <ExpandableListItemKey label="Gift wallet address" value={wallet.address || 'N/A'} />
       </Box>
       <Box mb={0.25}>
-        <ExpandableListItem label="XDAI balance" value={`${wallet.dai.toSignificantDigits(4)} XDAI`} />
+        <ExpandableListItem label="xDAI balance" value={`${wallet.dai.toSignificantDigits(4)} xDAI`} />
       </Box>
       <Box mb={4}>
-        <ExpandableListItem label="BZZ balance" value={`${wallet.bzz.toSignificantDigits(4)} BZZ`} />
+        <ExpandableListItem label="xBZZ balance" value={`${wallet.bzz.toSignificantDigits(4)} xBZZ`} />
       </Box>
       <Box mb={4}>
         <ArrowDown size={24} color="#aaaaaa" />
@@ -95,10 +95,10 @@ export function GiftCardFund(): ReactElement {
         <ExpandableListItemKey label="Node wallet address" value={nodeAddresses?.ethereum || 'N/A'} expanded />
       </Box>
       <Box mb={0.25}>
-        <ExpandableListItem label="XDAI balance" value={`${balance.dai.toSignificantDigits(4)} XDAI`} />
+        <ExpandableListItem label="xDAI balance" value={`${balance.dai.toSignificantDigits(4)} xDAI`} />
       </Box>
       <Box mb={2}>
-        <ExpandableListItem label="BZZ balance" value={`${balance.bzz.toSignificantDigits(4)} BZZ`} />
+        <ExpandableListItem label="xBZZ balance" value={`${balance.bzz.toSignificantDigits(4)} xBZZ`} />
       </Box>
       <SwarmButton iconType={Check} onClick={onFund} disabled={loading} loading={loading}>
         Send all funds to your node

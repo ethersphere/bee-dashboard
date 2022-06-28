@@ -17,26 +17,26 @@ export default function PeerBalances({ accounting, isLoadingUncashed, totalUncas
   return (
     <ExpandableList
       label={`Peers (${accounting?.length || 0})`}
-      info={`${totalUncashed.toFixedDecimal()} BZZ (uncashed)`}
+      info={`${totalUncashed.toFixedDecimal()} xBZZ (uncashed)`}
     >
-      <ExpandableListItem label="Uncashed Amount Total" value={`${totalUncashed.toFixedDecimal()} BZZ`} />
+      <ExpandableListItem label="Uncashed Amount Total" value={`${totalUncashed.toFixedDecimal()} xBZZ`} />
       {accounting?.map(({ peer, balance, received, sent, uncashedAmount, total }) => (
         <ExpandableList
           key={peer}
           label={`Peer ${peer.slice(0, 8)}[…]`}
           level={1}
-          info={`${uncashedAmount.toFixedDecimal()} BZZ (uncashed)`}
+          info={`${uncashedAmount.toFixedDecimal()} xBZZ (uncashed)`}
         >
           <ExpandableListItemKey label="Peer ID" value={peer} />
-          <ExpandableListItem label="Outstanding Balance" value={`${balance.toFixedDecimal()} BZZ`} />
+          <ExpandableListItem label="Outstanding Balance" value={`${balance.toFixedDecimal()} xBZZ`} />
           <ExpandableListItem
             label="Settlements Sent / Received"
-            value={`-${sent.toFixedDecimal()} / ${received.toFixedDecimal()} BZZ`}
+            value={`-${sent.toFixedDecimal()} / ${received.toFixedDecimal()} xBZZ`}
           />
-          <ExpandableListItem label="Total" value={`${total.toFixedDecimal()} BZZ`} />
+          <ExpandableListItem label="Total" value={`${total.toFixedDecimal()} xBZZ`} />
           <ExpandableListItem
             label="Uncashed Amount"
-            value={isLoadingUncashed ? 'loading…' : `${uncashedAmount.toFixedDecimal()} BZZ`}
+            value={isLoadingUncashed ? 'loading…' : `${uncashedAmount.toFixedDecimal()} xBZZ`}
           />
           {uncashedAmount.toBigNumber.isGreaterThan('0') && (
             <ExpandableListItemActions>

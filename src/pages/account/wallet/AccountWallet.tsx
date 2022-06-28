@@ -50,10 +50,10 @@ export function AccountWallet(): ReactElement {
             <ExpandableListItemKey label="Node wallet address" value={nodeAddresses.ethereum} expanded />
           </Box>
           <Box mb={0.25}>
-            <ExpandableListItem label="XDAI balance" value={`${balance.dai.toSignificantDigits(4)} XDAI`} />
+            <ExpandableListItem label="xDAI balance" value={`${balance.dai.toSignificantDigits(4)} xDAI`} />
           </Box>
           <Box mb={2}>
-            <ExpandableListItem label="BZZ balance" value={`${balance.bzz.toSignificantDigits(4)} BZZ`} />
+            <ExpandableListItem label="xBZZ balance" value={`${balance.bzz.toSignificantDigits(4)} xBZZ`} />
           </Box>
         </>
       ) : (

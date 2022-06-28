@@ -11,8 +11,8 @@ export function CryptoTopUpIndex(): ReactElement {
       p={
         <Typography>
           For security reasons it is recommended to send maximum 5 to 10 xDAI. To get xDAI from DAI you may use{' '}
-          <a href="https://bridge.xdaichain.com/" rel="noreferrer" target="_blank">
-            https://bridge.xdaichain.com/
+          <a href="https://bridge.gnosischain.com" rel="noreferrer" target="_blank">
+            https://bridge.gnosischain.com
           </a>
           .
         </Typography>

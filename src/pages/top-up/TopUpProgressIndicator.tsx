@@ -6,5 +6,5 @@ interface Props {
 }
 
 export function TopUpProgressIndicator({ index }: Props): ReactElement {
-  return <ProgressIndicator index={index} steps={['Buy xDAI', 'Swap BZZ']} />
+  return <ProgressIndicator index={index} steps={['Buy xDAI', 'Swap xBZZ']} />
 }

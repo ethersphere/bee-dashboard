@@ -96,7 +96,7 @@ export default function WithdrawDepositModal({
           />
           {amountError && (
             <FormHelperText error>
-              Please provide valid BZZ amount (max 16 decimals). Error: {amountError.message}
+              Please provide valid xBZZ amount (max 16 decimals). Error: {amountError.message}
             </FormHelperText>
           )}
         </DialogContent>

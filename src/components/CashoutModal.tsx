@@ -79,7 +79,7 @@ export default function CheckoutModal({ peerId, uncashedAmount }: Props): ReactE
             )}
             {!loadingCashout && (
               <span>
-                Are you sure you want to cashout <strong>{uncashedAmount} BZZ</strong> from Peer{' '}
+                Are you sure you want to cashout <strong>{uncashedAmount} xBZZ</strong> from Peer{' '}
                 <strong>{peerId}</strong>?
               </span>
             )}
