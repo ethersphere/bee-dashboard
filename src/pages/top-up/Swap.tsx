@@ -1,4 +1,5 @@
 import { Box, Typography } from '@material-ui/core'
+import BigNumber from 'bignumber.js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { useNavigate } from 'react-router'
@@ -32,6 +33,7 @@ export function Swap({ header }: Props): ReactElement {
   const [loading, setLoading] = useState(false)
   const [hasSwapped, setSwapped] = useState(false)
   const [userInputSwap, setUserInputSwap] = useState<string | null>(null)
+  const [price] = useState(DaiToken.fromDecimal('0.6', 18))
 
   const { providerUrl } = useContext(TopUpContext)
   const { balance, nodeAddresses } = useContext(BeeContext)
@@ -48,14 +50,22 @@ export function Swap({ header }: Props): ReactElement {
 
   let daiToSwap: DaiToken
 
-  if (userInputSwap && parseFloat(userInputSwap)) {
+  function isPositiveDecimal(value: string): boolean {
+    try {
+      return new BigNumber(value).isPositive()
+    } catch {
+      return false
+    }
+  }
+
+  if (userInputSwap && isPositiveDecimal(userInputSwap)) {
     daiToSwap = DaiToken.fromDecimal(userInputSwap, 18)
   } else {
     daiToSwap = lowAmountSwap.toBigNumber.gt(optimalSwap.toBigNumber) ? lowAmountSwap : optimalSwap
   }
 
   const daiAfterSwap = new DaiToken(balance.dai.toBigNumber.minus(daiToSwap.toBigNumber))
-  const bzzAfterSwap = new BzzToken(daiToSwap.toBigNumber.dividedBy(100).dividedToIntegerBy(0.6)) // TODO get price
+  const bzzAfterSwap = new BzzToken(daiToSwap.toBigNumber.dividedBy(100).dividedToIntegerBy(price.toDecimal))
 
   async function onSwap() {
     if (hasSwapped || !providerUrl) {
