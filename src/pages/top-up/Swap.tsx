@@ -1,9 +1,9 @@
 import { Box, Typography } from '@material-ui/core'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
+import { useNavigate } from 'react-router'
 import ArrowDown from 'remixicon-react/ArrowDownCircleLineIcon'
 import Check from 'remixicon-react/CheckLineIcon'
-import { useNavigate } from 'react-router'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
@@ -21,6 +21,9 @@ import { sleepMs } from '../../utils'
 import { performSwap, restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
 
+const MINIMUM_DAI = '0.1'
+const MINIMUM_BZZ = '0.1'
+
 interface Props {
   header: string
 }
@@ -28,6 +31,7 @@ interface Props {
 export function Swap({ header }: Props): ReactElement {
   const [loading, setLoading] = useState(false)
   const [hasSwapped, setSwapped] = useState(false)
+  const [userInputSwap, setUserInputSwap] = useState<string | null>(null)
 
   const { providerUrl } = useContext(TopUpContext)
   const { balance, nodeAddresses } = useContext(BeeContext)
@@ -39,10 +43,19 @@ export function Swap({ header }: Props): ReactElement {
     return <Loading />
   }
 
-  const daiToSwap = balance.dai.minusBaseUnits('1')
+  const optimalSwap = balance.dai.minusBaseUnits('1')
+  const lowAmountSwap = new DaiToken(balance.dai.toBigNumber.dividedToIntegerBy(2))
+
+  let daiToSwap: DaiToken
+
+  if (userInputSwap && parseFloat(userInputSwap)) {
+    daiToSwap = DaiToken.fromDecimal(userInputSwap, 18)
+  } else {
+    daiToSwap = lowAmountSwap.toBigNumber.gt(optimalSwap.toBigNumber) ? lowAmountSwap : optimalSwap
+  }
 
   const daiAfterSwap = new DaiToken(balance.dai.toBigNumber.minus(daiToSwap.toBigNumber))
-  const bzzAfterSwap = new BzzToken(daiToSwap.toBigNumber.dividedToIntegerBy(200))
+  const bzzAfterSwap = new BzzToken(daiToSwap.toBigNumber.dividedBy(100).dividedToIntegerBy(0.6)) // TODO get price
 
   async function onSwap() {
     if (hasSwapped || !providerUrl) {
@@ -76,7 +89,7 @@ export function Swap({ header }: Props): ReactElement {
       </Box>
       <Box mb={4}>
         <Typography>
-          You need to swap xDAI to BZZ in order to use Swarm. Make sure to keep at least 1 xDAI in order to pay for
+          You need to swap xDAI to BZZ in order to use Swarm. Make sure to keep at least 0.1 xDAI in order to pay for
           transaction costs on the network.
         </Typography>
       </Box>
@@ -91,9 +104,16 @@ export function Swap({ header }: Props): ReactElement {
         <SwarmTextInput
           label="Amount to swap"
           defaultValue={`${daiToSwap.toSignificantDigits(4)} XDAI`}
+          placeholder={`${daiToSwap.toSignificantDigits(4)} XDAI`}
           name="x"
-          onChange={() => false}
+          onChange={event => setUserInputSwap(event.target.value)}
         />
+        {daiAfterSwap.toDecimal.lt(MINIMUM_DAI) ? (
+          <Typography>Must keep at least 0.1 xDAI after swap!</Typography>
+        ) : null}
+        {bzzAfterSwap.toDecimal.lt(MINIMUM_DAI) ? (
+          <Typography>Must have at least 0.1 xBZZ after swap!</Typography>
+        ) : null}
       </Box>
       <Box mb={4}>
         <ArrowDown size={24} color="#aaaaaa" />
@@ -117,7 +137,9 @@ export function Swap({ header }: Props): ReactElement {
         <SwarmButton
           iconType={Check}
           onClick={onSwap}
-          disabled={hasSwapped || loading || balance.dai.toDecimal.lte(1)}
+          disabled={
+            hasSwapped || loading || daiAfterSwap.toDecimal.lt(MINIMUM_DAI) || bzzAfterSwap.toDecimal.lt(MINIMUM_DAI)
+          }
           loading={loading}
         >
           Swap Now

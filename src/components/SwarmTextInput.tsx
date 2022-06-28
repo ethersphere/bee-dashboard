@@ -10,6 +10,7 @@ interface Props {
   formik?: boolean
   optional?: boolean
   defaultValue?: string
+  placeholder?: string
   onChange?: (event: ChangeEvent<HTMLTextAreaElement>) => void
 }
 
@@ -41,6 +42,7 @@ export function SwarmTextInput({
   formik,
   onChange,
   defaultValue,
+  placeholder,
 }: Props): ReactElement {
   const classes = useStyles()
 
@@ -57,6 +59,7 @@ export function SwarmTextInput({
         className={classes.field}
         defaultValue={defaultValue || ''}
         InputProps={{ disableUnderline: true }}
+        placeholder={placeholder}
       />
     )
   }
@@ -72,6 +75,7 @@ export function SwarmTextInput({
       defaultValue={defaultValue || ''}
       onChange={onChange}
       InputProps={{ disableUnderline: true }}
+      placeholder={placeholder}
     />
   )
 }
