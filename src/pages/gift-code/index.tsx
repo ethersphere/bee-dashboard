@@ -1,4 +1,4 @@
-import { Box, Typography } from '@material-ui/core'
+import { Box, Tooltip, Typography } from '@material-ui/core'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import Check from 'remixicon-react/CheckLineIcon'
@@ -15,6 +15,10 @@ import { Context as BeeContext } from '../../providers/Bee'
 import { Context as TopUpContext } from '../../providers/TopUp'
 import { createGiftWallet } from '../../utils/desktop'
 import { ResolvedWallet } from '../../utils/wallet'
+import { Token } from '../../models/Token'
+
+const GIFT_WALLET_FUND_DAI_AMOUNT = Token.fromDecimal('0.1', 18)
+const GIFT_WALLET_FUND_BZZ_AMOUNT = Token.fromDecimal('0.5', 16)
 
 export default function Index(): ReactElement {
   const { giftWallets, addGiftWallet, provider } = useContext(TopUpContext)
@@ -62,13 +66,18 @@ export default function Index(): ReactElement {
     return <Loading />
   }
 
+  const notEnoughFundsCheck =
+    balance.dai.toBigNumber.isLessThanOrEqualTo(GIFT_WALLET_FUND_DAI_AMOUNT.toBigNumber) ||
+    balance.bzz.toBigNumber.isLessThan(GIFT_WALLET_FUND_BZZ_AMOUNT.toBigNumber)
+
   return (
     <>
       <HistoryHeader>Invite to Swarm...</HistoryHeader>
       <Box mb={4}>
         <Typography>
           Generate and share a gift wallet that anyone can use to set-up their light node with Swarm Desktop. This will
-          use 1 XDAI and 5 BZZ from your node wallet.
+          use {GIFT_WALLET_FUND_DAI_AMOUNT.toSignificantDigits(2)} XDAI and{' '}
+          {GIFT_WALLET_FUND_BZZ_AMOUNT.toSignificantDigits(2)} BZZ from your node wallet.
         </Typography>
       </Box>
       <Box mb={0.25}>
@@ -88,9 +97,18 @@ export default function Index(): ReactElement {
         ))}
       </Box>
       <ExpandableListItemActions>
-        <SwarmButton onClick={onCreate} iconType={Check} loading={loading} disabled={loading}>
-          Generate gift wallet
-        </SwarmButton>
+        <Tooltip title={'Not enough funds'} placement="top" open={notEnoughFundsCheck} arrow>
+          <div>
+            <SwarmButton
+              onClick={onCreate}
+              iconType={Check}
+              loading={loading}
+              disabled={loading || notEnoughFundsCheck}
+            >
+              Generate gift wallet
+            </SwarmButton>
+          </div>
+        </Tooltip>
         <SwarmButton onClick={onCancel} cancel iconType={X} disabled={loading}>
           Cancel
         </SwarmButton>
