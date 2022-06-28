@@ -33,19 +33,19 @@ export function AccountChequebook(): ReactElement {
           <ExpandableList label="Chequebook" defaultOpen>
             <ExpandableListItem
               label="Total Balance"
-              value={`${chequebookBalance?.totalBalance.toFixedDecimal()} BZZ`}
+              value={`${chequebookBalance?.totalBalance.toFixedDecimal()} xBZZ`}
             />
             <ExpandableListItem
               label="Available Uncommitted Balance"
-              value={`${chequebookBalance?.availableBalance.toFixedDecimal()} BZZ`}
+              value={`${chequebookBalance?.availableBalance.toFixedDecimal()} xBZZ`}
             />
             <ExpandableListItem
               label="Total Cheques Amount Sent"
-              value={`${settlements?.totalSent.toFixedDecimal()} BZZ`}
+              value={`${settlements?.totalSent.toFixedDecimal()} xBZZ`}
             />
             <ExpandableListItem
               label="Total Cheques Amount Received"
-              value={`${settlements?.totalReceived.toFixedDecimal()} BZZ`}
+              value={`${settlements?.totalReceived.toFixedDecimal()} xBZZ`}
             />
             <ExpandableListItemActions>
               <WithdrawModal />

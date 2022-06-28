@@ -95,19 +95,19 @@ export function Swap({ header }: Props): ReactElement {
         <TopUpProgressIndicator index={1} />
       </Box>
       <Box mb={2}>
-        <Typography style={{ fontWeight: 'bold' }}>Swap some xDAI to BZZ</Typography>
+        <Typography style={{ fontWeight: 'bold' }}>Swap some xDAI to xBZZ</Typography>
       </Box>
       <Box mb={4}>
         <Typography>
-          You need to swap xDAI to BZZ in order to use Swarm. Make sure to keep at least {MINIMUM_XDAI} xDAI in order to
-          pay for transaction costs on the network.
+          You need to swap xDAI to xBZZ in order to use Swarm. Make sure to keep at least {MINIMUM_XDAI} xDAI in order
+          to pay for transaction costs on the network.
         </Typography>
       </Box>
       <SwarmDivider mb={4} />
       <Box mb={4}>
         <Typography>
           Your current balance is {balance.dai.toSignificantDigits(4)} xDAI and {balance.bzz.toSignificantDigits(4)}{' '}
-          BZZ.
+          xBZZ.
         </Typography>
       </Box>
       <Box mb={4}>
@@ -139,8 +139,8 @@ export function Swap({ header }: Props): ReactElement {
       </Box>
       <Box mb={2}>
         <ExpandableListItem
-          label="Resulting BZZ balance after swap"
-          value={`${bzzAfterSwap.toSignificantDigits(4)} BZZ`}
+          label="Resulting xBZZ balance after swap"
+          value={`${bzzAfterSwap.toSignificantDigits(4)} xBZZ`}
         />
       </Box>
       <ExpandableListItemActions>

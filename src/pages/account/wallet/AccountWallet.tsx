@@ -53,7 +53,7 @@ export function AccountWallet(): ReactElement {
             <ExpandableListItem label="xDAI balance" value={`${balance.dai.toSignificantDigits(4)} xDAI`} />
           </Box>
           <Box mb={2}>
-            <ExpandableListItem label="BZZ balance" value={`${balance.bzz.toSignificantDigits(4)} BZZ`} />
+            <ExpandableListItem label="xBZZ balance" value={`${balance.bzz.toSignificantDigits(4)} xBZZ`} />
           </Box>
         </>
       ) : (
