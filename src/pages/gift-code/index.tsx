@@ -76,12 +76,12 @@ export default function Index(): ReactElement {
       <Box mb={4}>
         <Typography>
           Generate and share a gift wallet that anyone can use to set-up their light node with Swarm Desktop. This will
-          use {GIFT_WALLET_FUND_DAI_AMOUNT.toSignificantDigits(2)} XDAI and{' '}
+          use {GIFT_WALLET_FUND_DAI_AMOUNT.toSignificantDigits(2)} xDAI and{' '}
           {GIFT_WALLET_FUND_BZZ_AMOUNT.toSignificantDigits(2)} BZZ from your node wallet.
         </Typography>
       </Box>
       <Box mb={0.25}>
-        <ExpandableListItem label="XDAI balance" value={`${balance.dai.toSignificantDigits(4)} XDAI`} />
+        <ExpandableListItem label="xDAI balance" value={`${balance.dai.toSignificantDigits(4)} xDAI`} />
       </Box>
       <Box mb={2}>
         <ExpandableListItem label="BZZ balance" value={`${balance.bzz.toSignificantDigits(4)} BZZ`} />
@@ -91,7 +91,7 @@ export default function Index(): ReactElement {
           <Box mb={2} key={i}>
             <ExpandableListItemKey label={`swarm${String(i).padStart(3, '0')}`} value={x.privateKey} />
             <ExpandableListItemKey label="Address" value={x.address} />
-            <ExpandableListItem label="XDAI balance" value={`${x.dai.toSignificantDigits(4)} XDAI`} />
+            <ExpandableListItem label="xDAI balance" value={`${x.dai.toSignificantDigits(4)} xDAI`} />
             <ExpandableListItem label="BZZ balance" value={`${x.bzz.toSignificantDigits(4)} BZZ`} />
           </Box>
         ))}

@@ -24,23 +24,23 @@ const ChequebookDeployFund = (): ReactElement | null => {
       text = (
         <>
           Your chequebook is not funded. Please deposit some xBZZ to your chequebook address. You may need to aquire BZZ
-          (e.g. <a href="https://bzz.exchange/">bzz.exchange</a>) and bridge it to the xDai network through the{' '}
+          (e.g. <a href="https://bzz.exchange/">bzz.exchange</a>) and bridge it to the Gnosis chain network through the{' '}
           <a href="https://omni.xdaichain.com/bridge">omni bridge</a>. To pay the transaction fees, you will also need
-          xDAI token. You can purchase DAI on the network and bridge it to xDai network through the{' '}
-          <a href="https://bridge.xdaichain.com/">xDai Bridge</a>. See the{' '}
-          <a href="https://www.xdaichain.com/#xdai-stable-chain">official xDai website</a> for more information.
+          xDAI token. You can purchase DAI on the Ethereum mainnet network and bridge it to Gnosis chain network through
+          the <a href="https://bridge.xdaichain.com/">xDai Bridge</a>. See the{' '}
+          <a href="https://www.xdaichain.com/#xdai-stable-chain">official Gnosis chain website</a> for more information.
         </>
       )
       break
     default:
       text = (
         <>
-          Your chequebook is either not deployed nor funded. To run the node you will need xDAI and xBZZ on the xDai
-          network. You may need to aquire BZZ (e.g. <a href="https://bzz.exchange/">bzz.exchange</a>) and bridge it to
-          the xDai network through the <a href="https://omni.xdaichain.com/bridge">omni bridge</a>. To pay the
-          transaction fees, you will also need xDAI token. You can purchase DAI on the network and bridge it to xDai
-          network through the <a href="https://bridge.xdaichain.com/">xDai Bridge</a>. See the{' '}
-          <a href="https://www.xdaichain.com/#xdai-stable-chain">official xDai website</a> for more information.
+          Your chequebook is either not deployed nor funded. To run the node you will need xDAI and xBZZ on the Gnosis
+          chain network. You may need to aquire BZZ (e.g. <a href="https://bzz.exchange/">bzz.exchange</a>) and bridge
+          it to the Gnosis chain network through the <a href="https://omni.xdaichain.com/bridge">omni bridge</a>. To pay
+          the transaction fees, you will also need xDAI token. You can purchase DAI on the Ethereum mainnet network and
+          bridge it to Gnosis chain network through the <a href="https://bridge.xdaichain.com/">xDai Bridge</a>. See the{' '}
+          <a href="https://www.xdaichain.com/#xdai-stable-chain">official Gnosis chain website</a> for more information.
         </>
       )
   }

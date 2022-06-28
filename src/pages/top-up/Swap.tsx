@@ -113,8 +113,8 @@ export function Swap({ header }: Props): ReactElement {
       <Box mb={4}>
         <SwarmTextInput
           label="Amount to swap"
-          defaultValue={`${daiToSwap.toSignificantDigits(4)} XDAI`}
-          placeholder={`${daiToSwap.toSignificantDigits(4)} XDAI`}
+          defaultValue={`${daiToSwap.toSignificantDigits(4)} xDAI`}
+          placeholder={`${daiToSwap.toSignificantDigits(4)} xDAI`}
           name="x"
           onChange={event => setUserInputSwap(event.target.value)}
         />
@@ -133,8 +133,8 @@ export function Swap({ header }: Props): ReactElement {
       </Box>
       <Box mb={0.25}>
         <ExpandableListItem
-          label="Resulting XDAI balance after swap"
-          value={`${daiAfterSwap.toSignificantDigits(4)} XDAI`}
+          label="Resulting xDAI balance after swap"
+          value={`${daiAfterSwap.toSignificantDigits(4)} xDAI`}
         />
       </Box>
       <Box mb={2}>
