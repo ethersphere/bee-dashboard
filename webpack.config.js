@@ -1,8 +1,8 @@
-import Path from 'path'
-import { Configuration } from 'webpack'
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const Path = require('path')
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default (): Configuration => {
+module.exports = () => {
   const entry = Path.resolve(__dirname, 'src', 'App.tsx')
 
   return {
