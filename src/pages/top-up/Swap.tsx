@@ -111,7 +111,7 @@ export function Swap({ header }: Props): ReactElement {
         {daiAfterSwap.toDecimal.lt(MINIMUM_DAI) ? (
           <Typography>Must keep at least 0.1 xDAI after swap!</Typography>
         ) : null}
-        {bzzAfterSwap.toDecimal.lt(MINIMUM_DAI) ? (
+        {bzzAfterSwap.toDecimal.lt(MINIMUM_BZZ) ? (
           <Typography>Must have at least 0.1 xBZZ after swap!</Typography>
         ) : null}
       </Box>
