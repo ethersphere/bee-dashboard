@@ -11,7 +11,7 @@ import { SwarmDivider } from '../../components/SwarmDivider'
 import { Context } from '../../providers/Bee'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
 
-const MINIMUM_xDAI = '0.5'
+const MINIMUM_XDAI = '0.5'
 
 interface Props {
   header: string
@@ -28,7 +28,7 @@ export default function Index({ header, title, p, next }: Props): ReactElement {
     return <Loading />
   }
 
-  const disabled = balance.dai.toDecimal.lt(MINIMUM_xDAI)
+  const disabled = balance.dai.toDecimal.lt(MINIMUM_XDAI)
 
   return (
     <>
@@ -52,7 +52,7 @@ export default function Index({ header, title, p, next }: Props): ReactElement {
           Proceed
         </SwarmButton>
         {disabled ? (
-          <Typography>Please deposit at least {MINIMUM_xDAI} xDAI to the address above in order to proceed.</Typography>
+          <Typography>Please deposit at least {MINIMUM_XDAI} xDAI to the address above in order to proceed.</Typography>
         ) : null}
       </Grid>
     </>
