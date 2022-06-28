@@ -128,7 +128,7 @@ export default function Status(): ReactElement {
               Bee
             </a>
             {` ${latestUserVersion ?? '-'} `}
-            {latestUserVersion && (
+            {latestUserVersion && !isBeeDesktop && (
               <Button
                 size="small"
                 variant="outlined"
