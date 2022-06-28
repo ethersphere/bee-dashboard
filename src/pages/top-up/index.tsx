@@ -1,7 +1,7 @@
 import { Box, Grid, Typography } from '@material-ui/core'
 import { ReactElement, useContext } from 'react'
-import Check from 'remixicon-react/CheckLineIcon'
 import { useNavigate } from 'react-router'
+import Check from 'remixicon-react/CheckLineIcon'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import { HistoryHeader } from '../../components/HistoryHeader'
@@ -10,6 +10,8 @@ import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmDivider } from '../../components/SwarmDivider'
 import { Context } from '../../providers/Bee'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
+
+const MINIMUM_XDAI = '0.5'
 
 interface Props {
   header: string
@@ -26,7 +28,7 @@ export default function Index({ header, title, p, next }: Props): ReactElement {
     return <Loading />
   }
 
-  const disabled = balance.dai.toDecimal.lte(1)
+  const disabled = balance.dai.toDecimal.lt(MINIMUM_XDAI)
 
   return (
     <>
@@ -49,7 +51,9 @@ export default function Index({ header, title, p, next }: Props): ReactElement {
         <SwarmButton iconType={Check} onClick={() => navigate(next)} disabled={disabled}>
           Proceed
         </SwarmButton>
-        {disabled ? <Typography>Please deposit xDAI to the address above in order to proceed.</Typography> : null}
+        {disabled ? (
+          <Typography>Please deposit at least {MINIMUM_XDAI} xDAI to the address above in order to proceed.</Typography>
+        ) : null}
       </Grid>
     </>
   )

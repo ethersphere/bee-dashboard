@@ -1,9 +1,10 @@
 import { Box, Typography } from '@material-ui/core'
+import BigNumber from 'bignumber.js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
+import { useNavigate } from 'react-router'
 import ArrowDown from 'remixicon-react/ArrowDownCircleLineIcon'
 import Check from 'remixicon-react/CheckLineIcon'
-import { useNavigate } from 'react-router'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
@@ -21,6 +22,9 @@ import { sleepMs } from '../../utils'
 import { performSwap, restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
 
+const MINIMUM_XDAI = '0.1'
+const MINIMUM_XBZZ = '0.1'
+
 interface Props {
   header: string
 }
@@ -28,6 +32,8 @@ interface Props {
 export function Swap({ header }: Props): ReactElement {
   const [loading, setLoading] = useState(false)
   const [hasSwapped, setSwapped] = useState(false)
+  const [userInputSwap, setUserInputSwap] = useState<string | null>(null)
+  const [price] = useState(DaiToken.fromDecimal('0.6', 18))
 
   const { providerUrl } = useContext(TopUpContext)
   const { balance, nodeAddresses } = useContext(BeeContext)
@@ -39,10 +45,27 @@ export function Swap({ header }: Props): ReactElement {
     return <Loading />
   }
 
-  const daiToSwap = balance.dai.minusBaseUnits('1')
+  const optimalSwap = balance.dai.minusBaseUnits('1')
+  const lowAmountSwap = new DaiToken(balance.dai.toBigNumber.dividedToIntegerBy(2))
+
+  let daiToSwap: DaiToken
+
+  function isPositiveDecimal(value: string): boolean {
+    try {
+      return new BigNumber(value).isPositive()
+    } catch {
+      return false
+    }
+  }
+
+  if (userInputSwap && isPositiveDecimal(userInputSwap)) {
+    daiToSwap = DaiToken.fromDecimal(userInputSwap, 18)
+  } else {
+    daiToSwap = lowAmountSwap.toBigNumber.gt(optimalSwap.toBigNumber) ? lowAmountSwap : optimalSwap
+  }
 
   const daiAfterSwap = new DaiToken(balance.dai.toBigNumber.minus(daiToSwap.toBigNumber))
-  const bzzAfterSwap = new BzzToken(daiToSwap.toBigNumber.dividedToIntegerBy(200))
+  const bzzAfterSwap = new BzzToken(daiToSwap.toBigNumber.dividedBy(100).dividedToIntegerBy(price.toDecimal))
 
   async function onSwap() {
     if (hasSwapped || !providerUrl) {
@@ -76,8 +99,8 @@ export function Swap({ header }: Props): ReactElement {
       </Box>
       <Box mb={4}>
         <Typography>
-          You need to swap xDAI to BZZ in order to use Swarm. Make sure to keep at least 1 xDAI in order to pay for
-          transaction costs on the network.
+          You need to swap xDAI to BZZ in order to use Swarm. Make sure to keep at least {MINIMUM_XDAI} xDAI in order to
+          pay for transaction costs on the network.
         </Typography>
       </Box>
       <SwarmDivider mb={4} />
@@ -91,9 +114,16 @@ export function Swap({ header }: Props): ReactElement {
         <SwarmTextInput
           label="Amount to swap"
           defaultValue={`${daiToSwap.toSignificantDigits(4)} XDAI`}
+          placeholder={`${daiToSwap.toSignificantDigits(4)} XDAI`}
           name="x"
-          onChange={() => false}
+          onChange={event => setUserInputSwap(event.target.value)}
         />
+        {daiAfterSwap.toDecimal.lt(MINIMUM_XDAI) ? (
+          <Typography>Must keep at least {MINIMUM_XDAI} xDAI after swap!</Typography>
+        ) : null}
+        {bzzAfterSwap.toDecimal.lt(MINIMUM_XBZZ) ? (
+          <Typography>Must have at least {MINIMUM_XBZZ} xBZZ after swap!</Typography>
+        ) : null}
       </Box>
       <Box mb={4}>
         <ArrowDown size={24} color="#aaaaaa" />
@@ -117,7 +147,9 @@ export function Swap({ header }: Props): ReactElement {
         <SwarmButton
           iconType={Check}
           onClick={onSwap}
-          disabled={hasSwapped || loading || balance.dai.toDecimal.lte(1)}
+          disabled={
+            hasSwapped || loading || daiAfterSwap.toDecimal.lt(MINIMUM_XDAI) || bzzAfterSwap.toDecimal.lt(MINIMUM_XBZZ)
+          }
           loading={loading}
         >
           Swap Now
