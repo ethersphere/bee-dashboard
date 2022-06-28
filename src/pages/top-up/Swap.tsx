@@ -89,8 +89,8 @@ export function Swap({ header }: Props): ReactElement {
       </Box>
       <Box mb={4}>
         <Typography>
-          You need to swap xDAI to BZZ in order to use Swarm. Make sure to keep at least 0.1 xDAI in order to pay for
-          transaction costs on the network.
+          You need to swap xDAI to BZZ in order to use Swarm. Make sure to keep at least {MINIMUM_XDAI} xDAI in order to
+          pay for transaction costs on the network.
         </Typography>
       </Box>
       <SwarmDivider mb={4} />
@@ -109,10 +109,10 @@ export function Swap({ header }: Props): ReactElement {
           onChange={event => setUserInputSwap(event.target.value)}
         />
         {daiAfterSwap.toDecimal.lt(MINIMUM_XDAI) ? (
-          <Typography>Must keep at least 0.1 xDAI after swap!</Typography>
+          <Typography>Must keep at least {MINIMUM_XDAI} xDAI after swap!</Typography>
         ) : null}
         {bzzAfterSwap.toDecimal.lt(MINIMUM_XBZZ) ? (
-          <Typography>Must have at least 0.1 xBZZ after swap!</Typography>
+          <Typography>Must have at least {MINIMUM_XBZZ} xBZZ after swap!</Typography>
         ) : null}
       </Box>
       <Box mb={4}>
