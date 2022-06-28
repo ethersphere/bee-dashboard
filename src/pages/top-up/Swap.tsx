@@ -21,8 +21,8 @@ import { sleepMs } from '../../utils'
 import { performSwap, restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
 
-const MINIMUM_DAI = '0.1'
-const MINIMUM_BZZ = '0.1'
+const MINIMUM_XDAI = '0.1'
+const MINIMUM_XBZZ = '0.1'
 
 interface Props {
   header: string
@@ -108,10 +108,10 @@ export function Swap({ header }: Props): ReactElement {
           name="x"
           onChange={event => setUserInputSwap(event.target.value)}
         />
-        {daiAfterSwap.toDecimal.lt(MINIMUM_DAI) ? (
+        {daiAfterSwap.toDecimal.lt(MINIMUM_XDAI) ? (
           <Typography>Must keep at least 0.1 xDAI after swap!</Typography>
         ) : null}
-        {bzzAfterSwap.toDecimal.lt(MINIMUM_BZZ) ? (
+        {bzzAfterSwap.toDecimal.lt(MINIMUM_XBZZ) ? (
           <Typography>Must have at least 0.1 xBZZ after swap!</Typography>
         ) : null}
       </Box>
@@ -138,7 +138,7 @@ export function Swap({ header }: Props): ReactElement {
           iconType={Check}
           onClick={onSwap}
           disabled={
-            hasSwapped || loading || daiAfterSwap.toDecimal.lt(MINIMUM_DAI) || bzzAfterSwap.toDecimal.lt(MINIMUM_DAI)
+            hasSwapped || loading || daiAfterSwap.toDecimal.lt(MINIMUM_XDAI) || bzzAfterSwap.toDecimal.lt(MINIMUM_XBZZ)
           }
           loading={loading}
         >
