@@ -1,3 +1,4 @@
+export const BZZ_TOKEN_ADDRESS = '0xdBF3Ea6F5beE45c02255B2c26a16F300502F68da'
 export const bzzABI = [
   {
     type: 'function',

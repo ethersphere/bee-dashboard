@@ -1,6 +1,6 @@
 import { debounce } from '@material-ui/core'
 import { Contract, providers, Wallet, BigNumber as BN } from 'ethers'
-import { bzzABI } from './bzz-abi'
+import { bzzABI, BZZ_TOKEN_ADDRESS } from './bzz-abi'
 
 async function eth_getBalance(address: string, provider: providers.JsonRpcProvider): Promise<string> {
   if (!address.startsWith('0x')) {
@@ -20,7 +20,7 @@ async function eth_getBlockByNumber(provider: providers.JsonRpcProvider): Promis
 async function eth_getBalanceERC20(
   address: string,
   provider: providers.JsonRpcProvider,
-  tokenAddress = '0xdbf3ea6f5bee45c02255b2c26a16f300502f68da',
+  tokenAddress = BZZ_TOKEN_ADDRESS,
 ): Promise<string> {
   if (!address.startsWith('0x')) {
     address = `0x${address}`
@@ -70,7 +70,7 @@ export async function sendBzzTransaction(
 ): Promise<TransferResponse> {
   const signer = await makeReadySigner(privateKey, jsonRpcProvider)
   const gasPrice = await signer.getGasPrice()
-  const bzz = new Contract('0xdBF3Ea6F5beE45c02255B2c26a16F300502F68da', bzzABI, signer)
+  const bzz = new Contract(BZZ_TOKEN_ADDRESS, bzzABI, signer)
   const transaction = await bzz.transfer(to, value, { gasPrice })
   const receipt = await transaction.wait(1)
 
