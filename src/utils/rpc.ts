@@ -1,6 +1,6 @@
 import { debounce } from '@material-ui/core'
-import { Contract, providers, Wallet } from 'ethers'
-import { bzzContractInterface } from './bzz-contract-interface'
+import { Contract, providers, Wallet, BigNumber as BN } from 'ethers'
+import { bzzABI } from './bzz-abi'
 
 async function eth_getBalance(address: string, provider: providers.JsonRpcProvider): Promise<string> {
   if (!address.startsWith('0x')) {
@@ -17,27 +17,6 @@ async function eth_getBlockByNumber(provider: providers.JsonRpcProvider): Promis
   return blockNumber.toString()
 }
 
-const partialERC20tokenABI = [
-  {
-    constant: true,
-    inputs: [
-      {
-        name: '_owner',
-        type: 'address',
-      },
-    ],
-    name: 'balanceOf',
-    outputs: [
-      {
-        name: 'balance',
-        type: 'uint256',
-      },
-    ],
-    payable: false,
-    type: 'function',
-  },
-]
-
 async function eth_getBalanceERC20(
   address: string,
   provider: providers.JsonRpcProvider,
@@ -46,7 +25,7 @@ async function eth_getBalanceERC20(
   if (!address.startsWith('0x')) {
     address = `0x${address}`
   }
-  const contract = new Contract(tokenAddress, partialERC20tokenABI, provider)
+  const contract = new Contract(tokenAddress, bzzABI, provider)
   const balance = await contract.balanceOf(address)
 
   return balance.toString()
@@ -57,14 +36,26 @@ interface TransferResponse {
   receipt: providers.TransactionReceipt
 }
 
+export async function estimateNativeTransferTransactionCost(
+  privateKey: string,
+  jsonRpcProvider: string,
+): Promise<{ gasPrice: BN; totalCost: BN }> {
+  const signer = await makeReadySigner(privateKey, jsonRpcProvider)
+  const gasLimit = '21000'
+  const gasPrice = await signer.getGasPrice()
+
+  return { gasPrice, totalCost: gasPrice.mul(gasLimit) }
+}
+
 export async function sendNativeTransaction(
   privateKey: string,
   to: string,
   value: string,
   jsonRpcProvider: string,
+  externalGasPrice?: BN,
 ): Promise<TransferResponse> {
   const signer = await makeReadySigner(privateKey, jsonRpcProvider)
-  const gasPrice = await signer.getGasPrice()
+  const gasPrice = externalGasPrice ?? (await signer.getGasPrice())
   const transaction = await signer.sendTransaction({ to, value, gasPrice })
   const receipt = await transaction.wait(1)
 
@@ -79,7 +70,7 @@ export async function sendBzzTransaction(
 ): Promise<TransferResponse> {
   const signer = await makeReadySigner(privateKey, jsonRpcProvider)
   const gasPrice = await signer.getGasPrice()
-  const bzz = new Contract('0xdBF3Ea6F5beE45c02255B2c26a16F300502F68da', bzzContractInterface, signer)
+  const bzz = new Contract('0xdBF3Ea6F5beE45c02255B2c26a16F300502F68da', bzzABI, signer)
   const transaction = await bzz.transfer(to, value, { gasPrice })
   const receipt = await transaction.wait(1)
 

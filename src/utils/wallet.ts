@@ -2,7 +2,7 @@ import { providers, Wallet } from 'ethers'
 import { sleepMs } from '.'
 import { BzzToken } from '../models/BzzToken'
 import { DaiToken } from '../models/DaiToken'
-import { Rpc } from './rpc'
+import { estimateNativeTransferTransactionCost, Rpc } from './rpc'
 
 export class WalletAddress {
   private constructor(
@@ -59,19 +59,20 @@ export class ResolvedWallet {
   }
 
   public async transfer(destination: string, jsonRpcProvider: string): Promise<void> {
-    const DUMMY_GAS_PRICE = '50000000000000'
-
     if (this.bzz.toDecimal.gt(0.05)) {
       await Rpc.sendBzzTransaction(this.privateKey, destination, this.bzz.toString, jsonRpcProvider)
       await sleepMs(5_000)
     }
 
-    if (this.dai.toBigNumber.gt(DUMMY_GAS_PRICE)) {
+    const { gasPrice, totalCost } = await estimateNativeTransferTransactionCost(this.privateKey, jsonRpcProvider)
+
+    if (this.dai.toBigNumber.gt(totalCost.toString())) {
       await Rpc.sendNativeTransaction(
         this.privateKey,
         destination,
-        this.dai.toBigNumber.minus(DUMMY_GAS_PRICE).toString(),
+        this.dai.toBigNumber.minus(totalCost.toString()).toString(),
         jsonRpcProvider,
+        gasPrice,
       )
     }
   }

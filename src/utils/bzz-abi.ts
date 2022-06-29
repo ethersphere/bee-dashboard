@@ -1,4 +1,23 @@
-export const bzzContractInterface = [
+export const bzzABI = [
+  {
+    type: 'function',
+    stateMutability: 'view',
+    payable: false,
+    outputs: [
+      {
+        type: 'uint256',
+        name: '',
+      },
+    ],
+    name: 'balanceOf',
+    inputs: [
+      {
+        type: 'address',
+        name: '_owner',
+      },
+    ],
+    constant: true,
+  },
   {
     type: 'function',
     stateMutability: 'nonpayable',
