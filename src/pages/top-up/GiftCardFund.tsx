@@ -17,9 +17,12 @@ import { ROUTES } from '../../routes'
 import { sleepMs } from '../../utils'
 import { restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
 import { ResolvedWallet } from '../../utils/wallet'
+import { useIsBeeDesktop } from '../../hooks/apiHooks'
+import { BeeModes } from '@ethersphere/bee-js'
 
 export function GiftCardFund(): ReactElement {
-  const { nodeAddresses, balance } = useContext(BeeContext)
+  const { isBeeDesktop } = useIsBeeDesktop()
+  const { nodeAddresses, balance, nodeInfo } = useContext(BeeContext)
   const { provider, providerUrl } = useContext(TopUpContext)
 
   const [loading, setLoading] = useState(false)
@@ -42,6 +45,24 @@ export function GiftCardFund(): ReactElement {
     return <Loading />
   }
 
+  const canUpgradeToLightNode = isBeeDesktop && nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT
+
+  async function restart() {
+    if (!providerUrl) {
+      return
+    }
+
+    try {
+      await sleepMs(5_000)
+      await upgradeToLightNode(providerUrl)
+      await restartBeeNode()
+      enqueueSnackbar('Upgraded to light node', { variant: 'success' })
+      navigate(ROUTES.RESTART_LIGHT)
+    } catch (error) {
+      enqueueSnackbar(`Failed to upgrade: ${error}`, { variant: 'error' })
+    }
+  }
+
   async function onFund() {
     if (!wallet || !nodeAddresses || !providerUrl) {
       return
@@ -51,13 +72,11 @@ export function GiftCardFund(): ReactElement {
 
     try {
       await wallet.transfer(nodeAddresses.ethereum, providerUrl)
-      enqueueSnackbar('Successfully funded node, restarting...', { variant: 'success' })
-      await sleepMs(5_000)
-      await upgradeToLightNode(providerUrl)
-      await restartBeeNode()
-      navigate(ROUTES.RESTART_LIGHT)
+      enqueueSnackbar('Successfully funded node', { variant: 'success' })
+
+      if (canUpgradeToLightNode) await restart()
     } catch (error) {
-      enqueueSnackbar(`Failed to fund/restart node: ${error}`, { variant: 'error' })
+      enqueueSnackbar(`Failed to fund: ${error}`, { variant: 'error' })
     } finally {
       setLoading(false)
     }
@@ -101,7 +120,7 @@ export function GiftCardFund(): ReactElement {
         <ExpandableListItem label="xBZZ balance" value={`${balance.bzz.toSignificantDigits(4)} xBZZ`} />
       </Box>
       <SwarmButton iconType={Check} onClick={onFund} disabled={loading} loading={loading}>
-        Send all funds to your node
+        {canUpgradeToLightNode ? 'Send all funds to your node and Upgrade' : 'Send all funds to your node'}
       </SwarmButton>
     </>
   )

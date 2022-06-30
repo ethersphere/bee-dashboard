@@ -1,3 +1,4 @@
+import { BeeModes } from '@ethersphere/bee-js'
 import { Box, Typography } from '@material-ui/core'
 import BigNumber from 'bignumber.js'
 import { useSnackbar } from 'notistack'
@@ -13,6 +14,7 @@ import { Loading } from '../../components/Loading'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmDivider } from '../../components/SwarmDivider'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
+import { useIsBeeDesktop } from '../../hooks/apiHooks'
 import { BzzToken } from '../../models/BzzToken'
 import { DaiToken } from '../../models/DaiToken'
 import { Context as BeeContext } from '../../providers/Bee'
@@ -36,7 +38,8 @@ export function Swap({ header }: Props): ReactElement {
   const [price] = useState(DaiToken.fromDecimal('0.6', 18))
 
   const { providerUrl } = useContext(TopUpContext)
-  const { balance, nodeAddresses } = useContext(BeeContext)
+  const { balance, nodeAddresses, nodeInfo } = useContext(BeeContext)
+  const { isBeeDesktop } = useIsBeeDesktop()
 
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
@@ -67,6 +70,24 @@ export function Swap({ header }: Props): ReactElement {
   const daiAfterSwap = new DaiToken(balance.dai.toBigNumber.minus(daiToSwap.toBigNumber))
   const bzzAfterSwap = new BzzToken(daiToSwap.toBigNumber.dividedBy(100).dividedToIntegerBy(price.toDecimal))
 
+  const canUpgradeToLightNode = isBeeDesktop && nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT
+
+  async function restart() {
+    if (!providerUrl) {
+      return
+    }
+
+    try {
+      await sleepMs(5_000)
+      await upgradeToLightNode(providerUrl)
+      await restartBeeNode()
+      enqueueSnackbar('Upgraded to light node', { variant: 'success' })
+      navigate(ROUTES.RESTART_LIGHT)
+    } catch (error) {
+      enqueueSnackbar(`Failed to upgrade: ${error}`, { variant: 'error' })
+    }
+  }
+
   async function onSwap() {
     if (hasSwapped || !providerUrl) {
       return
@@ -75,12 +96,9 @@ export function Swap({ header }: Props): ReactElement {
     setSwapped(true)
     try {
       await performSwap(daiToSwap.toString)
-      enqueueSnackbar('Successfully swapped, restarting...', { variant: 'success' })
-      await sleepMs(5_000)
-      await upgradeToLightNode(providerUrl)
-      await restartBeeNode()
-      navigate(ROUTES.RESTART_LIGHT)
-      enqueueSnackbar('Upgraded to light node', { variant: 'success' })
+      enqueueSnackbar('Successfully swapped', { variant: 'success' })
+
+      if (canUpgradeToLightNode) await restart()
     } catch (error) {
       enqueueSnackbar(`Failed to swap: ${error}`, { variant: 'error' })
     } finally {
@@ -152,7 +170,7 @@ export function Swap({ header }: Props): ReactElement {
           }
           loading={loading}
         >
-          Swap Now
+          {canUpgradeToLightNode ? 'Swap Now and Upgrade' : 'Swap Now'}
         </SwarmButton>
       </ExpandableListItemActions>
     </>

@@ -42,7 +42,6 @@ export enum ROUTES {
   TOP_UP_BANK_CARD_SWAP = '/account/wallet/top-up/bank-card/swap',
   TOP_UP_GIFT_CODE = '/account/wallet/top-up/gift-code',
   TOP_UP_GIFT_CODE_FUND = '/account/wallet/top-up/gift-code/fund/:privateKeyString',
-  RESTART = '/restart',
   RESTART_LIGHT = '/light-mode-restart',
   ACCOUNT_WALLET = '/account/wallet',
   ACCOUNT_CHEQUEBOOK = '/account/chequebook',
