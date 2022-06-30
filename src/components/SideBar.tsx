@@ -8,6 +8,7 @@ import ExternalLinkIcon from 'remixicon-react/ExternalLinkLineIcon'
 import HomeIcon from 'remixicon-react/Home3LineIcon'
 import SettingsIcon from 'remixicon-react/Settings2LineIcon'
 import AccountIcon from 'remixicon-react/Wallet3LineIcon'
+import InstallIcon from 'remixicon-react/InstallLineIcon'
 import { Context as BeeContext } from '../providers/Bee'
 import { Context as TopUpContext } from '../providers/TopUp'
 import DashboardLogo from '../assets/dashboard-logo.svg'
@@ -96,6 +97,15 @@ export default function SideBar(): ReactElement {
       icon: SettingsIcon,
     },
   ]
+
+  if (nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT && isBeeDesktop) {
+    navBarItems.push({
+      label: 'Upgrade',
+      path: ROUTES.UPGRADE,
+      icon: InstallIcon,
+      pathMatcherSubstring: '/upgrade/',
+    })
+  }
 
   return (
     <Drawer className={classes.drawer} variant="permanent" anchor="left" classes={{ paper: classes.drawerPaper }}>

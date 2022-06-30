@@ -13,7 +13,6 @@ import { Upload } from './pages/files/Upload'
 import { UploadLander } from './pages/files/UploadLander'
 import GiftCards from './pages/gift-code'
 import Info from './pages/info'
-import LightModeRestart from './pages/restart/LightModeRestart'
 import Wallet from './pages/rpc'
 import Confirmation from './pages/rpc/Confirmation'
 import Settings from './pages/settings'
@@ -42,8 +41,6 @@ export enum ROUTES {
   TOP_UP_BANK_CARD_SWAP = '/account/wallet/top-up/bank-card/swap',
   TOP_UP_GIFT_CODE = '/account/wallet/top-up/gift-code',
   TOP_UP_GIFT_CODE_FUND = '/account/wallet/top-up/gift-code/fund/:privateKeyString',
-  RESTART = '/restart',
-  RESTART_LIGHT = '/light-mode-restart',
   ACCOUNT_WALLET = '/account/wallet',
   ACCOUNT_CHEQUEBOOK = '/account/chequebook',
   ACCOUNT_STAMPS = '/account/stamps',
@@ -53,6 +50,7 @@ export enum ROUTES {
   ACCOUNT_FEEDS_UPDATE = '/account/feeds/update/:hash',
   ACCOUNT_FEEDS_VIEW = '/account/feeds/:uuid',
   ACCOUNT_INVITATIONS = '/account/invitations',
+  UPGRADE = '/upgrade',
 }
 
 export const ACCOUNT_TABS = [
@@ -79,7 +77,6 @@ const BaseRouter = (): ReactElement => (
     <Route path={ROUTES.TOP_UP_BANK_CARD_SWAP} element={<Swap header="Top-up with bank card" />} />
     <Route path={ROUTES.TOP_UP_GIFT_CODE} element={<GiftCardTopUpIndex />} />
     <Route path={ROUTES.TOP_UP_GIFT_CODE_FUND} element={<GiftCardFund />} />
-    <Route path={ROUTES.RESTART_LIGHT} element={<LightModeRestart />} />
     <Route path={ROUTES.ACCOUNT_WALLET} element={<AccountWallet />} />
     <Route path={ROUTES.ACCOUNT_CHEQUEBOOK} element={<AccountChequebook />} />
     <Route path={ROUTES.ACCOUNT_STAMPS} element={<AccountStamps />} />

@@ -51,13 +51,9 @@ export function GiftCardFund(): ReactElement {
 
     try {
       await wallet.transfer(nodeAddresses.ethereum, providerUrl)
-      enqueueSnackbar('Successfully funded node, restarting...', { variant: 'success' })
-      await sleepMs(5_000)
-      await upgradeToLightNode(providerUrl)
-      await restartBeeNode()
-      navigate(ROUTES.RESTART_LIGHT)
+      enqueueSnackbar('Successfully funded node,', { variant: 'success' })
     } catch (error) {
-      enqueueSnackbar(`Failed to fund/restart node: ${error}`, { variant: 'error' })
+      enqueueSnackbar(`Failed to fund your node: ${error}`, { variant: 'error' })
     } finally {
       setLoading(false)
     }
