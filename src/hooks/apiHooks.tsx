@@ -14,6 +14,7 @@ export interface IsBeeDesktopHook {
   isBeeDesktop: boolean
   isLoading: boolean
   beeDesktopVersion: string
+  desktopAutoUpdateEnabled: boolean
 }
 
 export interface NewDesktopVersionHook {
@@ -31,6 +32,7 @@ interface Config {
  */
 export const useIsBeeDesktop = (conf: Config = config): IsBeeDesktopHook => {
   const [isBeeDesktop, setIsBeeDesktop] = useState<boolean>(false)
+  const [desktopAutoUpdateEnabled, setDesktopAutoUpdateEnabled] = useState<boolean>(true)
   const [beeDesktopVersion, setBeeDesktopVersion] = useState<string>('')
   const [isLoading, setLoading] = useState<boolean>(true)
 
@@ -41,6 +43,7 @@ export const useIsBeeDesktop = (conf: Config = config): IsBeeDesktopHook => {
         if (res.data?.name === 'bee-desktop') {
           setIsBeeDesktop(true)
           setBeeDesktopVersion(res.data?.version)
+          setDesktopAutoUpdateEnabled(res.data?.autoUpdateEnabled)
         } else setIsBeeDesktop(false)
       })
       .catch(() => {
@@ -51,7 +54,7 @@ export const useIsBeeDesktop = (conf: Config = config): IsBeeDesktopHook => {
       })
   }, [conf])
 
-  return { isBeeDesktop, isLoading, beeDesktopVersion }
+  return { isBeeDesktop, isLoading, beeDesktopVersion, desktopAutoUpdateEnabled }
 }
 
 async function checkNewVersion(conf: Config): Promise<string> {

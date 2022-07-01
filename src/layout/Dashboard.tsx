@@ -29,12 +29,12 @@ const Dashboard = (props: Props): ReactElement => {
   const classes = useStyles()
 
   const { isLoading } = useContext(Context)
-  const { isBeeDesktop } = useIsBeeDesktop()
+  const { isBeeDesktop, desktopAutoUpdateEnabled } = useIsBeeDesktop()
   const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isBeeDesktop)
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
   useEffect(() => {
-    if (newBeeDesktopVersion !== '') {
+    if (!desktopAutoUpdateEnabled && newBeeDesktopVersion !== '') {
       enqueueSnackbar(`There is new Swarm Dashboard version ${newBeeDesktopVersion}!`, {
         variant: 'warning',
         preventDuplicate: true,
@@ -61,7 +61,7 @@ const Dashboard = (props: Props): ReactElement => {
         ),
       })
     }
-  }, [enqueueSnackbar, closeSnackbar, newBeeDesktopVersion])
+  }, [enqueueSnackbar, closeSnackbar, newBeeDesktopVersion, desktopAutoUpdateEnabled])
 
   const content = (
     <>
