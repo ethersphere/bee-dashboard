@@ -1,5 +1,47 @@
 # Changelog
 
+## [0.18.0](https://github.com/ethersphere/bee-dashboard/compare/v0.17.0...v0.18.0) (2022-07-04)
+
+
+### Features
+
+* add postage stamp guide ([#455](https://github.com/ethersphere/bee-dashboard/issues/455)) ([fb8775d](https://github.com/ethersphere/bee-dashboard/commit/fb8775d0a7a2bb3525467cec98584009c167700f))
+* add real price calculation to swap page ([#459](https://github.com/ethersphere/bee-dashboard/issues/459)) ([a9a5d76](https://github.com/ethersphere/bee-dashboard/commit/a9a5d76e45d3a31f05f814fe6cd2c823317f1e2d))
+* add updated sidebar icons ([#407](https://github.com/ethersphere/bee-dashboard/issues/407)) ([8b3ea52](https://github.com/ethersphere/bee-dashboard/commit/8b3ea5249ee48e7a2403e00339fd51977b93fb56))
+* add upgrade guide link from medium ([#434](https://github.com/ethersphere/bee-dashboard/issues/434)) ([cfcc859](https://github.com/ethersphere/bee-dashboard/commit/cfcc859303f4fb931e07f9037a7ba0972f8fb8ba))
+* reduce the minimal dai amount for the topup ([#444](https://github.com/ethersphere/bee-dashboard/issues/444)) ([2a5c598](https://github.com/ethersphere/bee-dashboard/commit/2a5c598ece3ba5f88c53c87db52b10422a37aae7))
+* refresh frequency changes if the bee is in error state ([#409](https://github.com/ethersphere/bee-dashboard/issues/409)) ([ce44ef7](https://github.com/ethersphere/bee-dashboard/commit/ce44ef78f4d322a458c1e8dd1f5a0b87d3a45b85))
+* set title to swarm ([#413](https://github.com/ethersphere/bee-dashboard/issues/413)) ([d664400](https://github.com/ethersphere/bee-dashboard/commit/d664400a7e3427fd30c47b59ef9c0dccda061720))
+* transfer everything out of the gift wallet ([#456](https://github.com/ethersphere/bee-dashboard/issues/456)) ([7225c5c](https://github.com/ethersphere/bee-dashboard/commit/7225c5ca11a62e40f06e7b08d558b390e326bcaf))
+* ultra-light mode block not supported features that are not available in this mode ([#438](https://github.com/ethersphere/bee-dashboard/issues/438)) ([83aab3b](https://github.com/ethersphere/bee-dashboard/commit/83aab3be62d73b5a539aab8f9c2bbfad56c86bbf))
+* version check and info ([#425](https://github.com/ethersphere/bee-dashboard/issues/425)) ([8f4a4eb](https://github.com/ethersphere/bee-dashboard/commit/8f4a4ebaa951fdbbe9f697e2cb4dc34838ed5df7))
+
+
+### Bug Fixes
+
+* add guide link to bank card top up ([#439](https://github.com/ethersphere/bee-dashboard/issues/439)) ([2221d0e](https://github.com/ethersphere/bee-dashboard/commit/2221d0e7c89a9631e3d95dd71cde3eacb964f3b5))
+* add troubleshooting checks ([#435](https://github.com/ethersphere/bee-dashboard/issues/435)) ([a756eed](https://github.com/ethersphere/bee-dashboard/commit/a756eedc4995cad6c5cafd302f7d7d7d44656f6d))
+* bee data auto-refresh ([#436](https://github.com/ethersphere/bee-dashboard/issues/436)) ([4cd580c](https://github.com/ethersphere/bee-dashboard/commit/4cd580ca7f497104eb97ae5676f3d5334384f4dc))
+* change topup button ordering ([#453](https://github.com/ethersphere/bee-dashboard/issues/453)) ([56f207d](https://github.com/ethersphere/bee-dashboard/commit/56f207d6a63ee0a486a4e00770fd8342fa92a7b5))
+* change wording from deposit to top up wallet ([#440](https://github.com/ethersphere/bee-dashboard/issues/440)) ([21df01c](https://github.com/ethersphere/bee-dashboard/commit/21df01c9241bcdfd072b0f080a46823beb1a751a))
+* check desktop version only once ([#441](https://github.com/ethersphere/bee-dashboard/issues/441)) ([3986320](https://github.com/ethersphere/bee-dashboard/commit/398632001a589a20cecb4416dfd261be21e18959))
+* disable bee update button in desktop mode ([#452](https://github.com/ethersphere/bee-dashboard/issues/452)) ([c54170b](https://github.com/ethersphere/bee-dashboard/commit/c54170b18538f7d15181a87a556f7fb2954ed49d))
+* display account wallet partially while loading ([#420](https://github.com/ethersphere/bee-dashboard/issues/420)) ([f43de77](https://github.com/ethersphere/bee-dashboard/commit/f43de77294e86df4bb023cd19afe6327ace5e83c))
+* don't display buy new stamp button when already in process of buying one ([#422](https://github.com/ethersphere/bee-dashboard/issues/422)) ([807af12](https://github.com/ethersphere/bee-dashboard/commit/807af122f7743fc9d13120eef81cd3f55b51eb5a))
+* generate gift wallet is disabled if there is not enough funds ([#451](https://github.com/ethersphere/bee-dashboard/issues/451)) ([f2824b7](https://github.com/ethersphere/bee-dashboard/commit/f2824b749b950e5b401af1de2973f13ad95d0a2f))
+* info page card and map error states ([#412](https://github.com/ethersphere/bee-dashboard/issues/412)) ([b969d8c](https://github.com/ethersphere/bee-dashboard/commit/b969d8caeef8d0e6f6eb664b380228bccb498795))
+* make deposit go to top up selector page ([#419](https://github.com/ethersphere/bee-dashboard/issues/419)) ([aa99e01](https://github.com/ethersphere/bee-dashboard/commit/aa99e0153e20524c5b047e90803543cbb13bb625))
+* provider is by default null and account page redirect to provider setup ([#437](https://github.com/ethersphere/bee-dashboard/issues/437)) ([2e0eeb7](https://github.com/ethersphere/bee-dashboard/commit/2e0eeb7a1b86be091fbd4bc266aa2fcbfc271ca3))
+* remove expired stamps ([#463](https://github.com/ethersphere/bee-dashboard/issues/463)) ([eb51dbb](https://github.com/ethersphere/bee-dashboard/commit/eb51dbb090a22d398c13e355de26c229c79d4a6f))
+* replace feather icons with remix icons on swarm button ([#414](https://github.com/ethersphere/bee-dashboard/issues/414)) ([f238c43](https://github.com/ethersphere/bee-dashboard/commit/f238c433078b09ac034c4bc66a434f8a91422827))
+* sensible deposit and swap ([#448](https://github.com/ethersphere/bee-dashboard/issues/448)) ([26ce0ef](https://github.com/ethersphere/bee-dashboard/commit/26ce0efc0b5e441863d8991af6121f105f8c7981))
+* sentry trace only Bee Desktop API ([#421](https://github.com/ethersphere/bee-dashboard/issues/421)) ([7c39e27](https://github.com/ethersphere/bee-dashboard/commit/7c39e2741c87b1ca75fcb1a72a5d7c12b826e950))
+* show update notifications only on non-auto-updating Swarm Desktops ([#460](https://github.com/ethersphere/bee-dashboard/issues/460)) ([d12f86b](https://github.com/ethersphere/bee-dashboard/commit/d12f86b9fac047f7c62edaca4fa818dbac27e894))
+* text in the info page cards ([#411](https://github.com/ethersphere/bee-dashboard/issues/411)) ([5e31c21](https://github.com/ethersphere/bee-dashboard/commit/5e31c21f49e6418b3cf36a75076eff2234ab2e8c))
+* the topup urls are now under `/account` which fixes highlighting ([#424](https://github.com/ethersphere/bee-dashboard/issues/424)) ([d345059](https://github.com/ethersphere/bee-dashboard/commit/d345059048efdf7226b7bc26e6514792a0a4cbff))
+* use xDAI and xBZZ on Gnosis chain ([#454](https://github.com/ethersphere/bee-dashboard/issues/454)) ([a3c02db](https://github.com/ethersphere/bee-dashboard/commit/a3c02dbf8a063fd69f4b4c1b4ff058a35710d0bc))
+* users can now upgrade to light node if they have enough funds ([#458](https://github.com/ethersphere/bee-dashboard/issues/458)) ([8c182ca](https://github.com/ethersphere/bee-dashboard/commit/8c182cafd537e508384efcf9c52febcd47f14a67))
+
 ## [0.17.0](https://github.com/ethersphere/bee-dashboard/compare/v0.16.0...v0.17.0) (2022-06-20)
 
 
