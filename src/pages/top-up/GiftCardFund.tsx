@@ -1,9 +1,10 @@
+import { BeeModes } from '@ethersphere/bee-js'
 import { Box, Typography } from '@material-ui/core'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
-import Check from 'remixicon-react/CheckLineIcon'
-import ArrowDown from 'remixicon-react/ArrowDownLineIcon'
 import { useNavigate, useParams } from 'react-router'
+import ArrowDown from 'remixicon-react/ArrowDownLineIcon'
+import Check from 'remixicon-react/CheckLineIcon'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import { HistoryHeader } from '../../components/HistoryHeader'
@@ -11,14 +12,13 @@ import { Loading } from '../../components/Loading'
 import { ProgressIndicator } from '../../components/ProgressIndicator'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmDivider } from '../../components/SwarmDivider'
+import { useIsBeeDesktop } from '../../hooks/apiHooks'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as TopUpContext } from '../../providers/TopUp'
 import { ROUTES } from '../../routes'
 import { sleepMs } from '../../utils'
 import { restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
 import { ResolvedWallet } from '../../utils/wallet'
-import { useIsBeeDesktop } from '../../hooks/apiHooks'
-import { BeeModes } from '@ethersphere/bee-js'
 
 export function GiftCardFund(): ReactElement {
   const { isBeeDesktop } = useIsBeeDesktop()
@@ -78,6 +78,7 @@ export function GiftCardFund(): ReactElement {
     } catch (error) {
       enqueueSnackbar(`Failed to fund: ${error}`, { variant: 'error' })
     } finally {
+      wallet.refresh()
       setLoading(false)
     }
   }
