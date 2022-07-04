@@ -1,8 +1,8 @@
-import { BigNumber } from 'bignumber.js'
-import { Token } from '../models/Token'
-import { decodeCid } from '@ethersphere/swarm-cid'
-import { BZZ_LINK_DOMAIN } from '../constants'
 import { BatchId, BeeDebug, PostageBatch } from '@ethersphere/bee-js'
+import { decodeCid } from '@ethersphere/swarm-cid'
+import { BigNumber } from 'bignumber.js'
+import { BZZ_LINK_DOMAIN } from '../constants'
+import { Token } from '../models/Token'
 
 /**
  * Test if value is an integer
@@ -229,16 +229,25 @@ export function shortenText(text: string, length = 20, separator = '[…]'): str
 }
 
 const DEFAULT_POLLING_FREQUENCY = 1_000
-const DEFAULT_STAMP_USABLE_TIMEOUT = 120_000
+const DEFAULT_STAMP_USABLE_TIMEOUT = 240_000
 
 interface Options {
   pollingFrequency?: number
   timeout?: number
 }
 
-export async function waitUntilStampUsable(
+export function waitUntilStampUsable(batchId: BatchId, beeDebug: BeeDebug, options?: Options): Promise<PostageBatch> {
+  return waitForStamp(batchId, beeDebug, 'usable', options)
+}
+
+export function waitUntilStampExists(batchId: BatchId, beeDebug: BeeDebug, options?: Options): Promise<PostageBatch> {
+  return waitForStamp(batchId, beeDebug, 'exists', options)
+}
+
+async function waitForStamp(
   batchId: BatchId,
   beeDebug: BeeDebug,
+  field: 'exists' | 'usable',
   options?: Options,
 ): Promise<PostageBatch> {
   const timeout = options?.timeout || DEFAULT_STAMP_USABLE_TIMEOUT
@@ -247,7 +256,7 @@ export async function waitUntilStampUsable(
   for (let i = 0; i < timeout; i += pollingFrequency) {
     const stamp = await beeDebug.getPostageBatch(batchId)
 
-    if (stamp.usable) return stamp
+    if (stamp[field]) return stamp
     await sleepMs(pollingFrequency)
   }
 
