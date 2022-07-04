@@ -236,9 +236,18 @@ interface Options {
   timeout?: number
 }
 
-export async function waitUntilStampUsable(
+export function waitUntilStampUsable(batchId: BatchId, beeDebug: BeeDebug, options?: Options): Promise<PostageBatch> {
+  return waitForStamp(batchId, beeDebug, 'usable', options)
+}
+
+export function waitUntilStampExists(batchId: BatchId, beeDebug: BeeDebug, options?: Options): Promise<PostageBatch> {
+  return waitForStamp(batchId, beeDebug, 'exists', options)
+}
+
+async function waitForStamp(
   batchId: BatchId,
   beeDebug: BeeDebug,
+  field: 'exists' | 'usable',
   options?: Options,
 ): Promise<PostageBatch> {
   const timeout = options?.timeout || DEFAULT_STAMP_USABLE_TIMEOUT
@@ -247,7 +256,7 @@ export async function waitUntilStampUsable(
   for (let i = 0; i < timeout; i += pollingFrequency) {
     const stamp = await beeDebug.getPostageBatch(batchId)
 
-    if (stamp.usable) return stamp
+    if (stamp[field]) return stamp
     await sleepMs(pollingFrequency)
   }
 
