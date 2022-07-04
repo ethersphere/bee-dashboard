@@ -107,6 +107,7 @@ export function Swap({ header }: Props): ReactElement {
     } catch (error) {
       enqueueSnackbar(`Failed to swap: ${error}`, { variant: 'error' })
     } finally {
+      balance?.refresh()
       setLoading(false)
     }
   }
