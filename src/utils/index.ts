@@ -1,8 +1,8 @@
-import { BigNumber } from 'bignumber.js'
-import { Token } from '../models/Token'
-import { decodeCid } from '@ethersphere/swarm-cid'
-import { BZZ_LINK_DOMAIN } from '../constants'
 import { BatchId, BeeDebug, PostageBatch } from '@ethersphere/bee-js'
+import { decodeCid } from '@ethersphere/swarm-cid'
+import { BigNumber } from 'bignumber.js'
+import { BZZ_LINK_DOMAIN } from '../constants'
+import { Token } from '../models/Token'
 
 /**
  * Test if value is an integer
@@ -229,7 +229,7 @@ export function shortenText(text: string, length = 20, separator = '[…]'): str
 }
 
 const DEFAULT_POLLING_FREQUENCY = 1_000
-const DEFAULT_STAMP_USABLE_TIMEOUT = 120_000
+const DEFAULT_STAMP_USABLE_TIMEOUT = 240_000
 
 interface Options {
   pollingFrequency?: number
