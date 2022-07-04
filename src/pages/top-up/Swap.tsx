@@ -2,7 +2,7 @@ import { BeeModes } from '@ethersphere/bee-js'
 import { Box, Typography } from '@material-ui/core'
 import BigNumber from 'bignumber.js'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useContext, useState } from 'react'
+import { ReactElement, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import ArrowDown from 'remixicon-react/ArrowDownCircleLineIcon'
 import Check from 'remixicon-react/CheckLineIcon'
@@ -21,7 +21,7 @@ import { Context as BeeContext } from '../../providers/Bee'
 import { Context as TopUpContext } from '../../providers/TopUp'
 import { ROUTES } from '../../routes'
 import { sleepMs } from '../../utils'
-import { performSwap, restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
+import { getBzzPriceAsDai, performSwap, restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
 
 const MINIMUM_XDAI = '0.1'
@@ -35,7 +35,7 @@ export function Swap({ header }: Props): ReactElement {
   const [loading, setLoading] = useState(false)
   const [hasSwapped, setSwapped] = useState(false)
   const [userInputSwap, setUserInputSwap] = useState<string | null>(null)
-  const [price] = useState(DaiToken.fromDecimal('0.6', 18))
+  const [price, setPrice] = useState(DaiToken.fromDecimal('0.6', 18))
 
   const { providerUrl } = useContext(TopUpContext)
   const { balance, nodeAddresses, nodeInfo } = useContext(BeeContext)
@@ -43,6 +43,11 @@ export function Swap({ header }: Props): ReactElement {
 
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
+
+  useEffect(() => {
+    // eslint-disable-next-line no-console
+    getBzzPriceAsDai().then(setPrice).catch(console.error)
+  }, [])
 
   if (!balance || !nodeAddresses) {
     return <Loading />
