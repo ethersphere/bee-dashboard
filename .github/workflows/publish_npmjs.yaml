@@ -27,3 +27,4 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
         with:
           sourcemaps: ./build/static/js
+          version: ${{ github.ref }}
