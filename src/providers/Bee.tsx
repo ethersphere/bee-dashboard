@@ -21,6 +21,7 @@ import { Context as TopUpContext } from './TopUp'
 
 const REFRESH_WHEN_OK = 30_000
 const REFRESH_WHEN_ERROR = 5_000
+const TIMEOUT = 20_000
 
 export enum CheckState {
   OK = 'OK',
@@ -270,7 +271,7 @@ export function Provider({ children }: Props): ReactElement {
 
       // Wrap the chequebook balance call to return BZZ values as Token object
       const chequeBalanceWrapper = async () => {
-        const { totalBalance, availableBalance } = await beeDebugApi.getChequebookBalance()
+        const { totalBalance, availableBalance } = await beeDebugApi.getChequebookBalance({ timeout: TIMEOUT })
 
         return {
           totalBalance: new Token(totalBalance),
@@ -280,14 +281,14 @@ export function Provider({ children }: Props): ReactElement {
 
       // Wrap the balances call to return BZZ values as Token object
       const peerBalanceWrapper = async () => {
-        const { balances } = await beeDebugApi.getAllBalances()
+        const { balances } = await beeDebugApi.getAllBalances({ timeout: TIMEOUT })
 
         return balances.map(({ peer, balance }) => ({ peer, balance: new Token(balance) }))
       }
 
       // Wrap the settlements call to return BZZ values as Token object
       const settlementsWrapper = async () => {
-        const { totalReceived, settlements, totalSent } = await beeDebugApi.getAllSettlements()
+        const { totalReceived, settlements, totalSent } = await beeDebugApi.getAllSettlements({ timeout: TIMEOUT })
 
         return {
           totalReceived: new Token(totalReceived),
@@ -303,55 +304,55 @@ export function Provider({ children }: Props): ReactElement {
       const promises = [
         // API health
         beeApi
-          .isConnected()
+          .isConnected({ timeout: TIMEOUT })
           .then(setApiHealth)
           .catch(() => setApiHealth(false)),
 
         // Debug API health
         beeDebugApi
-          .getHealth()
+          .getHealth({ timeout: TIMEOUT })
           .then(setDebugApiHealth)
           .catch(() => setDebugApiHealth(null)),
 
         // Node Addresses
         beeDebugApi
-          .getNodeAddresses()
+          .getNodeAddresses({ timeout: TIMEOUT })
           .then(setNodeAddresses)
           .catch(() => setNodeAddresses(null)),
 
         // NodeInfo
         beeDebugApi
-          .getNodeInfo()
+          .getNodeInfo({ timeout: TIMEOUT })
           .then(setNodeInfo)
           .catch(() => setNodeInfo(null)),
 
         // Network Topology
         beeDebugApi
-          .getTopology()
+          .getTopology({ timeout: TIMEOUT })
           .then(setNodeTopology)
           .catch(() => setNodeTopology(null)),
 
         // Peers
         beeDebugApi
-          .getPeers()
+          .getPeers({ timeout: TIMEOUT })
           .then(setPeers)
           .catch(() => setPeers(null)),
 
         // Chequebook address
         beeDebugApi
-          .getChequebookAddress()
+          .getChequebookAddress({ timeout: TIMEOUT })
           .then(setChequebookAddress)
           .catch(() => setChequebookAddress(null)),
 
         // Cheques
         beeDebugApi
-          .getLastCheques()
+          .getLastCheques({ timeout: TIMEOUT })
           .then(setPeerCheques)
           .catch(() => setPeerCheques(null)),
 
         // Chain state
         beeDebugApi
-          .getChainState()
+          .getChainState({ timeout: TIMEOUT })
           .then(setChainState)
           .catch(() => setChainState(null)),
 
