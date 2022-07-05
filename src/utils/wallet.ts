@@ -73,6 +73,7 @@ export class ResolvedWallet {
         jsonRpcProvider,
         gasPrice,
       )
+      await this.refresh()
     }
   }
 }
