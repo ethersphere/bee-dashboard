@@ -21,7 +21,7 @@ import { Context as TopUpContext } from './TopUp'
 
 const REFRESH_WHEN_OK = 30_000
 const REFRESH_WHEN_ERROR = 5_000
-const TIMEOUT = 20_000
+const TIMEOUT = 3_000
 
 export enum CheckState {
   OK = 'OK',
