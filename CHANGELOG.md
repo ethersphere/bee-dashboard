@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.18.1](https://github.com/ethersphere/bee-dashboard/compare/v0.18.0...v0.18.1) (2022-07-05)
+
+
+### Bug Fixes
+
+* refresh balance after dai tx ([#470](https://github.com/ethersphere/bee-dashboard/issues/470)) ([477c238](https://github.com/ethersphere/bee-dashboard/commit/477c2385b1d06da499facebf630338eb90ad22e7))
+* refresh dai after spending gas ([#468](https://github.com/ethersphere/bee-dashboard/issues/468)) ([56457eb](https://github.com/ethersphere/bee-dashboard/commit/56457eb9b989ed00c3b87555a43da7024654667d))
+* refresh gift wallet after swap ([#465](https://github.com/ethersphere/bee-dashboard/issues/465)) ([afb8c31](https://github.com/ethersphere/bee-dashboard/commit/afb8c31d9a022033cee14ff9a951f87cb992636f))
+* status checks have timeout ([#471](https://github.com/ethersphere/bee-dashboard/issues/471)) ([acee8c9](https://github.com/ethersphere/bee-dashboard/commit/acee8c9802318deb64d2bd8e701fae15c10d5fcf))
+
 ## [0.18.0](https://github.com/ethersphere/bee-dashboard/compare/v0.17.0...v0.18.0) (2022-07-04)
 
 
