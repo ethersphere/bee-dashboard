@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.18.2](https://github.com/ethersphere/bee-dashboard/compare/v0.18.1...v0.18.2) (2022-07-06)
+
+
+### Bug Fixes
+
+* don't link to latest release ([#477](https://github.com/ethersphere/bee-dashboard/issues/477)) ([498294e](https://github.com/ethersphere/bee-dashboard/commit/498294e227baa52c59adecf9c4cfd205061ddf75))
+* enable desktop update notifications on all platforms ([#476](https://github.com/ethersphere/bee-dashboard/issues/476)) ([33fff93](https://github.com/ethersphere/bee-dashboard/commit/33fff93cac31ec54b02f9c7d0c90c13c8d3763c7))
+
 ## [0.18.1](https://github.com/ethersphere/bee-dashboard/compare/v0.18.0...v0.18.1) (2022-07-05)
 
 
