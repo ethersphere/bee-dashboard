@@ -112,6 +112,7 @@ export default function Status(): ReactElement {
                 variant="outlined"
                 href={BEE_DESKTOP_LATEST_RELEASE_PAGE}
                 target="_blank"
+                disabled={newBeeDesktopVersion === ''}
                 style={{ height: '26px' }}
               >
                 {newBeeDesktopVersion === '' ? 'latest' : 'update'}
@@ -133,6 +134,7 @@ export default function Status(): ReactElement {
                 size="small"
                 variant="outlined"
                 href={latestBeeVersionUrl}
+                disabled={isLatestBeeVersion}
                 target="_blank"
                 style={{ height: '26px' }}
               >
