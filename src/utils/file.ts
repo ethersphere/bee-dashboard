@@ -90,7 +90,7 @@ export function getPath(file: FilePath): string {
 export function packageFile(file: FilePath, pathOverwrite?: string): FilePath {
   let path = pathOverwrite || getPath(file)
 
-  if (!path.startsWith('/') && path.lastIndexOf('/') !== 0) {
+  if (!path.startsWith('/') && path.includes('/')) {
     path = `/${path}`
   }
 
