@@ -1,11 +1,11 @@
-import puppeteer from 'puppeteer'
-import { selectStampAndUpload } from '../helpers'
-import { Assert, Click } from '../library'
+const puppeteer = require('puppeteer')
+const { selectStampAndUpload } = require('../helpers')
+const { Assert, Click } = require('../library')
 
 /**
  * @param {puppeteer.Page} page Puppeteer Page object returned by `browser.newPage()`
  */
-export async function testTextFileUpload(page) {
+async function testTextFileUpload(page) {
   await Click.elementWithText(page, 'a', 'Files')
   await Click.elementWithTextAndUpload(page, 'button', 'Add File', 'test-data/text.txt')
   await assertUploadPreview(page)
@@ -29,3 +29,5 @@ async function assertDownloadPreview(page) {
   assertUploadPreview(page)
   await Assert.elementWithTextExists(page, 'p', 'Swarm Hash: da0773a9[…]5f7a1b54')
 }
+
+module.exports = { testTextFileUpload }

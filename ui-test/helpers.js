@@ -1,10 +1,10 @@
-import puppeteer from 'puppeteer'
-import { Assert, Click, sleep, Wait } from './library'
+const puppeteer = require('puppeteer')
+const { Assert, Click, sleep, Wait } = require('./library')
 
 /**
  * @param {puppeteer.Page} page Puppeteer Page object returned by `browser.newPage()`
  */
-export async function selectStampAndUpload(page) {
+async function selectStampAndUpload(page) {
   await Click.elementWithText(page, 'button', 'Add Postage Stamp')
   // select the first available stamp
   await Click.elementWithClass(page, 'div', '.MuiSelect-select')
@@ -18,3 +18,5 @@ export async function selectStampAndUpload(page) {
   await Assert.elementWithTextExists(page, 'button', 'Download')
   await Assert.elementWithTextExists(page, 'button', 'Update Feed')
 }
+
+module.exports = { selectStampAndUpload }

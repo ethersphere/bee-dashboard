@@ -1,9 +1,9 @@
-import puppeteer from 'puppeteer'
+const puppeteer = require('puppeteer')
 
 const SLEEP_MS = 500
 const SLEEP_ITERATIONS = 20
 
-export const sleep = async ms => new Promise(resolve => setTimeout(resolve, ms))
+const sleep = async ms => new Promise(resolve => setTimeout(resolve, ms))
 
 /**
  * @param {puppeteer.Page} page Puppeteer Page object returned by `browser.newPage()`
@@ -44,7 +44,7 @@ async function waitForElementCss(page, selector) {
  * @param {string} elementType HTML tag name, e.g. `a`, `button`, `div`,
  * @param {string} text e.g. `"Submit"`
  */
-async function waitForEnabledStateXPath(page, elementType, text) {
+function waitForEnabledStateXPath(page, elementType, text) {
   return waitForElementXPath(page, `//${elementType}[contains(., '${text}')][not(@disabled)]`)
 }
 
@@ -126,24 +126,27 @@ async function queryElementPropertyByAttribute(page, elementType, attribute, val
  * @param {puppeteer.Page} page Puppeteer Page object returned by `browser.newPage()`
  * @param {string} alt `<img>` `alt` to look for
  */
-async function queryImgSrcByAlt(page, alt) {
+function queryImgSrcByAlt(page, alt) {
   return queryElementPropertyByAttribute(page, 'img', 'alt', alt, 'src')
 }
 
-export const Assert = {
-  elementWithTextExists: assertElementWithTextExists,
-}
-export const Click = {
-  elementWithText: clickElementWithText,
-  elementWithClass: clickElementWithClass,
-  elementWithTextAndUpload: clickElementWithTextAndUpload,
-}
-export const Query = {
-  elementPropertyByAttribute: queryElementPropertyByAttribute,
-  imgSrcByAlt: queryImgSrcByAlt,
-}
-export const Wait = {
-  forElementCss: waitForElementCss,
-  forElementXPath: waitForElementXPath,
-  forEnabledStateXPath: waitForEnabledStateXPath,
+module.exports = {
+  sleep,
+  Assert: {
+    elementWithTextExists: assertElementWithTextExists,
+  },
+  Click: {
+    elementWithText: clickElementWithText,
+    elementWithClass: clickElementWithClass,
+    elementWithTextAndUpload: clickElementWithTextAndUpload,
+  },
+  Query: {
+    elementPropertyByAttribute: queryElementPropertyByAttribute,
+    imgSrcByAlt: queryImgSrcByAlt,
+  },
+  Wait: {
+    forElementCss: waitForElementCss,
+    forElementXPath: waitForElementXPath,
+    forEnabledStateXPath: waitForEnabledStateXPath,
+  },
 }
