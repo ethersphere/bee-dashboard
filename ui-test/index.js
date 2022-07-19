@@ -35,7 +35,6 @@ async function main() {
  */
 async function preparePage() {
   const browser = await puppeteer.launch({
-    headless: false,
     defaultViewport: null,
     args: [`--window-size=${VIEWPORT.width},${VIEWPORT.height}`],
   })
