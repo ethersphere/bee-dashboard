@@ -92,7 +92,6 @@
     "babel-loader": "8.1.0",
     "babel-plugin-syntax-dynamic-import": "6.18.0",
     "babel-plugin-tsconfig-paths": "1.0.2",
-    "concurrently": "^7.3.0",
     "cors": "^2.8.5",
     "depcheck": "^1.4.3",
     "env-paths": "^3.0.0",
