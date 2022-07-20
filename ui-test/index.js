@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-const path = require('path')
 const handler = require('serve-handler')
 const http = require('http')
 const puppeteer = require('puppeteer')
@@ -7,10 +6,19 @@ const { testFolderUpload } = require('./test-case/FolderUpload')
 const { testImageFileUpload } = require('./test-case/ImageFileUpload')
 const { testTextFileUpload } = require('./test-case/TextFileUpload')
 const { testWebsiteUpload } = require('./test-case/WebsiteUpload')
+const { testWebsiteRegression01 } = require('./test-case/WebsiteRegression01')
+const { testWebsiteRegression02 } = require('./test-case/WebsiteRegression02')
 
 const VIEWPORT = { width: 1366, height: 768 }
 
-const testCases = [testTextFileUpload, testImageFileUpload, testFolderUpload, testWebsiteUpload]
+const testCases = [
+  testTextFileUpload,
+  testImageFileUpload,
+  testFolderUpload,
+  testWebsiteUpload,
+  testWebsiteRegression02,
+  testWebsiteRegression01,
+]
 
 async function main() {
   const server = prepareServer()
@@ -36,6 +44,7 @@ async function main() {
 async function preparePage() {
   const browser = await puppeteer.launch({
     defaultViewport: null,
+    headless: false,
     args: [`--window-size=${VIEWPORT.width},${VIEWPORT.height}`],
   })
   const page = await browser.newPage()

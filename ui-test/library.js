@@ -3,7 +3,7 @@ const puppeteer = require('puppeteer')
 const SLEEP_MS = 500
 const SLEEP_ITERATIONS = 20
 
-const sleep = async ms => new Promise(resolve => setTimeout(resolve, ms))
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 /**
  * @param {puppeteer.Page} page Puppeteer Page object returned by `browser.newPage()`
