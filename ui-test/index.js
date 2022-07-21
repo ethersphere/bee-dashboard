@@ -8,6 +8,7 @@ const { testTextFileUpload } = require('./test-case/TextFileUpload')
 const { testWebsiteUpload } = require('./test-case/WebsiteUpload')
 const { testWebsiteRegression01 } = require('./test-case/WebsiteRegression01')
 const { testWebsiteRegression02 } = require('./test-case/WebsiteRegression02')
+const { testWebsiteRegression03 } = require('./test-case/WebsiteRegression03')
 
 const VIEWPORT = { width: 1366, height: 768 }
 
@@ -16,8 +17,9 @@ const testCases = [
   testImageFileUpload,
   testFolderUpload,
   testWebsiteUpload,
-  testWebsiteRegression02,
   testWebsiteRegression01,
+  testWebsiteRegression02,
+  testWebsiteRegression03,
 ]
 
 async function main() {
