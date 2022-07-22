@@ -9,7 +9,6 @@ import HomeIcon from 'remixicon-react/Home3LineIcon'
 import SettingsIcon from 'remixicon-react/Settings2LineIcon'
 import AccountIcon from 'remixicon-react/Wallet3LineIcon'
 import { Context as BeeContext } from '../providers/Bee'
-import { Context as TopUpContext } from '../providers/TopUp'
 import DashboardLogo from '../assets/dashboard-logo.svg'
 import DesktopLogo from '../assets/desktop-logo.svg'
 import { config } from '../config'
@@ -69,7 +68,6 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function SideBar(): ReactElement {
   const classes = useStyles()
   const { isBeeDesktop } = useIsBeeDesktop()
-  const { providerUrl } = useContext(TopUpContext)
   const { nodeInfo } = useContext(BeeContext)
 
   const navBarItems = [
@@ -86,7 +84,7 @@ export default function SideBar(): ReactElement {
     },
     {
       label: 'Account',
-      path: providerUrl === null ? ROUTES.WALLET : ROUTES.ACCOUNT_WALLET,
+      path: ROUTES.ACCOUNT_WALLET,
       icon: AccountIcon,
       pathMatcherSubstring: '/account/',
     },

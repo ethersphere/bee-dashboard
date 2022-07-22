@@ -51,7 +51,7 @@ export default function Status(): ReactElement {
             buttonProps={{
               iconType: Wallet,
               children: 'Setup wallet',
-              onClick: () => navigate(ROUTES.WALLET),
+              onClick: () => navigate(ROUTES.TOP_UP),
             }}
             icon={<Upload />}
             title="Your wallet is not setup."

@@ -14,8 +14,7 @@ import { UploadLander } from './pages/files/UploadLander'
 import GiftCards from './pages/gift-code'
 import Info from './pages/info'
 import LightModeRestart from './pages/restart/LightModeRestart'
-import Wallet from './pages/rpc'
-import Confirmation from './pages/rpc/Confirmation'
+import TopUp from './pages/top-up'
 import Settings from './pages/settings'
 import { CreatePostageStampPage } from './pages/stamps/CreatePostageStampPage'
 import Status from './pages/status'
@@ -34,8 +33,7 @@ export enum ROUTES {
   HASH = '/files/hash/:hash',
   SETTINGS = '/settings',
   STATUS = '/status',
-  WALLET = '/account/wallet/top-up',
-  CONFIRMATION = '/account/wallet/top-up/confirmation',
+  TOP_UP = '/account/wallet/top-up',
   TOP_UP_CRYPTO = '/account/wallet/top-up/crypto',
   TOP_UP_CRYPTO_SWAP = '/account/wallet/top-up/crypto/swap',
   TOP_UP_BANK_CARD = '/account/wallet/top-up/bank-card',
@@ -70,8 +68,7 @@ const BaseRouter = (): ReactElement => (
     <Route path={ROUTES.SETTINGS} element={<Settings />} />
     <Route path={ROUTES.STATUS} element={<Status />} />
     <Route path={ROUTES.INFO} element={<Info />} />
-    <Route path={ROUTES.WALLET} element={<Wallet />} />
-    <Route path={ROUTES.CONFIRMATION} element={<Confirmation />} />
+    <Route path={ROUTES.TOP_UP} element={<TopUp />} />
     <Route path={ROUTES.TOP_UP_CRYPTO} element={<CryptoTopUpIndex />} />
     <Route path={ROUTES.TOP_UP_CRYPTO_SWAP} element={<Swap header="Top-up with cryptocurrencies" />} />
     <Route path={ROUTES.TOP_UP_BANK_CARD} element={<BankCardTopUpIndex />} />
