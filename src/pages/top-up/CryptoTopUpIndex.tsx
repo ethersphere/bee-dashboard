@@ -1,11 +1,11 @@
 import { Typography } from '@material-ui/core'
 import { ReactElement } from 'react'
-import Index from '.'
+import Balance from './Balance'
 import { ROUTES } from '../../routes'
 
 export function CryptoTopUpIndex(): ReactElement {
   return (
-    <Index
+    <Balance
       header={'Top-up with cryptocurrencies'}
       title={'Send xDAI to the funding wallet below'}
       p={

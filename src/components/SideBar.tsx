@@ -84,7 +84,7 @@ export default function SideBar(): ReactElement {
     },
     {
       label: 'Account',
-      path: nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT ? ROUTES.WALLET : ROUTES.ACCOUNT_WALLET,
+      path: ROUTES.ACCOUNT_WALLET,
       icon: AccountIcon,
       pathMatcherSubstring: '/account/',
     },
