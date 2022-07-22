@@ -147,6 +147,7 @@ export function Upload(): ReactElement {
         }
       })
       .catch(e => {
+        console.error(e) // eslint-disable-line
         enqueueSnackbar(`Error uploading: ${e.message}`, { variant: 'error' })
         setUploading(false)
       })

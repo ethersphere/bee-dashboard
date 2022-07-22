@@ -85,6 +85,7 @@ export function Swap({ header }: Props): ReactElement {
       enqueueSnackbar('Upgraded to light node', { variant: 'success' })
       navigate(ROUTES.RESTART_LIGHT)
     } catch (error) {
+      console.error(error) // eslint-disable-line
       enqueueSnackbar(`Failed to upgrade: ${error}`, { variant: 'error' })
     }
   }
@@ -101,6 +102,7 @@ export function Swap({ header }: Props): ReactElement {
 
       if (canUpgradeToLightNode) await restart()
     } catch (error) {
+      console.error(error) // eslint-disable-line
       enqueueSnackbar(`Failed to swap: ${error}`, { variant: 'error' })
     } finally {
       balance?.refresh()

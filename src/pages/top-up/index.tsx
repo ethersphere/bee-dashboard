@@ -58,6 +58,7 @@ export default function TopUp(): ReactElement {
       enqueueSnackbar('Upgraded to light node', { variant: 'success' })
       navigate(ROUTES.RESTART_LIGHT)
     } catch (error) {
+      console.error(error) // eslint-disable-line
       enqueueSnackbar(`Failed to upgrade: ${error}`, { variant: 'error' })
     }
     setLoading(false)
