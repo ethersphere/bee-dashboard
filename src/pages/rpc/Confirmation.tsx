@@ -50,9 +50,6 @@ export default function Confirmation(): ReactElement {
     balance?.bzz.toDecimal.gte(MINIMUM_XBZZ)
 
   async function restart() {
-    if (!providerUrl) {
-      return
-    }
     setLoading(true)
     try {
       await upgradeToLightNode(providerUrl)

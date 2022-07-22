@@ -48,10 +48,6 @@ export function GiftCardFund(): ReactElement {
   const canUpgradeToLightNode = isBeeDesktop && nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT
 
   async function restart() {
-    if (!providerUrl) {
-      return
-    }
-
     try {
       await sleepMs(5_000)
       await upgradeToLightNode(providerUrl)

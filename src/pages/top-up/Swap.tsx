@@ -78,10 +78,6 @@ export function Swap({ header }: Props): ReactElement {
   const canUpgradeToLightNode = isBeeDesktop && nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT
 
   async function restart() {
-    if (!providerUrl) {
-      return
-    }
-
     try {
       await sleepMs(5_000)
       await upgradeToLightNode(providerUrl)
@@ -94,7 +90,7 @@ export function Swap({ header }: Props): ReactElement {
   }
 
   async function onSwap() {
-    if (hasSwapped || !providerUrl) {
+    if (hasSwapped) {
       return
     }
     setLoading(true)

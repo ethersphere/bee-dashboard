@@ -8,6 +8,7 @@ class Config {
   public readonly BEE_DESKTOP_URL: string
   public readonly SENTRY_KEY: string | undefined
   public readonly SENTRY_ENVIRONMENT: string | undefined
+  public readonly DEFAULT_RPC_URL: string
 
   constructor() {
     this.BEE_API_HOST = sessionStorage.getItem('api_host') ?? process.env.REACT_APP_BEE_HOST ?? 'http://localhost:1633'
@@ -21,6 +22,7 @@ class Config {
     this.BEE_DISCORD_HOST = process.env.REACT_APP_BEE_DISCORD_HOST ?? 'https://discord.gg/eKr9XPv7'
     this.GITHUB_REPO_URL = process.env.REACT_APP_BEE_GITHUB_REPO_URL ?? 'https://api.github.com/repos/ethersphere/bee'
     this.BEE_DESKTOP_URL = process.env.REACT_APP_BEE_DESKTOP_URL ?? window.location.origin
+    this.DEFAULT_RPC_URL = process.env.REACT_APP_DEFAULT_RPC_URL ?? 'https://xdai.fairdatasociety.org'
   }
 }
 
