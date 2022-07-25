@@ -75,6 +75,7 @@ export function Download(): ReactElement {
       if (message.includes('Not Found: Not Found')) {
         message = 'The specified hash was not found.'
       }
+      console.error(error) // eslint-disable-line
       enqueueSnackbar(<span>Error: {message || 'Unknown'}</span>, { variant: 'error' })
     } finally {
       setLoading(false)
