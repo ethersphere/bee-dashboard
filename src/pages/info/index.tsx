@@ -14,6 +14,7 @@ import { useIsBeeDesktop, useNewBeeDesktopVersion } from '../../hooks/apiHooks'
 import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../../utils/desktop'
 import config from '../../config'
 import NodeInfoCard from './NodeInfoCard'
+import { chainIdToName } from '../../utils/chain'
 
 export default function Status(): ReactElement {
   const {
@@ -25,6 +26,7 @@ export default function Status(): ReactElement {
     nodeInfo,
     balance,
     chequebookBalance,
+    wallet,
   } = useContext(BeeContext)
   const isBeeDesktop = config.BEE_DESKTOP_ENABLED
   const { beeDesktopVersion } = useIsBeeDesktop()
@@ -147,6 +149,7 @@ export default function Status(): ReactElement {
         }
       />
       <ExpandableListItem label="Mode" value={nodeInfo?.beeMode} />
+      {wallet && <ExpandableListItem label="Blockchain network" value={chainIdToName(wallet.chainID)} />}
     </div>
   )
 }

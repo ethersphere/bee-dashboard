@@ -8,6 +8,7 @@ import {
   NodeInfo,
   Peer,
   Topology,
+  WalletBalance,
 } from '@ethersphere/bee-js'
 import { createContext, ReactChild, ReactElement, useContext, useEffect, useState } from 'react'
 import semver from 'semver'
@@ -65,6 +66,7 @@ interface ContextInterface {
   peerCheques: LastChequesResponse | null
   settlements: Settlements | null
   chainState: ChainState | null
+  wallet: WalletBalance | null
   latestBeeRelease: LatestBeeRelease | null
   isLoading: boolean
   lastUpdate: number | null
@@ -102,6 +104,7 @@ const initialValues: ContextInterface = {
   peerCheques: null,
   settlements: null,
   chainState: null,
+  wallet: null,
   latestBeeRelease: null,
   isLoading: true,
   lastUpdate: null,
@@ -204,6 +207,7 @@ export function Provider({ children }: Props): ReactElement {
   const [settlements, setSettlements] = useState<Settlements | null>(null)
   const [chainState, setChainState] = useState<ChainState | null>(null)
   const [walletAddress, setWalletAddress] = useState<WalletAddress | null>(initialValues.balance)
+  const [wallet, setWallet] = useState<WalletBalance | null>(null)
 
   const { latestBeeRelease } = useLatestBeeRelease()
 
@@ -356,6 +360,12 @@ export function Provider({ children }: Props): ReactElement {
           .then(setChainState)
           .catch(() => setChainState(null)),
 
+        // Wallet
+        beeDebugApi
+          .getWalletBalance({ timeout: TIMEOUT })
+          .then(setWallet)
+          .catch(() => setWallet(null)),
+
         // Chequebook balance
         chequeBalanceWrapper()
           .then(setChequebookBalance)
@@ -446,6 +456,7 @@ export function Provider({ children }: Props): ReactElement {
         peerCheques,
         settlements,
         chainState,
+        wallet,
         latestBeeRelease,
         isLoading,
         lastUpdate,
