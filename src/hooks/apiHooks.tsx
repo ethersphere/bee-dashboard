@@ -36,9 +36,7 @@ export const useIsBeeDesktop = (conf: Config = config): IsBeeDesktopHook => {
   const [beeDesktopVersion, setBeeDesktopVersion] = useState<string>('')
   const [isLoading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
-  const isBeeDesktop = config.BEE_DESKTOP_ENABLED
-
-  console.log(conf)
+  const isBeeDesktop = conf.BEE_DESKTOP_ENABLED
 
   useEffect(() => {
     if (!isBeeDesktop) {
