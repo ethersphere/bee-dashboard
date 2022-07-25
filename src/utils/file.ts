@@ -88,7 +88,11 @@ export function getPath(file: FilePath): string {
  * Utility function that is needed to have correct directory structure as webkitRelativePath is read only
  */
 export function packageFile(file: FilePath, pathOverwrite?: string): FilePath {
-  const path = pathOverwrite || getPath(file)
+  let path = pathOverwrite || getPath(file)
+
+  if (!path.startsWith('/') && path.includes('/')) {
+    path = `/${path}`
+  }
 
   return {
     path: path,
