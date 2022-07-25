@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router'
 import { ROUTES } from '../../routes'
 import { useIsBeeDesktop, useNewBeeDesktopVersion } from '../../hooks/apiHooks'
 import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../../utils/desktop'
+import config from '../../config'
 import NodeInfoCard from './NodeInfoCard'
 
 export default function Status(): ReactElement {
@@ -25,7 +26,8 @@ export default function Status(): ReactElement {
     balance,
     chequebookBalance,
   } = useContext(BeeContext)
-  const { isBeeDesktop, beeDesktopVersion } = useIsBeeDesktop()
+  const isBeeDesktop = config.BEE_DESKTOP_ENABLED
+  const { beeDesktopVersion } = useIsBeeDesktop()
   const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isBeeDesktop)
   const navigate = useNavigate()
 

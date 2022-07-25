@@ -14,7 +14,6 @@ import { Loading } from '../../components/Loading'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmDivider } from '../../components/SwarmDivider'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
-import { useIsBeeDesktop } from '../../hooks/apiHooks'
 import { BzzToken } from '../../models/BzzToken'
 import { DaiToken } from '../../models/DaiToken'
 import { Context as BeeContext } from '../../providers/Bee'
@@ -23,6 +22,7 @@ import { ROUTES } from '../../routes'
 import { sleepMs } from '../../utils'
 import { getBzzPriceAsDai, performSwap, restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
+import config from '../../config'
 
 const MINIMUM_XDAI = '0.1'
 const MINIMUM_XBZZ = '0.1'
@@ -39,7 +39,7 @@ export function Swap({ header }: Props): ReactElement {
 
   const { providerUrl } = useContext(TopUpContext)
   const { balance, nodeAddresses, nodeInfo } = useContext(BeeContext)
-  const { isBeeDesktop } = useIsBeeDesktop()
+  const isBeeDesktop = config.BEE_DESKTOP_ENABLED
 
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()

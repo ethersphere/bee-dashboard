@@ -17,11 +17,11 @@ import { ROUTES } from '../../routes'
 import { sleepMs } from '../../utils'
 import { restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
 import { ResolvedWallet } from '../../utils/wallet'
-import { useIsBeeDesktop } from '../../hooks/apiHooks'
+import config from '../../config'
 import { BeeModes } from '@ethersphere/bee-js'
 
 export function GiftCardFund(): ReactElement {
-  const { isBeeDesktop } = useIsBeeDesktop()
+  const isBeeDesktop = config.BEE_DESKTOP_ENABLED
   const { nodeAddresses, balance, nodeInfo } = useContext(BeeContext)
   const { provider, providerUrl } = useContext(TopUpContext)
 

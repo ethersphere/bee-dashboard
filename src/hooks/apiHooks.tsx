@@ -11,7 +11,7 @@ export interface LatestBeeReleaseHook {
 }
 
 export interface IsBeeDesktopHook {
-  isBeeDesktop: boolean
+  error: Error | null
   isLoading: boolean
   beeDesktopVersion: string
   desktopAutoUpdateEnabled: boolean
@@ -23,6 +23,7 @@ export interface NewDesktopVersionHook {
 
 interface Config {
   BEE_DESKTOP_URL: string
+  BEE_DESKTOP_ENABLED: boolean
 }
 
 /**
@@ -31,30 +32,36 @@ interface Config {
  * @returns isBeeDesktop true if this is run within bee-desktop
  */
 export const useIsBeeDesktop = (conf: Config = config): IsBeeDesktopHook => {
-  const [isBeeDesktop, setIsBeeDesktop] = useState<boolean>(false)
   const [desktopAutoUpdateEnabled, setDesktopAutoUpdateEnabled] = useState<boolean>(true)
   const [beeDesktopVersion, setBeeDesktopVersion] = useState<string>('')
   const [isLoading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<Error | null>(null)
+  const isBeeDesktop = config.BEE_DESKTOP_ENABLED
+
+  console.log(conf)
 
   useEffect(() => {
-    axios
-      .get(`${conf.BEE_DESKTOP_URL}/info`)
-      .then(res => {
-        if (res.data?.name === 'bee-desktop') {
-          setIsBeeDesktop(true)
+    if (!isBeeDesktop) {
+      setLoading(false)
+      setError(null)
+    } else {
+      axios
+        .get(`${conf.BEE_DESKTOP_URL}/info`)
+        .then(res => {
           setBeeDesktopVersion(res.data?.version)
           setDesktopAutoUpdateEnabled(res.data?.autoUpdateEnabled)
-        } else setIsBeeDesktop(false)
-      })
-      .catch(() => {
-        setIsBeeDesktop(false)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }, [conf])
+          setError(null)
+        })
+        .catch(e => {
+          setError(e)
+        })
+        .finally(() => {
+          setLoading(false)
+        })
+    }
+  }, [conf, isBeeDesktop])
 
-  return { isBeeDesktop, isLoading, beeDesktopVersion, desktopAutoUpdateEnabled }
+  return { error, isLoading, beeDesktopVersion, desktopAutoUpdateEnabled }
 }
 
 async function checkNewVersion(conf: Config): Promise<string> {
