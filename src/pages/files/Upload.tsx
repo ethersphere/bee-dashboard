@@ -148,7 +148,12 @@ export function Upload(): ReactElement {
       })
       .catch(e => {
         console.error(e) // eslint-disable-line
-        enqueueSnackbar(`Error uploading: ${e.message}`, { variant: 'error' })
+
+        if (e.message.includes('String contains non ISO-8859-1 code point')) {
+          enqueueSnackbar('Filename contains invalid characters', { variant: 'error' })
+        } else {
+          enqueueSnackbar(`Error uploading: ${e.message}`, { variant: 'error' })
+        }
         setUploading(false)
       })
   }
