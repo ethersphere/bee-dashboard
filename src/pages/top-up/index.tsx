@@ -12,7 +12,7 @@ import { SwarmButton } from '../../components/SwarmButton'
 import { ROUTES } from '../../routes'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as TopUpContext } from '../../providers/TopUp'
-import { useIsBeeDesktop } from '../../hooks/apiHooks'
+import config from '../../config'
 import { BeeModes } from '@ethersphere/bee-js'
 import { restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
 import { Loading } from '../../components/Loading'
@@ -38,7 +38,7 @@ const MINIMUM_XBZZ = '0.1'
 export default function TopUp(): ReactElement {
   const navigate = useNavigate()
   const styles = useStyles()
-  const { isBeeDesktop } = useIsBeeDesktop()
+  const isBeeDesktop = config.BEE_DESKTOP_ENABLED
   const { balance, nodeInfo } = useContext(BeeContext)
   const { providerUrl } = useContext(TopUpContext)
   const [loading, setLoading] = useState(false)

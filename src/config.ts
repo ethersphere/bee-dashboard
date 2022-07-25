@@ -5,6 +5,7 @@ class Config {
   public readonly BEE_DOCS_HOST: string
   public readonly BEE_DISCORD_HOST: string
   public readonly GITHUB_REPO_URL: string
+  public readonly BEE_DESKTOP_ENABLED: boolean
   public readonly BEE_DESKTOP_URL: string
   public readonly SENTRY_KEY: string | undefined
   public readonly SENTRY_ENVIRONMENT: string | undefined
@@ -21,6 +22,7 @@ class Config {
     this.BEE_DOCS_HOST = process.env.REACT_APP_BEE_DOCS_HOST ?? 'https://docs.ethswarm.org/docs/'
     this.BEE_DISCORD_HOST = process.env.REACT_APP_BEE_DISCORD_HOST ?? 'https://discord.gg/eKr9XPv7'
     this.GITHUB_REPO_URL = process.env.REACT_APP_BEE_GITHUB_REPO_URL ?? 'https://api.github.com/repos/ethersphere/bee'
+    this.BEE_DESKTOP_ENABLED = process.env.REACT_APP_BEE_DESKTOP_ENABLED === 'true'
     this.BEE_DESKTOP_URL = process.env.REACT_APP_BEE_DESKTOP_URL ?? window.location.origin
     this.DEFAULT_RPC_URL = process.env.REACT_APP_DEFAULT_RPC_URL ?? 'https://xdai.fairdatasociety.org'
   }

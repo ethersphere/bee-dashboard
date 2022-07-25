@@ -12,7 +12,6 @@ import { Context as BeeContext } from '../providers/Bee'
 import DashboardLogo from '../assets/dashboard-logo.svg'
 import DesktopLogo from '../assets/desktop-logo.svg'
 import { config } from '../config'
-import { useIsBeeDesktop } from '../hooks/apiHooks'
 import { ROUTES } from '../routes'
 import Feedback from './Feedback'
 import SideBarItem from './SideBarItem'
@@ -67,7 +66,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function SideBar(): ReactElement {
   const classes = useStyles()
-  const { isBeeDesktop } = useIsBeeDesktop()
+  const isBeeDesktop = config.BEE_DESKTOP_ENABLED
   const { nodeInfo } = useContext(BeeContext)
 
   const navBarItems = [

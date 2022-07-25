@@ -10,7 +10,7 @@ interface AddressInfo {
   port: number
 }
 
-export function mockServer(data: Record<string | number | symbol, string>): Promise<Server> {
+export function mockServer(data: Record<string | number | symbol, string | boolean>): Promise<Server> {
   const app = express()
   app.use(cors())
 
@@ -26,48 +26,30 @@ export function mockServer(data: Record<string | number | symbol, string>): Prom
 }
 
 let serverCorrect: Server
-let serverWrong: Server
 
 let serverCorrectURL: string
-let serverWrongURL: string
 
 beforeAll(async () => {
-  serverCorrect = await mockServer({ name: 'bee-desktop' })
+  serverCorrect = await mockServer({ autoUpdateEnabled: true, version: '0.1.0' })
   const portServerCorrect = (serverCorrect.address() as AddressInfo).port
   serverCorrectURL = `http://localhost:${portServerCorrect}`
-
-  serverWrong = await mockServer({ foo: 'bar' })
-  const portServerWrong = (serverWrong.address() as AddressInfo).port
-  serverWrongURL = `http://localhost:${portServerWrong}`
 })
 
 afterAll(async () => {
   await new Promise(resolve => serverCorrect.close(resolve))
-  await new Promise(resolve => serverWrong.close(resolve))
 })
 
 describe('useIsBeeDesktop', () => {
-  it('should fail when connected to wrong server', async () => {
-    const { result, waitFor } = renderHook(() => useIsBeeDesktop({ BEE_DESKTOP_URL: serverWrongURL }))
-
-    expect(result.current.isLoading).toBe(true)
-    expect(result.current.isBeeDesktop).toBe(false)
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false)
-    })
-    expect(result.current.isBeeDesktop).toBe(false)
-  })
-
-  it('should return isBeeDesktop true when connected to bee-desktop', async () => {
-    const { result, waitFor } = renderHook(() => useIsBeeDesktop({ BEE_DESKTOP_URL: serverCorrectURL }))
-
-    expect(result.current.isLoading).toBe(true)
-    expect(result.current.isBeeDesktop).toBe(false)
+  it('should not have error when connected to bee-desktop', async () => {
+    const { result, waitFor } = renderHook(() =>
+      useIsBeeDesktop({ BEE_DESKTOP_URL: serverCorrectURL, BEE_DESKTOP_ENABLED: true }),
+    )
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false)
     })
-    expect(result.current.isBeeDesktop).toBe(true)
+    expect(result.current.desktopAutoUpdateEnabled).toBe(true)
+    expect(result.current.beeDesktopVersion).toBe('0.1.0')
+    expect(result.current.error).toBe(null)
   })
 })

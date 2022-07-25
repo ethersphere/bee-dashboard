@@ -9,7 +9,7 @@ import { Context } from '../providers/Bee'
 import config from '../config'
 import * as Sentry from '@sentry/react'
 import ItsBroken from './ItsBroken'
-import { useIsBeeDesktop, useNewBeeDesktopVersion } from '../hooks/apiHooks'
+import { useNewBeeDesktopVersion } from '../hooks/apiHooks'
 import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../utils/desktop'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -29,7 +29,7 @@ const Dashboard = (props: Props): ReactElement => {
   const classes = useStyles()
 
   const { isLoading } = useContext(Context)
-  const { isBeeDesktop } = useIsBeeDesktop()
+  const isBeeDesktop = config.BEE_DESKTOP_ENABLED
   const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isBeeDesktop)
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
