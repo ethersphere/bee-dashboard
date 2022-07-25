@@ -18,15 +18,26 @@ export function detectIndexHtml(files: FilePath[]): DetectedIndex | false {
     return { indexPath: exactMatch }
   }
 
-  const prefix = paths[0].split('/')[0] + '/'
+  const sortedPaths = paths.sort((a, b) => a.localeCompare(b))
+  const firstSegments = sortedPaths[0].split('/')
+  const lastSegments = sortedPaths[sortedPaths.length - 1].split('/')
+  let matchingSegments = 0
 
-  const allStartWithSamePrefix = paths.every(x => x.startsWith(prefix))
+  for (; matchingSegments < firstSegments.length; matchingSegments++) {
+    if (firstSegments[matchingSegments] !== lastSegments[matchingSegments]) {
+      break
+    }
+  }
+
+  const commonPrefix = firstSegments.slice(0, matchingSegments).join('/') + '/'
+
+  const allStartWithSamePrefix = paths.every(x => x.startsWith(commonPrefix))
 
   if (allStartWithSamePrefix) {
-    const match = paths.find(x => indexHtmls.map(y => prefix + y).includes(x))
+    const match = paths.find(x => indexHtmls.map(y => commonPrefix + y).includes(x))
 
     if (match) {
-      return { indexPath: match, commonPrefix: prefix }
+      return { indexPath: match, commonPrefix }
     }
   }
 
