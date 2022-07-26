@@ -2,8 +2,10 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import { ReactElement, useContext } from 'react'
 import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItemInput from '../../components/ExpandableListItemInput'
+import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import config from '../../config'
+import { useSnackbar } from 'notistack'
 
 export default function SettingsPage(): ReactElement {
   const {
@@ -19,6 +21,8 @@ export default function SettingsPage(): ReactElement {
     isLoading,
     setAndPersistJsonRpcProvider,
   } = useContext(SettingsContext)
+  const { refresh } = useContext(BeeContext)
+  const { enqueueSnackbar } = useSnackbar()
 
   if (isLoading) {
     return (
@@ -31,17 +35,34 @@ export default function SettingsPage(): ReactElement {
   return (
     <>
       <ExpandableList label="API Settings" defaultOpen>
-        <ExpandableListItemInput label="Bee API" value={apiUrl} onConfirm={setApiUrl} locked={lockedApiSettings} />
+        <ExpandableListItemInput
+          label="Bee API"
+          value={apiUrl}
+          onConfirm={setApiUrl}
+          locked={lockedApiSettings || config.BEE_DESKTOP_ENABLED}
+        />
         <ExpandableListItemInput
           label="Bee Debug API"
           value={apiDebugUrl}
           onConfirm={setDebugApiUrl}
-          locked={lockedApiSettings}
+          locked={lockedApiSettings || config.BEE_DESKTOP_ENABLED}
         />
         <ExpandableListItemInput
           label="Blockchain RPC URL"
           value={providerUrl}
-          onConfirm={setAndPersistJsonRpcProvider}
+          helperText="Changing the value will restart your bee node."
+          confirmLabel="Save and restart"
+          onConfirm={value => {
+            setAndPersistJsonRpcProvider(value)
+              .then(() => {
+                refresh()
+                enqueueSnackbar('Settings changed, restarting bee node...', { variant: 'success' })
+              })
+              .catch(error => {
+                console.log(error) //eslint-disable-line
+                enqueueSnackbar(`Failed to change RPC endpoint. Error: ${error}`, { variant: 'success' })
+              })
+          }}
         />
       </ExpandableList>
       {config.BEE_DESKTOP_ENABLED && (
