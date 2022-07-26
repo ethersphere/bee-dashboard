@@ -17,7 +17,7 @@ import { SwarmTextInput } from '../../components/SwarmTextInput'
 import { BzzToken } from '../../models/BzzToken'
 import { DaiToken } from '../../models/DaiToken'
 import { Context as BeeContext } from '../../providers/Bee'
-import { Context as TopUpContext } from '../../providers/TopUp'
+import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
 import { sleepMs } from '../../utils'
 import { getBzzPriceAsDai, performSwap, restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
@@ -37,7 +37,7 @@ export function Swap({ header }: Props): ReactElement {
   const [userInputSwap, setUserInputSwap] = useState<string | null>(null)
   const [price, setPrice] = useState(DaiToken.fromDecimal('0.6', 18))
 
-  const { providerUrl } = useContext(TopUpContext)
+  const { providerUrl } = useContext(SettingsContext)
   const { balance, nodeAddresses, nodeInfo } = useContext(BeeContext)
   const isBeeDesktop = config.BEE_DESKTOP_ENABLED
 

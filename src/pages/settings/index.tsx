@@ -5,8 +5,16 @@ import ExpandableListItemInput from '../../components/ExpandableListItemInput'
 import { Context as SettingsContext } from '../../providers/Settings'
 
 export default function SettingsPage(): ReactElement {
-  const { apiUrl, apiDebugUrl, setApiUrl, setDebugApiUrl, lockedApiSettings, config, isLoading } =
-    useContext(SettingsContext)
+  const {
+    apiUrl,
+    apiDebugUrl,
+    setApiUrl,
+    setDebugApiUrl,
+    lockedApiSettings,
+    config,
+    isLoading,
+    setAndPersistJsonRpcProvider,
+  } = useContext(SettingsContext)
 
   if (isLoading) {
     return (
@@ -26,7 +34,11 @@ export default function SettingsPage(): ReactElement {
         <ExpandableListItemInput label="Data DIR" value={config['data-dir']} locked />
         <ExpandableListItemInput label="ENS resolver URL" value={config['resolver-options']} locked />
         {config['swap-endpoint'] && (
-          <ExpandableListItemInput label="SWAP endpoint" value={config['swap-endpoint']} locked />
+          <ExpandableListItemInput
+            label="Blockchain RPC URL"
+            value={config['swap-endpoint']}
+            onConfirm={setAndPersistJsonRpcProvider}
+          />
         )}
       </ExpandableList>
     )

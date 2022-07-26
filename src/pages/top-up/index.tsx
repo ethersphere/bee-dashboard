@@ -11,7 +11,7 @@ import { HistoryHeader } from '../../components/HistoryHeader'
 import { SwarmButton } from '../../components/SwarmButton'
 import { ROUTES } from '../../routes'
 import { Context as BeeContext } from '../../providers/Bee'
-import { Context as TopUpContext } from '../../providers/TopUp'
+import { Context as SettingsContext } from '../../providers/Settings'
 import config from '../../config'
 import { BeeModes } from '@ethersphere/bee-js'
 import { restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
@@ -40,7 +40,7 @@ export default function TopUp(): ReactElement {
   const styles = useStyles()
   const isBeeDesktop = config.BEE_DESKTOP_ENABLED
   const { balance, nodeInfo } = useContext(BeeContext)
-  const { providerUrl } = useContext(TopUpContext)
+  const { providerUrl } = useContext(SettingsContext)
   const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
 

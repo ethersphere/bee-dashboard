@@ -17,7 +17,6 @@ import { Token } from '../models/Token'
 import type { Balance, ChequebookBalance, Settlements } from '../types'
 import { WalletAddress } from '../utils/wallet'
 import { Context as SettingsContext } from './Settings'
-import { Context as TopUpContext } from './TopUp'
 
 const REFRESH_WHEN_OK = 30_000
 const REFRESH_WHEN_ERROR = 5_000
@@ -189,8 +188,7 @@ function getStatus(
 let isRefreshing = false
 
 export function Provider({ children }: Props): ReactElement {
-  const { beeApi, beeDebugApi } = useContext(SettingsContext)
-  const { provider } = useContext(TopUpContext)
+  const { beeApi, beeDebugApi, provider } = useContext(SettingsContext)
   const [apiHealth, setApiHealth] = useState<boolean>(false)
   const [debugApiHealth, setDebugApiHealth] = useState<Health | null>(null)
   const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses | null>(null)

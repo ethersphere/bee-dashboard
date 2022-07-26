@@ -4,7 +4,7 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import ArrowRight from 'remixicon-react/ArrowRightLineIcon'
 import { useNavigate } from 'react-router'
-import { Context as TopUpContext } from '../../providers/TopUp'
+import { Context as SettingsContext } from '../../providers/Settings'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { ProgressIndicator } from '../../components/ProgressIndicator'
 import { SwarmButton } from '../../components/SwarmButton'
@@ -16,7 +16,7 @@ import { ROUTES } from '../../routes'
 import { Rpc } from '../../utils/rpc'
 
 export function GiftCardTopUpIndex(): ReactElement {
-  const { provider } = useContext(TopUpContext)
+  const { provider } = useContext(SettingsContext)
   const [loading, setLoading] = useState(false)
   const [giftCode, setGiftCode] = useState('')
 

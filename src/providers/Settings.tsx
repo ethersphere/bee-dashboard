@@ -1,7 +1,15 @@
 import { Bee, BeeDebug } from '@ethersphere/bee-js'
+import { providers } from 'ethers'
 import { createContext, ReactChild, ReactElement, useEffect, useState } from 'react'
 import { config } from '../config'
 import { BeeConfig, useGetBeeConfig } from '../hooks/apiHooks'
+import { setJsonRpcInDesktop } from '../utils/desktop'
+
+const LocalStorageKeys = {
+  providerUrl: 'json-rpc-provider',
+}
+
+const providerUrl = localStorage.getItem('json-rpc-provider') || config.DEFAULT_RPC_URL
 
 interface ContextInterface {
   apiUrl: string
@@ -13,6 +21,9 @@ interface ContextInterface {
   lockedApiSettings: boolean
   desktopApiKey: string
   config: BeeConfig | null
+  setAndPersistJsonRpcProvider: (url: string) => void
+  providerUrl: string
+  provider: providers.JsonRpcProvider
   isLoading: boolean
   error: Error | null
 }
@@ -27,6 +38,9 @@ const initialValues: ContextInterface = {
   lockedApiSettings: false,
   desktopApiKey: '',
   config: null,
+  setAndPersistJsonRpcProvider: () => {}, // eslint-disable-line
+  providerUrl,
+  provider: new providers.JsonRpcProvider(providerUrl),
   isLoading: true,
   error: null,
 }
@@ -53,7 +67,17 @@ export function Provider({
   const [beeDebugApi, setBeeDebugApi] = useState<BeeDebug | null>(null)
   const [lockedApiSettings] = useState<boolean>(Boolean(extLockedApiSettings))
   const [desktopApiKey, setDesktopApiKey] = useState<string>(initialValues.desktopApiKey)
+  const [providerUrl, setProviderUrl] = useState(initialValues.providerUrl)
+  const [provider, setProvider] = useState(initialValues.provider)
   const { config, isLoading, error } = useGetBeeConfig()
+
+  function setAndPersistJsonRpcProvider(providerUrl: string) {
+    localStorage.setItem(LocalStorageKeys.providerUrl, providerUrl)
+    setProviderUrl(providerUrl)
+    setProvider(new providers.JsonRpcProvider(providerUrl))
+    // eslint-disable-next-line no-console
+    setJsonRpcInDesktop(providerUrl).catch(console.error)
+  }
 
   function makeHttpUrl(string: string): string {
     if (!string.startsWith('http')) {
@@ -107,6 +131,9 @@ export function Provider({
         lockedApiSettings,
         desktopApiKey,
         config,
+        provider,
+        providerUrl,
+        setAndPersistJsonRpcProvider,
         isLoading,
         error,
       }}
