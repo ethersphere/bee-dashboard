@@ -16,14 +16,16 @@ interface ContextInterface {
   apiDebugUrl: string
   beeApi: Bee | null
   beeDebugApi: BeeDebug | null
-  setApiUrl: (url: string) => void
-  setDebugApiUrl: (url: string) => void
   lockedApiSettings: boolean
   desktopApiKey: string
-  config: BeeConfig | null
-  setAndPersistJsonRpcProvider: (url: string) => void
   providerUrl: string
   provider: providers.JsonRpcProvider
+  cors: string | null
+  dataDir: string | null
+  ensResolver: string | null
+  setApiUrl: (url: string) => void
+  setDebugApiUrl: (url: string) => void
+  setAndPersistJsonRpcProvider: (url: string) => void
   isLoading: boolean
   error: Error | null
 }
@@ -37,10 +39,12 @@ const initialValues: ContextInterface = {
   setDebugApiUrl: () => {}, // eslint-disable-line
   lockedApiSettings: false,
   desktopApiKey: '',
-  config: null,
   setAndPersistJsonRpcProvider: () => {}, // eslint-disable-line
   providerUrl,
   provider: new providers.JsonRpcProvider(providerUrl),
+  cors: null,
+  dataDir: null,
+  ensResolver: null,
   isLoading: true,
   error: null,
 }
@@ -65,7 +69,6 @@ export function Provider({
   const [apiDebugUrl, setDebugApiUrl] = useState<string>(initialValues.apiDebugUrl)
   const [beeApi, setBeeApi] = useState<Bee | null>(null)
   const [beeDebugApi, setBeeDebugApi] = useState<BeeDebug | null>(null)
-  const [lockedApiSettings] = useState<boolean>(Boolean(extLockedApiSettings))
   const [desktopApiKey, setDesktopApiKey] = useState<string>(initialValues.desktopApiKey)
   const [providerUrl, setProviderUrl] = useState(initialValues.providerUrl)
   const [provider, setProvider] = useState(initialValues.provider)
@@ -128,11 +131,13 @@ export function Provider({
         beeDebugApi,
         setApiUrl,
         setDebugApiUrl,
-        lockedApiSettings,
+        lockedApiSettings: Boolean(extLockedApiSettings),
         desktopApiKey,
-        config,
         provider,
         providerUrl,
+        cors: config?.['cors-allowed-origins'] ?? null,
+        dataDir: config?.['data-dir'] ?? null,
+        ensResolver: config?.['resolver-options'] ?? null,
         setAndPersistJsonRpcProvider,
         isLoading,
         error,
