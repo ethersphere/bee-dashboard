@@ -25,7 +25,7 @@ async function selectStampAndUpload(page) {
 }
 
 async function assertUploadedContentAtPath(swarmHash, path, contentType) {
-  const response = await axios.get(`http://localhost:1633/bzz/${swarmHash}/${path}`)
+  const response = await axios.get(`http://localhost:1633/bzz/${swarmHash}/${encodeURI(path)}`)
 
   if (response.status !== 200) {
     throw new Error(`Expected 200 OK, got ${response.status}`)

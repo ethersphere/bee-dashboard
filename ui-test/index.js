@@ -7,10 +7,20 @@ const { testImageFileUpload } = require('./test-case/ImageFileUpload')
 const { testTextFileUpload } = require('./test-case/TextFileUpload')
 const { testWebsiteUpload } = require('./test-case/WebsiteUpload')
 const { testReactWebsiteUpload } = require('./test-case/ReactWebsiteUpload')
+const { testUnicodeFileUpload } = require('./test-case/UnicodeFileUpload')
+const { testUnicodeWebsiteUpload } = require('./test-case/UnicodeWebsiteUpload')
 
 const VIEWPORT = { width: 1366, height: 768 }
 
-const testCases = [testTextFileUpload, testImageFileUpload, testFolderUpload, testWebsiteUpload, testReactWebsiteUpload]
+const testCases = [
+  testUnicodeFileUpload,
+  testUnicodeWebsiteUpload,
+  testTextFileUpload,
+  testImageFileUpload,
+  testFolderUpload,
+  testWebsiteUpload,
+  testReactWebsiteUpload,
+]
 
 async function main() {
   const server = prepareServer()

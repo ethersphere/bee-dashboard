@@ -77,7 +77,7 @@ export function Upload(): ReactElement {
     let fls: FilePath[] = files.map(f => packageFile(f)) // Apart from packaging, this is needed to not modify the original files array as it can trigger effects
     let indexDocument: string | undefined = undefined // This means we assume it's folder
 
-    if (files.length === 1) indexDocument = files[0].name
+    if (files.length === 1) indexDocument = unescape(encodeURIComponent(files[0].name))
     else if (files.length > 1) {
       const idx = detectIndexHtml(files)
 
