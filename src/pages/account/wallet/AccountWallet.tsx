@@ -10,6 +10,7 @@ import ExpandableListItemActions from '../../../components/ExpandableListItemAct
 import ExpandableListItemKey from '../../../components/ExpandableListItemKey'
 import { Loading } from '../../../components/Loading'
 import { SwarmButton } from '../../../components/SwarmButton'
+import config from '../../../config'
 import { Context } from '../../../providers/Bee'
 import { ROUTES } from '../../../routes'
 import { AccountNavigation } from '../AccountNavigation'
@@ -65,9 +66,11 @@ export function AccountWallet(): ReactElement {
         <SwarmButton onClick={onCheckTransactions} iconType={Link}>
           Check transactions on Blockscout
         </SwarmButton>
-        <SwarmButton onClick={onInvite} iconType={Gift}>
-          Invite to Swarm...
-        </SwarmButton>
+        {config.BEE_DESKTOP_ENABLED && (
+          <SwarmButton onClick={onInvite} iconType={Gift}>
+            Invite to Swarm...
+          </SwarmButton>
+        )}
       </ExpandableListItemActions>
     </>
   )
