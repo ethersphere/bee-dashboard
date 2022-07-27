@@ -23,6 +23,7 @@ import { CryptoTopUpIndex } from './pages/top-up/CryptoTopUpIndex'
 import { GiftCardFund } from './pages/top-up/GiftCardFund'
 import { GiftCardTopUpIndex } from './pages/top-up/GiftCardTopUpIndex'
 import { Swap } from './pages/top-up/Swap'
+import config from './config'
 
 export enum ROUTES {
   INFO = '/',
@@ -84,7 +85,7 @@ const BaseRouter = (): ReactElement => (
     <Route path={ROUTES.ACCOUNT_FEEDS_NEW} element={<CreateNewFeed />} />
     <Route path={ROUTES.ACCOUNT_FEEDS_UPDATE} element={<UpdateFeed />} />
     <Route path={ROUTES.ACCOUNT_FEEDS_VIEW} element={<FeedSubpage />} />
-    <Route path={ROUTES.ACCOUNT_INVITATIONS} element={<GiftCards />} />
+    {config.BEE_DESKTOP_ENABLED && <Route path={ROUTES.ACCOUNT_INVITATIONS} element={<GiftCards />} />}
   </Routes>
 )
 
