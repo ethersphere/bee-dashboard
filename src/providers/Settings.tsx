@@ -1,32 +1,50 @@
 import { Bee, BeeDebug } from '@ethersphere/bee-js'
+import { providers } from 'ethers'
 import { createContext, ReactChild, ReactElement, useEffect, useState } from 'react'
-import { config } from '../config'
-import { BeeConfig, useGetBeeConfig } from '../hooks/apiHooks'
+import { config as appConfig } from '../config'
+import { useGetBeeConfig } from '../hooks/apiHooks'
+import { restartBeeNode, setJsonRpcInDesktop } from '../utils/desktop'
+
+const LocalStorageKeys = {
+  providerUrl: 'json-rpc-provider',
+}
+
+const providerUrl = localStorage.getItem('json-rpc-provider') || appConfig.DEFAULT_RPC_URL
 
 interface ContextInterface {
   apiUrl: string
   apiDebugUrl: string
   beeApi: Bee | null
   beeDebugApi: BeeDebug | null
-  setApiUrl: (url: string) => void
-  setDebugApiUrl: (url: string) => void
   lockedApiSettings: boolean
   desktopApiKey: string
-  config: BeeConfig | null
+  providerUrl: string
+  provider: providers.JsonRpcProvider
+  cors: string | null
+  dataDir: string | null
+  ensResolver: string | null
+  setApiUrl: (url: string) => void
+  setDebugApiUrl: (url: string) => void
+  setAndPersistJsonRpcProvider: (url: string) => Promise<void>
   isLoading: boolean
   error: Error | null
 }
 
 const initialValues: ContextInterface = {
-  apiUrl: config.BEE_API_HOST,
-  apiDebugUrl: config.BEE_DEBUG_API_HOST,
+  apiUrl: appConfig.BEE_API_HOST,
+  apiDebugUrl: appConfig.BEE_DEBUG_API_HOST,
   beeApi: null,
   beeDebugApi: null,
   setApiUrl: () => {}, // eslint-disable-line
   setDebugApiUrl: () => {}, // eslint-disable-line
   lockedApiSettings: false,
   desktopApiKey: '',
-  config: null,
+  setAndPersistJsonRpcProvider: async () => {}, // eslint-disable-line
+  providerUrl,
+  provider: new providers.JsonRpcProvider(providerUrl),
+  cors: null,
+  dataDir: null,
+  ensResolver: null,
   isLoading: true,
   error: null,
 }
@@ -51,9 +69,25 @@ export function Provider({
   const [apiDebugUrl, setDebugApiUrl] = useState<string>(initialValues.apiDebugUrl)
   const [beeApi, setBeeApi] = useState<Bee | null>(null)
   const [beeDebugApi, setBeeDebugApi] = useState<BeeDebug | null>(null)
-  const [lockedApiSettings] = useState<boolean>(Boolean(extLockedApiSettings))
   const [desktopApiKey, setDesktopApiKey] = useState<string>(initialValues.desktopApiKey)
+  const [providerUrl, setProviderUrl] = useState(initialValues.providerUrl)
+  const [provider, setProvider] = useState(initialValues.provider)
   const { config, isLoading, error } = useGetBeeConfig()
+
+  async function setAndPersistJsonRpcProvider(providerUrl: string) {
+    try {
+      localStorage.setItem(LocalStorageKeys.providerUrl, providerUrl)
+      setProviderUrl(providerUrl)
+      setProvider(new providers.JsonRpcProvider(providerUrl))
+
+      if (appConfig.BEE_DESKTOP_ENABLED) {
+        await setJsonRpcInDesktop(providerUrl)
+        await restartBeeNode()
+      }
+    } catch (error) {
+      console.error(error) // eslint-disable-line
+    }
+  }
 
   function makeHttpUrl(string: string): string {
     if (!string.startsWith('http')) {
@@ -104,9 +138,14 @@ export function Provider({
         beeDebugApi,
         setApiUrl,
         setDebugApiUrl,
-        lockedApiSettings,
+        lockedApiSettings: Boolean(extLockedApiSettings),
         desktopApiKey,
-        config,
+        provider,
+        providerUrl,
+        cors: config?.['cors-allowed-origins'] ?? null,
+        dataDir: config?.['data-dir'] ?? null,
+        ensResolver: config?.['resolver-options'] ?? null,
+        setAndPersistJsonRpcProvider,
         isLoading,
         error,
       }}
