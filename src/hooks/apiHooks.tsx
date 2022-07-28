@@ -75,7 +75,7 @@ async function checkNewVersion(conf: Config): Promise<string> {
 }
 
 export function useNewBeeDesktopVersion(isBeeDesktop: boolean, conf: Config = config): NewDesktopVersionHook {
-  const [newBeeDesktopVersion, setNewNewBeeDesktopVersion] = useState<string>('')
+  const [newBeeDesktopVersion, setNewBeeDesktopVersion] = useState<string>('')
 
   useEffect(() => {
     if (!isBeeDesktop) {
@@ -84,7 +84,7 @@ export function useNewBeeDesktopVersion(isBeeDesktop: boolean, conf: Config = co
 
     checkNewVersion(conf).then(version => {
       if (version !== '') {
-        setNewNewBeeDesktopVersion(version)
+        setNewBeeDesktopVersion(version)
       }
     })
   }, [isBeeDesktop, conf])
