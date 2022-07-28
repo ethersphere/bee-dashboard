@@ -10,13 +10,14 @@ import ExpandableListItemActions from '../../components/ExpandableListItemAction
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { SwarmButton } from '../../components/SwarmButton'
 import { ROUTES } from '../../routes'
-import { Context as BeeContext } from '../../providers/Bee'
+import { CheckState, Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import config from '../../config'
 import { BeeModes } from '@ethersphere/bee-js'
 import { restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
 import { Loading } from '../../components/Loading'
 import { useSnackbar } from 'notistack'
+import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -39,7 +40,7 @@ export default function TopUp(): ReactElement {
   const navigate = useNavigate()
   const styles = useStyles()
   const isBeeDesktop = config.BEE_DESKTOP_ENABLED
-  const { balance, nodeInfo } = useContext(BeeContext)
+  const { balance, nodeInfo, status } = useContext(BeeContext)
   const { providerUrl } = useContext(SettingsContext)
   const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
@@ -63,6 +64,8 @@ export default function TopUp(): ReactElement {
     }
     setLoading(false)
   }
+
+  if (status.all === CheckState.ERROR) return <TroubleshootConnectionCard />
 
   if (!balance) {
     return <Loading />
