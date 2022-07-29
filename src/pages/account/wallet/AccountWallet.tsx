@@ -10,14 +10,15 @@ import ExpandableListItemActions from '../../../components/ExpandableListItemAct
 import ExpandableListItemKey from '../../../components/ExpandableListItemKey'
 import { Loading } from '../../../components/Loading'
 import { SwarmButton } from '../../../components/SwarmButton'
+import TroubleshootConnectionCard from '../../../components/TroubleshootConnectionCard'
 import config from '../../../config'
-import { Context } from '../../../providers/Bee'
+import { CheckState, Context } from '../../../providers/Bee'
 import { ROUTES } from '../../../routes'
 import { AccountNavigation } from '../AccountNavigation'
 import { Header } from '../Header'
 
 export function AccountWallet(): ReactElement {
-  const { balance, nodeAddresses, nodeInfo } = useContext(Context)
+  const { balance, nodeAddresses, nodeInfo, status } = useContext(Context)
 
   const navigate = useNavigate()
 
@@ -32,6 +33,8 @@ export function AccountWallet(): ReactElement {
   function onDeposit() {
     navigate(ROUTES.TOP_UP)
   }
+
+  if (status.all === CheckState.ERROR) return <TroubleshootConnectionCard />
 
   return (
     <>
