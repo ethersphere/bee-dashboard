@@ -20,9 +20,9 @@ Using it with older or newer Bee versions is not recommended and may not work. S
 
 ![Status page](/ui_samples/info.png)
 
-| Node Setup                           | Upload Files                           | Download Content                           | Accounting                                | Postage Stamps                           |
+| Node Setup                           | Upload Files                           | Download Content                           | Accounting                                | Settings                           |
 | ------------------------------------ | -------------------------------------- | ------------------------------------------ | ----------------------------------------- | ---------------------------------------- |
-| ![Setup](/ui_samples/node_setup.png) | ![Upload](/ui_samples/file_upload.png) | ![Download](/ui_samples/file_download.png) | ![Accounting](/ui_samples/accounting.png) | ![Peers](/ui_samples/postage_stamps.png) |
+| ![Setup](/ui_samples/node_setup.png) | ![Upload](/ui_samples/file_upload.png) | ![Download](/ui_samples/file_download.png) | ![Accounting](/ui_samples/accounting.png) | ![Settings](/ui_samples/settings.png) |
 
 ## Table of Contents
 
