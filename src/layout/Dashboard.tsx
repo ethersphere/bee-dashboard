@@ -5,7 +5,7 @@ import { useSnackbar } from 'notistack'
 import CloseIcon from 'remixicon-react/CloseCircleLineIcon'
 import ErrorBoundary from '../components/ErrorBoundary'
 import SideBar from '../components/SideBar'
-import { Context } from '../providers/Bee'
+import { Context as BeeContext } from '../providers/Bee'
 import config from '../config'
 import * as Sentry from '@sentry/react'
 import ItsBroken from './ItsBroken'
@@ -28,10 +28,49 @@ interface Props {
 const Dashboard = (props: Props): ReactElement => {
   const classes = useStyles()
 
-  const { isLoading } = useContext(Context)
+  const { isLoading, isLatestBeeVersion, latestBeeRelease, latestBeeVersionUrl } = useContext(BeeContext)
   const isBeeDesktop = config.BEE_DESKTOP_ENABLED
   const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isBeeDesktop)
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+
+  // New version of Bee client notification
+  useEffect(() => {
+    if (!isLoading && !isBeeDesktop && !isLatestBeeVersion && latestBeeRelease) {
+      enqueueSnackbar(`There is new Bee version ${latestBeeRelease?.name}!`, {
+        variant: 'warning',
+        preventDuplicate: true,
+        key: 'beeNewVersion',
+        persist: true,
+        action: key => (
+          <React.Fragment>
+            <Button
+              onClick={() => {
+                window.open(latestBeeVersionUrl)
+                closeSnackbar(key)
+              }}
+            >
+              Download release
+            </Button>
+            <IconButton
+              onClick={() => {
+                closeSnackbar(key)
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </React.Fragment>
+        ),
+      })
+    }
+  }, [
+    closeSnackbar,
+    enqueueSnackbar,
+    isLatestBeeVersion,
+    isBeeDesktop,
+    latestBeeRelease,
+    latestBeeVersionUrl,
+    isLoading,
+  ])
 
   useEffect(() => {
     if (newBeeDesktopVersion !== '') {
