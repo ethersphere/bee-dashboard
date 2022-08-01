@@ -1,3 +1,4 @@
+import { PostageBatchOptions } from '@ethersphere/bee-js'
 import { Box, Grid, Typography } from '@material-ui/core'
 import BigNumber from 'bignumber.js'
 import { Form, Formik, FormikHelpers } from 'formik'
@@ -102,7 +103,7 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
 
             const amount = BigInt(values.amount)
             const depth = Number.parseInt(values.depth)
-            const options = values.label ? { label: values.label } : undefined
+            const options: PostageBatchOptions = { waitForUsable: false, label: values.label || undefined }
             const batchId = await beeDebugApi.createPostageBatch(amount.toString(), depth, options)
             await waitUntilStampExists(batchId, beeDebugApi)
             actions.resetForm()
