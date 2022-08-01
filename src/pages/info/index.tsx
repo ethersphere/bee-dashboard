@@ -46,7 +46,11 @@ export default function Status(): ReactElement {
               onClick: () => navigate(ROUTES.ACCOUNT_WALLET),
             }}
             icon={<Wallet />}
-            title={`${balance?.bzz.toSignificantDigits(4)} xBZZ | ${balance?.dai.toSignificantDigits(4)} xDAI`}
+            title={
+              balance
+                ? `${balance?.bzz.toSignificantDigits(4)} xBZZ | ${balance?.dai.toSignificantDigits(4)} xDAI`
+                : 'Loading...'
+            }
             subtitle="Current wallet balance."
             status="ok"
           />
@@ -89,7 +93,7 @@ export default function Status(): ReactElement {
                 icon={<ExchangeFunds />}
                 title={
                   chequebookBalance?.availableBalance
-                    ? `${chequebookBalance.availableBalance.toFixedDecimal(4)} xBZZ`
+                    ? `${chequebookBalance.availableBalance.toSignificantDigits(4)} xBZZ`
                     : 'No available balance.'
                 }
                 subtitle="Chequebook not setup."
