@@ -29,14 +29,15 @@ interface Props {
 const Dashboard = (props: Props): ReactElement => {
   const classes = useStyles()
 
-  const { isLoading, isLatestBeeVersion, latestBeeRelease, latestBeeVersionUrl } = useContext(BeeContext)
+  const { isLoading, isLatestBeeVersion, latestBeeRelease, latestBeeVersionUrl, latestUserVersion } =
+    useContext(BeeContext)
   const { isBeeDesktop } = useContext(SettingsContext)
   const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isBeeDesktop)
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
   // New version of Bee client notification
   useEffect(() => {
-    if (!isLoading && !isBeeDesktop && !isLatestBeeVersion && latestBeeRelease) {
+    if (!isLoading && !isBeeDesktop && !isLatestBeeVersion && latestBeeRelease && latestUserVersion) {
       enqueueSnackbar(`There is new Bee version ${latestBeeRelease?.name}!`, {
         variant: 'warning',
         preventDuplicate: true,
@@ -71,6 +72,7 @@ const Dashboard = (props: Props): ReactElement => {
     latestBeeRelease,
     latestBeeVersionUrl,
     isLoading,
+    latestUserVersion,
   ])
 
   useEffect(() => {
