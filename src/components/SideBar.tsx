@@ -9,6 +9,7 @@ import HomeIcon from 'remixicon-react/Home3LineIcon'
 import SettingsIcon from 'remixicon-react/Settings2LineIcon'
 import AccountIcon from 'remixicon-react/Wallet3LineIcon'
 import { Context as BeeContext } from '../providers/Bee'
+import { Context as SettingsContext } from '../providers/Settings'
 import DashboardLogo from '../assets/dashboard-logo.svg'
 import DesktopLogo from '../assets/desktop-logo.svg'
 import { config } from '../config'
@@ -66,7 +67,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function SideBar(): ReactElement {
   const classes = useStyles()
-  const isBeeDesktop = config.BEE_DESKTOP_ENABLED
+  const { isBeeDesktop } = useContext(SettingsContext)
   const { nodeInfo } = useContext(BeeContext)
 
   const navBarItems = [

@@ -23,7 +23,6 @@ export interface NewDesktopVersionHook {
 
 interface Config {
   BEE_DESKTOP_URL: string
-  BEE_DESKTOP_ENABLED: boolean
 }
 
 /**
@@ -31,12 +30,11 @@ interface Config {
  *
  * @returns isBeeDesktop true if this is run within bee-desktop
  */
-export const useIsBeeDesktop = (conf: Config = config): IsBeeDesktopHook => {
+export const useIsBeeDesktop = (isBeeDesktop = false, conf: Config = config): IsBeeDesktopHook => {
   const [desktopAutoUpdateEnabled, setDesktopAutoUpdateEnabled] = useState<boolean>(true)
   const [beeDesktopVersion, setBeeDesktopVersion] = useState<string>('')
   const [isLoading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
-  const isBeeDesktop = conf.BEE_DESKTOP_ENABLED
 
   useEffect(() => {
     if (!isBeeDesktop) {

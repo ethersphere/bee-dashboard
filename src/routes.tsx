@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react'
+import { ReactElement, useContext } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { AccountChequebook } from './pages/account/chequebook/AccountChequebook'
 import { AccountFeeds } from './pages/account/feeds/AccountFeeds'
@@ -23,7 +23,7 @@ import { CryptoTopUpIndex } from './pages/top-up/CryptoTopUpIndex'
 import { GiftCardFund } from './pages/top-up/GiftCardFund'
 import { GiftCardTopUpIndex } from './pages/top-up/GiftCardTopUpIndex'
 import { Swap } from './pages/top-up/Swap'
-import config from './config'
+import { Context as SettingsContext } from './providers/Settings'
 
 export enum ROUTES {
   INFO = '/',
@@ -60,33 +60,37 @@ export const ACCOUNT_TABS = [
   ROUTES.ACCOUNT_FEEDS,
 ]
 
-const BaseRouter = (): ReactElement => (
-  <Routes>
-    <Route path={ROUTES.UPLOAD_IN_PROGRESS} element={<Upload />} />
-    <Route path={ROUTES.UPLOAD} element={<UploadLander />} />
-    <Route path={ROUTES.DOWNLOAD} element={<Download />} />
-    <Route path={ROUTES.HASH} element={<Share />} />
-    <Route path={ROUTES.SETTINGS} element={<Settings />} />
-    <Route path={ROUTES.STATUS} element={<Status />} />
-    <Route path={ROUTES.INFO} element={<Info />} />
-    <Route path={ROUTES.TOP_UP} element={<TopUp />} />
-    <Route path={ROUTES.TOP_UP_CRYPTO} element={<CryptoTopUpIndex />} />
-    <Route path={ROUTES.TOP_UP_CRYPTO_SWAP} element={<Swap header="Top-up with cryptocurrencies" />} />
-    <Route path={ROUTES.TOP_UP_BANK_CARD} element={<BankCardTopUpIndex />} />
-    <Route path={ROUTES.TOP_UP_BANK_CARD_SWAP} element={<Swap header="Top-up with bank card" />} />
-    <Route path={ROUTES.TOP_UP_GIFT_CODE} element={<GiftCardTopUpIndex />} />
-    <Route path={ROUTES.TOP_UP_GIFT_CODE_FUND} element={<GiftCardFund />} />
-    <Route path={ROUTES.RESTART_LIGHT} element={<LightModeRestart />} />
-    <Route path={ROUTES.ACCOUNT_WALLET} element={<AccountWallet />} />
-    <Route path={ROUTES.ACCOUNT_CHEQUEBOOK} element={<AccountChequebook />} />
-    <Route path={ROUTES.ACCOUNT_STAMPS} element={<AccountStamps />} />
-    <Route path={ROUTES.ACCOUNT_STAMPS_NEW} element={<CreatePostageStampPage />} />
-    <Route path={ROUTES.ACCOUNT_FEEDS} element={<AccountFeeds />} />
-    <Route path={ROUTES.ACCOUNT_FEEDS_NEW} element={<CreateNewFeed />} />
-    <Route path={ROUTES.ACCOUNT_FEEDS_UPDATE} element={<UpdateFeed />} />
-    <Route path={ROUTES.ACCOUNT_FEEDS_VIEW} element={<FeedSubpage />} />
-    {config.BEE_DESKTOP_ENABLED && <Route path={ROUTES.ACCOUNT_INVITATIONS} element={<GiftCards />} />}
-  </Routes>
-)
+const BaseRouter = (): ReactElement => {
+  const { isBeeDesktop } = useContext(SettingsContext)
+
+  return (
+    <Routes>
+      <Route path={ROUTES.UPLOAD_IN_PROGRESS} element={<Upload />} />
+      <Route path={ROUTES.UPLOAD} element={<UploadLander />} />
+      <Route path={ROUTES.DOWNLOAD} element={<Download />} />
+      <Route path={ROUTES.HASH} element={<Share />} />
+      <Route path={ROUTES.SETTINGS} element={<Settings />} />
+      <Route path={ROUTES.STATUS} element={<Status />} />
+      <Route path={ROUTES.INFO} element={<Info />} />
+      <Route path={ROUTES.TOP_UP} element={<TopUp />} />
+      <Route path={ROUTES.TOP_UP_CRYPTO} element={<CryptoTopUpIndex />} />
+      <Route path={ROUTES.TOP_UP_CRYPTO_SWAP} element={<Swap header="Top-up with cryptocurrencies" />} />
+      <Route path={ROUTES.TOP_UP_BANK_CARD} element={<BankCardTopUpIndex />} />
+      <Route path={ROUTES.TOP_UP_BANK_CARD_SWAP} element={<Swap header="Top-up with bank card" />} />
+      <Route path={ROUTES.TOP_UP_GIFT_CODE} element={<GiftCardTopUpIndex />} />
+      <Route path={ROUTES.TOP_UP_GIFT_CODE_FUND} element={<GiftCardFund />} />
+      <Route path={ROUTES.RESTART_LIGHT} element={<LightModeRestart />} />
+      <Route path={ROUTES.ACCOUNT_WALLET} element={<AccountWallet />} />
+      <Route path={ROUTES.ACCOUNT_CHEQUEBOOK} element={<AccountChequebook />} />
+      <Route path={ROUTES.ACCOUNT_STAMPS} element={<AccountStamps />} />
+      <Route path={ROUTES.ACCOUNT_STAMPS_NEW} element={<CreatePostageStampPage />} />
+      <Route path={ROUTES.ACCOUNT_FEEDS} element={<AccountFeeds />} />
+      <Route path={ROUTES.ACCOUNT_FEEDS_NEW} element={<CreateNewFeed />} />
+      <Route path={ROUTES.ACCOUNT_FEEDS_UPDATE} element={<UpdateFeed />} />
+      <Route path={ROUTES.ACCOUNT_FEEDS_VIEW} element={<FeedSubpage />} />
+      {isBeeDesktop && <Route path={ROUTES.ACCOUNT_INVITATIONS} element={<GiftCards />} />}
+    </Routes>
+  )
+}
 
 export default BaseRouter

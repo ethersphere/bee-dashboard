@@ -22,7 +22,6 @@ import { ROUTES } from '../../routes'
 import { sleepMs } from '../../utils'
 import { getBzzPriceAsDai, performSwap, restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
-import config from '../../config'
 
 const MINIMUM_XDAI = '0.1'
 const MINIMUM_XBZZ = '0.1'
@@ -39,7 +38,7 @@ export function Swap({ header }: Props): ReactElement {
 
   const { providerUrl } = useContext(SettingsContext)
   const { balance, nodeAddresses, nodeInfo } = useContext(BeeContext)
-  const isBeeDesktop = config.BEE_DESKTOP_ENABLED
+  const { isBeeDesktop } = useContext(SettingsContext)
 
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()

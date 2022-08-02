@@ -23,6 +23,7 @@ interface Props {
   beeApiUrl?: string
   beeDebugApiUrl?: string
   lockedApiSettings?: boolean
+  isBeeDesktop?: boolean
 }
 
 if (config.SENTRY_KEY) {
@@ -30,11 +31,16 @@ if (config.SENTRY_KEY) {
   initSentry().catch(e => console.error(e))
 }
 
-const App = ({ beeApiUrl, beeDebugApiUrl, lockedApiSettings }: Props): ReactElement => {
+const App = ({ beeApiUrl, beeDebugApiUrl, lockedApiSettings, isBeeDesktop }: Props): ReactElement => {
   const mainApp = (
     <div className="App">
       <ThemeProvider theme={theme}>
-        <SettingsProvider beeApiUrl={beeApiUrl} beeDebugApiUrl={beeDebugApiUrl} lockedApiSettings={lockedApiSettings}>
+        <SettingsProvider
+          beeApiUrl={beeApiUrl}
+          beeDebugApiUrl={beeDebugApiUrl}
+          lockedApiSettings={lockedApiSettings}
+          isBeeDesktop={isBeeDesktop}
+        >
           <TopUpProvider>
             <BeeProvider>
               <StampsProvider>

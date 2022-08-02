@@ -11,14 +11,15 @@ import ExpandableListItemKey from '../../../components/ExpandableListItemKey'
 import { Loading } from '../../../components/Loading'
 import { SwarmButton } from '../../../components/SwarmButton'
 import TroubleshootConnectionCard from '../../../components/TroubleshootConnectionCard'
-import config from '../../../config'
-import { CheckState, Context } from '../../../providers/Bee'
+import { CheckState, Context as BeeContext } from '../../../providers/Bee'
+import { Context as SettingsContext } from '../../../providers/Settings'
 import { ROUTES } from '../../../routes'
 import { AccountNavigation } from '../AccountNavigation'
 import { Header } from '../Header'
 
 export function AccountWallet(): ReactElement {
-  const { balance, nodeAddresses, nodeInfo, status } = useContext(Context)
+  const { balance, nodeAddresses, nodeInfo, status } = useContext(BeeContext)
+  const { isBeeDesktop } = useContext(SettingsContext)
 
   const navigate = useNavigate()
 
@@ -69,7 +70,7 @@ export function AccountWallet(): ReactElement {
         <SwarmButton onClick={onCheckTransactions} iconType={Link}>
           Check transactions on Blockscout
         </SwarmButton>
-        {config.BEE_DESKTOP_ENABLED && (
+        {isBeeDesktop && (
           <SwarmButton onClick={onInvite} iconType={Gift}>
             Invite to Swarm...
           </SwarmButton>
