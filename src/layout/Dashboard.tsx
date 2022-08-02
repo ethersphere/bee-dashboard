@@ -72,6 +72,7 @@ const Dashboard = (props: Props): ReactElement => {
     latestBeeRelease,
     latestBeeVersionUrl,
     isLoading,
+    latestUserVersion,
   ])
 
   useEffect(() => {
