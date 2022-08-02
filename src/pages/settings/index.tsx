@@ -4,7 +4,6 @@ import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItemInput from '../../components/ExpandableListItemInput'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
-import config from '../../config'
 import { useSnackbar } from 'notistack'
 
 export default function SettingsPage(): ReactElement {
@@ -19,6 +18,7 @@ export default function SettingsPage(): ReactElement {
     ensResolver,
     providerUrl,
     isLoading,
+    isBeeDesktop,
     setAndPersistJsonRpcProvider,
   } = useContext(SettingsContext)
   const { refresh } = useContext(BeeContext)
@@ -39,13 +39,13 @@ export default function SettingsPage(): ReactElement {
           label="Bee API"
           value={apiUrl}
           onConfirm={setApiUrl}
-          locked={lockedApiSettings || config.BEE_DESKTOP_ENABLED}
+          locked={lockedApiSettings || isBeeDesktop}
         />
         <ExpandableListItemInput
           label="Bee Debug API"
           value={apiDebugUrl}
           onConfirm={setDebugApiUrl}
-          locked={lockedApiSettings || config.BEE_DESKTOP_ENABLED}
+          locked={lockedApiSettings || isBeeDesktop}
         />
         <ExpandableListItemInput
           label="Blockchain RPC URL"
@@ -65,7 +65,7 @@ export default function SettingsPage(): ReactElement {
           }}
         />
       </ExpandableList>
-      {config.BEE_DESKTOP_ENABLED && (
+      {isBeeDesktop && (
         <ExpandableList label="Desktop Settings" defaultOpen>
           <ExpandableListItemInput label="CORS" value={cors ?? '-'} locked />
           <ExpandableListItemInput label="Data DIR" value={dataDir ?? '-'} locked />

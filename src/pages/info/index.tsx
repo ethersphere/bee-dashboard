@@ -5,6 +5,7 @@ import ExchangeFunds from 'remixicon-react/ExchangeFundsLineIcon'
 import Upload from 'remixicon-react/UploadLineIcon'
 
 import { Context as BeeContext } from '../../providers/Bee'
+import { Context as SettingsContext } from '../../providers/Settings'
 import Card from '../../components/Card'
 import Map from '../../components/Map'
 import ExpandableListItem from '../../components/ExpandableListItem'
@@ -12,7 +13,6 @@ import { useNavigate } from 'react-router'
 import { ROUTES } from '../../routes'
 import { useIsBeeDesktop, useNewBeeDesktopVersion } from '../../hooks/apiHooks'
 import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../../utils/desktop'
-import config from '../../config'
 import NodeInfoCard from './NodeInfoCard'
 import { chainIdToName } from '../../utils/chain'
 
@@ -28,7 +28,7 @@ export default function Status(): ReactElement {
     chequebookBalance,
     wallet,
   } = useContext(BeeContext)
-  const isBeeDesktop = config.BEE_DESKTOP_ENABLED
+  const { isBeeDesktop } = useContext(SettingsContext)
   const { beeDesktopVersion } = useIsBeeDesktop()
   const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isBeeDesktop)
   const navigate = useNavigate()

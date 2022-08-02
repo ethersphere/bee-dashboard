@@ -1,6 +1,6 @@
 import { Bee, BeeDebug } from '@ethersphere/bee-js'
 import { providers } from 'ethers'
-import { createContext, ReactChild, ReactElement, useEffect, useState } from 'react'
+import { createContext, ReactNode, ReactElement, useEffect, useState } from 'react'
 import { config as appConfig } from '../config'
 import { useGetBeeConfig } from '../hooks/apiHooks'
 import { restartBeeNode, setJsonRpcInDesktop } from '../utils/desktop'
@@ -26,6 +26,7 @@ interface ContextInterface {
   setApiUrl: (url: string) => void
   setDebugApiUrl: (url: string) => void
   setAndPersistJsonRpcProvider: (url: string) => Promise<void>
+  isBeeDesktop: boolean
   isLoading: boolean
   error: Error | null
 }
@@ -45,6 +46,7 @@ const initialValues: ContextInterface = {
   cors: null,
   dataDir: null,
   ensResolver: null,
+  isBeeDesktop: false,
   isLoading: true,
   error: null,
 }
@@ -53,10 +55,11 @@ export const Context = createContext<ContextInterface>(initialValues)
 export const Consumer = Context.Consumer
 
 interface Props {
-  children: ReactChild
+  children: ReactNode
   beeApiUrl?: string
   beeDebugApiUrl?: string
   lockedApiSettings?: boolean
+  isBeeDesktop?: boolean
 }
 
 export function Provider({
@@ -64,6 +67,7 @@ export function Provider({
   beeApiUrl,
   beeDebugApiUrl,
   lockedApiSettings: extLockedApiSettings,
+  isBeeDesktop: extIsBeeDesktop,
 }: Props): ReactElement {
   const [apiUrl, setApiUrl] = useState<string>(initialValues.apiUrl)
   const [apiDebugUrl, setDebugApiUrl] = useState<string>(initialValues.apiDebugUrl)
@@ -74,13 +78,17 @@ export function Provider({
   const [provider, setProvider] = useState(initialValues.provider)
   const { config, isLoading, error } = useGetBeeConfig()
 
+  const isBeeDesktop = extIsBeeDesktop ?? appConfig.BEE_DESKTOP_ENABLED
+
+  console.log({ isBeeDesktop, appConfig }) //eslint-disable-line
+
   async function setAndPersistJsonRpcProvider(providerUrl: string) {
     try {
       localStorage.setItem(LocalStorageKeys.providerUrl, providerUrl)
       setProviderUrl(providerUrl)
       setProvider(new providers.JsonRpcProvider(providerUrl))
 
-      if (appConfig.BEE_DESKTOP_ENABLED) {
+      if (isBeeDesktop) {
         await setJsonRpcInDesktop(providerUrl)
         await restartBeeNode()
       }
@@ -146,6 +154,7 @@ export function Provider({
         dataDir: config?.['data-dir'] ?? null,
         ensResolver: config?.['resolver-options'] ?? null,
         setAndPersistJsonRpcProvider,
+        isBeeDesktop: Boolean(isBeeDesktop),
         isLoading,
         error,
       }}

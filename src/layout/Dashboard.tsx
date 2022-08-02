@@ -6,6 +6,7 @@ import CloseIcon from 'remixicon-react/CloseCircleLineIcon'
 import ErrorBoundary from '../components/ErrorBoundary'
 import SideBar from '../components/SideBar'
 import { Context as BeeContext } from '../providers/Bee'
+import { Context as SettingsContext } from '../providers/Settings'
 import config from '../config'
 import * as Sentry from '@sentry/react'
 import ItsBroken from './ItsBroken'
@@ -29,7 +30,7 @@ const Dashboard = (props: Props): ReactElement => {
   const classes = useStyles()
 
   const { isLoading, isLatestBeeVersion, latestBeeRelease, latestBeeVersionUrl } = useContext(BeeContext)
-  const isBeeDesktop = config.BEE_DESKTOP_ENABLED
+  const { isBeeDesktop } = useContext(SettingsContext)
   const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isBeeDesktop)
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
