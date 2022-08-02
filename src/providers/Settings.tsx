@@ -78,9 +78,7 @@ export function Provider({
   const [provider, setProvider] = useState(initialValues.provider)
   const { config, isLoading, error } = useGetBeeConfig()
 
-  const isBeeDesktop = extIsBeeDesktop ?? appConfig.BEE_DESKTOP_ENABLED
-
-  console.log({ isBeeDesktop, appConfig }) //eslint-disable-line
+  const isBeeDesktop = Boolean(extIsBeeDesktop ?? appConfig.BEE_DESKTOP_ENABLED)
 
   async function setAndPersistJsonRpcProvider(providerUrl: string) {
     try {
@@ -154,7 +152,7 @@ export function Provider({
         dataDir: config?.['data-dir'] ?? null,
         ensResolver: config?.['resolver-options'] ?? null,
         setAndPersistJsonRpcProvider,
-        isBeeDesktop: Boolean(isBeeDesktop),
+        isBeeDesktop,
         isLoading,
         error,
       }}
