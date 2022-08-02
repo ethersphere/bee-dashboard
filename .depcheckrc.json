@@ -14,6 +14,7 @@
     "crypto*",
     "stream*",
     "env-paths",
-    "open"
+    "open",
+    "base64-inline-loader"
   ]
 }

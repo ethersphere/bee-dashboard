@@ -50,9 +50,9 @@
     "notistack": "1.0.10",
     "opener": "1.5.2",
     "qrcode.react": "1.0.1",
-    "react": ">= 17.0.2",
+    "react": ">=17.0.0 || >=18.0.0",
     "react-copy-to-clipboard": "5.0.4",
-    "react-dom": ">= 17.0.2",
+    "react-dom": ">=17.0.0 || >=18.0.0",
     "react-identicons": "1.2.5",
     "react-router": "6.2.1",
     "react-router-dom": "6.2.1",
@@ -163,4 +163,3 @@
     "bee": ">=0.6.0"
   }
 }
-
