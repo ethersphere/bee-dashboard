@@ -35,18 +35,9 @@ module.exports = () => {
           use: ['style-loader', 'css-loader'],
         },
         {
-          test: /\.(png|jp(e*)g|svg|gif)$/,
-          loader: 'file-loader',
-          options: {
-            name: 'assets/[name].[ext]',
-          },
-        },
-        {
-          test: /\.(ttf)$/,
-          loader: 'file-loader',
-          options: {
-            name: 'assets/fonts/[name].[ext]',
-          },
+            test: /\.(jpe?g|png|ttf|eot|svg|woff(2)?)(\?[a-z0-9=&.]+)?$/,
+            use: ['base64-inline-loader'],
+            type: 'javascript/auto'
         },
         {
           test: /\.(ts|js|tsx|jsx)$/,

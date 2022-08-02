@@ -92,6 +92,7 @@
     "babel-loader": "8.1.0",
     "babel-plugin-syntax-dynamic-import": "6.18.0",
     "babel-plugin-tsconfig-paths": "1.0.2",
+    "base64-inline-loader": "^2.0.1",
     "cors": "^2.8.5",
     "depcheck": "^1.4.3",
     "env-paths": "^3.0.0",
@@ -112,6 +113,7 @@
     "prettier": "2.4.1",
     "puppeteer": "^15.4.0",
     "react-scripts": "^5.0.1",
+    "rimraf": "^3.0.2",
     "ts-node": "^10.8.1",
     "typescript": "4.7.3",
     "web-vitals": "2.1.2",
@@ -127,7 +129,7 @@
     "start": "react-scripts start",
     "desktop": "node ./desktop.mjs",
     "build": "react-scripts build",
-    "build:component": "webpack --mode=production",
+    "build:component": "rimraf ./lib && webpack --mode=production",
     "compile:types": "tsc --project tsconfig.lib.json --emitDeclarationOnly --declaration",
     "test": "react-scripts test",
     "test:ui": "node ui-test/index.js",
@@ -161,3 +163,4 @@
     "bee": ">=0.6.0"
   }
 }
+
