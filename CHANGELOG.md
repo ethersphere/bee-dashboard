@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.19.0](https://github.com/ethersphere/bee-dashboard/compare/v0.18.2...v0.19.0) (2022-08-03)
+
+
+### Features
+
+* add loading state to wallet balance ([#508](https://github.com/ethersphere/bee-dashboard/issues/508)) ([b9c008f](https://github.com/ethersphere/bee-dashboard/commit/b9c008f019f5bfe005d11f0208e90ca21b274e97))
+* add wallet endpoint and display blockchain name ([#492](https://github.com/ethersphere/bee-dashboard/issues/492)) ([fd11f01](https://github.com/ethersphere/bee-dashboard/commit/fd11f0166d77a89a2b350f16f9254af91441089d))
+* check whether the app runs within bee-desktop is now an environment variable ([#490](https://github.com/ethersphere/bee-dashboard/issues/490)) ([f01477e](https://github.com/ethersphere/bee-dashboard/commit/f01477ea70e6c343461cce6c1bcee3d738c076de))
+* don't display duplicate notifications with snackbar ([#488](https://github.com/ethersphere/bee-dashboard/issues/488)) ([feeca00](https://github.com/ethersphere/bee-dashboard/commit/feeca008acd523f16e7efdde2fa92ec98fde8bc9))
+* log errorss to consolve when showing error notification ([#489](https://github.com/ethersphere/bee-dashboard/issues/489)) ([6bfe97b](https://github.com/ethersphere/bee-dashboard/commit/6bfe97be5d69adeb13dafad2016d1c76a9d2e67c))
+* make blockchain JSON RPC configurable from settings ([#494](https://github.com/ethersphere/bee-dashboard/issues/494)) ([408b565](https://github.com/ethersphere/bee-dashboard/commit/408b565935a59759af6d3e252ceae6981fb60eb6))
+* pass isBeeDesktop as Bee Dashboard component property ([#510](https://github.com/ethersphere/bee-dashboard/issues/510)) ([4c48657](https://github.com/ethersphere/bee-dashboard/commit/4c48657fca0c22d5d4aaf220ffb278ac67001e1f))
+* reintroduce new bee version notification ([#500](https://github.com/ethersphere/bee-dashboard/issues/500)) ([f53e966](https://github.com/ethersphere/bee-dashboard/commit/f53e9664da8f4d1b6803de09f45a92493957d79d))
+* set default rpc endpoint ([#485](https://github.com/ethersphere/bee-dashboard/issues/485)) ([cba21bb](https://github.com/ethersphere/bee-dashboard/commit/cba21bb2e0e70e0ada01402d44e9ee61a55173cf))
+
+
+### Bug Fixes
+
+* correct website upload path ([#483](https://github.com/ethersphere/bee-dashboard/issues/483)) ([186d035](https://github.com/ethersphere/bee-dashboard/commit/186d0352cfda0408cf7add535d9247a85ce3796d))
+* disable swarm invitation outside of Swarm Desktop ([#497](https://github.com/ethersphere/bee-dashboard/issues/497)) ([f8390d7](https://github.com/ethersphere/bee-dashboard/commit/f8390d7eacc082a7b0a4551a3bc1572e3ce3463e))
+* handle unicode filename and website uploads ([#491](https://github.com/ethersphere/bee-dashboard/issues/491)) ([f82444f](https://github.com/ethersphere/bee-dashboard/commit/f82444f2124cad8bccead01a33cbc9f51d126acf))
+* if the node has error, disable pages that can never load ([#502](https://github.com/ethersphere/bee-dashboard/issues/502)) ([896f6e4](https://github.com/ethersphere/bee-dashboard/commit/896f6e48d988bbc0fe82a63a44bc82b035f30073))
+* new bee version notification is only shown if user bee version is detected ([#512](https://github.com/ethersphere/bee-dashboard/issues/512)) ([1be5cbd](https://github.com/ethersphere/bee-dashboard/commit/1be5cbda6de073f1e569ab92f178d815548a461b))
+
 ## [0.18.2](https://github.com/ethersphere/bee-dashboard/compare/v0.18.1...v0.18.2) (2022-07-06)
 
 
