@@ -6,6 +6,7 @@ import Upload from 'remixicon-react/UploadLineIcon'
 
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
+import { Context as BalanceProvider } from '../../providers/WalletBalance'
 import Card from '../../components/Card'
 import Map from '../../components/Map'
 import ExpandableListItem from '../../components/ExpandableListItem'
@@ -24,14 +25,23 @@ export default function Status(): ReactElement {
     latestBeeVersionUrl,
     topology,
     nodeInfo,
-    balance,
     chequebookBalance,
-    wallet,
+    chainId,
   } = useContext(BeeContext)
   const { isBeeDesktop } = useContext(SettingsContext)
+  const { balance, error } = useContext(BalanceProvider)
   const { beeDesktopVersion } = useIsBeeDesktop()
   const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isBeeDesktop)
   const navigate = useNavigate()
+
+  let balanceText = 'Loading...'
+
+  if (error) {
+    balanceText = 'Could not load...'
+    console.error(error) // eslint-disable-line
+  } else if (balance) {
+    balanceText = `${balance.bzz.toSignificantDigits(4)} xBZZ | ${balance.dai.toSignificantDigits(4)} xDAI`
+  }
 
   return (
     <div>
@@ -46,7 +56,7 @@ export default function Status(): ReactElement {
               onClick: () => navigate(ROUTES.ACCOUNT_WALLET),
             }}
             icon={<Wallet />}
-            title={`${balance?.bzz.toSignificantDigits(4)} xBZZ | ${balance?.dai.toSignificantDigits(4)} xDAI`}
+            title={balanceText}
             subtitle="Current wallet balance."
             status="ok"
           />
@@ -89,7 +99,7 @@ export default function Status(): ReactElement {
                 icon={<ExchangeFunds />}
                 title={
                   chequebookBalance?.availableBalance
-                    ? `${chequebookBalance.availableBalance.toFixedDecimal(4)} xBZZ`
+                    ? `${chequebookBalance.availableBalance.toSignificantDigits(4)} xBZZ`
                     : 'No available balance.'
                 }
                 subtitle="Chequebook not setup."
@@ -149,7 +159,7 @@ export default function Status(): ReactElement {
         }
       />
       <ExpandableListItem label="Mode" value={nodeInfo?.beeMode} />
-      {wallet && <ExpandableListItem label="Blockchain network" value={chainIdToName(wallet.chainID)} />}
+      {chainId && <ExpandableListItem label="Blockchain network" value={chainIdToName(chainId)} />}
     </div>
   )
 }

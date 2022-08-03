@@ -8,7 +8,6 @@ import {
   NodeInfo,
   Peer,
   Topology,
-  WalletBalance,
 } from '@ethersphere/bee-js'
 import { createContext, ReactChild, ReactElement, useContext, useEffect, useState } from 'react'
 import semver from 'semver'
@@ -16,7 +15,6 @@ import PackageJson from '../../package.json'
 import { useLatestBeeRelease } from '../hooks/apiHooks'
 import { Token } from '../models/Token'
 import type { Balance, ChequebookBalance, Settlements } from '../types'
-import { WalletAddress } from '../utils/wallet'
 import { Context as SettingsContext } from './Settings'
 
 const REFRESH_WHEN_OK = 30_000
@@ -46,7 +44,6 @@ interface Status {
 
 interface ContextInterface {
   status: Status
-  balance: WalletAddress | null
   latestPublishedVersion?: string
   latestUserVersion?: string
   latestUserVersionExact?: string
@@ -65,7 +62,7 @@ interface ContextInterface {
   peerCheques: LastChequesResponse | null
   settlements: Settlements | null
   chainState: ChainState | null
-  wallet: WalletBalance | null
+  chainId: number | null
   latestBeeRelease: LatestBeeRelease | null
   isLoading: boolean
   lastUpdate: number | null
@@ -84,7 +81,6 @@ const initialValues: ContextInterface = {
     topology: { isEnabled: false, checkState: CheckState.ERROR },
     chequebook: { isEnabled: false, checkState: CheckState.ERROR },
   },
-  balance: null,
   latestPublishedVersion: undefined,
   latestUserVersion: undefined,
   latestUserVersionExact: undefined,
@@ -103,7 +99,7 @@ const initialValues: ContextInterface = {
   peerCheques: null,
   settlements: null,
   chainState: null,
-  wallet: null,
+  chainId: null,
   latestBeeRelease: null,
   isLoading: true,
   lastUpdate: null,
@@ -191,7 +187,7 @@ function getStatus(
 let isRefreshing = false
 
 export function Provider({ children }: Props): ReactElement {
-  const { beeApi, beeDebugApi, provider } = useContext(SettingsContext)
+  const { beeApi, beeDebugApi } = useContext(SettingsContext)
   const [apiHealth, setApiHealth] = useState<boolean>(false)
   const [debugApiHealth, setDebugApiHealth] = useState<Health | null>(null)
   const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses | null>(null)
@@ -204,8 +200,7 @@ export function Provider({ children }: Props): ReactElement {
   const [peerCheques, setPeerCheques] = useState<LastChequesResponse | null>(null)
   const [settlements, setSettlements] = useState<Settlements | null>(null)
   const [chainState, setChainState] = useState<ChainState | null>(null)
-  const [walletAddress, setWalletAddress] = useState<WalletAddress | null>(initialValues.balance)
-  const [wallet, setWallet] = useState<WalletBalance | null>(null)
+  const [chainId, setChainId] = useState<number | null>(null)
 
   const { latestBeeRelease } = useLatestBeeRelease()
 
@@ -243,18 +238,6 @@ export function Provider({ children }: Props): ReactElement {
 
     if (beeDebugApi !== null) refresh()
   }, [beeDebugApi]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    if (nodeAddresses?.ethereum && provider) {
-      WalletAddress.make(nodeAddresses.ethereum, provider).then(setWalletAddress)
-    }
-  }, [nodeAddresses, provider])
-
-  useEffect(() => {
-    const interval = setInterval(() => walletAddress?.refresh().then(setWalletAddress), REFRESH_WHEN_OK)
-
-    return () => clearInterval(interval)
-  }, [walletAddress])
 
   const refresh = async () => {
     // Don't want to refresh when already refreshing
@@ -361,8 +344,8 @@ export function Provider({ children }: Props): ReactElement {
         // Wallet
         beeDebugApi
           .getWalletBalance({ timeout: TIMEOUT })
-          .then(setWallet)
-          .catch(() => setWallet(null)),
+          .then(({ chainID }) => setChainId(chainID))
+          .catch(() => setChainId(null)),
 
         // Chequebook balance
         chequeBalanceWrapper()
@@ -429,7 +412,6 @@ export function Provider({ children }: Props): ReactElement {
     <Context.Provider
       value={{
         status,
-        balance: walletAddress,
         latestUserVersion,
         latestUserVersionExact,
         latestPublishedVersion,
@@ -454,7 +436,7 @@ export function Provider({ children }: Props): ReactElement {
         peerCheques,
         settlements,
         chainState,
-        wallet,
+        chainId,
         latestBeeRelease,
         isLoading,
         lastUpdate,

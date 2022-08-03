@@ -9,6 +9,7 @@ import { Loading } from '../../components/Loading'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmDivider } from '../../components/SwarmDivider'
 import { Context } from '../../providers/Bee'
+import { Context as BalanceProvider } from '../../providers/WalletBalance'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
 
 const MINIMUM_XDAI = '0.5'
@@ -21,7 +22,8 @@ interface Props {
 }
 
 export default function Index({ header, title, p, next }: Props): ReactElement {
-  const { nodeAddresses, balance } = useContext(Context)
+  const { nodeAddresses } = useContext(Context)
+  const { balance } = useContext(BalanceProvider)
   const navigate = useNavigate()
 
   if (!balance || !nodeAddresses) {

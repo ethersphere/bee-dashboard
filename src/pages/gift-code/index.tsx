@@ -11,7 +11,7 @@ import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { Loading } from '../../components/Loading'
 import { SwarmButton } from '../../components/SwarmButton'
-import { Context as BeeContext } from '../../providers/Bee'
+import { Context as BalanceProvider } from '../../providers/WalletBalance'
 import { Context as TopUpContext } from '../../providers/TopUp'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { createGiftWallet } from '../../utils/desktop'
@@ -24,7 +24,7 @@ const GIFT_WALLET_FUND_BZZ_AMOUNT = Token.fromDecimal('0.5', 16)
 export default function Index(): ReactElement {
   const { giftWallets, addGiftWallet } = useContext(TopUpContext)
   const { provider } = useContext(SettingsContext)
-  const { balance } = useContext(BeeContext)
+  const { balance } = useContext(BalanceProvider)
 
   const [loading, setLoading] = useState(false)
   const [balances, setBalances] = useState<ResolvedWallet[]>([])

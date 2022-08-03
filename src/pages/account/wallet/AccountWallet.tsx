@@ -13,13 +13,15 @@ import { SwarmButton } from '../../../components/SwarmButton'
 import TroubleshootConnectionCard from '../../../components/TroubleshootConnectionCard'
 import { CheckState, Context as BeeContext } from '../../../providers/Bee'
 import { Context as SettingsContext } from '../../../providers/Settings'
+import { Context as BalanceProvider } from '../../../providers/WalletBalance'
 import { ROUTES } from '../../../routes'
 import { AccountNavigation } from '../AccountNavigation'
 import { Header } from '../Header'
 
 export function AccountWallet(): ReactElement {
-  const { balance, nodeAddresses, nodeInfo, status } = useContext(BeeContext)
+  const { nodeAddresses, nodeInfo, status } = useContext(BeeContext)
   const { isBeeDesktop } = useContext(SettingsContext)
+  const { balance } = useContext(BalanceProvider)
 
   const navigate = useNavigate()
 

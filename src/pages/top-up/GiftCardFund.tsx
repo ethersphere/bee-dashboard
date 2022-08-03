@@ -13,6 +13,7 @@ import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmDivider } from '../../components/SwarmDivider'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
+import { Context as BalanceProvider } from '../../providers/WalletBalance'
 import { ROUTES } from '../../routes'
 import { sleepMs } from '../../utils'
 import { restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
@@ -20,9 +21,9 @@ import { ResolvedWallet } from '../../utils/wallet'
 import { BeeModes } from '@ethersphere/bee-js'
 
 export function GiftCardFund(): ReactElement {
-  const { isBeeDesktop } = useContext(SettingsContext)
-  const { nodeAddresses, balance, nodeInfo } = useContext(BeeContext)
-  const { provider, providerUrl } = useContext(SettingsContext)
+  const { nodeAddresses, nodeInfo } = useContext(BeeContext)
+  const { isBeeDesktop, provider, providerUrl } = useContext(SettingsContext)
+  const { balance } = useContext(BalanceProvider)
 
   const [loading, setLoading] = useState(false)
   const [wallet, setWallet] = useState<ResolvedWallet | null>(null)
