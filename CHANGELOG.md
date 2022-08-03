@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.19.1](https://github.com/ethersphere/bee-dashboard/compare/v0.19.0...v0.19.1) (2022-08-03)
+
+
+### Bug Fixes
+
+* compile types when building the library ([#516](https://github.com/ethersphere/bee-dashboard/issues/516)) ([df925b0](https://github.com/ethersphere/bee-dashboard/commit/df925b013bb02a16d308a86050ec8e0e0e361ff7))
+
 ## [0.19.0](https://github.com/ethersphere/bee-dashboard/compare/v0.18.2...v0.19.0) (2022-08-03)
 
 
