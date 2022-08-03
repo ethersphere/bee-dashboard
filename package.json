@@ -129,7 +129,7 @@
     "start": "react-scripts start",
     "desktop": "node ./desktop.mjs",
     "build": "react-scripts build",
-    "build:component": "rimraf ./lib && webpack --mode=production",
+    "build:component": "rimraf ./lib && webpack --mode=production && npm run compile:types",
     "compile:types": "tsc --project tsconfig.lib.json --emitDeclarationOnly --declaration",
     "test": "react-scripts test",
     "test:ui": "node ui-test/index.js",

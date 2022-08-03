@@ -60,9 +60,6 @@ jobs:
       - name: Types check
         run: npm run check:types
 
-      - name: Types build
-        run: npm run compile:types
-
       - name: Update supported Bee action
         uses: ethersphere/update-supported-bee-action@v1
         if: github.ref == 'refs/heads/master'
