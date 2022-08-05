@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getEnvVariable } from '../config'
 import { DaiToken } from '../models/DaiToken'
 import { Token } from '../models/Token'
 import { getJson, postJson, sendRequest } from './net'
@@ -73,9 +74,7 @@ export async function getLatestBeeDesktopVersion(): Promise<string> {
 }
 
 function getDesktopHost(): string {
-  if (process.env.REACT_APP_BEE_DESKTOP_URL) {
-    return process.env.REACT_APP_BEE_DESKTOP_URL
-  }
+  const desktopUrl = getEnvVariable('REACT_APP_BEE_DESKTOP_URL')
 
-  return `http://${window.location.host}`
+  return desktopUrl || `http://${window.location.host}`
 }
