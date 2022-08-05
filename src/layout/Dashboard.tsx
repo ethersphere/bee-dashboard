@@ -7,9 +7,6 @@ import ErrorBoundary from '../components/ErrorBoundary'
 import SideBar from '../components/SideBar'
 import { Context as BeeContext } from '../providers/Bee'
 import { Context as SettingsContext } from '../providers/Settings'
-import config from '../config'
-import * as Sentry from '@sentry/react'
-import ItsBroken from './ItsBroken'
 import { useNewBeeDesktopVersion } from '../hooks/apiHooks'
 import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../utils/desktop'
 
@@ -117,25 +114,13 @@ const Dashboard = (props: Props): ReactElement => {
     </>
   )
 
-  let errorBoundaryWithContent
-
-  if (config.SENTRY_KEY) {
-    errorBoundaryWithContent = (
-      <Sentry.ErrorBoundary
-        showDialog
-        fallback={({ error, componentStack, resetError }) => <ItsBroken message={error.message} />}
-      >
-        {content}
-      </Sentry.ErrorBoundary>
-    )
-  } else {
-    errorBoundaryWithContent = <ErrorBoundary>{content}</ErrorBoundary>
-  }
-
   return (
     <div style={{ display: 'flex' }}>
       <SideBar />
-      <Container className={classes.content}>{errorBoundaryWithContent}</Container>
+      <Container className={classes.content}>
+        {' '}
+        <ErrorBoundary>{content}</ErrorBoundary>
+      </Container>
     </div>
   )
 }

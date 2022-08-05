@@ -14,7 +14,6 @@ import DashboardLogo from '../assets/dashboard-logo.svg'
 import DesktopLogo from '../assets/desktop-logo.svg'
 import { config } from '../config'
 import { ROUTES } from '../routes'
-import Feedback from './Feedback'
 import SideBarItem from './SideBarItem'
 import SideBarStatus from './SideBarStatus'
 import { BeeModes } from '@ethersphere/bee-js'
@@ -133,7 +132,6 @@ export default function SideBar(): ReactElement {
             <Link to={ROUTES.STATUS} className={classes.link}>
               <SideBarStatus path={ROUTES.STATUS} />
             </Link>
-            <Feedback />
           </List>
         </Grid>
       </Grid>
