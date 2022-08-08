@@ -3,7 +3,6 @@ import { ThemeProvider } from '@material-ui/core/styles'
 import { SnackbarProvider } from 'notistack'
 import React, { ReactElement } from 'react'
 import { HashRouter as Router } from 'react-router-dom'
-import * as Sentry from '@sentry/react'
 import './App.css'
 import Dashboard from './layout/Dashboard'
 import { Provider as BeeProvider } from './providers/Bee'
@@ -16,20 +15,12 @@ import { Provider as TopUpProvider } from './providers/TopUp'
 import { Provider as BalanceProvider } from './providers/WalletBalance'
 import BaseRouter from './routes'
 import { theme } from './theme'
-import { config } from './config'
-import ItsBroken from './layout/ItsBroken'
-import { initSentry } from './utils/sentry'
 
 interface Props {
   beeApiUrl?: string
   beeDebugApiUrl?: string
   lockedApiSettings?: boolean
   isBeeDesktop?: boolean
-}
-
-if (config.SENTRY_KEY) {
-  // eslint-disable-next-line no-console
-  initSentry().catch(e => console.error(e))
 }
 
 const App = ({ beeApiUrl, beeDebugApiUrl, lockedApiSettings, isBeeDesktop }: Props): ReactElement => {
@@ -70,18 +61,6 @@ const App = ({ beeApiUrl, beeDebugApiUrl, lockedApiSettings, isBeeDesktop }: Pro
       </ThemeProvider>
     </div>
   )
-
-  // Displays Report Dialog when some component crashes
-  if (config.SENTRY_KEY) {
-    return (
-      <Sentry.ErrorBoundary
-        showDialog
-        fallback={({ error, componentStack, resetError }) => <ItsBroken message={error.message} />}
-      >
-        {mainApp}
-      </Sentry.ErrorBoundary>
-    )
-  }
 
   return mainApp
 }
