@@ -18,7 +18,7 @@ export default function SettingsPage(): ReactElement {
     ensResolver,
     providerUrl,
     isLoading,
-    isBeeDesktop,
+    isDesktop,
     setAndPersistJsonRpcProvider,
   } = useContext(SettingsContext)
   const { refresh } = useContext(BeeContext)
@@ -39,13 +39,13 @@ export default function SettingsPage(): ReactElement {
           label="Bee API"
           value={apiUrl}
           onConfirm={setApiUrl}
-          locked={lockedApiSettings || isBeeDesktop}
+          locked={lockedApiSettings || isDesktop}
         />
         <ExpandableListItemInput
           label="Bee Debug API"
           value={apiDebugUrl}
           onConfirm={setDebugApiUrl}
-          locked={lockedApiSettings || isBeeDesktop}
+          locked={lockedApiSettings || isDesktop}
         />
         <ExpandableListItemInput
           label="Blockchain RPC URL"
@@ -65,7 +65,7 @@ export default function SettingsPage(): ReactElement {
           }}
         />
       </ExpandableList>
-      {isBeeDesktop && (
+      {isDesktop && (
         <ExpandableList label="Desktop Settings" defaultOpen>
           <ExpandableListItemInput label="CORS" value={cors ?? '-'} locked />
           <ExpandableListItemInput label="Data DIR" value={dataDir ?? '-'} locked />

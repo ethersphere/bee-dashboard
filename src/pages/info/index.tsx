@@ -12,8 +12,8 @@ import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as BalanceProvider } from '../../providers/WalletBalance'
 import { ROUTES } from '../../routes'
-import { chainIdToName } from '../../utils/chain'
 import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../../utils/desktop'
+import { chainIdToName } from '../../utils/chain'
 import NodeInfoCard from './NodeInfoCard'
 
 export default function Status(): ReactElement {
@@ -27,10 +27,10 @@ export default function Status(): ReactElement {
     chequebookBalance,
     chainId,
   } = useContext(BeeContext)
-  const { isBeeDesktop } = useContext(SettingsContext)
+  const { isDesktop, desktopUrl } = useContext(SettingsContext)
   const { balance, error } = useContext(BalanceProvider)
-  const { beeDesktopVersion } = useBeeDesktop(isBeeDesktop)
-  const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isBeeDesktop)
+  const { beeDesktopVersion } = useBeeDesktop(isDesktop, desktopUrl)
+  const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isDesktop, desktopUrl)
   const navigate = useNavigate()
 
   let balanceText = 'Loading...'
@@ -114,7 +114,7 @@ export default function Status(): ReactElement {
       <ExpandableListItem label="Connected peers" value={topology?.connected ?? '-'} />
       <ExpandableListItem label="Population" value={topology?.population ?? '-'} />
       <div style={{ height: '16px' }} />
-      {isBeeDesktop && (
+      {isDesktop && (
         <ExpandableListItem
           label="Desktop version"
           value={
@@ -142,7 +142,7 @@ export default function Status(): ReactElement {
               Bee
             </a>
             {` ${latestUserVersion ?? '-'} `}
-            {latestUserVersion && !isBeeDesktop && (
+            {latestUserVersion && !isDesktop && (
               <Button
                 size="small"
                 variant="outlined"

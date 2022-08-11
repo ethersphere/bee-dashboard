@@ -49,23 +49,23 @@ interface ContextInterface {
   latestUserVersionExact?: string
   isLatestBeeVersion: boolean
   latestBeeVersionUrl: string
-  error: Error | null
+  error?: Error
   apiHealth: boolean
-  debugApiHealth: Health | null
-  nodeAddresses: NodeAddresses | null
-  nodeInfo: NodeInfo | null
-  topology: Topology | null
-  chequebookAddress: ChequebookAddressResponse | null
-  peers: Peer[] | null
-  chequebookBalance: ChequebookBalance | null
-  peerBalances: Balance[] | null
-  peerCheques: LastChequesResponse | null
-  settlements: Settlements | null
-  chainState: ChainState | null
-  chainId: number | null
-  latestBeeRelease: LatestBeeRelease | null
+  debugApiHealth?: Health
+  nodeAddresses?: NodeAddresses
+  nodeInfo?: NodeInfo
+  topology?: Topology
+  chequebookAddress?: ChequebookAddressResponse
+  peers?: Peer[]
+  chequebookBalance?: ChequebookBalance
+  peerBalances?: Balance[]
+  peerCheques?: LastChequesResponse
+  settlements?: Settlements
+  chainState?: ChainState
+  chainId?: number
+  latestBeeRelease?: LatestBeeRelease
   isLoading: boolean
-  lastUpdate: number | null
+  lastUpdate?: number
   start: (frequency?: number) => void
   stop: () => void
   refresh: () => Promise<void>
@@ -86,23 +86,8 @@ const initialValues: ContextInterface = {
   latestUserVersionExact: undefined,
   isLatestBeeVersion: false,
   latestBeeVersionUrl: 'https://github.com/ethersphere/bee/releases/latest',
-  error: null,
   apiHealth: false,
-  debugApiHealth: null,
-  nodeAddresses: null,
-  nodeInfo: null,
-  topology: null,
-  chequebookAddress: null,
-  peers: null,
-  chequebookBalance: null,
-  peerBalances: null,
-  peerCheques: null,
-  settlements: null,
-  chainState: null,
-  chainId: null,
-  latestBeeRelease: null,
   isLoading: true,
-  lastUpdate: null,
   start: () => {}, // eslint-disable-line
   stop: () => {}, // eslint-disable-line
   refresh: () => Promise.reject(),
@@ -116,14 +101,14 @@ interface Props {
 }
 
 function getStatus(
-  debugApiHealth: Health | null,
-  nodeAddresses: NodeAddresses | null,
-  nodeInfo: NodeInfo | null,
+  debugApiHealth: Health | undefined,
+  nodeAddresses: NodeAddresses | undefined,
+  nodeInfo: NodeInfo | undefined,
   apiHealth: boolean,
-  topology: Topology | null,
-  chequebookAddress: ChequebookAddressResponse | null,
-  chequebookBalance: ChequebookBalance | null,
-  error: Error | null,
+  topology: Topology | undefined,
+  chequebookAddress: ChequebookAddressResponse | undefined,
+  chequebookBalance: ChequebookBalance | undefined,
+  error: Error | undefined,
 ): Status {
   const status: Status = { ...initialValues.status }
 
@@ -189,25 +174,25 @@ let isRefreshing = false
 export function Provider({ children }: Props): ReactElement {
   const { beeApi, beeDebugApi } = useContext(SettingsContext)
   const [apiHealth, setApiHealth] = useState<boolean>(false)
-  const [debugApiHealth, setDebugApiHealth] = useState<Health | null>(null)
-  const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses | null>(null)
-  const [nodeInfo, setNodeInfo] = useState<NodeInfo | null>(null)
-  const [topology, setNodeTopology] = useState<Topology | null>(null)
-  const [chequebookAddress, setChequebookAddress] = useState<ChequebookAddressResponse | null>(null)
-  const [peers, setPeers] = useState<Peer[] | null>(null)
-  const [chequebookBalance, setChequebookBalance] = useState<ChequebookBalance | null>(null)
-  const [peerBalances, setPeerBalances] = useState<Balance[] | null>(null)
-  const [peerCheques, setPeerCheques] = useState<LastChequesResponse | null>(null)
-  const [settlements, setSettlements] = useState<Settlements | null>(null)
-  const [chainState, setChainState] = useState<ChainState | null>(null)
-  const [chainId, setChainId] = useState<number | null>(null)
+  const [debugApiHealth, setDebugApiHealth] = useState<Health | undefined>()
+  const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses | undefined>()
+  const [nodeInfo, setNodeInfo] = useState<NodeInfo | undefined>()
+  const [topology, setNodeTopology] = useState<Topology | undefined>()
+  const [chequebookAddress, setChequebookAddress] = useState<ChequebookAddressResponse | undefined>()
+  const [peers, setPeers] = useState<Peer[] | undefined>()
+  const [chequebookBalance, setChequebookBalance] = useState<ChequebookBalance | undefined>()
+  const [peerBalances, setPeerBalances] = useState<Balance[] | undefined>()
+  const [peerCheques, setPeerCheques] = useState<LastChequesResponse | undefined>()
+  const [settlements, setSettlements] = useState<Settlements | undefined>()
+  const [chainState, setChainState] = useState<ChainState | undefined>()
+  const [chainId, setChainId] = useState<number | undefined>()
 
   const { latestBeeRelease } = useLatestBeeRelease()
 
-  const [error, setError] = useState<Error | null>(initialValues.error)
+  const [error, setError] = useState<Error | undefined>(initialValues.error)
   const [isLoading, setIsLoading] = useState<boolean>(initialValues.isLoading)
-  const [lastUpdate, setLastUpdate] = useState<number | null>(initialValues.lastUpdate)
-  const [frequency, setFrequency] = useState<number | null>(30000)
+  const [lastUpdate, setLastUpdate] = useState<number | undefined>(initialValues.lastUpdate)
+  const [frequency, setFrequency] = useState<number | undefined>(30000)
 
   const latestPublishedVersion = semver.coerce(latestBeeRelease?.name)?.version
   const latestUserVersion = semver.coerce(debugApiHealth?.version)?.version
@@ -224,17 +209,17 @@ export function Provider({ children }: Props): ReactElement {
   useEffect(() => {
     setIsLoading(true)
 
-    setDebugApiHealth(null)
-    setNodeAddresses(null)
-    setNodeTopology(null)
-    setNodeInfo(null)
-    setPeers(null)
-    setChequebookAddress(null)
-    setChequebookBalance(null)
-    setPeerBalances(null)
-    setPeerCheques(null)
-    setSettlements(null)
-    setChainState(null)
+    setDebugApiHealth(undefined)
+    setNodeAddresses(undefined)
+    setNodeTopology(undefined)
+    setNodeInfo(undefined)
+    setPeers(undefined)
+    setChequebookAddress(undefined)
+    setChequebookBalance(undefined)
+    setPeerBalances(undefined)
+    setPeerCheques(undefined)
+    setSettlements(undefined)
+    setChainState(undefined)
 
     if (beeDebugApi !== null) refresh()
   }, [beeDebugApi]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -252,7 +237,7 @@ export function Provider({ children }: Props): ReactElement {
 
     try {
       isRefreshing = true
-      setError(null)
+      setError(undefined)
 
       // Wrap the chequebook balance call to return BZZ values as Token object
       const chequeBalanceWrapper = async () => {
@@ -297,70 +282,70 @@ export function Provider({ children }: Props): ReactElement {
         beeDebugApi
           .getHealth({ timeout: TIMEOUT })
           .then(setDebugApiHealth)
-          .catch(() => setDebugApiHealth(null)),
+          .catch(() => setDebugApiHealth(undefined)),
 
         // Node Addresses
         beeDebugApi
           .getNodeAddresses({ timeout: TIMEOUT })
           .then(setNodeAddresses)
-          .catch(() => setNodeAddresses(null)),
+          .catch(() => setNodeAddresses(undefined)),
 
         // NodeInfo
         beeDebugApi
           .getNodeInfo({ timeout: TIMEOUT })
           .then(setNodeInfo)
-          .catch(() => setNodeInfo(null)),
+          .catch(() => setNodeInfo(undefined)),
 
         // Network Topology
         beeDebugApi
           .getTopology({ timeout: TIMEOUT })
           .then(setNodeTopology)
-          .catch(() => setNodeTopology(null)),
+          .catch(() => setNodeTopology(undefined)),
 
         // Peers
         beeDebugApi
           .getPeers({ timeout: TIMEOUT })
           .then(setPeers)
-          .catch(() => setPeers(null)),
+          .catch(() => setPeers(undefined)),
 
         // Chequebook address
         beeDebugApi
           .getChequebookAddress({ timeout: TIMEOUT })
           .then(setChequebookAddress)
-          .catch(() => setChequebookAddress(null)),
+          .catch(() => setChequebookAddress(undefined)),
 
         // Cheques
         beeDebugApi
           .getLastCheques({ timeout: TIMEOUT })
           .then(setPeerCheques)
-          .catch(() => setPeerCheques(null)),
+          .catch(() => setPeerCheques(undefined)),
 
         // Chain state
         beeDebugApi
           .getChainState({ timeout: TIMEOUT })
           .then(setChainState)
-          .catch(() => setChainState(null)),
+          .catch(() => setChainState(undefined)),
 
         // Wallet
         beeDebugApi
           .getWalletBalance({ timeout: TIMEOUT })
           .then(({ chainID }) => setChainId(chainID))
-          .catch(() => setChainId(null)),
+          .catch(() => setChainId(undefined)),
 
         // Chequebook balance
         chequeBalanceWrapper()
           .then(setChequebookBalance)
-          .catch(() => setChequebookBalance(null)),
+          .catch(() => setChequebookBalance(undefined)),
 
         // Peer balances
         peerBalanceWrapper()
           .then(setPeerBalances)
-          .catch(() => setPeerBalances(null)),
+          .catch(() => setPeerBalances(undefined)),
 
         // Settlements
         settlementsWrapper()
           .then(setSettlements)
-          .catch(() => setSettlements(null)),
+          .catch(() => setSettlements(undefined)),
       ]
 
       await Promise.allSettled(promises)
@@ -377,7 +362,7 @@ export function Provider({ children }: Props): ReactElement {
     refresh()
     setFrequency(freq)
   }
-  const stop = () => setFrequency(null)
+  const stop = () => setFrequency(undefined)
 
   const status = getStatus(
     debugApiHealth,

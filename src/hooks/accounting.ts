@@ -7,7 +7,7 @@ import { Balance, Settlements, Settlement } from '../types'
 interface UseAccountingHook {
   isLoadingUncashed: boolean
   totalUncashed: Token
-  accounting: Accounting[] | null
+  accounting?: Accounting[]
 }
 
 export interface Accounting {
@@ -29,12 +29,12 @@ export interface Accounting {
  * @returns
  */
 function mergeAccounting(
-  balances: Balance[] | null,
+  balances?: Balance[],
   settlements?: Settlement[],
   uncashedAmounts?: LastCashoutActionResponse[],
-): Accounting[] | null {
+): Accounting[] | undefined {
   // Settlements or balances are still loading or there is an error -> return null
-  if (!balances || !settlements) return null
+  if (!balances || !settlements) return
 
   const accounting: Record<string, Accounting> = {}
 
@@ -79,9 +79,9 @@ function mergeAccounting(
 }
 
 export const useAccounting = (
-  beeDebugApi: BeeDebug | null,
-  settlements: Settlements | null,
-  balances: Balance[] | null,
+  beeDebugApi?: BeeDebug,
+  settlements?: Settlements,
+  balances?: Balance[],
 ): UseAccountingHook => {
   const [isLoadingUncashed, setIsloadingUncashed] = useState<boolean>(false)
   const [uncashedAmounts, setUncashedAmounts] = useState<LastCashoutActionResponse[] | undefined>(undefined)

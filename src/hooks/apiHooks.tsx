@@ -1,17 +1,17 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { config } from '../config'
-import { getLatestBeeDesktopVersion } from '../utils/desktop'
 import { getJson } from '../utils/net'
+import { getLatestBeeDesktopVersion } from '../utils/desktop'
+import { GITHUB_REPO_URL } from '../constants'
 
 export interface LatestBeeReleaseHook {
-  latestBeeRelease: LatestBeeRelease | null
+  latestBeeRelease?: LatestBeeRelease
   isLoadingLatestBeeRelease: boolean
-  error: Error | null
+  error?: Error
 }
 
 export interface BeeDesktopHook {
-  error: Error | null
+  error?: Error
   isLoading: boolean
   beeDesktopVersion: string
   desktopAutoUpdateEnabled: boolean
@@ -21,27 +21,26 @@ export interface NewDesktopVersionHook {
   newBeeDesktopVersion: string
 }
 
-interface Config {
-  BEE_DESKTOP_URL: string
-}
-
-export const useBeeDesktop = (isBeeDesktop = false, conf: Config = config): BeeDesktopHook => {
+/**
+ * Gets information about Desktop backend.
+ */
+export const useBeeDesktop = (isBeeDesktop = false, desktopUrl: string): BeeDesktopHook => {
   const [desktopAutoUpdateEnabled, setDesktopAutoUpdateEnabled] = useState<boolean>(true)
   const [beeDesktopVersion, setBeeDesktopVersion] = useState<string>('')
   const [isLoading, setLoading] = useState<boolean>(true)
-  const [error, setError] = useState<Error | null>(null)
+  const [error, setError] = useState<Error | undefined>()
 
   useEffect(() => {
     if (!isBeeDesktop) {
       setLoading(false)
-      setError(null)
+      setError(undefined)
     } else {
       axios
-        .get(`${conf.BEE_DESKTOP_URL}/info`)
+        .get(`${desktopUrl}/info`)
         .then(res => {
           setBeeDesktopVersion(res.data?.version)
           setDesktopAutoUpdateEnabled(res.data?.autoUpdateEnabled)
-          setError(null)
+          setError(undefined)
         })
         .catch(e => {
           setError(e)
@@ -50,13 +49,13 @@ export const useBeeDesktop = (isBeeDesktop = false, conf: Config = config): BeeD
           setLoading(false)
         })
     }
-  }, [conf, isBeeDesktop])
+  }, [desktopUrl, isBeeDesktop])
 
   return { error, isLoading, beeDesktopVersion, desktopAutoUpdateEnabled }
 }
 
-async function checkNewVersion(conf: Config): Promise<string> {
-  const resJson = await (await fetch(`${conf.BEE_DESKTOP_URL}/info`)).json()
+async function checkNewVersion(desktopUrl: string): Promise<string> {
+  const resJson = await (await fetch(`${desktopUrl}/info`)).json()
   const currentVersion = resJson.version
   const latestVersion = await getLatestBeeDesktopVersion()
 
@@ -67,7 +66,7 @@ async function checkNewVersion(conf: Config): Promise<string> {
   return ''
 }
 
-export function useNewBeeDesktopVersion(isBeeDesktop: boolean, conf: Config = config): NewDesktopVersionHook {
+export function useNewBeeDesktopVersion(isBeeDesktop: boolean, desktopUrl: string): NewDesktopVersionHook {
   const [newBeeDesktopVersion, setNewBeeDesktopVersion] = useState<string>('')
 
   useEffect(() => {
@@ -75,12 +74,12 @@ export function useNewBeeDesktopVersion(isBeeDesktop: boolean, conf: Config = co
       return
     }
 
-    checkNewVersion(conf).then(version => {
+    checkNewVersion(desktopUrl).then(version => {
       if (version !== '') {
         setNewBeeDesktopVersion(version)
       }
     })
-  }, [isBeeDesktop, conf])
+  }, [isBeeDesktop, desktopUrl])
 
   return { newBeeDesktopVersion }
 }
@@ -105,42 +104,42 @@ export interface BeeConfig {
 }
 
 export interface GetBeeConfig {
-  config: BeeConfig | null
+  config?: BeeConfig
   isLoading: boolean
-  error: Error | null
+  error?: Error
 }
 
-export const useGetBeeConfig = (conf: Config = config): GetBeeConfig => {
-  const [beeConfig, setBeeConfig] = useState<BeeConfig | null>(null)
+export const useGetBeeConfig = (desktopUrl: string): GetBeeConfig => {
+  const [beeConfig, setBeeConfig] = useState<BeeConfig | undefined>()
   const [isLoading, setLoading] = useState<boolean>(true)
-  const [error, setError] = useState<Error | null>(null)
+  const [error, setError] = useState<Error | undefined>()
 
   useEffect(() => {
-    getJson<BeeConfig>(`${conf.BEE_DESKTOP_URL}/config`)
+    getJson<BeeConfig>(`${desktopUrl}/config`)
       .then(beeConf => {
         setBeeConfig(beeConf)
-        setError(null)
+        setError(undefined)
       })
       .catch((err: Error) => {
         setError(err)
-        setBeeConfig(null)
+        setBeeConfig(undefined)
       })
       .finally(() => {
         setLoading(false)
       })
-  }, [conf])
+  }, [desktopUrl])
 
   return { config: beeConfig, isLoading, error }
 }
 
 export const useLatestBeeRelease = (): LatestBeeReleaseHook => {
-  const [latestBeeRelease, setLatestBeeRelease] = useState<LatestBeeRelease | null>(null)
+  const [latestBeeRelease, setLatestBeeRelease] = useState<LatestBeeRelease | undefined>()
   const [isLoadingLatestBeeRelease, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<Error | null>(null)
+  const [error, setError] = useState<Error | undefined>()
 
   useEffect(() => {
     axios
-      .get(`${config.GITHUB_REPO_URL}/releases/latest`)
+      .get(`${GITHUB_REPO_URL}/releases/latest`)
       .then(res => {
         setLatestBeeRelease(res.data)
       })

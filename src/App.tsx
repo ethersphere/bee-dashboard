@@ -31,7 +31,7 @@ const App = ({ beeApiUrl, beeDebugApiUrl, lockedApiSettings, isBeeDesktop }: Pro
           beeApiUrl={beeApiUrl}
           beeDebugApiUrl={beeDebugApiUrl}
           lockedApiSettings={lockedApiSettings}
-          isBeeDesktop={isBeeDesktop}
+          isDesktop={isBeeDesktop}
         >
           <TopUpProvider>
             <BeeProvider>

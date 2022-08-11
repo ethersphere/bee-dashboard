@@ -41,7 +41,7 @@ afterAll(async () => {
 
 describe('useBeeDesktop', () => {
   it('should not have error when connected to bee-desktop', async () => {
-    const { result, waitFor } = renderHook(() => useBeeDesktop(true, { BEE_DESKTOP_URL: serverCorrectURL }))
+    const { result, waitFor } = renderHook(() => useBeeDesktop(true, serverCorrectURL))
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false)

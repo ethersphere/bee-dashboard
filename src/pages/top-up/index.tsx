@@ -39,7 +39,7 @@ const MINIMUM_XBZZ = '0.1'
 export default function TopUp(): ReactElement {
   const navigate = useNavigate()
   const styles = useStyles()
-  const { isBeeDesktop } = useContext(SettingsContext)
+  const { isDesktop } = useContext(SettingsContext)
   const { nodeInfo, status } = useContext(BeeContext)
   const { balance } = useContext(BalanceProvider)
   const { providerUrl } = useContext(SettingsContext)
@@ -47,7 +47,7 @@ export default function TopUp(): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
 
   const canUpgradeToLightNode =
-    isBeeDesktop &&
+    isDesktop &&
     nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT &&
     balance?.dai.toDecimal.gte(MINIMUM_XDAI) &&
     balance?.bzz.toDecimal.gte(MINIMUM_XBZZ)

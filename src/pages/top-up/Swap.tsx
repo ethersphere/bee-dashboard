@@ -37,7 +37,7 @@ export function Swap({ header }: Props): ReactElement {
   const [userInputSwap, setUserInputSwap] = useState<string | null>(null)
   const [price, setPrice] = useState(DaiToken.fromDecimal('0.6', 18))
 
-  const { providerUrl, isBeeDesktop } = useContext(SettingsContext)
+  const { providerUrl, isDesktop } = useContext(SettingsContext)
   const { nodeAddresses, nodeInfo } = useContext(BeeContext)
   const { balance } = useContext(BalanceProvider)
 
@@ -75,7 +75,7 @@ export function Swap({ header }: Props): ReactElement {
   const daiAfterSwap = new DaiToken(balance.dai.toBigNumber.minus(daiToSwap.toBigNumber))
   const bzzAfterSwap = new BzzToken(daiToSwap.toBigNumber.dividedBy(100).dividedToIntegerBy(price.toDecimal))
 
-  const canUpgradeToLightNode = isBeeDesktop && nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT
+  const canUpgradeToLightNode = isDesktop && nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT
 
   async function restart() {
     try {

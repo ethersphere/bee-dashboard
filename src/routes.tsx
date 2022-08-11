@@ -61,7 +61,7 @@ export const ACCOUNT_TABS = [
 ]
 
 const BaseRouter = (): ReactElement => {
-  const { isBeeDesktop } = useContext(SettingsContext)
+  const { isDesktop } = useContext(SettingsContext)
 
   return (
     <Routes>
@@ -88,7 +88,7 @@ const BaseRouter = (): ReactElement => {
       <Route path={ROUTES.ACCOUNT_FEEDS_NEW} element={<CreateNewFeed />} />
       <Route path={ROUTES.ACCOUNT_FEEDS_UPDATE} element={<UpdateFeed />} />
       <Route path={ROUTES.ACCOUNT_FEEDS_VIEW} element={<FeedSubpage />} />
-      {isBeeDesktop && <Route path={ROUTES.ACCOUNT_INVITATIONS} element={<GiftCards />} />}
+      {isDesktop && <Route path={ROUTES.ACCOUNT_INVITATIONS} element={<GiftCards />} />}
     </Routes>
   )
 }

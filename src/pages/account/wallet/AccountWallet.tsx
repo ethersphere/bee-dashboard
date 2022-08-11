@@ -20,7 +20,7 @@ import { Header } from '../Header'
 
 export function AccountWallet(): ReactElement {
   const { nodeAddresses, nodeInfo, status } = useContext(BeeContext)
-  const { isBeeDesktop } = useContext(SettingsContext)
+  const { isDesktop } = useContext(SettingsContext)
   const { balance } = useContext(BalanceProvider)
 
   const navigate = useNavigate()
@@ -72,7 +72,7 @@ export function AccountWallet(): ReactElement {
         <SwarmButton onClick={onCheckTransactions} iconType={Link}>
           Check transactions on Blockscout
         </SwarmButton>
-        {isBeeDesktop && (
+        {isDesktop && (
           <SwarmButton onClick={onInvite} iconType={Gift}>
             Invite to Swarm...
           </SwarmButton>
