@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.19.2](https://github.com/ethersphere/bee-dashboard/compare/v0.19.1...v0.19.2) (2022-08-08)
+
+
+### Bug Fixes
+
+* remove sentry ([#520](https://github.com/ethersphere/bee-dashboard/issues/520)) ([0260df6](https://github.com/ethersphere/bee-dashboard/commit/0260df61de0619202a819b79820cfbef6e3757ae))
+
 ## [0.19.1](https://github.com/ethersphere/bee-dashboard/compare/v0.19.0...v0.19.1) (2022-08-03)
 
 
