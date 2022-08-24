@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.19.3](https://github.com/ethersphere/bee-dashboard/compare/v0.19.2...v0.19.3) (2022-08-24)
+
+
+### Bug Fixes
+
+* pass isBeeDesktop from provider to hook ([#525](https://github.com/ethersphere/bee-dashboard/issues/525)) ([677b6de](https://github.com/ethersphere/bee-dashboard/commit/677b6de0f82b02e1487420e3c08fbd19a949f97b))
+
 ## [0.19.2](https://github.com/ethersphere/bee-dashboard/compare/v0.19.1...v0.19.2) (2022-08-08)
 
 
