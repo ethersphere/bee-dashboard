@@ -1,21 +1,20 @@
-import { ReactElement, useContext } from 'react'
 import { Button } from '@material-ui/core'
-import Wallet from 'remixicon-react/Wallet3LineIcon'
+import { ReactElement, useContext } from 'react'
+import { useNavigate } from 'react-router'
 import ExchangeFunds from 'remixicon-react/ExchangeFundsLineIcon'
 import Upload from 'remixicon-react/UploadLineIcon'
-
+import Wallet from 'remixicon-react/Wallet3LineIcon'
+import Card from '../../components/Card'
+import ExpandableListItem from '../../components/ExpandableListItem'
+import Map from '../../components/Map'
+import { useBeeDesktop, useNewBeeDesktopVersion } from '../../hooks/apiHooks'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as BalanceProvider } from '../../providers/WalletBalance'
-import Card from '../../components/Card'
-import Map from '../../components/Map'
-import ExpandableListItem from '../../components/ExpandableListItem'
-import { useNavigate } from 'react-router'
 import { ROUTES } from '../../routes'
-import { useIsBeeDesktop, useNewBeeDesktopVersion } from '../../hooks/apiHooks'
+import { chainIdToName } from '../../utils/chain'
 import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../../utils/desktop'
 import NodeInfoCard from './NodeInfoCard'
-import { chainIdToName } from '../../utils/chain'
 
 export default function Status(): ReactElement {
   const {
@@ -30,7 +29,7 @@ export default function Status(): ReactElement {
   } = useContext(BeeContext)
   const { isBeeDesktop } = useContext(SettingsContext)
   const { balance, error } = useContext(BalanceProvider)
-  const { beeDesktopVersion } = useIsBeeDesktop()
+  const { beeDesktopVersion } = useBeeDesktop(isBeeDesktop)
   const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isBeeDesktop)
   const navigate = useNavigate()
 
