@@ -1,8 +1,8 @@
 import { renderHook } from '@testing-library/react-hooks'
-import express from 'express'
 import cors from 'cors'
+import express from 'express'
 import type { Server } from 'http'
-import { useIsBeeDesktop } from './apiHooks'
+import { useBeeDesktop } from './apiHooks'
 
 interface AddressInfo {
   address: string
@@ -39,9 +39,9 @@ afterAll(async () => {
   await new Promise(resolve => serverCorrect.close(resolve))
 })
 
-describe('useIsBeeDesktop', () => {
+describe('useBeeDesktop', () => {
   it('should not have error when connected to bee-desktop', async () => {
-    const { result, waitFor } = renderHook(() => useIsBeeDesktop(true, { BEE_DESKTOP_URL: serverCorrectURL }))
+    const { result, waitFor } = renderHook(() => useBeeDesktop(true, { BEE_DESKTOP_URL: serverCorrectURL }))
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false)

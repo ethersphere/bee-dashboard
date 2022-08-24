@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { config } from '../config'
-import { getJson } from '../utils/net'
 import { getLatestBeeDesktopVersion } from '../utils/desktop'
+import { getJson } from '../utils/net'
 
 export interface LatestBeeReleaseHook {
   latestBeeRelease: LatestBeeRelease | null
@@ -10,7 +10,7 @@ export interface LatestBeeReleaseHook {
   error: Error | null
 }
 
-export interface IsBeeDesktopHook {
+export interface BeeDesktopHook {
   error: Error | null
   isLoading: boolean
   beeDesktopVersion: string
@@ -25,12 +25,7 @@ interface Config {
   BEE_DESKTOP_URL: string
 }
 
-/**
- * Detect if the dashboard is run within bee-desktop
- *
- * @returns isBeeDesktop true if this is run within bee-desktop
- */
-export const useIsBeeDesktop = (isBeeDesktop = false, conf: Config = config): IsBeeDesktopHook => {
+export const useBeeDesktop = (isBeeDesktop = false, conf: Config = config): BeeDesktopHook => {
   const [desktopAutoUpdateEnabled, setDesktopAutoUpdateEnabled] = useState<boolean>(true)
   const [beeDesktopVersion, setBeeDesktopVersion] = useState<string>('')
   const [isLoading, setLoading] = useState<boolean>(true)
