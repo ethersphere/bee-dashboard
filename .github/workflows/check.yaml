@@ -20,8 +20,6 @@ jobs:
       REACT_APP_BEE_HOST: https://api.test-node.staging.ethswarm.org/
       REACT_APP_BEE_DEBUG_HOST: https://debug.test-node.staging.ethswarm.org/
       REACT_APP_DEV_MODE: 1
-      REACT_APP_SENTRY_KEY: ${{ secrets.SENTRY_KEY }}
-      REACT_APP_SENTRY_ENVIRONMENT: 'preview'
 
     steps:
       - uses: actions/checkout@v2
