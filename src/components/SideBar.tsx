@@ -12,11 +12,11 @@ import { Context as BeeContext } from '../providers/Bee'
 import { Context as SettingsContext } from '../providers/Settings'
 import DashboardLogo from '../assets/dashboard-logo.svg'
 import DesktopLogo from '../assets/desktop-logo.svg'
-import { config } from '../config'
 import { ROUTES } from '../routes'
 import SideBarItem from './SideBarItem'
 import SideBarStatus from './SideBarStatus'
 import { BeeModes } from '@ethersphere/bee-js'
+import { BEE_DOCS_HOST } from '../constants'
 
 const drawerWidth = 300
 
@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function SideBar(): ReactElement {
   const classes = useStyles()
-  const { isBeeDesktop } = useContext(SettingsContext)
+  const { isDesktop } = useContext(SettingsContext)
   const { nodeInfo } = useContext(BeeContext)
 
   const navBarItems = [
@@ -99,7 +99,7 @@ export default function SideBar(): ReactElement {
       <Grid container direction="column" justifyContent="space-between" className={classes.root}>
         <Grid className={classes.logo}>
           <Link to={ROUTES.INFO}>
-            <img alt="swarm" src={isBeeDesktop ? DesktopLogo : DashboardLogo} />
+            <img alt="swarm" src={isDesktop ? DesktopLogo : DashboardLogo} />
           </Link>
         </Grid>
         <Grid>
@@ -118,7 +118,7 @@ export default function SideBar(): ReactElement {
           </List>
           <Divider className={classes.divider} />
           <List>
-            <MUILink href={config.BEE_DOCS_HOST} target="_blank" className={classes.link}>
+            <MUILink href={BEE_DOCS_HOST} target="_blank" className={classes.link}>
               <SideBarItem
                 iconStart={<DocsIcon className={classes.icon} />}
                 iconEnd={<ExternalLinkIcon className={classes.icon} color="#595959" />}

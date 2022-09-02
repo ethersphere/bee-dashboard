@@ -94,7 +94,15 @@ npm start
 
 The Bee Dashboard runs in development mode on [http://localhost:3031/](http://localhost:3031/)
 
-> Setting the `REACT_APP_DEV_MODE=1` environment variable, or opening Bee Dashboard with the query string `?devMode=1` loosens some checks. This makes it possible to develop Bee Dashboard without having connected peers and chequebook properly set up, effectively supporting the dev mode of Bee itself.
+#### Environmental variables
+
+The CRA supports to specify "environmental variables" during build time which are then hardcoded into the served static files. 
+We support following variables:
+
+ - `REACT_APP_BEE_DESKTOP_ENABLED` (`boolean`) that toggles if the Dashboard is in Desktop mode or not.
+ - `REACT_APP_BEE_DESKTOP_URL` (`string`) defines custom URL where the Desktop API is expected. By default, it is same origin under which the Dashboard is served.
+ - `REACT_APP_BEE_API_URL` (`string`) defines custom Bee API URL to be used as default one. By default, the `http://localhost:1633` is used.
+ - `REACT_APP_BEE_DEBUG_API_URL` (`string`) defines custom Bee Debug API URL to be used as default one. By default, the `http://localhost:1635` is used.
 
 #### Swarm Desktop development
 

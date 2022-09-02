@@ -23,7 +23,7 @@ const GIFT_WALLET_FUND_BZZ_AMOUNT = Token.fromDecimal('0.5', 16)
 
 export default function Index(): ReactElement {
   const { giftWallets, addGiftWallet } = useContext(TopUpContext)
-  const { provider } = useContext(SettingsContext)
+  const { provider, desktopUrl } = useContext(SettingsContext)
   const { balance } = useContext(BalanceProvider)
 
   const [loading, setLoading] = useState(false)
@@ -50,7 +50,7 @@ export default function Index(): ReactElement {
     try {
       const wallet = Wallet.createRandom()
       addGiftWallet(wallet)
-      await createGiftWallet(wallet.address)
+      await createGiftWallet(desktopUrl, wallet.address)
       enqueueSnackbar('Succesfully funded gift wallet', { variant: 'success' })
     } catch (error) {
       console.error(error) // eslint-disable-line

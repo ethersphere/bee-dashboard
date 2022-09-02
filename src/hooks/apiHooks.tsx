@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { config } from '../config'
 import { getLatestBeeDesktopVersion } from '../utils/desktop'
 import { getJson } from '../utils/net'
+import { GITHUB_REPO_URL } from '../constants'
 
 export interface LatestBeeReleaseHook {
   latestBeeRelease: LatestBeeRelease | null
@@ -25,7 +25,7 @@ interface Config {
   BEE_DESKTOP_URL: string
 }
 
-export const useBeeDesktop = (isBeeDesktop = false, conf: Config = config): BeeDesktopHook => {
+export const useBeeDesktop = (isBeeDesktop = false, desktopUrl: string): BeeDesktopHook => {
   const [desktopAutoUpdateEnabled, setDesktopAutoUpdateEnabled] = useState<boolean>(true)
   const [beeDesktopVersion, setBeeDesktopVersion] = useState<string>('')
   const [isLoading, setLoading] = useState<boolean>(true)
@@ -37,7 +37,7 @@ export const useBeeDesktop = (isBeeDesktop = false, conf: Config = config): BeeD
       setError(null)
     } else {
       axios
-        .get(`${conf.BEE_DESKTOP_URL}/info`)
+        .get(`${desktopUrl}/info`)
         .then(res => {
           setBeeDesktopVersion(res.data?.version)
           setDesktopAutoUpdateEnabled(res.data?.autoUpdateEnabled)
@@ -50,13 +50,13 @@ export const useBeeDesktop = (isBeeDesktop = false, conf: Config = config): BeeD
           setLoading(false)
         })
     }
-  }, [conf, isBeeDesktop])
+  }, [desktopUrl, isBeeDesktop])
 
   return { error, isLoading, beeDesktopVersion, desktopAutoUpdateEnabled }
 }
 
-async function checkNewVersion(conf: Config): Promise<string> {
-  const resJson = await (await fetch(`${conf.BEE_DESKTOP_URL}/info`)).json()
+async function checkNewVersion(desktopUrl: string): Promise<string> {
+  const resJson = await (await fetch(`${desktopUrl}/info`)).json()
   const currentVersion = resJson.version
   const latestVersion = await getLatestBeeDesktopVersion()
 
@@ -67,7 +67,7 @@ async function checkNewVersion(conf: Config): Promise<string> {
   return ''
 }
 
-export function useNewBeeDesktopVersion(isBeeDesktop: boolean, conf: Config = config): NewDesktopVersionHook {
+export function useNewBeeDesktopVersion(isBeeDesktop: boolean, desktopUrl: string): NewDesktopVersionHook {
   const [newBeeDesktopVersion, setNewBeeDesktopVersion] = useState<string>('')
 
   useEffect(() => {
@@ -75,12 +75,12 @@ export function useNewBeeDesktopVersion(isBeeDesktop: boolean, conf: Config = co
       return
     }
 
-    checkNewVersion(conf).then(version => {
+    checkNewVersion(desktopUrl).then(version => {
       if (version !== '') {
         setNewBeeDesktopVersion(version)
       }
     })
-  }, [isBeeDesktop, conf])
+  }, [isBeeDesktop, desktopUrl])
 
   return { newBeeDesktopVersion }
 }
@@ -110,13 +110,13 @@ export interface GetBeeConfig {
   error: Error | null
 }
 
-export const useGetBeeConfig = (conf: Config = config): GetBeeConfig => {
+export const useGetBeeConfig = (desktopUrl: string): GetBeeConfig => {
   const [beeConfig, setBeeConfig] = useState<BeeConfig | null>(null)
   const [isLoading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
-    getJson<BeeConfig>(`${conf.BEE_DESKTOP_URL}/config`)
+    getJson<BeeConfig>(`${desktopUrl}/config`)
       .then(beeConf => {
         setBeeConfig(beeConf)
         setError(null)
@@ -128,7 +128,7 @@ export const useGetBeeConfig = (conf: Config = config): GetBeeConfig => {
       .finally(() => {
         setLoading(false)
       })
-  }, [conf])
+  }, [desktopUrl])
 
   return { config: beeConfig, isLoading, error }
 }
@@ -140,7 +140,7 @@ export const useLatestBeeRelease = (): LatestBeeReleaseHook => {
 
   useEffect(() => {
     axios
-      .get(`${config.GITHUB_REPO_URL}/releases/latest`)
+      .get(`${GITHUB_REPO_URL}/releases/latest`)
       .then(res => {
         setLatestBeeRelease(res.data)
       })

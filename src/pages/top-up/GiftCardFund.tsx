@@ -22,7 +22,7 @@ import { BeeModes } from '@ethersphere/bee-js'
 
 export function GiftCardFund(): ReactElement {
   const { nodeAddresses, nodeInfo } = useContext(BeeContext)
-  const { isBeeDesktop, provider, providerUrl } = useContext(SettingsContext)
+  const { isDesktop, desktopUrl, provider, providerUrl } = useContext(SettingsContext)
   const { balance } = useContext(BalanceProvider)
 
   const [loading, setLoading] = useState(false)
@@ -45,13 +45,13 @@ export function GiftCardFund(): ReactElement {
     return <Loading />
   }
 
-  const canUpgradeToLightNode = isBeeDesktop && nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT
+  const canUpgradeToLightNode = isDesktop && nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT
 
   async function restart() {
     try {
       await sleepMs(5_000)
-      await upgradeToLightNode(providerUrl)
-      await restartBeeNode()
+      await upgradeToLightNode(desktopUrl, providerUrl)
+      await restartBeeNode(desktopUrl)
       enqueueSnackbar('Upgraded to light node', { variant: 'success' })
       navigate(ROUTES.RESTART_LIGHT)
     } catch (error) {

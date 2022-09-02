@@ -8,7 +8,6 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { Loading } from '../../components/Loading'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
-import config from '../../config'
 import { META_FILE_NAME, PREVIEW_FILE_NAME } from '../../constants'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
@@ -78,7 +77,7 @@ export function Share(): ReactElement {
     } catch (e) {} // eslint-disable-line no-empty
 
     if (previewFile) {
-      setPreview(`${config.BEE_API_HOST}/bzz/${reference}/${PREVIEW_FILE_NAME}`)
+      setPreview(`${apiUrl}/bzz/${reference}/${PREVIEW_FILE_NAME}`)
     }
 
     setMetadata(metadata)

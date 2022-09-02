@@ -1,9 +1,9 @@
 import { Typography } from '@material-ui/core/'
 import { ReactElement } from 'react'
 import Identicon from 'react-identicons'
-import { config } from '../config'
 import ClipboardCopy from './ClipboardCopy'
 import QRCodeModal from './QRCodeModal'
+import { BLOCKCHAIN_EXPLORER_URL } from '../constants'
 
 interface Props {
   address: string | undefined
@@ -36,7 +36,7 @@ export default function EthereumAddress(props: Props): ReactElement {
                     }
                   : { marginRight: '7px' }
               }
-              href={`${config.BLOCKCHAIN_EXPLORER_URL}/${props.transaction ? 'tx' : 'address'}/${props.address}`}
+              href={`${BLOCKCHAIN_EXPLORER_URL}/${props.transaction ? 'tx' : 'address'}/${props.address}`}
               target="_blank"
               rel="noreferrer"
             >

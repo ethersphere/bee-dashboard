@@ -8,7 +8,7 @@ import SideBar from '../components/SideBar'
 import { Context as BeeContext } from '../providers/Bee'
 import { Context as SettingsContext } from '../providers/Settings'
 import { useNewBeeDesktopVersion } from '../hooks/apiHooks'
-import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../utils/desktop'
+import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../constants'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -28,13 +28,13 @@ const Dashboard = (props: Props): ReactElement => {
 
   const { isLoading, isLatestBeeVersion, latestBeeRelease, latestBeeVersionUrl, latestUserVersion } =
     useContext(BeeContext)
-  const { isBeeDesktop } = useContext(SettingsContext)
-  const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isBeeDesktop)
+  const { isDesktop, desktopUrl } = useContext(SettingsContext)
+  const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isDesktop, desktopUrl)
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
   // New version of Bee client notification
   useEffect(() => {
-    if (!isLoading && !isBeeDesktop && !isLatestBeeVersion && latestBeeRelease && latestUserVersion) {
+    if (!isLoading && !isDesktop && !isLatestBeeVersion && latestBeeRelease && latestUserVersion) {
       enqueueSnackbar(`There is new Bee version ${latestBeeRelease?.name}!`, {
         variant: 'warning',
         preventDuplicate: true,
@@ -65,7 +65,7 @@ const Dashboard = (props: Props): ReactElement => {
     closeSnackbar,
     enqueueSnackbar,
     isLatestBeeVersion,
-    isBeeDesktop,
+    isDesktop,
     latestBeeRelease,
     latestBeeVersionUrl,
     isLoading,
