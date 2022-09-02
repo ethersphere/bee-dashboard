@@ -2,6 +2,7 @@ import { Component, ErrorInfo, ReactElement } from 'react'
 
 interface Props {
   children: ReactElement
+  errorReporting?: (err: Error) => void
 }
 
 interface State {
@@ -9,8 +10,11 @@ interface State {
 }
 
 export default class ErrorBoundary extends Component<Props, State> {
+  private errorReporting?: (err: Error) => void
+
   constructor(props: Props) {
     super(props)
+    this.errorReporting = props.errorReporting
     this.state = { error: null }
   }
 
@@ -20,7 +24,10 @@ export default class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    // You can also log the error to an error reporting service
+    if (this.errorReporting) {
+      this.errorReporting(error)
+    }
+
     console.error({ error, errorInfo }) // eslint-disable-line
   }
 

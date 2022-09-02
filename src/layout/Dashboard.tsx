@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   children?: ReactElement
+  errorReporting?: (err: Error) => void
 }
 
 const Dashboard = (props: Props): ReactElement => {
@@ -119,7 +120,7 @@ const Dashboard = (props: Props): ReactElement => {
       <SideBar />
       <Container className={classes.content}>
         {' '}
-        <ErrorBoundary>{content}</ErrorBoundary>
+        <ErrorBoundary errorReporting={props.errorReporting}>{content}</ErrorBoundary>
       </Container>
     </div>
   )
