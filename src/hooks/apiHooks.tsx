@@ -21,10 +21,6 @@ export interface NewDesktopVersionHook {
   newBeeDesktopVersion: string
 }
 
-interface Config {
-  BEE_DESKTOP_URL: string
-}
-
 export const useBeeDesktop = (isBeeDesktop = false, desktopUrl: string): BeeDesktopHook => {
   const [desktopAutoUpdateEnabled, setDesktopAutoUpdateEnabled] = useState<boolean>(true)
   const [beeDesktopVersion, setBeeDesktopVersion] = useState<string>('')
