@@ -1,81 +1,47 @@
 import axios from 'axios'
 import { DaiToken } from '../models/DaiToken'
 import { Token } from '../models/Token'
-import { getJson, postJson, sendRequest } from './net'
+import { postJson } from './net'
+import { BEE_DESKTOP_LATEST_RELEASE_PAGE_API } from '../constants'
 
-interface DesktopStatus {
-  status: 0 | 1 | 2
-  address: string | null
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  config: Record<string, any>
-}
-
-export const BEE_DESKTOP_LATEST_RELEASE_PAGE = 'https://github.com/ethersphere/bee-desktop/releases/latest'
-
-export async function getDesktopStatus(): Promise<DesktopStatus> {
-  const response = await getJson(`${getDesktopHost()}/status`)
-
-  return response as DesktopStatus
-}
-
-export async function getBzzPriceAsDai(): Promise<Token> {
-  const response = await axios.get(`${getDesktopHost()}/price`)
+export async function getBzzPriceAsDai(desktopUrl: string): Promise<Token> {
+  const response = await axios.get(`${desktopUrl}/price`)
 
   return DaiToken.fromDecimal(response.data, 18)
 }
 
-export async function upgradeToLightNode(rpcProvider: string): Promise<void> {
-  await updateDesktopConfiguration({
+export async function upgradeToLightNode(desktopUrl: string, rpcProvider: string): Promise<void> {
+  await updateDesktopConfiguration(desktopUrl, {
     'chain-enable': true,
     'swap-enable': true,
     'swap-endpoint': rpcProvider,
   })
 }
 
-export async function setJsonRpcInDesktop(value: string): Promise<void> {
-  await updateDesktopConfiguration({
+export async function setJsonRpcInDesktop(desktopUrl: string, value: string): Promise<void> {
+  await updateDesktopConfiguration(desktopUrl, {
     'swap-endpoint': value,
   })
 }
 
-async function updateDesktopConfiguration(values: Record<string, unknown>): Promise<void> {
-  await postJson(`${getDesktopHost()}/config`, values)
+async function updateDesktopConfiguration(desktopUrl: string, values: Record<string, unknown>): Promise<void> {
+  await postJson(`${desktopUrl}/config`, values)
 }
 
-export async function restartBeeNode(): Promise<void> {
-  await postJson(`${getDesktopHost()}/restart`)
+export async function restartBeeNode(desktopUrl: string): Promise<void> {
+  await postJson(`${desktopUrl}/restart`)
 }
 
-export async function createGiftWallet(address: string): Promise<void> {
-  await postJson(`${getDesktopHost()}/gift-wallet/${address}`)
+export async function createGiftWallet(desktopUrl: string, address: string): Promise<void> {
+  await postJson(`${desktopUrl}/gift-wallet/${address}`)
 }
 
-export async function performSwap(daiAmount: string): Promise<void> {
-  await postJson(`${getDesktopHost()}/swap`, { dai: daiAmount })
-}
-
-export async function getBeeDesktopLogs(): Promise<string> {
-  const response = await sendRequest(`${getDesktopHost()}/logs/bee-desktop`, 'GET')
-
-  return response as unknown as string
-}
-
-export async function getBeeLogs(): Promise<string> {
-  const response = await sendRequest(`${getDesktopHost()}/logs/bee`, 'GET')
-
-  return response as unknown as string
+export async function performSwap(desktopUrl: string, daiAmount: string): Promise<void> {
+  await postJson(`${desktopUrl}/swap`, { dai: daiAmount })
 }
 
 export async function getLatestBeeDesktopVersion(): Promise<string> {
-  const response = await (await fetch('https://api.github.com/repos/ethersphere/bee-desktop/releases/latest')).json()
+  const response = await (await fetch(BEE_DESKTOP_LATEST_RELEASE_PAGE_API)).json()
 
   return response.tag_name.replace('v', '') // We get for example "v0.12.1"
-}
-
-function getDesktopHost(): string {
-  if (process.env.REACT_APP_BEE_DESKTOP_URL) {
-    return process.env.REACT_APP_BEE_DESKTOP_URL
-  }
-
-  return `http://${window.location.host}`
 }

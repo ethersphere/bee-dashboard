@@ -31,13 +31,21 @@ interface Props {
   header: string
 }
 
+function isPositiveDecimal(value: string): boolean {
+  try {
+    return new BigNumber(value).isPositive()
+  } catch {
+    return false
+  }
+}
+
 export function Swap({ header }: Props): ReactElement {
   const [loading, setLoading] = useState(false)
   const [hasSwapped, setSwapped] = useState(false)
   const [userInputSwap, setUserInputSwap] = useState<string | null>(null)
   const [price, setPrice] = useState(DaiToken.fromDecimal('0.6', 18))
 
-  const { providerUrl, isBeeDesktop } = useContext(SettingsContext)
+  const { providerUrl, isDesktop, desktopUrl } = useContext(SettingsContext)
   const { nodeAddresses, nodeInfo } = useContext(BeeContext)
   const { balance } = useContext(BalanceProvider)
 
@@ -46,8 +54,8 @@ export function Swap({ header }: Props): ReactElement {
 
   useEffect(() => {
     // eslint-disable-next-line no-console
-    getBzzPriceAsDai().then(setPrice).catch(console.error)
-  }, [])
+    getBzzPriceAsDai(desktopUrl).then(setPrice).catch(console.error)
+  }, [desktopUrl])
 
   if (!balance || !nodeAddresses) {
     return <Loading />
@@ -58,14 +66,6 @@ export function Swap({ header }: Props): ReactElement {
 
   let daiToSwap: DaiToken
 
-  function isPositiveDecimal(value: string): boolean {
-    try {
-      return new BigNumber(value).isPositive()
-    } catch {
-      return false
-    }
-  }
-
   if (userInputSwap && isPositiveDecimal(userInputSwap)) {
     daiToSwap = DaiToken.fromDecimal(userInputSwap, 18)
   } else {
@@ -75,13 +75,14 @@ export function Swap({ header }: Props): ReactElement {
   const daiAfterSwap = new DaiToken(balance.dai.toBigNumber.minus(daiToSwap.toBigNumber))
   const bzzAfterSwap = new BzzToken(daiToSwap.toBigNumber.dividedBy(100).dividedToIntegerBy(price.toDecimal))
 
-  const canUpgradeToLightNode = isBeeDesktop && nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT
+  const canUpgradeToLightNode = isDesktop && nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT
 
   async function restart() {
     try {
       await sleepMs(5_000)
-      await upgradeToLightNode(providerUrl)
-      await restartBeeNode()
+      await upgradeToLightNode(desktopUrl, providerUrl)
+      await restartBeeNode(desktopUrl)
+
       enqueueSnackbar('Upgraded to light node', { variant: 'success' })
       navigate(ROUTES.RESTART_LIGHT)
     } catch (error) {
@@ -96,8 +97,9 @@ export function Swap({ header }: Props): ReactElement {
     }
     setLoading(true)
     setSwapped(true)
+
     try {
-      await performSwap(daiToSwap.toString)
+      await performSwap(desktopUrl, daiToSwap.toString)
       enqueueSnackbar('Successfully swapped', { variant: 'success' })
 
       if (canUpgradeToLightNode) await restart()

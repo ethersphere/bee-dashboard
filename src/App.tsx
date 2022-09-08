@@ -20,10 +20,11 @@ interface Props {
   beeApiUrl?: string
   beeDebugApiUrl?: string
   lockedApiSettings?: boolean
-  isBeeDesktop?: boolean
+  isDesktop?: boolean
+  desktopUrl?: string
 }
 
-const App = ({ beeApiUrl, beeDebugApiUrl, lockedApiSettings, isBeeDesktop }: Props): ReactElement => {
+const App = ({ beeApiUrl, beeDebugApiUrl, lockedApiSettings, isDesktop, desktopUrl }: Props): ReactElement => {
   const mainApp = (
     <div className="App">
       <ThemeProvider theme={theme}>
@@ -31,7 +32,8 @@ const App = ({ beeApiUrl, beeDebugApiUrl, lockedApiSettings, isBeeDesktop }: Pro
           beeApiUrl={beeApiUrl}
           beeDebugApiUrl={beeDebugApiUrl}
           lockedApiSettings={lockedApiSettings}
-          isBeeDesktop={isBeeDesktop}
+          isDesktop={isDesktop}
+          desktopUrl={desktopUrl}
         >
           <TopUpProvider>
             <BeeProvider>

@@ -19,7 +19,6 @@ jobs:
     env:
       REACT_APP_BEE_HOST: https://api.test-node.staging.ethswarm.org/
       REACT_APP_BEE_DEBUG_HOST: https://debug.test-node.staging.ethswarm.org/
-      REACT_APP_DEV_MODE: 1
 
     steps:
       - uses: actions/checkout@v2
