@@ -22,9 +22,17 @@ interface Props {
   lockedApiSettings?: boolean
   isDesktop?: boolean
   desktopUrl?: string
+  errorReporting?: (err: Error) => void
 }
 
-const App = ({ beeApiUrl, beeDebugApiUrl, lockedApiSettings, isDesktop, desktopUrl }: Props): ReactElement => {
+const App = ({
+  beeApiUrl,
+  beeDebugApiUrl,
+  lockedApiSettings,
+  isDesktop,
+  desktopUrl,
+  errorReporting,
+}: Props): ReactElement => {
   const mainApp = (
     <div className="App">
       <ThemeProvider theme={theme}>
@@ -46,7 +54,7 @@ const App = ({ beeApiUrl, beeDebugApiUrl, lockedApiSettings, isDesktop, desktopU
                           <Router>
                             <>
                               <CssBaseline />
-                              <Dashboard>
+                              <Dashboard errorReporting={errorReporting}>
                                 <BaseRouter />
                               </Dashboard>
                             </>
