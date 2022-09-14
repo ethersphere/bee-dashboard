@@ -30,7 +30,7 @@ export default function Status(): ReactElement {
   const { isDesktop, desktopUrl } = useContext(SettingsContext)
   const { balance, error } = useContext(BalanceProvider)
   const { beeDesktopVersion } = useBeeDesktop(isDesktop, desktopUrl)
-  const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isDesktop, desktopUrl)
+  const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isDesktop, desktopUrl, false)
   const navigate = useNavigate()
 
   let balanceText = 'Loading...'

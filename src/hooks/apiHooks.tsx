@@ -63,11 +63,15 @@ async function checkNewVersion(desktopUrl: string): Promise<string> {
   return ''
 }
 
-export function useNewBeeDesktopVersion(isBeeDesktop: boolean, desktopUrl: string): NewDesktopVersionHook {
+export function useNewBeeDesktopVersion(
+  isBeeDesktop: boolean,
+  desktopUrl: string,
+  desktopAutoUpdateEnabled: boolean,
+): NewDesktopVersionHook {
   const [newBeeDesktopVersion, setNewBeeDesktopVersion] = useState<string>('')
 
   useEffect(() => {
-    if (!isBeeDesktop) {
+    if (!isBeeDesktop || desktopAutoUpdateEnabled) {
       return
     }
 
@@ -76,7 +80,7 @@ export function useNewBeeDesktopVersion(isBeeDesktop: boolean, desktopUrl: strin
         setNewBeeDesktopVersion(version)
       }
     })
-  }, [isBeeDesktop, desktopUrl])
+  }, [isBeeDesktop, desktopUrl, desktopAutoUpdateEnabled])
 
   return { newBeeDesktopVersion }
 }
