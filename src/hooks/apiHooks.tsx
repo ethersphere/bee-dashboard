@@ -80,7 +80,7 @@ export function useNewBeeDesktopVersion(
         setNewBeeDesktopVersion(version)
       }
     })
-  }, [isBeeDesktop, desktopUrl])
+  }, [isBeeDesktop, desktopUrl, desktopAutoUpdateEnabled])
 
   return { newBeeDesktopVersion }
 }

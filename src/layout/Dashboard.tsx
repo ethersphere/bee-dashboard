@@ -107,7 +107,7 @@ const Dashboard = (props: Props): ReactElement => {
         ),
       })
     }
-  }, [enqueueSnackbar, closeSnackbar, newBeeDesktopVersion])
+  }, [enqueueSnackbar, closeSnackbar, newBeeDesktopVersion, desktopAutoUpdateEnabled])
 
   const content = (
     <>
