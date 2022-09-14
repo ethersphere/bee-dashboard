@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.20.0](https://github.com/ethersphere/bee-dashboard/compare/v0.19.3...v0.20.0) (2022-09-14)
+
+
+### Features
+
+* error reporting callback ([#530](https://github.com/ethersphere/bee-dashboard/issues/530)) ([0c74dae](https://github.com/ethersphere/bee-dashboard/commit/0c74dae4e88916cf54c3c0500b37203b865e48a7))
+
+
+### Bug Fixes
+
+* show update notifications only on non-auto-updating Swarm Desktops ([#543](https://github.com/ethersphere/bee-dashboard/issues/543)) ([528a810](https://github.com/ethersphere/bee-dashboard/commit/528a8106907ef176bcdb68b3386c2f3f9ea98a47))
+
 ## [0.19.3](https://github.com/ethersphere/bee-dashboard/compare/v0.19.2...v0.19.3) (2022-08-24)
 
 
