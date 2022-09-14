@@ -7,7 +7,7 @@ import ErrorBoundary from '../components/ErrorBoundary'
 import SideBar from '../components/SideBar'
 import { Context as BeeContext } from '../providers/Bee'
 import { Context as SettingsContext } from '../providers/Settings'
-import { useNewBeeDesktopVersion } from '../hooks/apiHooks'
+import { useBeeDesktop, useNewBeeDesktopVersion } from '../hooks/apiHooks'
 import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../constants'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -30,7 +30,8 @@ const Dashboard = (props: Props): ReactElement => {
   const { isLoading, isLatestBeeVersion, latestBeeRelease, latestBeeVersionUrl, latestUserVersion } =
     useContext(BeeContext)
   const { isDesktop, desktopUrl } = useContext(SettingsContext)
-  const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isDesktop, desktopUrl)
+  const { desktopAutoUpdateEnabled } = useBeeDesktop(isDesktop, desktopUrl)
+  const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isDesktop, desktopUrl, desktopAutoUpdateEnabled)
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
   // New version of Bee client notification
@@ -74,6 +75,11 @@ const Dashboard = (props: Props): ReactElement => {
   ])
 
   useEffect(() => {
+    // When autoupdate is enabled then we leave the version check for the built-in Electron update mechanism
+    if (desktopAutoUpdateEnabled) {
+      return
+    }
+
     if (newBeeDesktopVersion !== '') {
       enqueueSnackbar(`There is new Swarm Dashboard version ${newBeeDesktopVersion}!`, {
         variant: 'warning',
