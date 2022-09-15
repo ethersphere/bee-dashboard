@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.2](https://github.com/ethersphere/bee-dashboard/compare/v0.20.1...v0.20.2) (2022-09-15)
+
+
+### Bug Fixes
+
+* stamp purchasing ([#551](https://github.com/ethersphere/bee-dashboard/issues/551)) ([c0456a3](https://github.com/ethersphere/bee-dashboard/commit/c0456a3bf6d541457b706670b1a757d2b1d70f10))
+
 ## [0.20.1](https://github.com/ethersphere/bee-dashboard/compare/v0.20.0...v0.20.1) (2022-09-15)
 
 
