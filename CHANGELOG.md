@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.20.1](https://github.com/ethersphere/bee-dashboard/compare/v0.20.0...v0.20.1) (2022-09-15)
+
+
+### Bug Fixes
+
+* revert bee env. variable names and add default rpc var ([#545](https://github.com/ethersphere/bee-dashboard/issues/545)) ([5295bd5](https://github.com/ethersphere/bee-dashboard/commit/5295bd5b012962846aa15ff12ca4234f0c8b37f7))
+* rpc endpoint setting ultra-light mode logic ([#547](https://github.com/ethersphere/bee-dashboard/issues/547)) ([e2dd077](https://github.com/ethersphere/bee-dashboard/commit/e2dd077118faf3b6071fc8327e37e317e0174975))
+
 ## [0.20.0](https://github.com/ethersphere/bee-dashboard/compare/v0.19.3...v0.20.0) (2022-09-14)
 
 
