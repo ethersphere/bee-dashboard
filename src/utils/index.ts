@@ -1,4 +1,4 @@
-import { BatchId, BeeDebug, PostageBatch } from '@ethersphere/bee-js'
+import { BatchId, BeeDebug, BeeResponseError, PostageBatch } from '@ethersphere/bee-js'
 import { decodeCid } from '@ethersphere/swarm-cid'
 import { BigNumber } from 'bignumber.js'
 import { BZZ_LINK_DOMAIN } from '../constants'
@@ -229,7 +229,7 @@ export function shortenText(text: string, length = 20, separator = '[…]'): str
 }
 
 const DEFAULT_POLLING_FREQUENCY = 1_000
-const DEFAULT_STAMP_USABLE_TIMEOUT = 240_000
+const DEFAULT_STAMP_USABLE_TIMEOUT = 5 * 60_000
 
 interface Options {
   pollingFrequency?: number
@@ -254,9 +254,17 @@ async function waitForStamp(
   const pollingFrequency = options?.pollingFrequency || DEFAULT_POLLING_FREQUENCY
 
   for (let i = 0; i < timeout; i += pollingFrequency) {
-    const stamp = await beeDebug.getPostageBatch(batchId)
+    try {
+      const stamp = await beeDebug.getPostageBatch(batchId)
 
-    if (stamp[field]) return stamp
+      if (stamp[field]) return stamp
+    } catch (e) {
+      // TODO: Workaround for https://github.com/ethersphere/bee/issues/3300
+      if ((e as BeeResponseError).message !== 'Bad Request: cannot get batch') {
+        throw e
+      }
+    }
+
     await sleepMs(pollingFrequency)
   }
 
