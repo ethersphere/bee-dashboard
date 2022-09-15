@@ -9,8 +9,6 @@ const LocalStorageKeys = {
   providerUrl: 'json-rpc-provider',
 }
 
-const providerUrl = localStorage.getItem('json-rpc-provider') || DEFAULT_RPC_URL
-
 interface ContextInterface {
   apiUrl: string
   apiDebugUrl: string
@@ -20,8 +18,8 @@ interface ContextInterface {
   desktopApiKey: string
   isDesktop: boolean
   desktopUrl: string
-  providerUrl: string
-  provider: providers.JsonRpcProvider
+  rpcProviderUrl: string
+  rpcProvider: providers.JsonRpcProvider
   cors: string | null
   dataDir: string | null
   ensResolver: string | null
@@ -44,8 +42,8 @@ const initialValues: ContextInterface = {
   desktopApiKey: '',
   desktopUrl: window.location.origin,
   setAndPersistJsonRpcProvider: async () => {}, // eslint-disable-line
-  providerUrl,
-  provider: new providers.JsonRpcProvider(providerUrl),
+  rpcProviderUrl: '',
+  rpcProvider: new providers.JsonRpcProvider(''),
   cors: null,
   dataDir: null,
   ensResolver: null,
@@ -62,6 +60,7 @@ interface InitialSettings {
   lockedApiSettings?: boolean
   isDesktop?: boolean
   desktopUrl?: string
+  defaultRpcUrl?: string
 }
 
 interface Props extends InitialSettings {
@@ -71,14 +70,16 @@ interface Props extends InitialSettings {
 export function Provider({ children, ...propsSettings }: Props): ReactElement {
   const desktopUrl = propsSettings.desktopUrl ?? initialValues.desktopUrl
   const isDesktop = Boolean(propsSettings.isDesktop)
+  const propsProviderUrl =
+    localStorage.getItem(LocalStorageKeys.providerUrl) || propsSettings.defaultRpcUrl || DEFAULT_RPC_URL
 
   const [apiUrl, setApiUrl] = useState<string>(initialValues.apiUrl)
   const [apiDebugUrl, setDebugApiUrl] = useState<string>(initialValues.apiDebugUrl)
   const [beeApi, setBeeApi] = useState<Bee | null>(null)
   const [beeDebugApi, setBeeDebugApi] = useState<BeeDebug | null>(null)
   const [desktopApiKey, setDesktopApiKey] = useState<string>(initialValues.desktopApiKey)
-  const [providerUrl, setProviderUrl] = useState(initialValues.providerUrl)
-  const [provider, setProvider] = useState(initialValues.provider)
+  const [rpcProviderUrl, setRpcProviderUrl] = useState(propsProviderUrl)
+  const [rpcProvider, setRpcProvider] = useState(new providers.JsonRpcProvider(propsProviderUrl))
   const { config, isLoading, error } = useGetBeeConfig(desktopUrl)
 
   const url = makeHttpUrl(
@@ -133,16 +134,16 @@ export function Provider({ children, ...propsSettings }: Props): ReactElement {
         desktopApiKey,
         isDesktop,
         desktopUrl,
-        provider,
-        providerUrl,
+        rpcProvider,
+        rpcProviderUrl,
         cors: config?.['cors-allowed-origins'] ?? null,
         dataDir: config?.['data-dir'] ?? null,
         ensResolver: config?.['resolver-options'] ?? null,
         setAndPersistJsonRpcProvider: setAndPersistJsonRpcProviderClosure(
           isDesktop,
           desktopUrl,
-          setProviderUrl,
-          setProvider,
+          setRpcProviderUrl,
+          setRpcProvider,
         ),
         isLoading,
         error,

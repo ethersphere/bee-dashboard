@@ -23,7 +23,7 @@ const GIFT_WALLET_FUND_BZZ_AMOUNT = Token.fromDecimal('0.5', 16)
 
 export default function Index(): ReactElement {
   const { giftWallets, addGiftWallet } = useContext(TopUpContext)
-  const { provider, desktopUrl } = useContext(SettingsContext)
+  const { rpcProvider, desktopUrl } = useContext(SettingsContext)
   const { balance } = useContext(BalanceProvider)
 
   const [loading, setLoading] = useState(false)
@@ -33,13 +33,13 @@ export default function Index(): ReactElement {
     async function mapGiftWallets() {
       const results = []
       for (const giftWallet of giftWallets) {
-        results.push(await ResolvedWallet.make(giftWallet, provider))
+        results.push(await ResolvedWallet.make(giftWallet, rpcProvider))
       }
       setBalances(results)
     }
 
     mapGiftWallets()
-  }, [giftWallets, provider])
+  }, [giftWallets, rpcProvider])
 
   const { enqueueSnackbar } = useSnackbar()
   const navigate = useNavigate()

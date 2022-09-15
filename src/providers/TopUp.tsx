@@ -27,17 +27,17 @@ interface Props {
 
 export function Provider({ children }: Props): ReactElement {
   const [giftWallets, setGiftWallets] = useState(initialValues.giftWallets)
-  const { provider } = useContext(SettingsContext)
+  const { rpcProvider } = useContext(SettingsContext)
 
   useEffect(() => {
-    if (provider === null) return
+    if (rpcProvider === null) return
 
     const existingGiftWallets = localStorage.getItem(LocalStorageKeys.giftWallets)
 
     if (existingGiftWallets) {
-      setGiftWallets(JSON.parse(existingGiftWallets).map((privateKey: string) => new Wallet(privateKey, provider)))
+      setGiftWallets(JSON.parse(existingGiftWallets).map((privateKey: string) => new Wallet(privateKey, rpcProvider)))
     }
-  }, [provider])
+  }, [rpcProvider])
 
   function addGiftWallet(wallet: Wallet) {
     const newArray = [...giftWallets, wallet]
