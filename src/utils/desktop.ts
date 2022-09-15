@@ -12,7 +12,6 @@ export async function getBzzPriceAsDai(desktopUrl: string): Promise<Token> {
 
 export async function upgradeToLightNode(desktopUrl: string, rpcProvider: string): Promise<void> {
   await updateDesktopConfiguration(desktopUrl, {
-    'chain-enable': true,
     'swap-enable': true,
     'swap-endpoint': rpcProvider,
   })

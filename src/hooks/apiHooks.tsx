@@ -94,13 +94,10 @@ export interface BeeConfig {
   'swap-initial-deposit': bigint
   mainnet: boolean
   'full-node': boolean
-  'chain-enable': boolean
   'cors-allowed-origins': string
   'resolver-options': string
   'use-postage-snapshot': boolean
   'data-dir': string
-  transaction: string
-  'block-hash': string
   'swap-endpoint'?: string
 }
 
