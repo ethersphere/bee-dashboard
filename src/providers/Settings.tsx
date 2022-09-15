@@ -2,7 +2,6 @@ import { Bee, BeeDebug } from '@ethersphere/bee-js'
 import { providers } from 'ethers'
 import { createContext, ReactNode, ReactElement, useEffect, useState } from 'react'
 import { useGetBeeConfig } from '../hooks/apiHooks'
-import { restartBeeNode, setJsonRpcInDesktop } from '../utils/desktop'
 import { DEFAULT_BEE_API_HOST, DEFAULT_BEE_DEBUG_API_HOST, DEFAULT_RPC_URL } from '../constants'
 
 const LocalStorageKeys = {
@@ -25,7 +24,7 @@ interface ContextInterface {
   ensResolver: string | null
   setApiUrl: (url: string) => void
   setDebugApiUrl: (url: string) => void
-  setAndPersistJsonRpcProvider: (url: string) => Promise<void>
+  setAndPersistJsonRpcProvider: (url: string) => void
   isLoading: boolean
   error: Error | null
 }
@@ -139,12 +138,7 @@ export function Provider({ children, ...propsSettings }: Props): ReactElement {
         cors: config?.['cors-allowed-origins'] ?? null,
         dataDir: config?.['data-dir'] ?? null,
         ensResolver: config?.['resolver-options'] ?? null,
-        setAndPersistJsonRpcProvider: setAndPersistJsonRpcProviderClosure(
-          isDesktop,
-          desktopUrl,
-          setRpcProviderUrl,
-          setRpcProvider,
-        ),
+        setAndPersistJsonRpcProvider: setAndPersistJsonRpcProviderClosure(setRpcProviderUrl, setRpcProvider),
         isLoading,
         error,
       }}
@@ -163,23 +157,12 @@ function makeHttpUrl(string: string): string {
 }
 
 function setAndPersistJsonRpcProviderClosure(
-  isDesktop: boolean,
-  desktopUrl: string,
   setProviderUrl: (url: string) => void,
   setProvider: (prov: providers.JsonRpcProvider) => void,
 ) {
-  return async (providerUrl: string) => {
-    try {
-      localStorage.setItem(LocalStorageKeys.providerUrl, providerUrl)
-      setProviderUrl(providerUrl)
-      setProvider(new providers.JsonRpcProvider(providerUrl))
-
-      if (isDesktop) {
-        await setJsonRpcInDesktop(desktopUrl, providerUrl)
-        await restartBeeNode(desktopUrl)
-      }
-    } catch (error) {
-      console.error(error) // eslint-disable-line
-    }
+  return (providerUrl: string) => {
+    localStorage.setItem(LocalStorageKeys.providerUrl, providerUrl)
+    setProviderUrl(providerUrl)
+    setProvider(new providers.JsonRpcProvider(providerUrl))
   }
 }

@@ -5,6 +5,8 @@ import ExpandableListItemInput from '../../components/ExpandableListItemInput'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { useSnackbar } from 'notistack'
+import { restartBeeNode, setJsonRpcInDesktop } from '../../utils/desktop'
+import { BeeModes } from '@ethersphere/bee-js'
 
 export default function SettingsPage(): ReactElement {
   const {
@@ -19,10 +21,36 @@ export default function SettingsPage(): ReactElement {
     rpcProviderUrl,
     isLoading,
     isDesktop,
+    desktopUrl,
     setAndPersistJsonRpcProvider,
   } = useContext(SettingsContext)
-  const { refresh } = useContext(BeeContext)
-  const { enqueueSnackbar } = useSnackbar()
+  const { refresh, nodeInfo } = useContext(BeeContext)
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+
+  async function handleSetRpcUrl(value: string) {
+    try {
+      setAndPersistJsonRpcProvider(value)
+
+      // We can't set the RPC URL to the `swap-endpoint` Bee config value unless the Bee node is already in
+      // light mode as setting this config value, basically upgrades the node to light mode.
+      if (isDesktop && nodeInfo?.beeMode === BeeModes.LIGHT) {
+        await setJsonRpcInDesktop(desktopUrl, rpcProviderUrl)
+        const snackKey = enqueueSnackbar('RPC endpoint successfully changed, restarting Bee node...', {
+          variant: 'success',
+        })
+        await restartBeeNode(desktopUrl)
+        closeSnackbar(snackKey)
+        enqueueSnackbar('Bee node restarted', { variant: 'success' })
+      } else {
+        enqueueSnackbar('RPC endpoint successfully changed', { variant: 'success' })
+      }
+
+      await refresh()
+    } catch (e) {
+      console.error(e) //eslint-disable-line
+      enqueueSnackbar(`Failed to change RPC endpoint. Error: ${e}`, { variant: 'error' })
+    }
+  }
 
   if (isLoading) {
     return (
@@ -52,17 +80,7 @@ export default function SettingsPage(): ReactElement {
           value={rpcProviderUrl}
           helperText="Changing the value will restart your bee node."
           confirmLabel="Save and restart"
-          onConfirm={value => {
-            setAndPersistJsonRpcProvider(value)
-              .then(() => {
-                refresh()
-                enqueueSnackbar('Settings changed, restarting bee node...', { variant: 'success' })
-              })
-              .catch(error => {
-                console.log(error) //eslint-disable-line
-                enqueueSnackbar(`Failed to change RPC endpoint. Error: ${error}`, { variant: 'success' })
-              })
-          }}
+          onConfirm={handleSetRpcUrl}
         />
       </ExpandableList>
       {isDesktop && (
