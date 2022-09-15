@@ -45,7 +45,7 @@ export function Swap({ header }: Props): ReactElement {
   const [userInputSwap, setUserInputSwap] = useState<string | null>(null)
   const [price, setPrice] = useState(DaiToken.fromDecimal('0.6', 18))
 
-  const { providerUrl, isDesktop, desktopUrl } = useContext(SettingsContext)
+  const { rpcProviderUrl, isDesktop, desktopUrl } = useContext(SettingsContext)
   const { nodeAddresses, nodeInfo } = useContext(BeeContext)
   const { balance } = useContext(BalanceProvider)
 
@@ -80,7 +80,7 @@ export function Swap({ header }: Props): ReactElement {
   async function restart() {
     try {
       await sleepMs(5_000)
-      await upgradeToLightNode(desktopUrl, providerUrl)
+      await upgradeToLightNode(desktopUrl, rpcProviderUrl)
       await restartBeeNode(desktopUrl)
 
       enqueueSnackbar('Upgraded to light node', { variant: 'success' })

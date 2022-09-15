@@ -101,8 +101,9 @@ We support following variables:
 
  - `REACT_APP_BEE_DESKTOP_ENABLED` (`boolean`) that toggles if the Dashboard is in Desktop mode or not.
  - `REACT_APP_BEE_DESKTOP_URL` (`string`) defines custom URL where the Desktop API is expected. By default, it is same origin under which the Dashboard is served.
- - `REACT_APP_BEE_API_URL` (`string`) defines custom Bee API URL to be used as default one. By default, the `http://localhost:1633` is used.
- - `REACT_APP_BEE_DEBUG_API_URL` (`string`) defines custom Bee Debug API URL to be used as default one. By default, the `http://localhost:1635` is used.
+ - `REACT_APP_BEE_HOST` (`string`) defines custom Bee API URL to be used as default one. By default, the `http://localhost:1633` is used.
+ - `REACT_APP_BEE_DEBUG_HOST` (`string`) defines custom Bee Debug API URL to be used as default one. By default, the `http://localhost:1635` is used.
+ - `REACT_APP_DEFAULT_RPC_URL` (`string`) defines the default RPC provider URL. Be aware, that his only configures the default value. The user can override this in Settings, which is then persisted in local store and has priority over the value set in this env. variable. By default `https://xdai.fairdatasociety.org` is used.
 
 #### Swarm Desktop development
 

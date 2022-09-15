@@ -19,6 +19,7 @@ import { theme } from './theme'
 interface Props {
   beeApiUrl?: string
   beeDebugApiUrl?: string
+  defaultRpcUrl?: string
   lockedApiSettings?: boolean
   isDesktop?: boolean
   desktopUrl?: string
@@ -28,6 +29,7 @@ interface Props {
 const App = ({
   beeApiUrl,
   beeDebugApiUrl,
+  defaultRpcUrl,
   lockedApiSettings,
   isDesktop,
   desktopUrl,
@@ -39,6 +41,7 @@ const App = ({
         <SettingsProvider
           beeApiUrl={beeApiUrl}
           beeDebugApiUrl={beeDebugApiUrl}
+          defaultRpcUrl={defaultRpcUrl}
           lockedApiSettings={lockedApiSettings}
           isDesktop={isDesktop}
           desktopUrl={desktopUrl}

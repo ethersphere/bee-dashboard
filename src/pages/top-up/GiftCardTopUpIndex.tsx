@@ -16,7 +16,7 @@ import { ROUTES } from '../../routes'
 import { Rpc } from '../../utils/rpc'
 
 export function GiftCardTopUpIndex(): ReactElement {
-  const { provider } = useContext(SettingsContext)
+  const { rpcProvider } = useContext(SettingsContext)
   const [loading, setLoading] = useState(false)
   const [giftCode, setGiftCode] = useState('')
 
@@ -24,13 +24,13 @@ export function GiftCardTopUpIndex(): ReactElement {
   const navigate = useNavigate()
 
   async function onProceed() {
-    if (!provider) return
+    if (!rpcProvider) return
 
     setLoading(true)
     try {
-      const wallet = new Wallet(giftCode, provider)
-      const dai = new DaiToken(await Rpc._eth_getBalance(wallet.address, provider))
-      const bzz = new BzzToken(await Rpc._eth_getBalanceERC20(wallet.address, provider))
+      const wallet = new Wallet(giftCode, rpcProvider)
+      const dai = new DaiToken(await Rpc._eth_getBalance(wallet.address, rpcProvider))
+      const bzz = new BzzToken(await Rpc._eth_getBalanceERC20(wallet.address, rpcProvider))
 
       if (dai.toDecimal.lt(0.001) || bzz.toDecimal.lt(0.001)) {
         throw Error('Gift wallet does not have enough funds')

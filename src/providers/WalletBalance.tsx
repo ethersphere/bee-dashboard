@@ -31,7 +31,7 @@ interface Props {
 }
 
 export function Provider({ children }: Props): ReactElement {
-  const { provider } = useContext(SettingsContext)
+  const { rpcProvider } = useContext(SettingsContext)
   const { nodeAddresses } = useContext(BeeContext)
   const [balance, setBalance] = useState<WalletAddress | null>(initialValues.balance)
   const [error, setError] = useState<Error | null>(initialValues.error)
@@ -40,12 +40,12 @@ export function Provider({ children }: Props): ReactElement {
   const [frequency, setFrequency] = useState<number | null>(null)
 
   useEffect(() => {
-    if (nodeAddresses?.ethereum && provider) {
-      WalletAddress.make(nodeAddresses.ethereum, provider).then(setBalance)
+    if (nodeAddresses?.ethereum && rpcProvider) {
+      WalletAddress.make(nodeAddresses.ethereum, rpcProvider).then(setBalance)
     } else {
       setBalance(null)
     }
-  }, [nodeAddresses, provider])
+  }, [nodeAddresses, rpcProvider])
 
   const refresh = async () => {
     // Don't want to refresh when already refreshing

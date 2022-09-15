@@ -42,7 +42,7 @@ export default function TopUp(): ReactElement {
   const { isDesktop, desktopUrl } = useContext(SettingsContext)
   const { nodeInfo, status } = useContext(BeeContext)
   const { balance } = useContext(BalanceProvider)
-  const { providerUrl } = useContext(SettingsContext)
+  const { rpcProviderUrl } = useContext(SettingsContext)
   const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
 
@@ -55,7 +55,7 @@ export default function TopUp(): ReactElement {
   async function restart() {
     setLoading(true)
     try {
-      await upgradeToLightNode(desktopUrl, providerUrl)
+      await upgradeToLightNode(desktopUrl, rpcProviderUrl)
       await restartBeeNode(desktopUrl)
       enqueueSnackbar('Upgraded to light node', { variant: 'success' })
       navigate(ROUTES.RESTART_LIGHT)

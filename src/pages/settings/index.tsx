@@ -16,7 +16,7 @@ export default function SettingsPage(): ReactElement {
     cors,
     dataDir,
     ensResolver,
-    providerUrl,
+    rpcProviderUrl,
     isLoading,
     isDesktop,
     setAndPersistJsonRpcProvider,
@@ -49,7 +49,7 @@ export default function SettingsPage(): ReactElement {
         />
         <ExpandableListItemInput
           label="Blockchain RPC URL"
-          value={providerUrl}
+          value={rpcProviderUrl}
           helperText="Changing the value will restart your bee node."
           confirmLabel="Save and restart"
           onConfirm={value => {

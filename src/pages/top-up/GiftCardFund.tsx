@@ -22,7 +22,7 @@ import { BeeModes } from '@ethersphere/bee-js'
 
 export function GiftCardFund(): ReactElement {
   const { nodeAddresses, nodeInfo } = useContext(BeeContext)
-  const { isDesktop, desktopUrl, provider, providerUrl } = useContext(SettingsContext)
+  const { isDesktop, desktopUrl, rpcProvider, rpcProviderUrl } = useContext(SettingsContext)
   const { balance } = useContext(BalanceProvider)
 
   const [loading, setLoading] = useState(false)
@@ -34,12 +34,12 @@ export function GiftCardFund(): ReactElement {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (!privateKeyString || !provider) {
+    if (!privateKeyString || !rpcProvider) {
       return
     }
 
-    ResolvedWallet.make(privateKeyString, provider).then(setWallet)
-  }, [privateKeyString, provider])
+    ResolvedWallet.make(privateKeyString, rpcProvider).then(setWallet)
+  }, [privateKeyString, rpcProvider])
 
   if (!wallet || !balance) {
     return <Loading />
@@ -50,7 +50,7 @@ export function GiftCardFund(): ReactElement {
   async function restart() {
     try {
       await sleepMs(5_000)
-      await upgradeToLightNode(desktopUrl, providerUrl)
+      await upgradeToLightNode(desktopUrl, rpcProviderUrl)
       await restartBeeNode(desktopUrl)
       enqueueSnackbar('Upgraded to light node', { variant: 'success' })
       navigate(ROUTES.RESTART_LIGHT)
@@ -61,14 +61,14 @@ export function GiftCardFund(): ReactElement {
   }
 
   async function onFund() {
-    if (!wallet || !nodeAddresses || !providerUrl) {
+    if (!wallet || !nodeAddresses || !rpcProviderUrl) {
       return
     }
 
     setLoading(true)
 
     try {
-      await wallet.transfer(nodeAddresses.ethereum, providerUrl)
+      await wallet.transfer(nodeAddresses.ethereum, rpcProviderUrl)
       enqueueSnackbar('Successfully funded node', { variant: 'success' })
 
       if (canUpgradeToLightNode) await restart()
