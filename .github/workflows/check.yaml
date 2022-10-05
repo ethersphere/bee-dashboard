@@ -71,6 +71,7 @@ jobs:
 
       - name: Create preview
         uses: ethersphere/swarm-actions/pr-preview@v0
+        continue-on-error: true
         with:
           bee-url: https://unlimited.gateway.ethswarm.org
           token: ${{ secrets.GHA_PAT_BASIC }}
