@@ -107,10 +107,10 @@ We support following variables:
 
 #### Swarm Desktop development
 
-If you want to develop Bee Dashboard in the Swarm Desktop mode, then spin up `swarm-desktop` to the point where you see Bee Dashboard (eq. install Bee etc.) and:
+If you want to develop Bee Dashboard in the Swarm Desktop mode, then spin up `swarm-desktop` to the point where Desktop is initialized (eq. the splash screen disappear) and:
 
 ```sh
-echo "REACT_APP_BEE_DESKTOP_URL=http://localhost:3000
+echo "REACT_APP_BEE_DESKTOP_URL=http://localhost:3054
 REACT_APP_BEE_DESKTOP_ENABLED=true" > .env.development.local
 
 npm start
