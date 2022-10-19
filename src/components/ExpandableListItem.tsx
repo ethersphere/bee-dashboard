@@ -35,21 +35,24 @@ export default function ExpandableListItem({ label, value, tooltip }: Props): Re
   return (
     <ListItem className={classes.header}>
       <Grid container direction="row" justifyContent="space-between" alignItems="center">
-        {label && <Typography variant="body1">{label}</Typography>}
-        {value && (
-          <div>
-            <Grid container direction="row" alignItems="center">
-              <Typography variant="body2">{value}</Typography>
-              {tooltip && (
-                <Tooltip title={tooltip} placement="top" arrow>
-                  <IconButton size="small" className={classes.copyValue}>
-                    <Info strokeWidth={1} />
-                  </IconButton>
-                </Tooltip>
-              )}
-            </Grid>
-          </div>
-        )}
+        {label}
+        {value &&
+          (typeof value !== 'object' ? (
+            <div>
+              <Grid container direction="row" alignItems="center">
+                <Typography variant="body2">{value}</Typography>
+                {tooltip && (
+                  <Tooltip title={tooltip} placement="top" arrow>
+                    <IconButton size="small" className={classes.copyValue}>
+                      <Info strokeWidth={1} />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </Grid>
+            </div>
+          ) : (
+            value
+          ))}
       </Grid>
     </ListItem>
   )
