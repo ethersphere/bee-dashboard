@@ -1,8 +1,8 @@
-import { ReactElement, ReactNode } from 'react'
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
-import { Typography, Grid, IconButton, Tooltip } from '@material-ui/core'
-import Info from 'remixicon-react/InformationLineIcon'
+import { Grid, IconButton, Tooltip, Typography } from '@material-ui/core'
 import ListItem from '@material-ui/core/ListItem'
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import { ReactElement, ReactNode } from 'react'
+import Info from 'remixicon-react/InformationLineIcon'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -35,7 +35,7 @@ export default function ExpandableListItem({ label, value, tooltip }: Props): Re
   return (
     <ListItem className={classes.header}>
       <Grid container direction="row" justifyContent="space-between" alignItems="center">
-        {label}
+        {label && <Typography variant="body1">{label}</Typography>}
         {value &&
           (typeof value !== 'object' ? (
             <div>
