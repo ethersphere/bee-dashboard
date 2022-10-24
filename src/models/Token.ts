@@ -87,4 +87,11 @@ export class Token {
       this.decimals,
     )
   }
+
+  plusBaseUnits(amount: string): Token {
+    return new Token(
+      this.toBigNumber.plus(new BigNumber(amount).multipliedBy(new BigNumber(10).pow(this.decimals))),
+      this.decimals,
+    )
+  }
 }
