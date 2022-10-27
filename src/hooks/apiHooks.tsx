@@ -11,6 +11,7 @@ export interface LatestBeeReleaseHook {
 }
 
 export interface BeeDesktopHook {
+  reachable: boolean
   error: Error | null
   isLoading: boolean
   beeDesktopVersion: string
@@ -22,6 +23,7 @@ export interface NewDesktopVersionHook {
 }
 
 export const useBeeDesktop = (isBeeDesktop = false, desktopUrl: string): BeeDesktopHook => {
+  const [reachable, setReachable] = useState(false)
   const [desktopAutoUpdateEnabled, setDesktopAutoUpdateEnabled] = useState<boolean>(true)
   const [beeDesktopVersion, setBeeDesktopVersion] = useState<string>('')
   const [isLoading, setLoading] = useState<boolean>(true)
@@ -35,11 +37,13 @@ export const useBeeDesktop = (isBeeDesktop = false, desktopUrl: string): BeeDesk
       axios
         .get(`${desktopUrl}/info`)
         .then(res => {
+          setReachable(true)
           setBeeDesktopVersion(res.data?.version)
           setDesktopAutoUpdateEnabled(res.data?.autoUpdateEnabled)
           setError(null)
         })
         .catch(e => {
+          setReachable(false)
           setError(e)
         })
         .finally(() => {
@@ -48,7 +52,7 @@ export const useBeeDesktop = (isBeeDesktop = false, desktopUrl: string): BeeDesk
     }
   }, [desktopUrl, isBeeDesktop])
 
-  return { error, isLoading, beeDesktopVersion, desktopAutoUpdateEnabled }
+  return { error, isLoading, beeDesktopVersion, desktopAutoUpdateEnabled, reachable }
 }
 
 async function checkNewVersion(desktopUrl: string): Promise<string> {

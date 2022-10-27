@@ -8,8 +8,9 @@ import { CheckState, Context } from '../../../providers/Bee'
 export default function PeerConnection(): ReactElement | null {
   const { status, isLoading, topology } = useContext(Context)
   const { isEnabled, checkState } = status.topology
+  const { checkState: debugApiCheckState } = status.debugApiConnection
 
-  if (!isEnabled) return null
+  if (!isEnabled || debugApiCheckState === CheckState.ERROR) return null
 
   let text: ReactNode
   switch (checkState) {
