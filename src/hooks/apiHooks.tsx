@@ -31,19 +31,39 @@ export const useBeeDesktop = (isBeeDesktop = false, desktopUrl: string): BeeDesk
 
   useEffect(() => {
     if (!isBeeDesktop) {
+      return
+    }
+
+    function runReachabilityCheck() {
+      axios
+        .get(`${desktopUrl}/info`)
+        .then(() => {
+          setReachable(true)
+        })
+        .catch(() => {
+          setReachable(false)
+        })
+    }
+
+    runReachabilityCheck()
+    const interval = setInterval(runReachabilityCheck, 10_000)
+
+    return () => clearInterval(interval)
+  }, [desktopUrl, isBeeDesktop])
+
+  useEffect(() => {
+    if (!isBeeDesktop) {
       setLoading(false)
       setError(null)
     } else {
       axios
         .get(`${desktopUrl}/info`)
         .then(res => {
-          setReachable(true)
           setBeeDesktopVersion(res.data?.version)
           setDesktopAutoUpdateEnabled(res.data?.autoUpdateEnabled)
           setError(null)
         })
         .catch(e => {
-          setReachable(false)
           setError(e)
         })
         .finally(() => {
