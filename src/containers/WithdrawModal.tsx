@@ -20,9 +20,7 @@ export default function WithdrawModal(): ReactElement {
       action={async (amount: bigint) => {
         if (!beeDebugApi) throw new Error('Bee Debug URL is not valid')
 
-        const transactionHash = await beeDebugApi.withdrawTokens(amount.toString()).catch((error: Error) => {
-          throw error
-        })
+        const transactionHash = await beeDebugApi.withdrawTokens(amount.toString())
         refresh()
 
         return transactionHash

@@ -20,9 +20,7 @@ export default function DepositModal(): ReactElement {
       action={async (amount: bigint) => {
         if (!beeDebugApi) throw new Error('Bee Debug URL is not valid')
 
-        const transactionHash = await beeDebugApi.depositTokens(amount.toString()).catch((error: Error) => {
-          throw error
-        })
+        const transactionHash = await beeDebugApi.depositTokens(amount.toString())
         refresh()
 
         return transactionHash
