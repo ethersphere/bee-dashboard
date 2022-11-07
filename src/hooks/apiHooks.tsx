@@ -11,6 +11,7 @@ export interface LatestBeeReleaseHook {
 }
 
 export interface BeeDesktopHook {
+  reachable: boolean
   error: Error | null
   isLoading: boolean
   beeDesktopVersion: string
@@ -22,10 +23,33 @@ export interface NewDesktopVersionHook {
 }
 
 export const useBeeDesktop = (isBeeDesktop = false, desktopUrl: string): BeeDesktopHook => {
+  const [reachable, setReachable] = useState(false)
   const [desktopAutoUpdateEnabled, setDesktopAutoUpdateEnabled] = useState<boolean>(true)
   const [beeDesktopVersion, setBeeDesktopVersion] = useState<string>('')
   const [isLoading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<Error | null>(null)
+
+  useEffect(() => {
+    if (!isBeeDesktop) {
+      return
+    }
+
+    function runReachabilityCheck() {
+      axios
+        .get(`${desktopUrl}/info`)
+        .then(() => {
+          setReachable(true)
+        })
+        .catch(() => {
+          setReachable(false)
+        })
+    }
+
+    runReachabilityCheck()
+    const interval = setInterval(runReachabilityCheck, 10_000)
+
+    return () => clearInterval(interval)
+  }, [desktopUrl, isBeeDesktop])
 
   useEffect(() => {
     if (!isBeeDesktop) {
@@ -48,7 +72,7 @@ export const useBeeDesktop = (isBeeDesktop = false, desktopUrl: string): BeeDesk
     }
   }, [desktopUrl, isBeeDesktop])
 
-  return { error, isLoading, beeDesktopVersion, desktopAutoUpdateEnabled }
+  return { error, isLoading, beeDesktopVersion, desktopAutoUpdateEnabled, reachable }
 }
 
 async function checkNewVersion(desktopUrl: string): Promise<string> {

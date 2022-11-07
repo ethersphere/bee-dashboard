@@ -11,8 +11,9 @@ import { CheckState, Context } from '../../../providers/Bee'
 const ChequebookDeployFund = (): ReactElement | null => {
   const { status, isLoading, chequebookAddress } = useContext(Context)
   const { checkState, isEnabled } = status.chequebook
+  const { checkState: debugApiCheckState } = status.debugApiConnection
 
-  if (!isEnabled) return null
+  if (!isEnabled || debugApiCheckState === CheckState.ERROR) return null
 
   let text: ReactNode
 
