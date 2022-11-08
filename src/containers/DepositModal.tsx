@@ -1,12 +1,13 @@
+import { BigNumber } from 'bignumber.js'
 import { ReactElement, useContext } from 'react'
 import Download from 'remixicon-react/DownloadLineIcon'
-import { Context as SettingsContext } from '../providers/Settings'
-
 import WithdrawDepositModal from '../components/WithdrawDepositModal'
-import { BigNumber } from 'bignumber.js'
+import { Context as BeeContext } from '../providers/Bee'
+import { Context as SettingsContext } from '../providers/Settings'
 
 export default function DepositModal(): ReactElement {
   const { beeDebugApi } = useContext(SettingsContext)
+  const { refresh } = useContext(BeeContext)
 
   return (
     <WithdrawDepositModal
@@ -16,10 +17,13 @@ export default function DepositModal(): ReactElement {
       label="Deposit"
       icon={<Download size="1rem" />}
       min={new BigNumber(0)}
-      action={(amount: bigint) => {
+      action={async (amount: bigint) => {
         if (!beeDebugApi) throw new Error('Bee Debug URL is not valid')
 
-        return beeDebugApi.depositTokens(amount.toString())
+        const transactionHash = await beeDebugApi.depositTokens(amount.toString())
+        refresh()
+
+        return transactionHash
       }}
     />
   )
