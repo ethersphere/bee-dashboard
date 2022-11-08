@@ -59,7 +59,9 @@ export function Swap({ header }: Props): ReactElement {
       return
     }
 
-    if (balance.dai.toDecimal.isGreaterThanOrEqualTo(DaiToken.fromDecimal('1').plusBaseUnits(MINIMUM_XDAI).toDecimal)) {
+    const minimumOptimalValue = DaiToken.fromDecimal('1').plusBaseUnits(MINIMUM_XDAI).toDecimal
+
+    if (balance.dai.toDecimal.isGreaterThanOrEqualTo(minimumOptimalValue)) {
       // Balance has at least 1 + MINIMUM_XDAI xDai
       setDaiToSwap(balance.dai.minusBaseUnits('1'))
     } else {
