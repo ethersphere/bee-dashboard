@@ -46,9 +46,11 @@ export function AccountWallet(): ReactElement {
       <Box mb={4}>
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="h2">Wallet balance</Typography>
-          <SwarmButton onClick={onDeposit} iconType={Download}>
-            Top up wallet
-          </SwarmButton>
+          {isDesktop && (
+            <SwarmButton onClick={onDeposit} iconType={Download}>
+              Top up wallet
+            </SwarmButton>
+          )}
         </Grid>
       </Box>
       {balance && nodeAddresses ? (
