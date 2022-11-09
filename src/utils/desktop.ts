@@ -1,13 +1,13 @@
 import axios from 'axios'
+import { BEE_DESKTOP_LATEST_RELEASE_PAGE_API } from '../constants'
 import { DaiToken } from '../models/DaiToken'
 import { Token } from '../models/Token'
 import { postJson } from './net'
-import { BEE_DESKTOP_LATEST_RELEASE_PAGE_API } from '../constants'
 
 export async function getBzzPriceAsDai(desktopUrl: string): Promise<Token> {
   const response = await axios.get(`${desktopUrl}/price`)
 
-  return DaiToken.fromDecimal(response.data, 18)
+  return DaiToken.fromDecimal(response.data)
 }
 
 export async function upgradeToLightNode(desktopUrl: string, rpcProvider: string): Promise<void> {
