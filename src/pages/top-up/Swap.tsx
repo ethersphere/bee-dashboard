@@ -13,7 +13,7 @@ import { Loading } from '../../components/Loading'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmDivider } from '../../components/SwarmDivider'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
-import { BzzToken } from '../../models/BzzToken'
+import { BzzToken, BZZ_DECIMAL_PLACES } from '../../models/BzzToken'
 import { DaiToken } from '../../models/DaiToken'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
@@ -94,7 +94,9 @@ export function Swap({ header }: Props): ReactElement {
     }
     const daiAfterSwap = new DaiToken(balance.dai.toBigNumber.minus(daiToSwap.toBigNumber))
     setDaiAfterSwap(daiAfterSwap)
-    const tokensConverted = BzzToken.fromDecimal(daiToSwap.toBigNumber.dividedToIntegerBy(price.toBigNumber))
+    const tokensConverted = BzzToken.fromDecimal(
+      daiToSwap.toBigNumber.dividedBy(price.toBigNumber).decimalPlaces(BZZ_DECIMAL_PLACES),
+    )
     const bzzAfterSwap = new BzzToken(tokensConverted.toBigNumber.plus(balance.bzz.toBigNumber))
     setBzzAfterSwap(bzzAfterSwap)
 
@@ -134,7 +136,10 @@ export function Swap({ header }: Props): ReactElement {
 
     try {
       await performSwap(desktopUrl, daiToSwap.toString)
-      enqueueSnackbar('Successfully swapped', { variant: 'success' })
+      const message = canUpgradeToLightNode
+        ? 'Successfully swapped. Beginning light node upgrade...'
+        : 'Successfully swapped. Balances will refresh soon. You may now leave the page.'
+      enqueueSnackbar(message, { variant: 'success' })
 
       if (canUpgradeToLightNode) await restart()
     } catch (error) {

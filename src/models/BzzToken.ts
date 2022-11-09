@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js'
 import { Token } from './Token'
 
-const BZZ_DECIMAL_PLACES = 16
+export const BZZ_DECIMAL_PLACES = 16
 
 export class BzzToken extends Token {
   constructor(value: BigNumber | string | bigint) {
