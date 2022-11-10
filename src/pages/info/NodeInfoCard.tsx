@@ -1,16 +1,28 @@
 import { ReactElement, useContext } from 'react'
-import Search from 'remixicon-react/SearchLineIcon'
 import Globe from 'remixicon-react/GlobalLineIcon'
+import Search from 'remixicon-react/SearchLineIcon'
 import Settings from 'remixicon-react/Settings2LineIcon'
 
-import { CheckState, Context as BeeContext } from '../../providers/Bee'
-import Card from '../../components/Card'
 import { useNavigate } from 'react-router'
+import Card from '../../components/Card'
+import { CheckState, Context as BeeContext } from '../../providers/Bee'
 import { ROUTES } from '../../routes'
 
 export default function NodeInfoCard(): ReactElement {
-  const { status } = useContext(BeeContext)
+  const { debugApiHealth, debugApiReadiness, status } = useContext(BeeContext)
   const navigate = useNavigate()
+
+  if (debugApiHealth && !debugApiReadiness) {
+    return (
+      <Card
+        buttonProps={{ iconType: Settings, children: 'Open node setup', onClick: () => navigate(ROUTES.STATUS) }}
+        icon={<Globe />}
+        title="Starting up..."
+        subtitle="Your Bee node is currently launching."
+        status="loading"
+      />
+    )
+  }
 
   if (status.all === CheckState.ERROR) {
     return (

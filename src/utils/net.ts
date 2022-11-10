@@ -31,3 +31,14 @@ export async function sendRequest(
 
   return response.data
 }
+
+// TODO: replace this with bee-js once released
+export async function getReadiness(beeDebugApi: string): Promise<boolean> {
+  try {
+    const response = await axios.get(`${beeDebugApi}/readiness`)
+
+    return response.status === 200
+  } catch {
+    return false
+  }
+}
