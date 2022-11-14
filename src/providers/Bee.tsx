@@ -15,7 +15,6 @@ import PackageJson from '../../package.json'
 import { useLatestBeeRelease } from '../hooks/apiHooks'
 import { Token } from '../models/Token'
 import type { Balance, ChequebookBalance, Settlements } from '../types'
-import { getReadiness } from '../utils/net'
 import { Context as SettingsContext } from './Settings'
 
 const REFRESH_WHEN_OK = 30_000
@@ -304,7 +303,8 @@ export function Provider({ children }: Props): ReactElement {
           .catch(() => setDebugApiHealth(null)),
 
         // Debug API readiness
-        getReadiness(beeDebugApi.url)
+        beeDebugApi
+          .getReadiness({ timeout: TIMEOUT })
           .then(setDebugApiReadiness)
           .catch(() => setDebugApiReadiness(false)),
 
