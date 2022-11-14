@@ -1,110 +1,41 @@
 import { Button } from '@material-ui/core'
 import { ReactElement, useContext } from 'react'
-import { useNavigate } from 'react-router'
-import ExchangeFunds from 'remixicon-react/ExchangeFundsLineIcon'
-import Upload from 'remixicon-react/UploadLineIcon'
-import Wallet from 'remixicon-react/Wallet3LineIcon'
-import Card from '../../components/Card'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import Map from '../../components/Map'
+import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../../constants'
 import { useBeeDesktop, useNewBeeDesktopVersion } from '../../hooks/apiHooks'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
-import { Context as BalanceProvider } from '../../providers/WalletBalance'
-import { ROUTES } from '../../routes'
 import { chainIdToName } from '../../utils/chain'
+import { ChequebookInfoCard } from './ChequebookInfoCard'
 import NodeInfoCard from './NodeInfoCard'
-import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../../constants'
+import { WalletInfoCard } from './WalletInfoCard'
 
 export default function Status(): ReactElement {
   const {
+    debugApiReadiness,
     status,
     latestUserVersion,
     isLatestBeeVersion,
     latestBeeVersionUrl,
     topology,
     nodeInfo,
-    chequebookBalance,
     chainId,
   } = useContext(BeeContext)
   const { isDesktop, desktopUrl } = useContext(SettingsContext)
-  const { balance, error } = useContext(BalanceProvider)
   const { beeDesktopVersion } = useBeeDesktop(isDesktop, desktopUrl)
   const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isDesktop, desktopUrl, false)
-  const navigate = useNavigate()
-
-  let balanceText = 'Loading...'
-
-  if (error) {
-    balanceText = 'Could not load...'
-    console.error(error) // eslint-disable-line
-  } else if (balance) {
-    balanceText = `${balance.bzz.toSignificantDigits(4)} xBZZ | ${balance.dai.toSignificantDigits(4)} xDAI`
-  }
 
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'stretch', alignContent: 'stretch' }}>
         <NodeInfoCard />
-        <div style={{ width: '8px' }}></div>
-        {nodeInfo?.beeMode && ['light', 'full', 'dev'].includes(nodeInfo.beeMode) ? (
-          <Card
-            buttonProps={{
-              iconType: Wallet,
-              children: 'Manage your wallet',
-              onClick: () => navigate(ROUTES.ACCOUNT_WALLET),
-            }}
-            icon={<Wallet />}
-            title={balanceText}
-            subtitle="Current wallet balance."
-            status="ok"
-          />
-        ) : (
-          <Card
-            buttonProps={{
-              iconType: Wallet,
-              children: 'Setup wallet',
-              onClick: () => navigate(ROUTES.TOP_UP),
-            }}
-            icon={<Upload />}
-            title="Your wallet is not setup."
-            subtitle="To share content on Swarm, please setup your wallet."
-            status="error"
-          />
-        )}
-        {nodeInfo?.beeMode && ['light', 'full', 'dev'].includes(nodeInfo.beeMode) && (
+        {debugApiReadiness && (
           <>
-            <div style={{ width: '8px' }} />
-            {chequebookBalance?.availableBalance !== undefined &&
-            chequebookBalance?.availableBalance.toBigNumber.isGreaterThan(0) ? (
-              <Card
-                buttonProps={{
-                  iconType: ExchangeFunds,
-                  children: 'View chequebook',
-                  onClick: () => navigate(ROUTES.ACCOUNT_CHEQUEBOOK),
-                }}
-                icon={<ExchangeFunds />}
-                title={`${chequebookBalance?.availableBalance.toSignificantDigits(4)} xBZZ`}
-                subtitle="Current chequebook balance."
-                status="ok"
-              />
-            ) : (
-              <Card
-                buttonProps={{
-                  iconType: ExchangeFunds,
-                  children: 'View chequebook',
-                  onClick: () => navigate(ROUTES.ACCOUNT_CHEQUEBOOK),
-                }}
-                icon={<ExchangeFunds />}
-                title={
-                  chequebookBalance?.availableBalance
-                    ? `${chequebookBalance.availableBalance.toSignificantDigits(4)} xBZZ`
-                    : 'No available balance.'
-                }
-                subtitle="Chequebook not setup."
-                status="error"
-              />
-            )}
+            <div style={{ width: '8px' }}></div>
+            <WalletInfoCard />
+            <div style={{ width: '8px' }}></div>
+            <ChequebookInfoCard />
           </>
         )}
       </div>

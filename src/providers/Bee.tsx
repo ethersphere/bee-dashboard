@@ -52,6 +52,7 @@ interface ContextInterface {
   error: Error | null
   apiHealth: boolean
   debugApiHealth: Health | null
+  debugApiReadiness: boolean
   nodeAddresses: NodeAddresses | null
   nodeInfo: NodeInfo | null
   topology: Topology | null
@@ -89,6 +90,7 @@ const initialValues: ContextInterface = {
   error: null,
   apiHealth: false,
   debugApiHealth: null,
+  debugApiReadiness: false,
   nodeAddresses: null,
   nodeInfo: null,
   topology: null,
@@ -190,6 +192,7 @@ export function Provider({ children }: Props): ReactElement {
   const { beeApi, beeDebugApi } = useContext(SettingsContext)
   const [apiHealth, setApiHealth] = useState<boolean>(false)
   const [debugApiHealth, setDebugApiHealth] = useState<Health | null>(null)
+  const [debugApiReadiness, setDebugApiReadiness] = useState(false)
   const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses | null>(null)
   const [nodeInfo, setNodeInfo] = useState<NodeInfo | null>(null)
   const [topology, setNodeTopology] = useState<Topology | null>(null)
@@ -298,6 +301,12 @@ export function Provider({ children }: Props): ReactElement {
           .getHealth({ timeout: TIMEOUT })
           .then(setDebugApiHealth)
           .catch(() => setDebugApiHealth(null)),
+
+        // Debug API readiness
+        beeDebugApi
+          .getReadiness({ timeout: TIMEOUT })
+          .then(setDebugApiReadiness)
+          .catch(() => setDebugApiReadiness(false)),
 
         // Node Addresses
         beeDebugApi
@@ -426,6 +435,7 @@ export function Provider({ children }: Props): ReactElement {
         error,
         apiHealth,
         debugApiHealth,
+        debugApiReadiness,
         nodeAddresses,
         nodeInfo,
         topology,
