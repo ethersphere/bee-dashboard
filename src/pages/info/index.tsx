@@ -158,7 +158,7 @@ export default function Status(): ReactElement {
         }
       />
       <ExpandableListItem label="Mode" value={nodeInfo?.beeMode} />
-      {chainId && <ExpandableListItem label="Blockchain network" value={chainIdToName(chainId)} />}
+      {chainId !== null && <ExpandableListItem label="Blockchain network" value={chainIdToName(chainId)} />}
     </div>
   )
 }
