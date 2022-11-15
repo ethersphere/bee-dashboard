@@ -20,7 +20,14 @@ import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as BalanceProvider } from '../../providers/WalletBalance'
 import { ROUTES } from '../../routes'
 import { sleepMs } from '../../utils'
-import { getBzzPriceAsDai, performSwap, restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
+import {
+  getBzzPriceAsDai,
+  getDesktopConfiguration,
+  performSwap,
+  restartBeeNode,
+  upgradeToLightNode,
+} from '../../utils/desktop'
+import { Rpc } from '../../utils/rpc'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
 
 const MINIMUM_XDAI = '0.1'
@@ -127,6 +134,27 @@ export function Swap({ header }: Props): ReactElement {
     }
   }
 
+  async function performSwapWithChecks(daiToSwap: DaiToken) {
+    const desktopConfiguration = await getDesktopConfiguration(desktopUrl).catch(error => {
+      enqueueSnackbar('Unable to reach Desktop API. Is Swarm Desktop running?', { variant: 'error' })
+      throw error
+    })
+
+    if (!desktopConfiguration['swap-endpoint']) {
+      const message = 'Swap endpoint not configured in Swarm Desktop'
+      enqueueSnackbar(message, { variant: 'error' })
+      throw Error(message)
+    }
+    await Rpc.getNetworkChainId(desktopConfiguration['swap-endpoint']).catch(error => {
+      enqueueSnackbar(`Swap endpoint not reachable at ${desktopConfiguration['swap-endpoint']}`, { variant: 'error' })
+      throw error
+    })
+    await performSwap(desktopUrl, daiToSwap.toString).catch(error => {
+      enqueueSnackbar(`Failed to swap: ${error}`, { variant: 'error' })
+      throw error
+    })
+  }
+
   async function onSwap() {
     if (hasSwapped || !daiToSwap) {
       return
@@ -135,7 +163,7 @@ export function Swap({ header }: Props): ReactElement {
     setSwapped(true)
 
     try {
-      await performSwap(desktopUrl, daiToSwap.toString)
+      await performSwapWithChecks(daiToSwap)
       const message = canUpgradeToLightNode
         ? 'Successfully swapped. Beginning light node upgrade...'
         : 'Successfully swapped. Balances will refresh soon. You may now leave the page.'
@@ -144,7 +172,6 @@ export function Swap({ header }: Props): ReactElement {
       if (canUpgradeToLightNode) await restart()
     } catch (error) {
       console.error(error) // eslint-disable-line
-      enqueueSnackbar(`Failed to swap: ${error}`, { variant: 'error' })
     } finally {
       balance?.refresh()
       setLoading(false)
