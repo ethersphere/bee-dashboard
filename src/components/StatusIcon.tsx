@@ -25,6 +25,9 @@ export default function StatusIcon({ checkState, size, className, isLoading }: P
     case CheckState.ERROR:
       backgroundColor = '#ff3a52'
       break
+    case CheckState.STARTING:
+      backgroundColor = 'orange'
+      break
     default:
       // Default is error
       backgroundColor = '#ff3a52'
