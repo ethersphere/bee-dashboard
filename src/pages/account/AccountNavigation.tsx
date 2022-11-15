@@ -8,10 +8,11 @@ const tabMap = {
   CHEQUEBOOK: 1,
   STAMPS: 2,
   FEEDS: 3,
+  STAKING: 4,
 }
 
 interface Props {
-  active: 'WALLET' | 'CHEQUEBOOK' | 'STAMPS' | 'FEEDS'
+  active: 'WALLET' | 'CHEQUEBOOK' | 'STAMPS' | 'FEEDS' | 'STAKING'
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -48,7 +49,8 @@ export function AccountNavigation({ active }: Props): ReactElement {
         <Tab className={classes.leftTab} key="WALLET" label="Wallet" />
         <Tab className={classes.centerTab} key="CHEQUEBOOK" label="Chequebook" />
         <Tab className={classes.centerTab} key="STAMPS" label="Stamps" />
-        <Tab className={classes.rightTab} key="FEEDS" label="Feeds" />
+        <Tab className={classes.centerTab} key="FEEDS" label="Feeds" />
+        <Tab className={classes.rightTab} key="STAKING" label="Staking" />
       </Tabs>
     </div>
   )
