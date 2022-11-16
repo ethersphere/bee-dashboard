@@ -1,12 +1,12 @@
+import { BeeModes } from '@ethersphere/bee-js'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useContext } from 'react'
 import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItemInput from '../../components/ExpandableListItemInput'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
-import { useSnackbar } from 'notistack'
 import { restartBeeNode, setJsonRpcInDesktop } from '../../utils/desktop'
-import { BeeModes } from '@ethersphere/bee-js'
 
 export default function SettingsPage(): ReactElement {
   const {
@@ -34,7 +34,7 @@ export default function SettingsPage(): ReactElement {
       // We can't set the RPC URL to the `swap-endpoint` Bee config value unless the Bee node is already in
       // light mode as setting this config value, basically upgrades the node to light mode.
       if (isDesktop && nodeInfo?.beeMode === BeeModes.LIGHT) {
-        await setJsonRpcInDesktop(desktopUrl, rpcProviderUrl)
+        await setJsonRpcInDesktop(desktopUrl, value)
         const snackKey = enqueueSnackbar('RPC endpoint successfully changed, restarting Bee node...', {
           variant: 'success',
         })
