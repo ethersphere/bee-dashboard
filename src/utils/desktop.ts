@@ -2,7 +2,7 @@ import axios from 'axios'
 import { BEE_DESKTOP_LATEST_RELEASE_PAGE_API } from '../constants'
 import { DaiToken } from '../models/DaiToken'
 import { Token } from '../models/Token'
-import { postJson } from './net'
+import { getJson, postJson } from './net'
 
 export interface BeeConfig {
   'api-addr': string
@@ -39,10 +39,8 @@ export async function setJsonRpcInDesktop(desktopUrl: string, value: string): Pr
   })
 }
 
-export async function getDesktopConfiguration(desktopUrl: string): Promise<BeeConfig> {
-  const response = await axios.get(`${desktopUrl}/config`)
-
-  return response.data
+export function getDesktopConfiguration(desktopUrl: string): Promise<BeeConfig> {
+  return getJson(`${desktopUrl}/config`)
 }
 
 async function updateDesktopConfiguration(desktopUrl: string, values: Record<string, unknown>): Promise<void> {
