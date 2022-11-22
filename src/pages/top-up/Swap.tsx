@@ -174,7 +174,7 @@ export function Swap({ header }: Props): ReactElement {
         enqueueSnackbar(error.snackbarMessage, { variant: 'error' })
 
         if (error.originalError) {
-          console.error(error) // eslint-disable-line
+          console.error(error.originalError) // eslint-disable-line
         }
       } else {
         console.error(error) // eslint-disable-line
