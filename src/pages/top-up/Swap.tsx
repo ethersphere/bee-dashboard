@@ -28,6 +28,7 @@ import {
   upgradeToLightNode,
 } from '../../utils/desktop'
 import { Rpc } from '../../utils/rpc'
+import { isSwapError, SwapError } from '../../utils/SwapError'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
 
 const MINIMUM_XDAI = '0.1'
@@ -136,22 +137,20 @@ export function Swap({ header }: Props): ReactElement {
 
   async function performSwapWithChecks(daiToSwap: DaiToken) {
     const desktopConfiguration = await getDesktopConfiguration(desktopUrl).catch(error => {
-      enqueueSnackbar('Unable to reach Desktop API. Is Swarm Desktop running?', { variant: 'error' })
-      throw error
+      throw new SwapError('Unable to reach Desktop API. Is Swarm Desktop running?', error)
     })
 
     if (!desktopConfiguration['swap-endpoint']) {
-      const message = 'Swap endpoint not configured in Swarm Desktop'
-      enqueueSnackbar(message, { variant: 'error' })
-      throw Error(message)
+      throw new SwapError('Swap endpoint not configured in Swarm Desktop')
     }
     await Rpc.getNetworkChainId(desktopConfiguration['swap-endpoint']).catch(error => {
-      enqueueSnackbar(`Swap endpoint not reachable at ${desktopConfiguration['swap-endpoint']}`, { variant: 'error' })
-      throw error
+      throw new SwapError(`Swap endpoint not reachable at ${desktopConfiguration['swap-endpoint']}`, error)
     })
     await performSwap(desktopUrl, daiToSwap.toString).catch(error => {
-      enqueueSnackbar(`Failed to swap: ${error}`, { variant: 'error' })
-      throw error
+      throw new SwapError(
+        `Failed to swap. The full error is printed to the console. Message: ${error.message || 'none'}`,
+        error,
+      )
     })
   }
 
@@ -171,7 +170,15 @@ export function Swap({ header }: Props): ReactElement {
 
       if (canUpgradeToLightNode) await restart()
     } catch (error) {
-      console.error(error) // eslint-disable-line
+      if (isSwapError(error)) {
+        enqueueSnackbar(error.snackbarMessage, { variant: 'error' })
+
+        if (error.originalError) {
+          console.error(error) // eslint-disable-line
+        }
+      } else {
+        console.error(error) // eslint-disable-line
+      }
     } finally {
       balance?.refresh()
       setLoading(false)
