@@ -28,7 +28,7 @@ import {
   upgradeToLightNode,
 } from '../../utils/desktop'
 import { Rpc } from '../../utils/rpc'
-import { isSwapError, SwapError } from '../../utils/SwapError'
+import { isSwapError, SwapError, wrapWithSwapError } from '../../utils/SwapError'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
 
 const MINIMUM_XDAI = '0.1'
@@ -136,22 +136,22 @@ export function Swap({ header }: Props): ReactElement {
   }
 
   async function performSwapWithChecks(daiToSwap: DaiToken) {
-    const desktopConfiguration = await getDesktopConfiguration(desktopUrl).catch(error => {
-      throw new SwapError('Unable to reach Desktop API. Is Swarm Desktop running?', error)
-    })
+    const desktopConfiguration = await wrapWithSwapError(
+      getDesktopConfiguration(desktopUrl),
+      'Unable to reach Desktop API. Is Swarm Desktop running?',
+    )
 
     if (!desktopConfiguration['swap-endpoint']) {
-      throw new SwapError('Swap endpoint not configured in Swarm Desktop')
+      throw new SwapError('Swap endpoint is not configured in Swarm Desktop')
     }
-    await Rpc.getNetworkChainId(desktopConfiguration['swap-endpoint']).catch(error => {
-      throw new SwapError(`Swap endpoint not reachable at ${desktopConfiguration['swap-endpoint']}`, error)
-    })
-    await performSwap(desktopUrl, daiToSwap.toString).catch(error => {
-      throw new SwapError(
-        `Failed to swap. The full error is printed to the console. Message: ${error.message || 'none'}`,
-        error,
-      )
-    })
+    await wrapWithSwapError(
+      Rpc.getNetworkChainId(desktopConfiguration['swap-endpoint']),
+      `Swap endpoint not reachable at ${desktopConfiguration['swap-endpoint']}`,
+    )
+    await wrapWithSwapError(
+      performSwap(desktopUrl, daiToSwap.toString),
+      'Failed to swap. The full error is printed to the console.',
+    )
   }
 
   async function onSwap() {
@@ -165,7 +165,7 @@ export function Swap({ header }: Props): ReactElement {
       await performSwapWithChecks(daiToSwap)
       const message = canUpgradeToLightNode
         ? 'Successfully swapped. Beginning light node upgrade...'
-        : 'Successfully swapped. Balances will refresh soon. You may now leave the page.'
+        : 'Successfully swapped. Balances will refresh soon. You may now navigate away.'
       enqueueSnackbar(message, { variant: 'success' })
 
       if (canUpgradeToLightNode) await restart()
