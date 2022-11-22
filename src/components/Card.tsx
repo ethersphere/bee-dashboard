@@ -64,7 +64,7 @@ export default function Card({ buttonProps, icon, title, subtitle, status }: Pro
   } else if (status === 'error') {
     statusIcon = <AlertCircle size="13" color="#f44336" />
   } else if (status === 'loading') {
-    statusIcon = <RefreshLine size="13" color="#096cca" />
+    statusIcon = <RefreshLine size="13" color="orange" />
   }
 
   return (
