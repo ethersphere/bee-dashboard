@@ -25,6 +25,7 @@ export enum CheckState {
   OK = 'OK',
   WARNING = 'Warning',
   ERROR = 'Error',
+  STARTING = 'Starting',
 }
 
 interface StatusItem {
@@ -119,7 +120,7 @@ interface Props {
 
 function getStatus(
   debugApiHealth: Health | null,
-  nodeAddresses: NodeAddresses | null,
+  debugApiReadiness: boolean,
   nodeInfo: NodeInfo | null,
   apiHealth: boolean,
   topology: Topology | null,
@@ -171,18 +172,23 @@ function getStatus(
     else status.chequebook.checkState = CheckState.OK
   }
 
-  // Determine overall status
-  if (Object.values(status).some(({ isEnabled, checkState }) => isEnabled && checkState === CheckState.ERROR)) {
-    status.all = CheckState.ERROR
+  status.all = determineOverallStatus(debugApiHealth, debugApiReadiness, status)
+
+  return status
+}
+
+function determineOverallStatus(debugApiHealth: Health | null, debugApiReadiness: boolean, status: Status): CheckState {
+  if (debugApiHealth?.status === 'ok' && !debugApiReadiness) {
+    return CheckState.STARTING
+  } else if (Object.values(status).some(({ isEnabled, checkState }) => isEnabled && checkState === CheckState.ERROR)) {
+    return CheckState.ERROR
   } else if (
     Object.values(status).some(({ isEnabled, checkState }) => isEnabled && checkState === CheckState.WARNING)
   ) {
-    status.all = CheckState.WARNING
+    return CheckState.WARNING
   } else {
-    status.all = CheckState.OK
+    return CheckState.OK
   }
-
-  return status
 }
 
 // This does not need to be exposed and works much better as variable than state variable which may trigger some unnecessary re-renders
@@ -390,7 +396,7 @@ export function Provider({ children }: Props): ReactElement {
 
   const status = getStatus(
     debugApiHealth,
-    nodeAddresses,
+    debugApiReadiness,
     nodeInfo,
     apiHealth,
     topology,
