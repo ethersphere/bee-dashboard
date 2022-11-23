@@ -1,7 +1,7 @@
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { ThemeProvider } from '@material-ui/core/styles'
 import { SnackbarProvider } from 'notistack'
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { HashRouter as Router } from 'react-router-dom'
 import './App.css'
 import Dashboard from './layout/Dashboard'
@@ -47,7 +47,7 @@ const App = ({
           desktopUrl={desktopUrl}
         >
           <TopUpProvider>
-            <BeeProvider>
+            <BeeProvider isDesktop={isDesktop}>
               <BalanceProvider>
                 <StampsProvider>
                   <FileProvider>
