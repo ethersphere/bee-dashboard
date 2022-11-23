@@ -34,6 +34,8 @@ import { TopUpProgressIndicator } from './TopUpProgressIndicator'
 const MINIMUM_XDAI = '0.1'
 const MINIMUM_XBZZ = '0.1'
 
+const GENERIC_SWAP_FAILED_ERROR_MESSAGE = 'Failed to swap. The full error is printed to the console.'
+
 interface Props {
   header: string
 }
@@ -148,10 +150,7 @@ export function Swap({ header }: Props): ReactElement {
       Rpc.getNetworkChainId(desktopConfiguration['swap-endpoint']),
       `Swap endpoint not reachable at ${desktopConfiguration['swap-endpoint']}`,
     )
-    await wrapWithSwapError(
-      performSwap(desktopUrl, daiToSwap.toString),
-      'Failed to swap. The full error is printed to the console.',
-    )
+    await wrapWithSwapError(performSwap(desktopUrl, daiToSwap.toString), GENERIC_SWAP_FAILED_ERROR_MESSAGE)
   }
 
   async function onSwap() {
@@ -171,12 +170,15 @@ export function Swap({ header }: Props): ReactElement {
       if (canUpgradeToLightNode) await restart()
     } catch (error) {
       if (isSwapError(error)) {
+        // we have a custom and user friendly error message
         enqueueSnackbar(error.snackbarMessage, { variant: 'error' })
 
         if (error.originalError) {
           console.error(error.originalError) // eslint-disable-line
         }
       } else {
+        // we have an unexpected error
+        enqueueSnackbar(`${GENERIC_SWAP_FAILED_ERROR_MESSAGE} ${error}`, { variant: 'error' })
         console.error(error) // eslint-disable-line
       }
     } finally {
