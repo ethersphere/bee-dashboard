@@ -7,8 +7,6 @@ import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { getDesktopConfiguration, restartBeeNode, setJsonRpcInDesktop } from '../../utils/desktop'
 
-const RPC_CHANGE_SUCCESS_MESSAGE = 'RPC endpoint successfully changed'
-
 export default function SettingsPage(): ReactElement {
   const {
     apiUrl,
@@ -32,25 +30,18 @@ export default function SettingsPage(): ReactElement {
     try {
       setAndPersistJsonRpcProvider(value)
 
-      if (isDesktop) {
-        const desktopConfiguration = await getDesktopConfiguration(desktopUrl)
+      const shouldUpdateDesktop = isDesktop && (await getDesktopConfiguration(desktopUrl))['swap-endpoint']
 
-        // We are in light mode if desktop configuration is already set.
-        // We only want to update the Bee config in this case, otherwise we
-        // would trigger an unwanted light node upgrade.
-        if (desktopConfiguration['swap-endpoint']) {
-          await setJsonRpcInDesktop(desktopUrl, value)
-          const snackKey = enqueueSnackbar('RPC endpoint successfully changed, restarting Bee node...', {
-            variant: 'success',
-          })
-          await restartBeeNode(desktopUrl)
-          closeSnackbar(snackKey)
-          enqueueSnackbar('Bee node restarted', { variant: 'success' })
-        } else {
-          enqueueSnackbar(RPC_CHANGE_SUCCESS_MESSAGE, { variant: 'success' })
-        }
+      if (shouldUpdateDesktop) {
+        await setJsonRpcInDesktop(desktopUrl, value)
+        const snackKey = enqueueSnackbar('RPC endpoint successfully changed, restarting Bee node...', {
+          variant: 'success',
+        })
+        await restartBeeNode(desktopUrl)
+        closeSnackbar(snackKey)
+        enqueueSnackbar('Bee node restarted', { variant: 'success' })
       } else {
-        enqueueSnackbar(RPC_CHANGE_SUCCESS_MESSAGE, { variant: 'success' })
+        enqueueSnackbar('RPC endpoint successfully changed', { variant: 'success' })
       }
 
       await refresh()
