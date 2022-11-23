@@ -5,7 +5,9 @@ import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItemInput from '../../components/ExpandableListItemInput'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
-import { restartBeeNode, setJsonRpcInDesktop } from '../../utils/desktop'
+import { getDesktopConfiguration, restartBeeNode, setJsonRpcInDesktop } from '../../utils/desktop'
+
+const RPC_CHANGE_SUCCESS_MESSAGE = 'RPC endpoint successfully changed'
 
 export default function SettingsPage(): ReactElement {
   const {
@@ -30,24 +32,31 @@ export default function SettingsPage(): ReactElement {
     try {
       setAndPersistJsonRpcProvider(value)
 
-      // We can't set the RPC URL to the `swap-endpoint` Bee config value unless the Bee node is already in
-      // light mode as setting this config value, basically upgrades the node to light mode.
       if (isDesktop) {
-        await setJsonRpcInDesktop(desktopUrl, value)
-        const snackKey = enqueueSnackbar('RPC endpoint successfully changed, restarting Bee node...', {
-          variant: 'success',
-        })
-        await restartBeeNode(desktopUrl)
-        closeSnackbar(snackKey)
-        enqueueSnackbar('Bee node restarted', { variant: 'success' })
+        const desktopConfiguration = await getDesktopConfiguration(desktopUrl)
+
+        // We are in light mode if desktop configuration is already set.
+        // We only want to update the Bee config in this case, otherwise we
+        // would trigger an unwanted light node upgrade.
+        if (desktopConfiguration['swap-endpoint']) {
+          await setJsonRpcInDesktop(desktopUrl, value)
+          const snackKey = enqueueSnackbar('RPC endpoint successfully changed, restarting Bee node...', {
+            variant: 'success',
+          })
+          await restartBeeNode(desktopUrl)
+          closeSnackbar(snackKey)
+          enqueueSnackbar('Bee node restarted', { variant: 'success' })
+        } else {
+          enqueueSnackbar(RPC_CHANGE_SUCCESS_MESSAGE, { variant: 'success' })
+        }
       } else {
-        enqueueSnackbar('RPC endpoint successfully changed', { variant: 'success' })
+        enqueueSnackbar(RPC_CHANGE_SUCCESS_MESSAGE, { variant: 'success' })
       }
 
       await refresh()
     } catch (e) {
       console.error(e) //eslint-disable-line
-      enqueueSnackbar(`Failed to change RPC endpoint. Error: ${e}`, { variant: 'error' })
+      enqueueSnackbar(`Failed to change RPC endpoint. ${e}`, { variant: 'error' })
     }
   }
 
