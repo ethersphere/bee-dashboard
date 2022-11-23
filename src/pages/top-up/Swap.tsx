@@ -20,11 +20,21 @@ import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as BalanceProvider } from '../../providers/WalletBalance'
 import { ROUTES } from '../../routes'
 import { sleepMs } from '../../utils'
-import { getBzzPriceAsDai, performSwap, restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
+import {
+  getBzzPriceAsDai,
+  getDesktopConfiguration,
+  performSwap,
+  restartBeeNode,
+  upgradeToLightNode,
+} from '../../utils/desktop'
+import { Rpc } from '../../utils/rpc'
+import { isSwapError, SwapError, wrapWithSwapError } from '../../utils/SwapError'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
 
 const MINIMUM_XDAI = '0.1'
 const MINIMUM_XBZZ = '0.1'
+
+const GENERIC_SWAP_FAILED_ERROR_MESSAGE = 'Failed to swap. The full error is printed to the console.'
 
 interface Props {
   header: string
@@ -127,6 +137,22 @@ export function Swap({ header }: Props): ReactElement {
     }
   }
 
+  async function performSwapWithChecks(daiToSwap: DaiToken) {
+    const desktopConfiguration = await wrapWithSwapError(
+      getDesktopConfiguration(desktopUrl),
+      'Unable to reach Desktop API. Is Swarm Desktop running?',
+    )
+
+    if (!desktopConfiguration['swap-endpoint']) {
+      throw new SwapError('Swap endpoint is not configured in Swarm Desktop')
+    }
+    await wrapWithSwapError(
+      Rpc.getNetworkChainId(desktopConfiguration['swap-endpoint']),
+      `Swap endpoint not reachable at ${desktopConfiguration['swap-endpoint']}`,
+    )
+    await wrapWithSwapError(performSwap(desktopUrl, daiToSwap.toString), GENERIC_SWAP_FAILED_ERROR_MESSAGE)
+  }
+
   async function onSwap() {
     if (hasSwapped || !daiToSwap) {
       return
@@ -135,16 +161,26 @@ export function Swap({ header }: Props): ReactElement {
     setSwapped(true)
 
     try {
-      await performSwap(desktopUrl, daiToSwap.toString)
+      await performSwapWithChecks(daiToSwap)
       const message = canUpgradeToLightNode
         ? 'Successfully swapped. Beginning light node upgrade...'
-        : 'Successfully swapped. Balances will refresh soon. You may now leave the page.'
+        : 'Successfully swapped. Balances will refresh soon. You may now navigate away.'
       enqueueSnackbar(message, { variant: 'success' })
 
       if (canUpgradeToLightNode) await restart()
     } catch (error) {
-      console.error(error) // eslint-disable-line
-      enqueueSnackbar(`Failed to swap: ${error}`, { variant: 'error' })
+      if (isSwapError(error)) {
+        // we have a custom and user friendly error message
+        enqueueSnackbar(error.snackbarMessage, { variant: 'error' })
+
+        if (error.originalError) {
+          console.error(error.originalError) // eslint-disable-line
+        }
+      } else {
+        // we have an unexpected error
+        enqueueSnackbar(`${GENERIC_SWAP_FAILED_ERROR_MESSAGE} ${error}`, { variant: 'error' })
+        console.error(error) // eslint-disable-line
+      }
     } finally {
       balance?.refresh()
       setLoading(false)

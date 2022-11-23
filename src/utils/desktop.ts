@@ -2,7 +2,23 @@ import axios from 'axios'
 import { BEE_DESKTOP_LATEST_RELEASE_PAGE_API } from '../constants'
 import { DaiToken } from '../models/DaiToken'
 import { Token } from '../models/Token'
-import { postJson } from './net'
+import { getJson, postJson } from './net'
+
+export interface BeeConfig {
+  'api-addr': string
+  'debug-api-addr': string
+  'debug-api-enable': boolean
+  password: string
+  'swap-enable': boolean
+  'swap-initial-deposit': bigint
+  mainnet: boolean
+  'full-node': boolean
+  'cors-allowed-origins': string
+  'resolver-options': string
+  'use-postage-snapshot': boolean
+  'data-dir': string
+  'swap-endpoint'?: string
+}
 
 export async function getBzzPriceAsDai(desktopUrl: string): Promise<Token> {
   const response = await axios.get(`${desktopUrl}/price`)
@@ -21,6 +37,10 @@ export async function setJsonRpcInDesktop(desktopUrl: string, value: string): Pr
   await updateDesktopConfiguration(desktopUrl, {
     'swap-endpoint': value,
   })
+}
+
+export function getDesktopConfiguration(desktopUrl: string): Promise<BeeConfig> {
+  return getJson(`${desktopUrl}/config`)
 }
 
 async function updateDesktopConfiguration(desktopUrl: string, values: Record<string, unknown>): Promise<void> {

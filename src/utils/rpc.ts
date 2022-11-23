@@ -2,6 +2,16 @@ import { debounce } from '@material-ui/core'
 import { Contract, providers, Wallet, BigNumber as BN } from 'ethers'
 import { bzzABI, BZZ_TOKEN_ADDRESS } from './bzz-abi'
 
+const NETWORK_ID = 100
+
+async function getNetworkChainId(url: string): Promise<number> {
+  const provider = new providers.JsonRpcProvider(url, NETWORK_ID)
+  await provider.ready
+  const network = await provider.getNetwork()
+
+  return network.chainId
+}
+
 async function eth_getBalance(address: string, provider: providers.JsonRpcProvider): Promise<string> {
   if (!address.startsWith('0x')) {
     address = `0x${address}`
@@ -78,7 +88,7 @@ export async function sendBzzTransaction(
 }
 
 async function makeReadySigner(privateKey: string, jsonRpcProvider: string) {
-  const provider = new providers.JsonRpcProvider(jsonRpcProvider, 100)
+  const provider = new providers.JsonRpcProvider(jsonRpcProvider, NETWORK_ID)
   await provider.ready
   const signer = new Wallet(privateKey, provider)
 
@@ -86,6 +96,7 @@ async function makeReadySigner(privateKey: string, jsonRpcProvider: string) {
 }
 
 export const Rpc = {
+  getNetworkChainId,
   sendNativeTransaction,
   sendBzzTransaction,
   _eth_getBalance: eth_getBalance,
