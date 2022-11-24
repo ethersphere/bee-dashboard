@@ -1,9 +1,10 @@
+import { BeeModes } from '@ethersphere/bee-js'
 import { Box, Typography } from '@material-ui/core'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
-import Check from 'remixicon-react/CheckLineIcon'
-import ArrowDown from 'remixicon-react/ArrowDownLineIcon'
 import { useNavigate, useParams } from 'react-router'
+import ArrowDown from 'remixicon-react/ArrowDownLineIcon'
+import Check from 'remixicon-react/CheckLineIcon'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import { HistoryHeader } from '../../components/HistoryHeader'
@@ -18,7 +19,6 @@ import { ROUTES } from '../../routes'
 import { sleepMs } from '../../utils'
 import { restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
 import { ResolvedWallet } from '../../utils/wallet'
-import { BeeModes } from '@ethersphere/bee-js'
 
 export function GiftCardFund(): ReactElement {
   const { nodeAddresses, nodeInfo } = useContext(BeeContext)
@@ -52,7 +52,6 @@ export function GiftCardFund(): ReactElement {
       await sleepMs(5_000)
       await upgradeToLightNode(desktopUrl, rpcProviderUrl)
       await restartBeeNode(desktopUrl)
-      enqueueSnackbar('Upgraded to light node', { variant: 'success' })
       navigate(ROUTES.RESTART_LIGHT)
     } catch (error) {
       console.error(error) // eslint-disable-line

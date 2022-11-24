@@ -128,7 +128,6 @@ export function Swap({ header }: Props): ReactElement {
       await sleepMs(5_000)
       await restartBeeNode(desktopUrl)
 
-      enqueueSnackbar('Upgraded to light node', { variant: 'success' })
       navigate(ROUTES.RESTART_LIGHT)
     } catch (error) {
       console.error(error) // eslint-disable-line

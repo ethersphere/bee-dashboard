@@ -1,23 +1,23 @@
+import { BeeModes } from '@ethersphere/bee-js'
 import { Box, createStyles, Grid, makeStyles, Typography } from '@material-ui/core'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
+import { useNavigate } from 'react-router'
+import BankCard from 'remixicon-react/BankCard2LineIcon'
 import Check from 'remixicon-react/CheckLineIcon'
 import Download from 'remixicon-react/DownloadLineIcon'
-import BankCard from 'remixicon-react/BankCard2LineIcon'
-import MoneyDollarCircle from 'remixicon-react/MoneyDollarCircleLineIcon'
 import Gift from 'remixicon-react/GiftLineIcon'
-import { useNavigate } from 'react-router'
+import MoneyDollarCircle from 'remixicon-react/MoneyDollarCircleLineIcon'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import { HistoryHeader } from '../../components/HistoryHeader'
+import { Loading } from '../../components/Loading'
 import { SwarmButton } from '../../components/SwarmButton'
-import { ROUTES } from '../../routes'
+import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { CheckState, Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as BalanceProvider } from '../../providers/WalletBalance'
-import { BeeModes } from '@ethersphere/bee-js'
+import { ROUTES } from '../../routes'
 import { restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
-import { Loading } from '../../components/Loading'
-import { useSnackbar } from 'notistack'
-import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -57,7 +57,6 @@ export default function TopUp(): ReactElement {
     try {
       await upgradeToLightNode(desktopUrl, rpcProviderUrl)
       await restartBeeNode(desktopUrl)
-      enqueueSnackbar('Upgraded to light node', { variant: 'success' })
       navigate(ROUTES.RESTART_LIGHT)
     } catch (error) {
       console.error(error) // eslint-disable-line
