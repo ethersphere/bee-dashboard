@@ -143,14 +143,9 @@ export function Swap({ header }: Props): ReactElement {
     )
 
     if (canUpgradeToLightNode) {
-      await wrapWithSwapError(
+      desktopConfiguration = await wrapWithSwapError(
         upgradeToLightNode(desktopUrl, rpcProviderUrl),
         'Failed to update the configuration file with the new swap values using the Desktop API',
-      )
-
-      desktopConfiguration = await wrapWithSwapError(
-        getDesktopConfiguration(desktopUrl),
-        'Failed to fetch the new configuration using the Desktop API',
       )
     }
 
