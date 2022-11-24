@@ -126,7 +126,6 @@ export function Swap({ header }: Props): ReactElement {
   async function restart() {
     try {
       await sleepMs(5_000)
-      await upgradeToLightNode(desktopUrl, rpcProviderUrl)
       await restartBeeNode(desktopUrl)
 
       enqueueSnackbar('Upgraded to light node', { variant: 'success' })
@@ -138,10 +137,22 @@ export function Swap({ header }: Props): ReactElement {
   }
 
   async function performSwapWithChecks(daiToSwap: DaiToken) {
-    const desktopConfiguration = await wrapWithSwapError(
+    let desktopConfiguration = await wrapWithSwapError(
       getDesktopConfiguration(desktopUrl),
       'Unable to reach Desktop API. Is Swarm Desktop running?',
     )
+
+    if (canUpgradeToLightNode) {
+      await wrapWithSwapError(
+        upgradeToLightNode(desktopUrl, rpcProviderUrl),
+        'Failed to update the configuration file with the new swap values using the Desktop API',
+      )
+
+      desktopConfiguration = await wrapWithSwapError(
+        getDesktopConfiguration(desktopUrl),
+        'Failed to fetch the new configuration using the Desktop API',
+      )
+    }
 
     if (!desktopConfiguration['swap-endpoint']) {
       throw new SwapError('Swap endpoint is not configured in Swarm Desktop')
