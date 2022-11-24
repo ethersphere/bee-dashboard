@@ -1,12 +1,11 @@
 import CircularProgress from '@material-ui/core/CircularProgress'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useContext } from 'react'
 import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItemInput from '../../components/ExpandableListItemInput'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
-import { useSnackbar } from 'notistack'
-import { restartBeeNode, setJsonRpcInDesktop } from '../../utils/desktop'
-import { BeeModes } from '@ethersphere/bee-js'
+import { getDesktopConfiguration, restartBeeNode, setJsonRpcInDesktop } from '../../utils/desktop'
 
 export default function SettingsPage(): ReactElement {
   const {
@@ -24,17 +23,17 @@ export default function SettingsPage(): ReactElement {
     desktopUrl,
     setAndPersistJsonRpcProvider,
   } = useContext(SettingsContext)
-  const { refresh, nodeInfo } = useContext(BeeContext)
+  const { refresh } = useContext(BeeContext)
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
   async function handleSetRpcUrl(value: string) {
     try {
       setAndPersistJsonRpcProvider(value)
 
-      // We can't set the RPC URL to the `swap-endpoint` Bee config value unless the Bee node is already in
-      // light mode as setting this config value, basically upgrades the node to light mode.
-      if (isDesktop && nodeInfo?.beeMode === BeeModes.LIGHT) {
-        await setJsonRpcInDesktop(desktopUrl, rpcProviderUrl)
+      const shouldUpdateDesktop = isDesktop && (await getDesktopConfiguration(desktopUrl))['swap-endpoint']
+
+      if (shouldUpdateDesktop) {
+        await setJsonRpcInDesktop(desktopUrl, value)
         const snackKey = enqueueSnackbar('RPC endpoint successfully changed, restarting Bee node...', {
           variant: 'success',
         })
@@ -48,7 +47,7 @@ export default function SettingsPage(): ReactElement {
       await refresh()
     } catch (e) {
       console.error(e) //eslint-disable-line
-      enqueueSnackbar(`Failed to change RPC endpoint. Error: ${e}`, { variant: 'error' })
+      enqueueSnackbar(`Failed to change RPC endpoint. ${e}`, { variant: 'error' })
     }
   }
 

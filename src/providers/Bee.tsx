@@ -127,11 +127,12 @@ function getStatus(
   chequebookAddress: ChequebookAddressResponse | null,
   chequebookBalance: ChequebookBalance | null,
   error: Error | null,
+  isDesktop: boolean,
 ): Status {
   const status: Status = { ...initialValues.status }
 
   // Version check
-  status.version.isEnabled = true
+  status.version.isEnabled = !isDesktop
   status.version.checkState =
     debugApiHealth &&
     semver.satisfies(debugApiHealth.version, PackageJson.engines.bee, {
@@ -194,7 +195,15 @@ function determineOverallStatus(debugApiHealth: Health | null, debugApiReadiness
 // This does not need to be exposed and works much better as variable than state variable which may trigger some unnecessary re-renders
 let isRefreshing = false
 
-export function Provider({ children }: Props): ReactElement {
+interface InitialSettings {
+  isDesktop?: boolean
+}
+
+interface Props extends InitialSettings {
+  children: ReactChild
+}
+
+export function Provider({ children, isDesktop }: Props): ReactElement {
   const { beeApi, beeDebugApi } = useContext(SettingsContext)
   const [apiHealth, setApiHealth] = useState<boolean>(false)
   const [debugApiHealth, setDebugApiHealth] = useState<Health | null>(null)
@@ -403,6 +412,7 @@ export function Provider({ children }: Props): ReactElement {
     chequebookAddress,
     chequebookBalance,
     error,
+    Boolean(isDesktop),
   )
 
   useEffect(() => {
