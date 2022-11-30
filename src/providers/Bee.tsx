@@ -139,7 +139,7 @@ function getStatus(
       includePrerelease: true,
     })
       ? CheckState.OK
-      : CheckState.ERROR
+      : CheckState.WARNING
 
   // Blockchain connection check
   status.blockchainConnection.isEnabled = true
