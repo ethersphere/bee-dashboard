@@ -135,10 +135,24 @@ export function Swap({ header }: Props): ReactElement {
     }
   }
 
+  async function sendSwapRequest(daiToSwap: DaiToken) {
+    try {
+      await performSwap(desktopUrl, daiToSwap.toString)
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error)
+      throw error
+    }
+  }
+
   async function performSwapWithChecks(daiToSwap: DaiToken) {
+    if (!localStorage.getItem('apiKey')) {
+      throw new SwapError('API key is not set, reopen dashboard through the desktop app')
+    }
+
     let desktopConfiguration = await wrapWithSwapError(
       getDesktopConfiguration(desktopUrl),
-      'Unable to reach Desktop API. Is Swarm Desktop running?',
+      'Unable to reach Desktop API - Swarm Desktop may not be running or API key is wrong',
     )
 
     if (canUpgradeToLightNode) {
@@ -155,7 +169,7 @@ export function Swap({ header }: Props): ReactElement {
       Rpc.getNetworkChainId(desktopConfiguration['swap-endpoint']),
       `Swap endpoint not reachable at ${desktopConfiguration['swap-endpoint']}`,
     )
-    await wrapWithSwapError(performSwap(desktopUrl, daiToSwap.toString), GENERIC_SWAP_FAILED_ERROR_MESSAGE)
+    await wrapWithSwapError(sendSwapRequest(daiToSwap), GENERIC_SWAP_FAILED_ERROR_MESSAGE)
   }
 
   async function onSwap() {

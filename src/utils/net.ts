@@ -27,6 +27,12 @@ export async function sendRequest(
     method,
     headers,
     data,
+  }).catch(error => {
+    if (error?.response?.data) {
+      throw Error(JSON.stringify(error.response.data))
+    } else {
+      throw error
+    }
   })
 
   return response.data
