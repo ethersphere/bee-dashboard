@@ -147,7 +147,7 @@ export function Swap({ header }: Props): ReactElement {
 
   async function performSwapWithChecks(daiToSwap: DaiToken) {
     if (!localStorage.getItem('apiKey')) {
-      throw new SwapError('API key is not set, reopen dashboard through the desktop app')
+      throw new SwapError('API key is not set, reopen dashboard through Swarm Desktop')
     }
 
     let desktopConfiguration = await wrapWithSwapError(
