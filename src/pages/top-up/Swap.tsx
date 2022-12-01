@@ -65,7 +65,7 @@ export function Swap({ header }: Props): ReactElement {
 
   // Set the initial xDAI to swap
   useEffect(() => {
-    if (!balance) {
+    if (!balance || userInputSwap) {
       return
     }
 
@@ -78,7 +78,7 @@ export function Swap({ header }: Props): ReactElement {
       // Balance is low, halve the amount
       setDaiToSwap(new DaiToken(balance.dai.toBigNumber.dividedToIntegerBy(2)))
     }
-  }, [balance])
+  }, [balance, userInputSwap])
 
   // Set the xDAI to swap based on user input
   useEffect(() => {
