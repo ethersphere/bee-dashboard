@@ -1,5 +1,6 @@
 import { BeeModes } from '@ethersphere/bee-js'
 import { Box, Grid, Typography } from '@material-ui/core'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { Waiting } from '../../components/Waiting'
@@ -12,6 +13,7 @@ export default function LightModeRestart(): ReactElement {
   const [startedAt] = useState(Number.parseInt(localStorage.getItem(STARTED_UPGRADE_AT) ?? Date.now().toFixed()))
   const { apiHealth, nodeInfo } = useContext(Context)
   const navigate = useNavigate()
+  const { enqueueSnackbar } = useSnackbar()
 
   useEffect(() => {
     localStorage.setItem(STARTED_UPGRADE_AT, startedAt.toFixed())
@@ -23,10 +25,11 @@ export default function LightModeRestart(): ReactElement {
     }
 
     if (apiHealth && nodeInfo?.beeMode === BeeModes.LIGHT) {
+      enqueueSnackbar('Upgraded to light node', { variant: 'success' })
       localStorage.removeItem(STARTED_UPGRADE_AT)
       navigate(ROUTES.INFO)
     }
-  }, [startedAt, navigate, nodeInfo, apiHealth])
+  }, [startedAt, navigate, nodeInfo, apiHealth, enqueueSnackbar])
 
   return (
     <Grid container direction="column" justifyContent="center" alignItems="center">

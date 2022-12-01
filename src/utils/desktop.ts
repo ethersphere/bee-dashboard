@@ -26,8 +26,8 @@ export async function getBzzPriceAsDai(desktopUrl: string): Promise<Token> {
   return DaiToken.fromDecimal(response.data)
 }
 
-export async function upgradeToLightNode(desktopUrl: string, rpcProvider: string): Promise<void> {
-  await updateDesktopConfiguration(desktopUrl, {
+export function upgradeToLightNode(desktopUrl: string, rpcProvider: string): Promise<BeeConfig> {
+  return updateDesktopConfiguration(desktopUrl, {
     'swap-enable': true,
     'swap-endpoint': rpcProvider,
   })
@@ -43,8 +43,8 @@ export function getDesktopConfiguration(desktopUrl: string): Promise<BeeConfig> 
   return getJson(`${desktopUrl}/config`)
 }
 
-async function updateDesktopConfiguration(desktopUrl: string, values: Record<string, unknown>): Promise<void> {
-  await postJson(`${desktopUrl}/config`, values)
+function updateDesktopConfiguration(desktopUrl: string, values: Record<string, unknown>): Promise<BeeConfig> {
+  return postJson(`${desktopUrl}/config`, values)
 }
 
 export async function restartBeeNode(desktopUrl: string): Promise<void> {
