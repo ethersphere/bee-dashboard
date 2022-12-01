@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.21.0](https://github.com/ethersphere/bee-dashboard/compare/v0.20.2...v0.21.0) (2022-12-01)
+
+
+### Features
+
+* add prerequisite checks before swap ([#588](https://github.com/ethersphere/bee-dashboard/issues/588)) ([4e564dd](https://github.com/ethersphere/bee-dashboard/commit/4e564dd5c08b938c95f07818bc60957a7df4f5bb))
+* add starting state to sidebar indicator ([#587](https://github.com/ethersphere/bee-dashboard/issues/587)) ([848e61a](https://github.com/ethersphere/bee-dashboard/commit/848e61a7a0fc9b31cae4f603473b37d467f9e914))
+
+
+### Bug Fixes
+
+* add loading state to info page ([#584](https://github.com/ethersphere/bee-dashboard/issues/584)) ([0246904](https://github.com/ethersphere/bee-dashboard/commit/02469046b05512d6617d8b21ca93b41d6a8a6827))
+* always consider user input when performing swap ([#572](https://github.com/ethersphere/bee-dashboard/issues/572)) ([ec8fdf0](https://github.com/ethersphere/bee-dashboard/commit/ec8fdf0315ed7ee75c7612780c602cba49a2321d))
+* always set rpc to newly provided value in desktop ([#591](https://github.com/ethersphere/bee-dashboard/issues/591)) ([b798fa0](https://github.com/ethersphere/bee-dashboard/commit/b798fa0e68b367fe324ef64507b1405b642da6e0))
+* change status page depending on desktop mode ([#573](https://github.com/ethersphere/bee-dashboard/issues/573)) ([a4b8e7c](https://github.com/ethersphere/bee-dashboard/commit/a4b8e7ca2596028e7c8192c92202c0361610e307))
+* change version mismatch to a warning ([#594](https://github.com/ethersphere/bee-dashboard/issues/594)) ([dc04e26](https://github.com/ethersphere/bee-dashboard/commit/dc04e26db4fe6beb9e76fad79c732794b0b7f77d))
+* fix conditional rendering for blockchain network ([#583](https://github.com/ethersphere/bee-dashboard/issues/583)) ([1ce4a47](https://github.com/ethersphere/bee-dashboard/commit/1ce4a474954a5ba4debee53b40bb66a46fb19ffc))
+* handle auth and server error during swap ([#593](https://github.com/ethersphere/bee-dashboard/issues/593)) ([665ae06](https://github.com/ethersphere/bee-dashboard/commit/665ae063fa49bc94762ea10a9098b57e95327d9c))
+* hide swap in standalone mode ([#582](https://github.com/ethersphere/bee-dashboard/issues/582)) ([9a8520e](https://github.com/ethersphere/bee-dashboard/commit/9a8520eb6fe9f40a77c4230ab79d3731ebdd4b42))
+* refresh after chequebook withdraw deposit ([#576](https://github.com/ethersphere/bee-dashboard/issues/576)) ([6936098](https://github.com/ethersphere/bee-dashboard/commit/693609810d735d1e54691b13ea0e4db33e678a53))
+
 ## [0.20.2](https://github.com/ethersphere/bee-dashboard/compare/v0.20.1...v0.20.2) (2022-09-15)
 
 
