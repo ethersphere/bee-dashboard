@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import axios from 'axios'
+import { AuthError } from './AuthError'
 
 export function getJson<T extends Record<string, any>>(url: string): Promise<T> {
   return sendRequest(url, 'GET') as Promise<T>
@@ -28,11 +29,14 @@ export async function sendRequest(
     headers,
     data,
   }).catch(error => {
-    if (error?.response?.data) {
-      throw Error(JSON.stringify(error.response.data))
-    } else {
-      throw error
+    if (error?.response?.status === 401) {
+      throw new AuthError()
     }
+
+    if (error?.response?.data) {
+      throw Error(`Request ${method} ${url} failed: ${JSON.stringify(error.response.data)}`)
+    }
+    throw error
   })
 
   return response.data

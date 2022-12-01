@@ -152,7 +152,7 @@ export function Swap({ header }: Props): ReactElement {
 
     let desktopConfiguration = await wrapWithSwapError(
       getDesktopConfiguration(desktopUrl),
-      'Unable to reach Desktop API - Swarm Desktop may not be running or API key is wrong',
+      'Unable to reach Desktop API, Swarm Desktop may not be running',
     )
 
     if (canUpgradeToLightNode) {
