@@ -163,14 +163,9 @@ function getStatus(
   if (error || (nodeInfo && [BeeModes.FULL, BeeModes.LIGHT].includes(nodeInfo.beeMode))) {
     status.chequebook.isEnabled = true
 
-    if (
-      chequebookAddress?.chequebookAddress &&
-      chequebookBalance !== null &&
-      chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0)
-    ) {
+    if (chequebookAddress?.chequebookAddress && chequebookBalance !== null) {
       status.chequebook.checkState = CheckState.OK
-    } else if (chequebookAddress?.chequebookAddress) status.chequebook.checkState = CheckState.WARNING
-    else status.chequebook.checkState = CheckState.OK
+    } else status.chequebook.checkState = CheckState.OK
   }
 
   status.all = determineOverallStatus(debugApiHealth, debugApiReadiness, status)
