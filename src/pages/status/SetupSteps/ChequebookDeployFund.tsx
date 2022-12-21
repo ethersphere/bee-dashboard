@@ -1,11 +1,11 @@
-import type { ReactElement, ReactNode } from 'react'
 import { useContext } from 'react'
+import DepositModal from '../../../containers/DepositModal'
+import type { ReactElement, ReactNode } from 'react'
 import ExpandableList from '../../../components/ExpandableList'
-import ExpandableListItemActions from '../../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../../components/ExpandableListItemKey'
+import ExpandableListItemActions from '../../../components/ExpandableListItemActions'
 import ExpandableListItemNote from '../../../components/ExpandableListItemNote'
 import StatusIcon from '../../../components/StatusIcon'
-import DepositModal from '../../../containers/DepositModal'
 import { CheckState, Context } from '../../../providers/Bee'
 
 const ChequebookDeployFund = (): ReactElement | null => {
