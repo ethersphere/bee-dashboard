@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.21.1](https://github.com/ethersphere/bee-dashboard/compare/v0.21.0...v0.21.1) (2022-12-21)
+
+
+### Bug Fixes
+
+* do not require chequebook funding ([#599](https://github.com/ethersphere/bee-dashboard/issues/599)) ([42b7f08](https://github.com/ethersphere/bee-dashboard/commit/42b7f080b00a94f068d2fad4779d02ddcf58e27d))
+
 ## [0.21.0](https://github.com/ethersphere/bee-dashboard/compare/v0.20.2...v0.21.0) (2022-12-01)
 
 
