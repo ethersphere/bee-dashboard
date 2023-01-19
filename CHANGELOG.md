@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.0](https://github.com/ethersphere/bee-dashboard/compare/v0.21.1...v0.22.0) (2023-01-19)
+
+
+### Features
+
+* add node connecting status ([#603](https://github.com/ethersphere/bee-dashboard/issues/603)) ([90f9f91](https://github.com/ethersphere/bee-dashboard/commit/90f9f91ddbefb47b40c7e567125972b800d81972))
+
 ## [0.21.1](https://github.com/ethersphere/bee-dashboard/compare/v0.21.0...v0.21.1) (2022-12-21)
 
 
