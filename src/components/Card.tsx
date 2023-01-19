@@ -2,6 +2,7 @@ import { createStyles, makeStyles, Theme, Typography } from '@material-ui/core'
 import { ReactElement } from 'react'
 import Check from 'remixicon-react/CheckLineIcon'
 import AlertCircle from 'remixicon-react/ErrorWarningFillIcon'
+import Connecting from 'remixicon-react/LinksLineIcon'
 import RefreshLine from 'remixicon-react/RefreshLineIcon'
 import { SwarmButton, SwarmButtonProps } from './SwarmButton'
 
@@ -10,7 +11,7 @@ interface Props {
   title: string
   subtitle: string
   buttonProps: SwarmButtonProps
-  status: 'ok' | 'error' | 'loading'
+  status: 'ok' | 'error' | 'loading' | 'connecting'
 }
 
 const useStyles = (backgroundColor: string) =>
@@ -65,6 +66,8 @@ export default function Card({ buttonProps, icon, title, subtitle, status }: Pro
     statusIcon = <AlertCircle size="13" color="#f44336" />
   } else if (status === 'loading') {
     statusIcon = <RefreshLine size="13" color="orange" />
+  } else if (status === 'connecting') {
+    statusIcon = <Connecting size="13" color="#0074D9" />
   }
 
   return (

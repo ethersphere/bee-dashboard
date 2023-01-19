@@ -17,11 +17,13 @@ import { Token } from '../models/Token'
 import type { Balance, ChequebookBalance, Settlements } from '../types'
 import { Context as SettingsContext } from './Settings'
 
+const LAUNCH_GRACE_PERIOD = 15_000
 const REFRESH_WHEN_OK = 30_000
 const REFRESH_WHEN_ERROR = 5_000
 const TIMEOUT = 3_000
 
 export enum CheckState {
+  CONNECTING = 'Connecting',
   OK = 'OK',
   WARNING = 'Warning',
   ERROR = 'Error',
@@ -128,6 +130,7 @@ function getStatus(
   chequebookBalance: ChequebookBalance | null,
   error: Error | null,
   isDesktop: boolean,
+  startedAt: number,
 ): Status {
   const status: Status = { ...initialValues.status }
 
@@ -168,19 +171,32 @@ function getStatus(
     } else status.chequebook.checkState = CheckState.OK
   }
 
-  status.all = determineOverallStatus(debugApiHealth, debugApiReadiness, status)
+  status.all = determineOverallStatus(debugApiHealth, debugApiReadiness, status, startedAt)
 
   return status
 }
 
-function determineOverallStatus(debugApiHealth: Health | null, debugApiReadiness: boolean, status: Status): CheckState {
+function determineOverallStatus(
+  debugApiHealth: Health | null,
+  debugApiReadiness: boolean,
+  status: Status,
+  startedAt: number,
+): CheckState {
+  const hasErrors = Object.values(status).some(
+    ({ isEnabled, checkState }) => isEnabled && checkState === CheckState.ERROR,
+  )
+  const hasWarnings = Object.values(status).some(
+    ({ isEnabled, checkState }) => isEnabled && checkState === CheckState.WARNING,
+  )
+  const isInGracePeriod = Date.now() - startedAt < LAUNCH_GRACE_PERIOD
+
   if (debugApiHealth?.status === 'ok' && !debugApiReadiness) {
     return CheckState.STARTING
-  } else if (Object.values(status).some(({ isEnabled, checkState }) => isEnabled && checkState === CheckState.ERROR)) {
+  } else if (hasErrors && isInGracePeriod) {
+    return CheckState.CONNECTING
+  } else if (hasErrors) {
     return CheckState.ERROR
-  } else if (
-    Object.values(status).some(({ isEnabled, checkState }) => isEnabled && checkState === CheckState.WARNING)
-  ) {
+  } else if (hasWarnings) {
     return CheckState.WARNING
   } else {
     return CheckState.OK
@@ -214,6 +230,7 @@ export function Provider({ children, isDesktop }: Props): ReactElement {
   const [settlements, setSettlements] = useState<Settlements | null>(null)
   const [chainState, setChainState] = useState<ChainState | null>(null)
   const [chainId, setChainId] = useState<number | null>(null)
+  const [startedAt] = useState(Date.now())
 
   const { latestBeeRelease } = useLatestBeeRelease()
 
@@ -408,6 +425,7 @@ export function Provider({ children, isDesktop }: Props): ReactElement {
     chequebookBalance,
     error,
     Boolean(isDesktop),
+    startedAt,
   )
 
   useEffect(() => {

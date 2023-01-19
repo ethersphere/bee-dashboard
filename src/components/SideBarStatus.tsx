@@ -1,9 +1,9 @@
 import { ReactElement, useContext } from 'react'
-import { useLocation, matchPath } from 'react-router-dom'
+import { matchPath, useLocation } from 'react-router-dom'
 import ArrowRight from 'remixicon-react/ArrowRightLineIcon'
 
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles'
-import { ListItemText, ListItemIcon, ListItem, Typography } from '@material-ui/core'
+import { ListItem, ListItemIcon, ListItemText, Typography } from '@material-ui/core'
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import { Context } from '../providers/Bee'
 import StatusIcon from './StatusIcon'
 
@@ -44,6 +44,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     smallerText: {
       fontSize: '0.9rem',
+      whiteSpace: 'nowrap',
     },
   }),
 )
