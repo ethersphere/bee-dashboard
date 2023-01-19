@@ -12,6 +12,18 @@ export default function NodeInfoCard(): ReactElement {
   const { status } = useContext(BeeContext)
   const navigate = useNavigate()
 
+  if (status.all === CheckState.CONNECTING) {
+    return (
+      <Card
+        buttonProps={{ iconType: Settings, children: 'Open node setup', onClick: () => navigate(ROUTES.STATUS) }}
+        icon={<Globe />}
+        title="Connecting..."
+        subtitle="Attempting to establish connection to your Bee node."
+        status="connecting"
+      />
+    )
+  }
+
   if (status.all === CheckState.STARTING) {
     return (
       <Card
