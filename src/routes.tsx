@@ -2,6 +2,7 @@ import { ReactElement, useContext } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { AccountChequebook } from './pages/account/chequebook/AccountChequebook'
 import { AccountFeeds } from './pages/account/feeds/AccountFeeds'
+import { AccountStaking } from './pages/account/staking/AccountStaking'
 import { AccountStamps } from './pages/account/stamps/AccountStamps'
 import { AccountWallet } from './pages/account/wallet/AccountWallet'
 import CreateNewFeed from './pages/feeds/CreateNewFeed'
@@ -14,10 +15,10 @@ import { UploadLander } from './pages/files/UploadLander'
 import GiftCards from './pages/gift-code'
 import Info from './pages/info'
 import LightModeRestart from './pages/restart/LightModeRestart'
-import TopUp from './pages/top-up'
 import Settings from './pages/settings'
 import { CreatePostageStampPage } from './pages/stamps/CreatePostageStampPage'
 import Status from './pages/status'
+import TopUp from './pages/top-up'
 import { BankCardTopUpIndex } from './pages/top-up/BankCardTopUpIndex'
 import { CryptoTopUpIndex } from './pages/top-up/CryptoTopUpIndex'
 import { GiftCardFund } from './pages/top-up/GiftCardFund'
@@ -51,6 +52,7 @@ export enum ROUTES {
   ACCOUNT_FEEDS_UPDATE = '/account/feeds/update/:hash',
   ACCOUNT_FEEDS_VIEW = '/account/feeds/:uuid',
   ACCOUNT_INVITATIONS = '/account/invitations',
+  ACCOUNT_STAKING = '/account/staking',
 }
 
 export const ACCOUNT_TABS = [
@@ -58,6 +60,7 @@ export const ACCOUNT_TABS = [
   ROUTES.ACCOUNT_CHEQUEBOOK,
   ROUTES.ACCOUNT_STAMPS,
   ROUTES.ACCOUNT_FEEDS,
+  ROUTES.ACCOUNT_STAKING,
 ]
 
 const BaseRouter = (): ReactElement => {
@@ -88,6 +91,7 @@ const BaseRouter = (): ReactElement => {
       <Route path={ROUTES.ACCOUNT_FEEDS_NEW} element={<CreateNewFeed />} />
       <Route path={ROUTES.ACCOUNT_FEEDS_UPDATE} element={<UpdateFeed />} />
       <Route path={ROUTES.ACCOUNT_FEEDS_VIEW} element={<FeedSubpage />} />
+      <Route path={ROUTES.ACCOUNT_STAKING} element={<AccountStaking />} />
       {isDesktop && <Route path={ROUTES.ACCOUNT_INVITATIONS} element={<GiftCards />} />}
     </Routes>
   )

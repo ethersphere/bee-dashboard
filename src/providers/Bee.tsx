@@ -13,6 +13,7 @@ import { createContext, ReactChild, ReactElement, useContext, useEffect, useStat
 import semver from 'semver'
 import PackageJson from '../../package.json'
 import { useLatestBeeRelease } from '../hooks/apiHooks'
+import { BzzToken } from '../models/BzzToken'
 import { Token } from '../models/Token'
 import type { Balance, ChequebookBalance, Settlements } from '../types'
 import { Context as SettingsContext } from './Settings'
@@ -62,6 +63,7 @@ interface ContextInterface {
   chequebookAddress: ChequebookAddressResponse | null
   peers: Peer[] | null
   chequebookBalance: ChequebookBalance | null
+  stake: BzzToken | null
   peerBalances: Balance[] | null
   peerCheques: LastChequesResponse | null
   settlements: Settlements | null
@@ -98,6 +100,7 @@ const initialValues: ContextInterface = {
   nodeInfo: null,
   topology: null,
   chequebookAddress: null,
+  stake: null,
   peers: null,
   chequebookBalance: null,
   peerBalances: null,
@@ -225,6 +228,7 @@ export function Provider({ children, isDesktop }: Props): ReactElement {
   const [chequebookAddress, setChequebookAddress] = useState<ChequebookAddressResponse | null>(null)
   const [peers, setPeers] = useState<Peer[] | null>(null)
   const [chequebookBalance, setChequebookBalance] = useState<ChequebookBalance | null>(null)
+  const [stake, setStake] = useState<BzzToken | null>(null)
   const [peerBalances, setPeerBalances] = useState<Balance[] | null>(null)
   const [peerCheques, setPeerCheques] = useState<LastChequesResponse | null>(null)
   const [settlements, setSettlements] = useState<Settlements | null>(null)
@@ -388,6 +392,11 @@ export function Provider({ children, isDesktop }: Props): ReactElement {
           .then(setChequebookBalance)
           .catch(() => setChequebookBalance(null)),
 
+        beeDebugApi
+          .getStake({ timeout: TIMEOUT })
+          .then(stake => setStake(new BzzToken(stake)))
+          .catch(() => setStake(null)),
+
         // Peer balances
         peerBalanceWrapper()
           .then(setPeerBalances)
@@ -471,6 +480,7 @@ export function Provider({ children, isDesktop }: Props): ReactElement {
         chequebookAddress,
         peers,
         chequebookBalance,
+        stake,
         peerBalances,
         peerCheques,
         settlements,
