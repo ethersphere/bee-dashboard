@@ -9,10 +9,22 @@ import { CheckState, Context as BeeContext } from '../../providers/Bee'
 import { ROUTES } from '../../routes'
 
 export default function NodeInfoCard(): ReactElement {
-  const { debugApiHealth, debugApiReadiness, status } = useContext(BeeContext)
+  const { status } = useContext(BeeContext)
   const navigate = useNavigate()
 
-  if (debugApiHealth && !debugApiReadiness) {
+  if (status.all === CheckState.CONNECTING) {
+    return (
+      <Card
+        buttonProps={{ iconType: Settings, children: 'Open node setup', onClick: () => navigate(ROUTES.STATUS) }}
+        icon={<Globe />}
+        title="Connecting..."
+        subtitle="Attempting to establish connection to your Bee node."
+        status="connecting"
+      />
+    )
+  }
+
+  if (status.all === CheckState.STARTING) {
     return (
       <Card
         buttonProps={{ iconType: Settings, children: 'Open node setup', onClick: () => navigate(ROUTES.STATUS) }}

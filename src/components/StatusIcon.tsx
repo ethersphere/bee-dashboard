@@ -1,5 +1,5 @@
-import type { ReactElement } from 'react'
 import { CircularProgress } from '@material-ui/core'
+import type { ReactElement } from 'react'
 import { CheckState } from '../providers/Bee'
 
 interface Props {
@@ -24,6 +24,12 @@ export default function StatusIcon({ checkState, size, className, isLoading }: P
       break
     case CheckState.ERROR:
       backgroundColor = '#ff3a52'
+      break
+    case CheckState.STARTING:
+      backgroundColor = 'orange'
+      break
+    case CheckState.CONNECTING:
+      backgroundColor = '#0074D9'
       break
     default:
       // Default is error

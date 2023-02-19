@@ -18,14 +18,17 @@ import { Token } from '../models/Token'
 import type { Balance, ChequebookBalance, Settlements } from '../types'
 import { Context as SettingsContext } from './Settings'
 
+const LAUNCH_GRACE_PERIOD = 15_000
 const REFRESH_WHEN_OK = 30_000
 const REFRESH_WHEN_ERROR = 5_000
 const TIMEOUT = 3_000
 
 export enum CheckState {
+  CONNECTING = 'Connecting',
   OK = 'OK',
   WARNING = 'Warning',
   ERROR = 'Error',
+  STARTING = 'Starting',
 }
 
 interface StatusItem {
@@ -122,25 +125,27 @@ interface Props {
 
 function getStatus(
   debugApiHealth: Health | null,
-  nodeAddresses: NodeAddresses | null,
+  debugApiReadiness: boolean,
   nodeInfo: NodeInfo | null,
   apiHealth: boolean,
   topology: Topology | null,
   chequebookAddress: ChequebookAddressResponse | null,
   chequebookBalance: ChequebookBalance | null,
   error: Error | null,
+  isDesktop: boolean,
+  startedAt: number,
 ): Status {
   const status: Status = { ...initialValues.status }
 
   // Version check
-  status.version.isEnabled = true
+  status.version.isEnabled = !isDesktop
   status.version.checkState =
     debugApiHealth &&
     semver.satisfies(debugApiHealth.version, PackageJson.engines.bee, {
       includePrerelease: true,
     })
       ? CheckState.OK
-      : CheckState.ERROR
+      : CheckState.WARNING
 
   // Blockchain connection check
   status.blockchainConnection.isEnabled = true
@@ -164,34 +169,55 @@ function getStatus(
   if (error || (nodeInfo && [BeeModes.FULL, BeeModes.LIGHT].includes(nodeInfo.beeMode))) {
     status.chequebook.isEnabled = true
 
-    if (
-      chequebookAddress?.chequebookAddress &&
-      chequebookBalance !== null &&
-      chequebookBalance?.totalBalance.toBigNumber.isGreaterThan(0)
-    ) {
+    if (chequebookAddress?.chequebookAddress && chequebookBalance !== null) {
       status.chequebook.checkState = CheckState.OK
-    } else if (chequebookAddress?.chequebookAddress) status.chequebook.checkState = CheckState.WARNING
-    else status.chequebook.checkState = CheckState.OK
+    } else status.chequebook.checkState = CheckState.OK
   }
 
-  // Determine overall status
-  if (Object.values(status).some(({ isEnabled, checkState }) => isEnabled && checkState === CheckState.ERROR)) {
-    status.all = CheckState.ERROR
-  } else if (
-    Object.values(status).some(({ isEnabled, checkState }) => isEnabled && checkState === CheckState.WARNING)
-  ) {
-    status.all = CheckState.WARNING
-  } else {
-    status.all = CheckState.OK
-  }
+  status.all = determineOverallStatus(debugApiHealth, debugApiReadiness, status, startedAt)
 
   return status
+}
+
+function determineOverallStatus(
+  debugApiHealth: Health | null,
+  debugApiReadiness: boolean,
+  status: Status,
+  startedAt: number,
+): CheckState {
+  const hasErrors = Object.values(status).some(
+    ({ isEnabled, checkState }) => isEnabled && checkState === CheckState.ERROR,
+  )
+  const hasWarnings = Object.values(status).some(
+    ({ isEnabled, checkState }) => isEnabled && checkState === CheckState.WARNING,
+  )
+  const isInGracePeriod = Date.now() - startedAt < LAUNCH_GRACE_PERIOD
+
+  if (debugApiHealth?.status === 'ok' && !debugApiReadiness) {
+    return CheckState.STARTING
+  } else if (hasErrors && isInGracePeriod) {
+    return CheckState.CONNECTING
+  } else if (hasErrors) {
+    return CheckState.ERROR
+  } else if (hasWarnings) {
+    return CheckState.WARNING
+  } else {
+    return CheckState.OK
+  }
 }
 
 // This does not need to be exposed and works much better as variable than state variable which may trigger some unnecessary re-renders
 let isRefreshing = false
 
-export function Provider({ children }: Props): ReactElement {
+interface InitialSettings {
+  isDesktop?: boolean
+}
+
+interface Props extends InitialSettings {
+  children: ReactChild
+}
+
+export function Provider({ children, isDesktop }: Props): ReactElement {
   const { beeApi, beeDebugApi } = useContext(SettingsContext)
   const [apiHealth, setApiHealth] = useState<boolean>(false)
   const [debugApiHealth, setDebugApiHealth] = useState<Health | null>(null)
@@ -208,6 +234,7 @@ export function Provider({ children }: Props): ReactElement {
   const [settlements, setSettlements] = useState<Settlements | null>(null)
   const [chainState, setChainState] = useState<ChainState | null>(null)
   const [chainId, setChainId] = useState<number | null>(null)
+  const [startedAt] = useState(Date.now())
 
   const { latestBeeRelease } = useLatestBeeRelease()
 
@@ -399,13 +426,15 @@ export function Provider({ children }: Props): ReactElement {
 
   const status = getStatus(
     debugApiHealth,
-    nodeAddresses,
+    debugApiReadiness,
     nodeInfo,
     apiHealth,
     topology,
     chequebookAddress,
     chequebookBalance,
     error,
+    Boolean(isDesktop),
+    startedAt,
   )
 
   useEffect(() => {
