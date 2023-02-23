@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.23.0](https://github.com/ethersphere/bee-dashboard/compare/v0.22.0...v0.23.0) (2023-02-21)
+
+
+### Features
+
+* add staking for full nodes ([#590](https://github.com/ethersphere/bee-dashboard/issues/590)) ([fac72b1](https://github.com/ethersphere/bee-dashboard/commit/fac72b1299353c104231aa038c1bab9df78c1355))
+* upgrade bee-js to 5.2.0 ([#611](https://github.com/ethersphere/bee-dashboard/issues/611)) ([e215c61](https://github.com/ethersphere/bee-dashboard/commit/e215c61ea1619fc388fe8b1904d160b04a1a5c0d))
+
 ## [0.22.0](https://github.com/ethersphere/bee-dashboard/compare/v0.21.1...v0.22.0) (2023-01-19)
 
 
