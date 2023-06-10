@@ -1,17 +1,17 @@
 import { BeeModes, Utils } from '@ethersphere/bee-js'
-import { ManifestJs } from '@ethersphere/manifest-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Search from 'remixicon-react/SearchLineIcon'
 import ExpandableListItemInput from '../../components/ExpandableListItemInput'
 import { History } from '../../components/History'
+import { Context as BeeContext } from '../../providers/Bee'
 import { Context as FileContext, defaultUploadOrigin } from '../../providers/File'
 import { Context as SettingsContext } from '../../providers/Settings'
-import { Context as BeeContext } from '../../providers/Bee'
 import { ROUTES } from '../../routes'
 import { recognizeEnsOrSwarmHash, regexpEns } from '../../utils'
 import { determineHistoryName, HISTORY_KEYS, putHistory } from '../../utils/local-storage'
+import { ManifestJs } from '../../utils/manifest'
 import { FileNavigation } from './FileNavigation'
 
 export function Download(): ReactElement {
@@ -34,9 +34,7 @@ export function Download(): ReactElement {
     ) {
       setReferenceError(undefined)
     } else {
-      setReferenceError(
-        'Incorrect format of swarm hash. Expected 64 or 128 hexstring characters, bzz.link url or ENS domain.',
-      )
+      setReferenceError('Incorrect format of swarm hash. Expected 64 or 128 hexstring characters or ENS domain.')
     }
   }
 

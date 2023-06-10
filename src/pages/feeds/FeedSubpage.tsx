@@ -1,12 +1,10 @@
-import * as swarmCid from '@ethersphere/swarm-cid'
 import { Box } from '@material-ui/core'
 import { ReactElement, useContext, useEffect, useState } from 'react'
-import X from 'remixicon-react/CloseLineIcon'
 import { useNavigate, useParams } from 'react-router-dom'
+import X from 'remixicon-react/CloseLineIcon'
 import { DocumentationText } from '../../components/DocumentationText'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
-import ExpandableListItemLink from '../../components/ExpandableListItemLink'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { SwarmButton } from '../../components/SwarmButton'
 import { Context as BeeContext } from '../../providers/Bee'
@@ -55,14 +53,8 @@ export function FeedSubpage(): ReactElement {
       <UploadArea showHelp={false} uploadOrigin={{ origin: 'FEED', uuid }} />
       {available && identity.feedHash ? (
         <>
-          <Box mb={0.25}>
-            <ExpandableListItemKey label="Feed hash" value={identity.feedHash} />
-          </Box>
           <Box mb={4}>
-            <ExpandableListItemLink
-              label="BZZ Link"
-              value={`https://${swarmCid.encodeFeedReference(identity.feedHash)}.bzz.link`}
-            />
+            <ExpandableListItemKey label="Feed hash" value={identity.feedHash} />
           </Box>
         </>
       ) : (

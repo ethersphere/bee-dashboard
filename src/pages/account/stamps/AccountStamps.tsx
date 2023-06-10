@@ -1,10 +1,11 @@
-import { CircularProgress, Container, createStyles, makeStyles } from '@material-ui/core'
+import { CircularProgress, createStyles, makeStyles } from '@material-ui/core'
 import { ReactElement, useContext, useEffect } from 'react'
-import PlusSquare from 'remixicon-react/AddBoxLineIcon'
 import { useNavigate } from 'react-router'
+import PlusSquare from 'remixicon-react/AddBoxLineIcon'
+import { Loading } from '../../../components/Loading'
 import { SwarmButton } from '../../../components/SwarmButton'
 import TroubleshootConnectionCard from '../../../components/TroubleshootConnectionCard'
-import { CheckState, Context as BeeContext } from '../../../providers/Bee'
+import { Context as BeeContext, CheckState } from '../../../providers/Bee'
 import { Context as StampsContext } from '../../../providers/Stamps'
 import { ROUTES } from '../../../routes'
 import StampsTable from '../../stamps/StampsTable'
@@ -53,11 +54,7 @@ export function AccountStamps(): ReactElement {
       <Header />
       <AccountNavigation active="STAMPS" />
       <div className={classes.root}>
-        {error && (
-          <Container style={{ textAlign: 'center', padding: '50px' }}>
-            Error loading postage stamps details: {error.message}
-          </Container>
-        )}
+        {error && <Loading />}
         {!error && (
           <>
             <div className={classes.actions}>

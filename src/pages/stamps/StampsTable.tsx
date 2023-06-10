@@ -1,8 +1,12 @@
-import type { ReactElement } from 'react'
+import { ReactElement, useContext } from 'react'
+import TimerFlash from 'remixicon-react/TimerFlashFillIcon'
 import ExpandableElement from '../../components/ExpandableElement'
 import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItem from '../../components/ExpandableListItem'
+import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
+import StampExtensionModal from '../../components/StampExtensionModal'
+import { Context } from '../../providers/Settings'
 import { EnrichedPostageBatch } from '../../providers/Stamps'
 import { secondsToTimeString } from '../../utils'
 import { getHumanReadableFileSize } from '../../utils/file'
@@ -13,7 +17,11 @@ interface Props {
 }
 
 function StampsTable({ postageStamps }: Props): ReactElement | null {
-  if (postageStamps === null) return null
+  const { beeDebugApi } = useContext(Context)
+
+  if (!postageStamps || !beeDebugApi) {
+    return null
+  }
 
   return (
     <ExpandableList label="Postage Stamps" defaultOpen>
@@ -38,7 +46,16 @@ function StampsTable({ postageStamps }: Props): ReactElement | null {
               <ExpandableListItem label="Label" value={stamp.label} />
               <ExpandableListItem label="Usable" value={stamp.usable ? 'yes' : 'no'} />
               <ExpandableListItem label="Exists" value={stamp.exists ? 'yes' : 'no'} />
+              <ExpandableListItem label="Immutable" value={stamp.immutableFlag ? 'yes' : 'no'} />
               <ExpandableListItem label="Purchase Block Number" value={stamp.blockNumber} />
+              <ExpandableListItemActions>
+                <StampExtensionModal
+                  label="Topup & Dilute"
+                  icon={<TimerFlash size="1rem" />}
+                  beeDebug={beeDebugApi}
+                  stamp={stamp.batchID}
+                />
+              </ExpandableListItemActions>
             </>
           }
         >

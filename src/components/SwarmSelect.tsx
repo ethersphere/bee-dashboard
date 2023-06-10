@@ -30,6 +30,7 @@ interface Props {
   formik?: boolean
   defaultValue?: string
   placeholder?: string
+  disabled?: boolean
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -60,6 +61,7 @@ export function SwarmSelect({
   onChange,
   label,
   placeholder,
+  disabled = false,
 }: Props): ReactElement {
   const classes = useStyles()
 
@@ -69,6 +71,7 @@ export function SwarmSelect({
         {label && <FormHelperText>{label}</FormHelperText>}
         <Field
           required
+          disabled={disabled}
           component={Select}
           name={name}
           fullWidth
@@ -94,6 +97,7 @@ export function SwarmSelect({
       {label && <FormHelperText>{label}</FormHelperText>}
       <MuiSelect
         required
+        disabled={disabled}
         name={name}
         fullWidth
         variant="outlined"

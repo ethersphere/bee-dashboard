@@ -1,4 +1,4 @@
-import { BatchId, BeeDebug, BeeResponseError, PostageBatch } from '@ethersphere/bee-js'
+import { BatchId, BeeDebug, PostageBatch } from '@ethersphere/bee-js'
 import { decodeCid } from '@ethersphere/swarm-cid'
 import { BigNumber } from 'bignumber.js'
 import { BZZ_LINK_DOMAIN } from '../constants'
@@ -258,9 +258,9 @@ async function waitForStamp(
       const stamp = await beeDebug.getPostageBatch(batchId)
 
       if (stamp[field]) return stamp
-    } catch (e) {
+    } catch (e: any) {
       // TODO: Workaround for https://github.com/ethersphere/bee/issues/3300
-      if ((e as BeeResponseError).message !== 'Bad Request: cannot get batch') {
+      if (e?.message !== 'Bad Request: cannot get batch') {
         throw e
       }
     }
