@@ -36,8 +36,8 @@ export default function StampExtensionModal({ label, icon, beeDebug, stamp }: Pr
       try {
         await beeDebug.topUpBatch(stamp, amount)
         enqueueSnackbar(`Successfully topped up stamp, your changes will appear soon`, { variant: 'success' })
-      } catch (error: any) {
-        enqueueSnackbar(`Failed to topup stamp: ${error.message || 'Unknown reason'}`, { variant: 'error' })
+      } catch (error) {
+        enqueueSnackbar(`Failed to topup stamp: ${error || 'Unknown reason'}`, { variant: 'error' })
       }
     }
 
@@ -45,8 +45,8 @@ export default function StampExtensionModal({ label, icon, beeDebug, stamp }: Pr
       try {
         await beeDebug.diluteBatch(stamp, parseInt(amount, 10))
         enqueueSnackbar(`Successfully diluted stamp, your changes will appear soon`, { variant: 'success' })
-      } catch (error: any) {
-        enqueueSnackbar(`Failed to dilute stamp: ${error.message || 'Unknown reason'}`, { variant: 'error' })
+      } catch (error) {
+        enqueueSnackbar(`Failed to dilute stamp: ${error || 'Unknown reason'}`, { variant: 'error' })
       }
     }
   }
