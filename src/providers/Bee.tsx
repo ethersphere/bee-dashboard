@@ -9,7 +9,7 @@ import {
   Peer,
   Topology,
 } from '@ethersphere/bee-js'
-import { createContext, ReactChild, ReactElement, useContext, useEffect, useState } from 'react'
+import { ReactChild, ReactElement, createContext, useContext, useEffect, useState } from 'react'
 import semver from 'semver'
 import PackageJson from '../../package.json'
 import { useLatestBeeRelease } from '../hooks/apiHooks'

@@ -1,8 +1,8 @@
 import { Bee, BeeDebug } from '@ethersphere/bee-js'
 import { providers } from 'ethers'
-import { createContext, ReactNode, ReactElement, useEffect, useState } from 'react'
-import { useGetBeeConfig } from '../hooks/apiHooks'
+import { ReactElement, ReactNode, createContext, useEffect, useState } from 'react'
 import { DEFAULT_BEE_API_HOST, DEFAULT_BEE_DEBUG_API_HOST, DEFAULT_RPC_URL } from '../constants'
+import { useGetBeeConfig } from '../hooks/apiHooks'
 
 const LocalStorageKeys = {
   providerUrl: 'json-rpc-provider',
@@ -18,7 +18,7 @@ interface ContextInterface {
   isDesktop: boolean
   desktopUrl: string
   rpcProviderUrl: string
-  rpcProvider: providers.JsonRpcProvider
+  rpcProvider: providers.JsonRpcProvider | null
   cors: string | null
   dataDir: string | null
   ensResolver: string | null
@@ -42,7 +42,7 @@ const initialValues: ContextInterface = {
   desktopUrl: window.location.origin,
   setAndPersistJsonRpcProvider: async () => {}, // eslint-disable-line
   rpcProviderUrl: '',
-  rpcProvider: new providers.JsonRpcProvider(''),
+  rpcProvider: null,
   cors: null,
   dataDir: null,
   ensResolver: null,

@@ -7,11 +7,11 @@ import { HistoryHeader } from '../../components/HistoryHeader'
 import { ProgressIndicator } from '../../components/ProgressIndicator'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { META_FILE_NAME, PREVIEW_FILE_NAME } from '../../constants'
-import { CheckState, Context as BeeContext } from '../../providers/Bee'
-import { Context as IdentityContext, Identity } from '../../providers/Feeds'
+import { Context as BeeContext, CheckState } from '../../providers/Bee'
+import { Identity, Context as IdentityContext } from '../../providers/Feeds'
 import { Context as FileContext } from '../../providers/File'
 import { Context as SettingsContext } from '../../providers/Settings'
-import { Context as StampsContext, EnrichedPostageBatch } from '../../providers/Stamps'
+import { EnrichedPostageBatch, Context as StampsContext } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
 import { waitUntilStampUsable } from '../../utils'
 import { detectIndexHtml, getAssetNameFromFiles, packageFile } from '../../utils/file'
@@ -130,7 +130,7 @@ export function Upload(): ReactElement {
     }
 
     beeApi
-      .uploadFiles(stamp.batchID, fls, { indexDocument })
+      .uploadFiles(stamp.batchID, fls, { indexDocument, deferred: true })
       .then(hash => {
         putHistory(HISTORY_KEYS.UPLOAD_HISTORY, hash.reference, getAssetNameFromFiles(files))
 

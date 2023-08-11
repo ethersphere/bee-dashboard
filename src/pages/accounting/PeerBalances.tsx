@@ -14,13 +14,15 @@ interface Props {
 }
 
 export default function PeerBalances({ accounting, isLoadingUncashed, totalUncashed }: Props): ReactElement | null {
+  const uncashedPeers = accounting?.filter(({ uncashedAmount }) => uncashedAmount.toBigNumber.isGreaterThan('0')) || []
+
   return (
     <ExpandableList
-      label={`Peers (${accounting?.length || 0})`}
+      label={`Peers (${uncashedPeers.length})`}
       info={`${totalUncashed.toFixedDecimal()} xBZZ (uncashed)`}
     >
       <ExpandableListItem label="Uncashed Amount Total" value={`${totalUncashed.toFixedDecimal()} xBZZ`} />
-      {accounting?.map(({ peer, balance, received, sent, uncashedAmount, total }) => (
+      {uncashedPeers.map(({ peer, balance, received, sent, uncashedAmount, total }) => (
         <ExpandableList
           key={peer}
           label={`Peer ${peer.slice(0, 8)}[…]`}
