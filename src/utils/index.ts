@@ -258,11 +258,8 @@ async function waitForStamp(
       const stamp = await beeDebug.getPostageBatch(batchId)
 
       if (stamp[field]) return stamp
-    } catch (e: any) {
-      // TODO: Workaround for https://github.com/ethersphere/bee/issues/3300
-      if (e?.message !== 'Bad Request: cannot get batch') {
-        throw e
-      }
+    } catch {
+      // ignore
     }
 
     await sleepMs(pollingFrequency)
