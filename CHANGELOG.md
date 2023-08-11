@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.24.0](https://github.com/ethersphere/bee-dashboard/compare/v0.23.0...v0.24.0) (2023-08-11)
+
+
+### Features
+
+* add stamp dilute and topup ([#619](https://github.com/ethersphere/bee-dashboard/issues/619)) ([055a300](https://github.com/ethersphere/bee-dashboard/commit/055a3002b303df45c7010ef4d365e14b979e9084))
+
 ## [0.23.0](https://github.com/ethersphere/bee-dashboard/compare/v0.22.0...v0.23.0) (2023-02-21)
 
 
