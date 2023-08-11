@@ -88,7 +88,7 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
       const options: PostageBatchOptions = {
         waitForUsable: false,
         label: labelInput || undefined,
-        // immutableFlag: immutable,
+        immutableFlag: immutable,
       }
 
       const batchId = await beeDebugApi.createPostageBatch(amount.toString(), depth, options)
@@ -184,7 +184,6 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
             { value: 'Yes', label: 'Yes' },
             { value: 'No', label: 'No' },
           ]}
-          disabled
         />
         <Box mt={0.25} sx={{ bgcolor: '#f6f6f6' }} p={2}>
           <Grid container justifyContent="space-between">
