@@ -30,7 +30,7 @@ export default function SettingsPage(): ReactElement {
     try {
       setAndPersistJsonRpcProvider(value)
 
-      const shouldUpdateDesktop = isDesktop && (await getDesktopConfiguration(desktopUrl))['swap-endpoint']
+      const shouldUpdateDesktop = isDesktop && (await getDesktopConfiguration(desktopUrl))['blockchain-rpc-endpoint']
 
       if (shouldUpdateDesktop) {
         await setJsonRpcInDesktop(desktopUrl, value)
