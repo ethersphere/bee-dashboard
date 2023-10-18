@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.24.1](https://github.com/ethersphere/bee-dashboard/compare/v0.24.0...v0.24.1) (2023-10-18)
+
+
+### Bug Fixes
+
+* update `swap-endpoint` to `blockchain-rpc-endpoint` ([#628](https://github.com/ethersphere/bee-dashboard/issues/628)) ([bce93ce](https://github.com/ethersphere/bee-dashboard/commit/bce93ce3cdc1ef4b1f50fcf274591ba00726be16))
+
 ## [0.24.0](https://github.com/ethersphere/bee-dashboard/compare/v0.23.0...v0.24.0) (2023-08-11)
 
 
