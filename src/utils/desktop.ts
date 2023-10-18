@@ -17,7 +17,7 @@ export interface BeeConfig {
   'resolver-options': string
   'use-postage-snapshot': boolean
   'data-dir': string
-  'swap-endpoint'?: string
+  'blockchain-rpc-endpoint'?: string
 }
 
 export async function getBzzPriceAsDai(desktopUrl: string): Promise<Token> {
@@ -29,13 +29,13 @@ export async function getBzzPriceAsDai(desktopUrl: string): Promise<Token> {
 export function upgradeToLightNode(desktopUrl: string, rpcProvider: string): Promise<BeeConfig> {
   return updateDesktopConfiguration(desktopUrl, {
     'swap-enable': true,
-    'swap-endpoint': rpcProvider,
+    'blockchain-rpc-endpoint': rpcProvider,
   })
 }
 
 export async function setJsonRpcInDesktop(desktopUrl: string, value: string): Promise<void> {
   await updateDesktopConfiguration(desktopUrl, {
-    'swap-endpoint': value,
+    'blockchain-rpc-endpoint': value,
   })
 }
 
