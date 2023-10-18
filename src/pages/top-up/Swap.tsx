@@ -162,12 +162,12 @@ export function Swap({ header }: Props): ReactElement {
       )
     }
 
-    if (!desktopConfiguration['swap-endpoint']) {
-      throw new SwapError('Swap endpoint is not configured in Swarm Desktop')
+    if (!desktopConfiguration['blockchain-rpc-endpoint']) {
+      throw new SwapError('Blockchain RPC endpoint is not configured in Swarm Desktop')
     }
     await wrapWithSwapError(
-      Rpc.getNetworkChainId(desktopConfiguration['swap-endpoint']),
-      `Swap endpoint not reachable at ${desktopConfiguration['swap-endpoint']}`,
+      Rpc.getNetworkChainId(desktopConfiguration['blockchain-rpc-endpoint']),
+      `Blockchain RPC endpoint not reachable at ${desktopConfiguration['blockchain-rpc-endpoint']}`,
     )
     await wrapWithSwapError(sendSwapRequest(daiToSwap), GENERIC_SWAP_FAILED_ERROR_MESSAGE)
   }

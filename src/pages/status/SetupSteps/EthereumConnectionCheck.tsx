@@ -34,7 +34,7 @@ export default function EthereumConnectionCheck(): ReactElement | null {
               Getblock
             </a>
             . By default, Bee expects a local node at http://localhost:8545. To use a provider instead, simply change
-            the <strong>swap-endpoint</strong> in your configuration file.
+            the <strong>blockchain-rpc-endpoint</strong> in your configuration file.
           </>
         )}
       </ExpandableListItemNote>
