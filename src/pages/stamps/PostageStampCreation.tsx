@@ -138,6 +138,12 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
     setErrors(validate())
   }, [depthInput, amountInput])
 
+  function checkAndSetAmountInput(value: string) {
+    const amount = new BigNumber(value)
+    const onlyDigits = amount.isNaN() ? '0' : value
+    setAmountInput(onlyDigits)
+  }
+
   return (
     <>
       <Box mb={4}>
@@ -164,7 +170,7 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
         </Box>
       </Box>
       <Box mb={2}>
-        <SwarmTextInput name="amount" label="Amount" onChange={event => setAmountInput(event.target.value)} />
+        <SwarmTextInput name="amount" label="Amount" onChange={event => checkAndSetAmountInput(event.target.value)} />
         <Box mt={0.25} sx={{ bgcolor: '#f6f6f6' }} p={2}>
           <Grid container justifyContent="space-between">
             <Typography>Corresponding TTL (Time to live)</Typography>
