@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { PostageBatchOptions } from '@ethersphere/bee-js'
 import { Box, Grid, Typography } from '@material-ui/core'
 import BigNumber from 'bignumber.js'
@@ -102,46 +103,52 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
     setSubmitting(false)
   }
 
-  useEffect(() => {
-    function validate() {
-      const errors: Record<string, string> = {}
+  function validateAmountInput(amountInput: string) {
+    let validAmountInput = '0'
 
-      if (!depthInput) {
-        errors.depth = 'Required field'
-      } else {
-        const depth = new BigNumber(depthInput)
-
-        if (!depth.isInteger()) {
-          errors.depth = 'Depth must be an integer'
-        } else if (depth.isLessThan(17)) {
-          errors.depth = 'Minimal depth is 17'
-        } else if (depth.isGreaterThan(255)) {
-          errors.depth = 'Depth has to be at most 255'
-        }
-      }
-
-      if (!amountInput) {
-        errors.amount = 'Required field'
+    if (!amountInput) {
+      errors.amount = 'Required field'
+    } else {
+      if (amountInput.indexOf('.') > -1) {
+        errors.amount = 'Amount must be an integer'
       } else {
         const amount = new BigNumber(amountInput)
 
-        if (!amount.isInteger()) {
-          errors.amount = 'Amount must be an integer'
+        if (amount.isNaN()) {
+          errors.amount = 'Amount must contain only digits'
         } else if (amount.isLessThanOrEqualTo(0)) {
           errors.amount = 'Amount must be greater than 0'
+        } else {
+          errors.amount = ''
+          validAmountInput = amountInput
         }
       }
-
-      return errors
     }
 
-    setErrors(validate())
-  }, [depthInput, amountInput])
+    setAmountInput(validAmountInput)
+  }
 
-  function checkAndSetAmountInput(value: string) {
-    const amount = new BigNumber(value)
-    const onlyDigits = amount.isNaN() ? '0' : value
-    setAmountInput(onlyDigits)
+  function validateDepthInput(depthInput: string) {
+    let validDepthInput = '0'
+
+    if (!depthInput) {
+      errors.depth = 'Required field'
+    } else {
+      const depth = new BigNumber(depthInput)
+
+      if (!depth.isInteger()) {
+        errors.depth = 'Depth must be an integer'
+      } else if (depth.isLessThan(17)) {
+        errors.depth = 'Minimal depth is 17'
+      } else if (depth.isGreaterThan(255)) {
+        errors.depth = 'Depth has to be at most 255'
+      } else {
+        errors.depth = ''
+        validDepthInput = depthInput
+      }
+    }
+
+    setDepthInput(validDepthInput)
   }
 
   return (
@@ -161,7 +168,7 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
         </Typography>
       </Box>
       <Box mb={2}>
-        <SwarmTextInput name="depth" label="Depth" onChange={event => setDepthInput(event.target.value)} />
+        <SwarmTextInput name="depth" label="Depth" onChange={event => validateDepthInput(event.target.value)} />
         <Box mt={0.25} sx={{ bgcolor: '#f6f6f6' }} p={2}>
           <Grid container justifyContent="space-between">
             <Typography>Corresponding file size</Typography>
@@ -170,7 +177,7 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
         </Box>
       </Box>
       <Box mb={2}>
-        <SwarmTextInput name="amount" label="Amount" onChange={event => checkAndSetAmountInput(event.target.value)} />
+        <SwarmTextInput name="amount" label="Amount" onChange={event => validateAmountInput(event.target.value)} />
         <Box mt={0.25} sx={{ bgcolor: '#f6f6f6' }} p={2}>
           <Grid container justifyContent="space-between">
             <Typography>Corresponding TTL (Time to live)</Typography>
