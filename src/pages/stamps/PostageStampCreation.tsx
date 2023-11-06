@@ -226,7 +226,7 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
         </Grid>
       </Box>
       <SwarmButton
-        disabled={submitting || Object.keys(errors).length > 0}
+        disabled={submitting || errors.depth !== '' || errors.amount !== ''}
         onClick={submit}
         iconType={Check}
         loading={submitting}
