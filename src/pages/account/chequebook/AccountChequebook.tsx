@@ -12,6 +12,7 @@ import { Context as SettingsContext } from '../../../providers/Settings'
 import PeerBalances from '../../accounting/PeerBalances'
 import { AccountNavigation } from '../AccountNavigation'
 import { Header } from '../Header'
+import { Box } from '@material-ui/core'
 
 export function AccountChequebook(): ReactElement {
   const { status, nodeAddresses, chequebookAddress, chequebookBalance, settlements, peerBalances } =
@@ -43,10 +44,12 @@ export function AccountChequebook(): ReactElement {
               label="Total Cheques Amount Sent"
               value={`${settlements?.totalSent.toFixedDecimal()} xBZZ`}
             />
-            <ExpandableListItem
-              label="Total Cheques Amount Received"
-              value={`${settlements?.totalReceived.toFixedDecimal()} xBZZ`}
-            />
+            <Box mb={2}>
+              <ExpandableListItem
+                label="Total Cheques Amount Received"
+                value={`${settlements?.totalReceived.toFixedDecimal()} xBZZ`}
+              />
+            </Box>
             <ExpandableListItemActions>
               <WithdrawModal />
               <DepositModal />
