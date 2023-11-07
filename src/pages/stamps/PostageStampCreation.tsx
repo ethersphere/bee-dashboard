@@ -1,9 +1,8 @@
-/* eslint-disable no-console */
 import { PostageBatchOptions } from '@ethersphere/bee-js'
 import { Box, Grid, Typography } from '@material-ui/core'
 import BigNumber from 'bignumber.js'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useContext, useEffect, useState } from 'react'
+import { ReactElement, useContext, useState } from 'react'
 import Check from 'remixicon-react/CheckLineIcon'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmSelect } from '../../components/SwarmSelect'
@@ -33,7 +32,7 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
   const [amountInput, setAmountInput] = useState<string>('')
   const [labelInput, setLabelInput] = useState('')
   const [immutable, setImmutable] = useState(false)
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const errors: Record<string, string> = {}
   const [submitting, setSubmitting] = useState(false)
 
   const { enqueueSnackbar } = useSnackbar()
