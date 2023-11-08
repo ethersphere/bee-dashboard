@@ -23,7 +23,10 @@ export function PostageStampSelector({ onSelect, defaultValue }: Props): ReactEl
 
   return (
     <SwarmSelect
-      options={(stamps || []).map(x => ({ label: x.batchID.slice(0, 8), value: x.batchID }))}
+      options={(stamps || []).map(x => ({
+        label: x.label ? x.batchID.slice(0, 8) + ' - ' + x.label : x.batchID.slice(0, 8),
+        value: x.batchID,
+      }))}
       onChange={event => onChange(event.target.value as string)}
       defaultValue={defaultValue}
       placeholder="Please select a postage stamp..."
