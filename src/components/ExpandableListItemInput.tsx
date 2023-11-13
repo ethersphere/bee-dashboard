@@ -1,4 +1,4 @@
-import { Grid, IconButton, InputBase, ListItem, Typography } from '@material-ui/core'
+import { Box, Grid, IconButton, InputBase, ListItem, Typography } from '@material-ui/core'
 import Collapse from '@material-ui/core/Collapse'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import { ChangeEvent, ReactElement, useState } from 'react'
@@ -134,31 +134,33 @@ export default function ExpandableListItemKey({
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
         {helperText && <ExpandableListItemNote>{helperText}</ExpandableListItemNote>}
-        <ExpandableListItemActions>
-          <SwarmButton
-            disabled={
-              loading ||
-              inputValue === value ||
-              Boolean(confirmLabelDisabled) || // Disable if external validation is provided
-              (inputValue === '' && value === undefined) // Disable if no initial value was not provided and the field is empty. The undefined check is improtant so that it is possible to submit with empty input in other cases
-            }
-            loading={loading}
-            iconType={confirmIcon ?? Check}
-            onClick={() => {
-              if (onConfirm) onConfirm(inputValue)
-            }}
-          >
-            {confirmLabel || 'Save'}
-          </SwarmButton>
-          <SwarmButton
-            disabled={loading || inputValue === value || inputValue === ''}
-            iconType={X}
-            onClick={() => setInputValue(value || '')}
-            cancel
-          >
-            Cancel
-          </SwarmButton>
-        </ExpandableListItemActions>
+        <Box mt={2}>
+          <ExpandableListItemActions>
+            <SwarmButton
+              disabled={
+                loading ||
+                inputValue === value ||
+                Boolean(confirmLabelDisabled) || // Disable if external validation is provided
+                (inputValue === '' && value === undefined) // Disable if no initial value was not provided and the field is empty. The undefined check is improtant so that it is possible to submit with empty input in other cases
+              }
+              loading={loading}
+              iconType={confirmIcon ?? Check}
+              onClick={() => {
+                if (onConfirm) onConfirm(inputValue)
+              }}
+            >
+              {confirmLabel || 'Save'}
+            </SwarmButton>
+            <SwarmButton
+              disabled={loading || inputValue === value || inputValue === ''}
+              iconType={X}
+              onClick={() => setInputValue(value || '')}
+              cancel
+            >
+              Cancel
+            </SwarmButton>
+          </ExpandableListItemActions>
+        </Box>
       </Collapse>
     </>
   )
