@@ -1,5 +1,6 @@
 import { ReactElement, useContext } from 'react'
-import TimerFlash from 'remixicon-react/TimerFlashFillIcon'
+import TimerFlashFill from 'remixicon-react/TimerFlashFillIcon'
+import TimerFlashLine from 'remixicon-react/TimerFlashLineIcon'
 import ExpandableElement from '../../components/ExpandableElement'
 import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItem from '../../components/ExpandableListItem'
@@ -50,8 +51,14 @@ function StampsTable({ postageStamps }: Props): ReactElement | null {
               <ExpandableListItem label="Purchase Block Number" value={stamp.blockNumber} />
               <ExpandableListItemActions>
                 <StampExtensionModal
-                  label="Topup & Dilute"
-                  icon={<TimerFlash size="1rem" />}
+                  type="Topup"
+                  icon={<TimerFlashFill size="1rem" />}
+                  beeDebug={beeDebugApi}
+                  stamp={stamp.batchID}
+                />
+                <StampExtensionModal
+                  type="Dilute"
+                  icon={<TimerFlashLine size="1rem" />}
                   beeDebug={beeDebugApi}
                   stamp={stamp.batchID}
                 />

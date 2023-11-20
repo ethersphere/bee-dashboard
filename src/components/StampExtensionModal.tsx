@@ -1,4 +1,5 @@
 import { BeeDebug } from '@ethersphere/bee-js'
+import { Box } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -7,20 +8,19 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import Input from '@material-ui/core/Input'
 import { useSnackbar } from 'notistack'
 import { ReactElement, ReactNode, useState } from 'react'
-import { SwarmSelect } from './SwarmSelect'
 
 interface Props {
-  label: string
+  type: 'Topup' | 'Dilute'
   icon: ReactNode
   beeDebug: BeeDebug
   stamp: string
 }
 
-export default function StampExtensionModal({ label, icon, beeDebug, stamp }: Props): ReactElement {
+export default function StampExtensionModal({ type, icon, beeDebug, stamp }: Props): ReactElement {
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState('')
-  const [type, setType] = useState<'Topup' | 'Dilute'>('Topup')
   const { enqueueSnackbar } = useSnackbar()
+  const label = `${type} ${stamp.substring(0, 8)}`
 
   const handleClickOpen = (e: React.MouseEvent<HTMLButtonElement>) => {
     setOpen(true)
@@ -56,22 +56,13 @@ export default function StampExtensionModal({ label, icon, beeDebug, stamp }: Pr
   }
 
   return (
-    <div>
+    <Box mb={2}>
       <Button variant="contained" onClick={handleClickOpen} startIcon={icon}>
-        {label}
+        {type}
       </Button>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">{label}</DialogTitle>
         <DialogContent>
-          <SwarmSelect
-            label="Action"
-            defaultValue="Topup"
-            onChange={event => setType(event.target.value as 'Topup' | 'Dilute')}
-            options={[
-              { value: 'Topup', label: 'Topup' },
-              { value: 'Dilute', label: 'Dilute' },
-            ]}
-          />
           <Input
             autoFocus
             margin="dense"
@@ -87,11 +78,11 @@ export default function StampExtensionModal({ label, icon, beeDebug, stamp }: Pr
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleAction} color="primary">
+          <Button disabled={amount === ''} onClick={handleAction} color="primary">
             {type}
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </Box>
   )
 }

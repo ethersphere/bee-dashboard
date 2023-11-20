@@ -24,6 +24,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     contentLevel12: {
       marginTop: theme.spacing(0.25),
+      '& > li:last-of-type': {
+        marginBottom: theme.spacing(2),
+      },
     },
     infoText: {
       color: '#c9c9c9',
