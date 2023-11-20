@@ -32,7 +32,8 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
   const [amountInput, setAmountInput] = useState<string>('')
   const [labelInput, setLabelInput] = useState('')
   const [immutable, setImmutable] = useState(false)
-  const errors: Record<string, string> = {}
+  const [depthError, setDepthError] = useState<string>('')
+  const [amountError, setAmountError] = useState<string>('')
   const [submitting, setSubmitting] = useState(false)
 
   const { enqueueSnackbar } = useSnackbar()
@@ -106,19 +107,19 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
     let validAmountInput = '0'
 
     if (!amountInput) {
-      errors.amount = 'Required field'
+      setAmountError('Required field')
     } else {
       if (amountInput.indexOf('.') > -1) {
-        errors.amount = 'Amount must be an integer'
+        setAmountError('Amount must be an integer')
       } else {
         const amount = new BigNumber(amountInput)
 
         if (amount.isNaN()) {
-          errors.amount = 'Amount must contain only digits'
+          setAmountError('Amount must contain only digits')
         } else if (amount.isLessThanOrEqualTo(0)) {
-          errors.amount = 'Amount must be greater than 0'
+          setAmountError('Amount must be greater than 0')
         } else {
-          errors.amount = ''
+          setAmountError('')
           validAmountInput = amountInput
         }
       }
@@ -131,18 +132,18 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
     let validDepthInput = '0'
 
     if (!depthInput) {
-      errors.depth = 'Required field'
+      setDepthError('Required field')
     } else {
       const depth = new BigNumber(depthInput)
 
       if (!depth.isInteger()) {
-        errors.depth = 'Depth must be an integer'
+        setDepthError('Depth must be an integer')
       } else if (depth.isLessThan(17)) {
-        errors.depth = 'Minimal depth is 17'
+        setDepthError('Minimal depth is 17')
       } else if (depth.isGreaterThan(255)) {
-        errors.depth = 'Depth has to be at most 255'
+        setDepthError('Depth has to be at most 255')
       } else {
-        errors.depth = ''
+        setDepthError('')
         validDepthInput = depthInput
       }
     }
@@ -171,18 +172,20 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
         <Box mt={0.25} sx={{ bgcolor: '#f6f6f6' }} p={2}>
           <Grid container justifyContent="space-between">
             <Typography>Corresponding file size</Typography>
-            <Typography>{!errors.depth && depthInput ? getFileSize(parseInt(depthInput, 10)) : '-'}</Typography>
+            <Typography>{!depthError && depthInput ? getFileSize(parseInt(depthInput, 10)) : '-'}</Typography>
           </Grid>
         </Box>
+        {depthError && <Typography>{depthError}</Typography>}
       </Box>
       <Box mb={2}>
         <SwarmTextInput name="amount" label="Amount" onChange={event => validateAmountInput(event.target.value)} />
         <Box mt={0.25} sx={{ bgcolor: '#f6f6f6' }} p={2}>
           <Grid container justifyContent="space-between">
             <Typography>Corresponding TTL (Time to live)</Typography>
-            <Typography>{!errors.amount && amountInput ? getTtl(Number.parseInt(amountInput, 10)) : '-'}</Typography>
+            <Typography>{!amountError && amountInput ? getTtl(Number.parseInt(amountInput, 10)) : '-'}</Typography>
           </Grid>
         </Box>
+        {amountError && <Typography>{amountError}</Typography>}
       </Box>
       <Box mb={2}>
         <SwarmTextInput name="label" label="Label" optional onChange={event => setLabelInput(event.target.value)} />
@@ -218,14 +221,14 @@ export function PostageStampCreation({ onFinished }: Props): ReactElement {
         <Grid container justifyContent="space-between">
           <Typography>Indicative Price</Typography>
           <Typography>
-            {!errors.amount && !errors.depth && amountInput && depthInput
+            {!amountError && !depthError && amountInput && depthInput
               ? getPrice(parseInt(depthInput, 10), BigInt(amountInput))
               : '-'}
           </Typography>
         </Grid>
       </Box>
       <SwarmButton
-        disabled={submitting || errors.depth !== '' || errors.amount !== ''}
+        disabled={submitting || Boolean(depthError) || Boolean(amountError) || !depthInput || !amountInput}
         onClick={submit}
         iconType={Check}
         loading={submitting}
