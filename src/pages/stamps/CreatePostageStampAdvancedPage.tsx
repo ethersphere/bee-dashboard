@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import { useNavigate } from 'react-router'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { ROUTES } from '../../routes'
-import { PostageStampCreation } from './PostageStampCreation'
+import { PostageStampAdvancedCreation } from './PostageStampAdvancedCreation'
 
 export function CreatePostageStampPage(): ReactElement {
   const navigate = useNavigate()
@@ -14,7 +14,7 @@ export function CreatePostageStampPage(): ReactElement {
   return (
     <div>
       <HistoryHeader>Buy new postage stamp</HistoryHeader>
-      <PostageStampCreation onFinished={onFinished} />
+      <PostageStampAdvancedCreation onFinished={onFinished} />
     </div>
   )
 }

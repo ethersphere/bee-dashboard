@@ -16,7 +16,7 @@ import GiftCards from './pages/gift-code'
 import Info from './pages/info'
 import LightModeRestart from './pages/restart/LightModeRestart'
 import Settings from './pages/settings'
-import { CreatePostageStampPage } from './pages/stamps/CreatePostageStampPage'
+import { CreatePostageStampPage } from './pages/stamps/CreatePostageStampAdvancedPage'
 import Status from './pages/status'
 import TopUp from './pages/top-up'
 import { BankCardTopUpIndex } from './pages/top-up/BankCardTopUpIndex'
@@ -25,6 +25,7 @@ import { GiftCardFund } from './pages/top-up/GiftCardFund'
 import { GiftCardTopUpIndex } from './pages/top-up/GiftCardTopUpIndex'
 import { Swap } from './pages/top-up/Swap'
 import { Context as SettingsContext } from './providers/Settings'
+import { CreatePostageStampBasicPage } from './pages/stamps/CreatePostageStampStandardPage'
 
 export enum ROUTES {
   INFO = '/',
@@ -46,7 +47,8 @@ export enum ROUTES {
   ACCOUNT_WALLET = '/account/wallet',
   ACCOUNT_CHEQUEBOOK = '/account/chequebook',
   ACCOUNT_STAMPS = '/account/stamps',
-  ACCOUNT_STAMPS_NEW = '/account/stamps/new',
+  ACCOUNT_STAMPS_NEW_STANDARD = '/account/stamps/new',
+  ACCOUNT_STAMPS_NEW_ADVANCED = '/account/stamps/new/advanced',
   ACCOUNT_FEEDS = '/account/feeds',
   ACCOUNT_FEEDS_NEW = '/account/feeds/new',
   ACCOUNT_FEEDS_UPDATE = '/account/feeds/update/:hash',
@@ -86,7 +88,8 @@ const BaseRouter = (): ReactElement => {
       <Route path={ROUTES.ACCOUNT_WALLET} element={<AccountWallet />} />
       <Route path={ROUTES.ACCOUNT_CHEQUEBOOK} element={<AccountChequebook />} />
       <Route path={ROUTES.ACCOUNT_STAMPS} element={<AccountStamps />} />
-      <Route path={ROUTES.ACCOUNT_STAMPS_NEW} element={<CreatePostageStampPage />} />
+      <Route path={ROUTES.ACCOUNT_STAMPS_NEW_STANDARD} element={<CreatePostageStampBasicPage />} />
+      <Route path={ROUTES.ACCOUNT_STAMPS_NEW_ADVANCED} element={<CreatePostageStampPage />} />
       <Route path={ROUTES.ACCOUNT_FEEDS} element={<AccountFeeds />} />
       <Route path={ROUTES.ACCOUNT_FEEDS_NEW} element={<CreateNewFeed />} />
       <Route path={ROUTES.ACCOUNT_FEEDS_UPDATE} element={<UpdateFeed />} />

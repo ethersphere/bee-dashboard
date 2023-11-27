@@ -18,7 +18,7 @@ import { detectIndexHtml, getAssetNameFromFiles, packageFile } from '../../utils
 import { persistIdentity, updateFeed } from '../../utils/identity'
 import { HISTORY_KEYS, putHistory } from '../../utils/local-storage'
 import { FeedPasswordDialog } from '../feeds/FeedPasswordDialog'
-import { PostageStampCreation } from '../stamps/PostageStampCreation'
+import { PostageStampAdvancedCreation } from '../stamps/PostageStampAdvancedCreation'
 import { PostageStampSelector } from '../stamps/PostageStampSelector'
 import { AssetPreview } from './AssetPreview'
 import { StampPreview } from './StampPreview'
@@ -186,7 +186,7 @@ export function Upload(): ReactElement {
             {hasAnyStamps && stampMode === 'SELECT' ? (
               <PostageStampSelector onSelect={stamp => setStamp(stamp)} defaultValue={stamp?.batchID} />
             ) : (
-              <PostageStampCreation onFinished={() => setStampMode('SELECT')} />
+              <PostageStampAdvancedCreation onFinished={() => setStampMode('SELECT')} />
             )}
           </Box>
           <Box mb={4}>
