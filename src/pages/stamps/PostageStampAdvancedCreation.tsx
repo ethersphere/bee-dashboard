@@ -174,22 +174,25 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
 
   return (
     <>
-      <Box mb={4}>
-        <Typography>
-          To upload data to Swarm network, you will need to purchase a postage stamp. If you&apos;re not familiar with
-          this, please read{' '}
-          <a
-            href="https://medium.com/ethereum-swarm/how-to-upload-data-to-the-swarm-network-c0766c3ae381"
-            target="_blank"
-            rel="noreferrer"
-          >
-            this guide
-          </a>
-          .
-        </Typography>
+      <Box mb={1}>
+        <Typography variant="h2">Batch name</Typography>
       </Box>
       <Box mb={2}>
-        <SwarmTextInput name="depth" label="Depth" onChange={event => validateDepthInput(event.target.value)} />
+        <SwarmTextInput name="label" label="Label" optional onChange={event => setLabelInput(event.target.value)} />
+      </Box>
+      <Box mb={2}>
+        <SwarmSelect
+          label="Immutable"
+          defaultValue="No"
+          onChange={event => setImmutable(event.target.value === 'Yes')}
+          options={[
+            { value: 'Yes', label: 'Yes' },
+            { value: 'No', label: 'No' },
+          ]}
+        />
+      </Box>
+      <Box mb={2}>
+        <SwarmTextInput name="depth" label="Batch depth" onChange={event => validateDepthInput(event.target.value)} />
         <Box mt={0.25} sx={{ bgcolor: '#f6f6f6' }} p={2}>
           <Grid container justifyContent="space-between">
             <Typography>Corresponding file size</Typography>
@@ -206,38 +209,14 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
             <Typography>{!amountError && amountInput ? getTtl(Number.parseInt(amountInput, 10)) : '-'}</Typography>
           </Grid>
         </Box>
+        <Box display="flex" justifyContent={'right'} mt={0.5}>
+          <Typography style={{ fontSize: '10px', color: 'rgba(0, 0, 0, 0.26)' }}>
+            Current price of 24000 per block
+          </Typography>
+        </Box>
         {amountError && <Typography>{amountError}</Typography>}
       </Box>
-      <Box mb={2}>
-        <SwarmTextInput name="label" label="Label" optional onChange={event => setLabelInput(event.target.value)} />
-      </Box>
-      <Box mb={2}>
-        <SwarmSelect
-          label="Immutable"
-          defaultValue="No"
-          onChange={event => setImmutable(event.target.value === 'Yes')}
-          options={[
-            { value: 'Yes', label: 'Yes' },
-            { value: 'No', label: 'No' },
-          ]}
-        />
-        <Box mt={0.25} sx={{ bgcolor: '#f6f6f6' }} p={2}>
-          <Grid container justifyContent="space-between">
-            {immutable && (
-              <Typography>
-                Once an immutable stamp is maxed out, it disallows further content uploads, thereby safeguarding your
-                previously uploaded content from unintentional overwriting.
-              </Typography>
-            )}
-            {!immutable && (
-              <Typography>
-                When a mutable stamp reaches full capacity, it still permits new content uploads. However, this comes
-                with the caveat of overwriting previously uploaded content associated with the same stamp.
-              </Typography>
-            )}
-          </Grid>
-        </Box>
-      </Box>
+
       <Box mb={4} sx={{ bgcolor: '#fcf2e8' }} p={2}>
         <Grid container justifyContent="space-between">
           <Typography>Indicative Price</Typography>

@@ -1,25 +1,17 @@
 import { PostageBatchOptions } from '@ethersphere/bee-js'
+import { Utils } from '@ethersphere/bee-js'
 import { Box, Button, Grid, Slider, Typography } from '@material-ui/core'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import BigNumber from 'bignumber.js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import Check from 'remixicon-react/CheckLineIcon'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
-import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as StampsContext } from '../../providers/Stamps'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../../routes'
-import {
-  calculateStampPrice,
-  convertAmountToSeconds,
-  convertDepthToBytes,
-  secondsToTimeString,
-  waitUntilStampExists,
-} from '../../utils'
-import { getHumanReadableFileSize } from '../../utils/file'
+import { calculateStampPrice, convertAmountToSeconds, secondsToTimeString, waitUntilStampExists } from '../../utils'
 
 interface Props {
   onFinished: () => void
@@ -38,40 +30,40 @@ const useStyles = makeStyles((theme: Theme) =>
         },
       },
     },
+    buttonSelected: {
+      color: 'white',
+      backgroundColor: theme.palette.primary.main,
+    },
   }),
 )
+
+const marks = [
+  { value: 1, label: '1 day' },
+  { value: 365, label: '365 days' },
+]
+
 export function PostageStampStandardCreation({ onFinished }: Props): ReactElement {
+  const getDepthForCapacity = Utils.getDepthForCapacity
+  const getAmountForTtl = Utils.getAmountForTtl
   const classes = useStyles()
-  const { chainState } = useContext(BeeContext)
   const { refresh } = useContext(StampsContext)
   const { beeDebugApi } = useContext(SettingsContext)
 
-  const [depthInput, setDepthInput] = useState<string>('')
-  const [amountInput, setAmountInput] = useState<string>('')
+  const [depthInput, setDepthInput] = useState<number>(getDepthForCapacity(4))
+  const [amountInput, setAmountInput] = useState<number>(Number.parseInt(getAmountForTtl(30)))
   const [labelInput, setLabelInput] = useState('')
-  const [immutable, setImmutable] = useState(false)
-  const [depthError, setDepthError] = useState<string>('')
-  const [amountError, setAmountError] = useState<string>('')
   const [submitting, setSubmitting] = useState(false)
+  const [buttonValue, setButtonValue] = useState(4)
+
+  function sliderValueChange(event: any, newValue: any) {
+    const amountValue = Number.parseInt(getAmountForTtl(newValue))
+    setAmountInput(amountValue)
+  }
 
   const { enqueueSnackbar } = useSnackbar()
 
-  function getFileSize(depth: number): string {
-    if (isNaN(depth) || depth < 17 || depth > 255) {
-      return '-'
-    }
-
-    return `~${getHumanReadableFileSize(convertDepthToBytes(depth))}`
-  }
-
   function getTtl(amount: number): string {
-    const isCurrentPriceAvailable = chainState && chainState.currentPrice
-
-    if (amount <= 0 || !isCurrentPriceAvailable) {
-      return '-'
-    }
-
-    const pricePerBlock = Number.parseInt(chainState.currentPrice, 10)
+    const pricePerBlock = 24000
 
     return `${secondsToTimeString(
       convertAmountToSeconds(amount, pricePerBlock),
@@ -79,12 +71,6 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
   }
 
   function getPrice(depth: number, amount: bigint): string {
-    const hasInvalidInput = amount <= 0 || isNaN(depth) || depth < 17 || depth > 255
-
-    if (hasInvalidInput) {
-      return '-'
-    }
-
     const price = calculateStampPrice(depth, amount)
 
     return `${price.toSignificantDigits()} xBZZ`
@@ -103,11 +89,11 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
 
       setSubmitting(true)
       const amount = BigInt(amountInput)
-      const depth = Number.parseInt(depthInput)
+      const depth = depthInput
       const options: PostageBatchOptions = {
         waitForUsable: false,
         label: labelInput || undefined,
-        immutableFlag: immutable,
+        immutableFlag: false,
       }
 
       const batchId = await beeDebugApi.createPostageBatch(amount.toString(), depth, options)
@@ -121,52 +107,12 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
     setSubmitting(false)
   }
 
-  function validateAmountInput(amountInput: string) {
-    let validAmountInput = '0'
-
-    if (!amountInput) {
-      setAmountError('Required field')
-    } else {
-      if (amountInput.indexOf('.') > -1) {
-        setAmountError('Amount must be an integer')
-      } else {
-        const amount = new BigNumber(amountInput)
-
-        if (amount.isNaN()) {
-          setAmountError('Amount must contain only digits')
-        } else if (amount.isLessThanOrEqualTo(0)) {
-          setAmountError('Amount must be greater than 0')
-        } else {
-          setAmountError('')
-          validAmountInput = amountInput
-        }
-      }
-    }
-
-    setAmountInput(validAmountInput)
-  }
-
-  function validateDepthInput(depthInput: string) {
-    let validDepthInput = '0'
-
-    if (!depthInput) {
-      setDepthError('Required field')
-    } else {
-      const depth = new BigNumber(depthInput)
-
-      if (!depth.isInteger()) {
-        setDepthError('Depth must be an integer')
-      } else if (depth.isLessThan(17)) {
-        setDepthError('Minimal depth is 17')
-      } else if (depth.isGreaterThan(255)) {
-        setDepthError('Depth has to be at most 255')
-      } else {
-        setDepthError('')
-        validDepthInput = depthInput
-      }
-    }
-
-    setDepthInput(validDepthInput)
+  function handleBatchSize(event: any) {
+    let value = event.target.innerText
+    value = Number(value.substring(0, value.length - 3))
+    setButtonValue(value)
+    const capacity = getDepthForCapacity(value)
+    setDepthInput(capacity)
   }
 
   return (
@@ -189,9 +135,7 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
         <Typography variant="h2">Batch name</Typography>
       </Box>
       <Box mb={2}>
-        <SwarmTextInput name="depth" label="Label" onChange={event => validateDepthInput(event.target.value)} />
-
-        {depthError && <Typography>{depthError}</Typography>}
+        <SwarmTextInput name="depth" label="Label" onChange={e => setLabelInput(e.target.value)} />
       </Box>
       <Box mb={1}>
         <Typography variant="h2">Batch size</Typography>
@@ -199,18 +143,33 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
       <Box mb={2}>
         <Grid container justifyContent="space-between" spacing={2}>
           <Grid item xs={4}>
-            <Button variant="contained" fullWidth>
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={handleBatchSize}
+              className={buttonValue === 4 ? classes.buttonSelected : ''}
+            >
               4 GB
             </Button>
           </Grid>
           <Grid item xs={4}>
-            <Button variant="contained" fullWidth>
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={handleBatchSize}
+              className={buttonValue === 32 ? classes.buttonSelected : ''}
+            >
               32 GB
             </Button>
           </Grid>
           <Grid item xs={4}>
-            <Button variant="contained" fullWidth>
-              256
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={handleBatchSize}
+              className={buttonValue === 256 ? classes.buttonSelected : ''}
+            >
+              256 GB
             </Button>
           </Grid>
         </Grid>
@@ -219,32 +178,40 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
         <Typography variant="h2">Data persistence</Typography>
       </Box>
       <Box mb={2}>
-        <Slider aria-label="Volume" />
+        <Slider
+          aria-label="Volume"
+          min={1}
+          max={365}
+          step={1}
+          marks={marks}
+          valueLabelDisplay="auto"
+          defaultValue={30}
+          onChange={sliderValueChange}
+        />
       </Box>
       <Box mb={2}>
-        <SwarmTextInput name="amount" label="Amount" onChange={event => validateAmountInput(event.target.value)} />
         <Box mt={0.25} sx={{ bgcolor: '#f6f6f6' }} p={2}>
           <Grid container justifyContent="space-between">
             <Typography>Corresponding TTL (Time to live)</Typography>
-            <Typography>{!amountError && amountInput ? getTtl(Number.parseInt(amountInput, 10)) : '-'}</Typography>
+            <Typography>{amountInput ? getTtl(amountInput) : '-'}</Typography>
           </Grid>
         </Box>
-        {amountError && <Typography>{amountError}</Typography>}
+        <Box display="flex" justifyContent={'right'} mt={0.5}>
+          <Typography style={{ fontSize: '10px', color: 'rgba(0, 0, 0, 0.26)' }}>
+            Current price of 24000 per block
+          </Typography>
+        </Box>
       </Box>
       <Box mb={4} sx={{ bgcolor: '#fcf2e8' }} p={2}>
         <Grid container justifyContent="space-between">
           <Typography>Indicative Price</Typography>
-          <Typography>
-            {!amountError && !depthError && amountInput && depthInput
-              ? getPrice(parseInt(depthInput, 10), BigInt(amountInput))
-              : '-'}
-          </Typography>
+          <Typography>{getPrice(depthInput, BigInt(amountInput))}</Typography>
         </Grid>
       </Box>
       <Grid container justifyContent="space-between" alignItems="center">
         <Grid item>
           <SwarmButton
-            disabled={submitting || Boolean(depthError) || Boolean(amountError) || !depthInput || !amountInput}
+            disabled={submitting || !depthInput || !amountInput}
             onClick={submit}
             iconType={Check}
             loading={submitting}

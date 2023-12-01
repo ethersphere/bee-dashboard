@@ -13,7 +13,7 @@ export function CreatePostageStampPage(): ReactElement {
 
   return (
     <div>
-      <HistoryHeader>Buy new postage stamp</HistoryHeader>
+      <HistoryHeader>Buy new postage stamp batch</HistoryHeader>
       <PostageStampAdvancedCreation onFinished={onFinished} />
     </div>
   )
