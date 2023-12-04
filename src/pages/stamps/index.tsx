@@ -44,7 +44,7 @@ export default function Stamp(): ReactElement {
   if (status.all === CheckState.ERROR) return <TroubleshootConnectionCard />
 
   function navigateToNewStamp() {
-    navigate(ROUTES.ACCOUNT_STAMPS_NEW)
+    navigate(ROUTES.ACCOUNT_STAMPS_NEW_STANDARD)
   }
 
   return (

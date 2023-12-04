@@ -159,6 +159,23 @@ const componentsOverrides = (theme: Theme) => ({
       backgroundColor: 'transparent',
     },
   },
+  MuiSlider: {
+    root: {
+      '& .MuiSlider-valueLabel': {
+        top: '-27px',
+        '& span': {
+          height: '20px',
+          borderRadius: '0px',
+          transform: 'none',
+          '& span': {
+            display: 'flex',
+            alignItems: 'center',
+            transform: 'none',
+          },
+        },
+      },
+    },
+  },
 })
 
 const propsOverrides = {
