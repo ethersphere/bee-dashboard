@@ -93,7 +93,7 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
       const options: PostageBatchOptions = {
         waitForUsable: false,
         label: labelInput || undefined,
-        // immutableFlag: true,
+        immutableFlag: true,
       }
 
       const batchId = await beeDebugApi.createPostageBatch(amount.toString(), depth, options)
