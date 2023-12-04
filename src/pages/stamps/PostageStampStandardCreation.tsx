@@ -1,15 +1,14 @@
-import { PostageBatchOptions } from '@ethersphere/bee-js'
-import { Utils } from '@ethersphere/bee-js'
+import { PostageBatchOptions, Utils } from '@ethersphere/bee-js'
 import { Box, Button, Grid, Slider, Typography } from '@material-ui/core'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import { Theme, createStyles, makeStyles } from '@material-ui/core/styles'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
+import { Link } from 'react-router-dom'
 import Check from 'remixicon-react/CheckLineIcon'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as StampsContext } from '../../providers/Stamps'
-import { Link } from 'react-router-dom'
 import { ROUTES } from '../../routes'
 import { calculateStampPrice, convertAmountToSeconds, secondsToTimeString, waitUntilStampExists } from '../../utils'
 
@@ -43,30 +42,31 @@ const marks = [
 ]
 
 export function PostageStampStandardCreation({ onFinished }: Props): ReactElement {
-  const getDepthForCapacity = Utils.getDepthForCapacity
-  const getAmountForTtl = Utils.getAmountForTtl
   const classes = useStyles()
   const { refresh } = useContext(StampsContext)
   const { beeDebugApi } = useContext(SettingsContext)
 
-  const [depthInput, setDepthInput] = useState<number>(getDepthForCapacity(4))
-  const [amountInput, setAmountInput] = useState<number>(Number.parseInt(getAmountForTtl(30)))
+  const [depthInput, setDepthInput] = useState<number>(Utils.getDepthForCapacity(4))
+  const [amountInput, setAmountInput] = useState<string>(Utils.getAmountForTtl(30))
   const [labelInput, setLabelInput] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [buttonValue, setButtonValue] = useState(4)
 
-  function sliderValueChange(event: any, newValue: any) {
-    const amountValue = Number.parseInt(getAmountForTtl(newValue))
+  function sliderValueChange(_: unknown, newValue: number | number[]) {
+    if (typeof newValue !== 'number') {
+      return
+    }
+    const amountValue = Utils.getAmountForTtl(newValue)
     setAmountInput(amountValue)
   }
 
   const { enqueueSnackbar } = useSnackbar()
 
-  function getTtl(amount: number): string {
+  function getTtl(amount: string): string {
     const pricePerBlock = 24000
 
     return `${secondsToTimeString(
-      convertAmountToSeconds(amount, pricePerBlock),
+      convertAmountToSeconds(parseInt(amount, 10), pricePerBlock),
     )} (with price of ${pricePerBlock.toFixed(0)} per block)`
   }
 
@@ -93,7 +93,7 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
       const options: PostageBatchOptions = {
         waitForUsable: false,
         label: labelInput || undefined,
-        immutableFlag: false,
+        // immutableFlag: true,
       }
 
       const batchId = await beeDebugApi.createPostageBatch(amount.toString(), depth, options)
@@ -107,11 +107,9 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
     setSubmitting(false)
   }
 
-  function handleBatchSize(event: any) {
-    let value = event.target.innerText
-    value = Number(value.substring(0, value.length - 3))
-    setButtonValue(value)
-    const capacity = getDepthForCapacity(value)
+  function handleBatchSize(gigabytes: number) {
+    setButtonValue(gigabytes)
+    const capacity = Utils.getDepthForCapacity(gigabytes)
     setDepthInput(capacity)
   }
 
@@ -146,7 +144,7 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
             <Button
               variant="contained"
               fullWidth
-              onClick={handleBatchSize}
+              onClick={() => handleBatchSize(4)}
               className={buttonValue === 4 ? classes.buttonSelected : ''}
             >
               4 GB
@@ -156,7 +154,7 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
             <Button
               variant="contained"
               fullWidth
-              onClick={handleBatchSize}
+              onClick={() => handleBatchSize(32)}
               className={buttonValue === 32 ? classes.buttonSelected : ''}
             >
               32 GB
@@ -166,7 +164,7 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
             <Button
               variant="contained"
               fullWidth
-              onClick={handleBatchSize}
+              onClick={() => handleBatchSize(256)}
               className={buttonValue === 256 ? classes.buttonSelected : ''}
             >
               256 GB
