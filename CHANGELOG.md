@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.25.0](https://github.com/ethersphere/bee-dashboard/compare/v0.24.1...v0.25.0) (2023-12-04)
+
+
+### Features
+
+* improve topup and dilute ux ([0c2ac0c](https://github.com/ethersphere/bee-dashboard/commit/0c2ac0c454ad02200a2762958c5bc5abbdfe8005))
+* update postage stamp creation screen ([#641](https://github.com/ethersphere/bee-dashboard/issues/641)) ([4f9abc6](https://github.com/ethersphere/bee-dashboard/commit/4f9abc614eedd5ce3a279a4686cc832c4d1e62c7))
+
+
+### Bug Fixes
+
+* add missing stamp labels and fix inputs ([#634](https://github.com/ethersphere/bee-dashboard/issues/634)) ([7fa1cb0](https://github.com/ethersphere/bee-dashboard/commit/7fa1cb0ccf9f2a32263e84aa76732ebd2fc7fb22))
+* put stamp input error handling in state ([#640](https://github.com/ethersphere/bee-dashboard/issues/640)) ([20a051b](https://github.com/ethersphere/bee-dashboard/commit/20a051b6589c22397a7305d722a56df0604ff7a4))
+
 ## [0.24.1](https://github.com/ethersphere/bee-dashboard/compare/v0.24.0...v0.24.1) (2023-10-18)
 
 
