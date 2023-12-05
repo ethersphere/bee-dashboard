@@ -10,6 +10,7 @@ import ExpandableListItem from '../../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../../components/ExpandableListItemKey'
 import { SwarmButton } from '../../../components/SwarmButton'
+import { SwarmTextInput } from '../../../components/SwarmTextInput'
 import { Context as IdentityContext, Identity } from '../../../providers/Feeds'
 import { ROUTES } from '../../../routes'
 import { formatEnum } from '../../../utils'
@@ -98,7 +99,11 @@ export function AccountFeeds(): ReactElement {
               <ExpandableListItem label="Identity type" value={formatEnum(x.type)} />
             </ExpandableList>
           </Box>
-          <ExpandableListItemKey label="Topic" value={'00'.repeat(32)} />
+          {x.website ? (
+            <ExpandableListItemKey label="Topic" value={'00'.repeat(32)} />
+          ) : (
+            <SwarmTextInput name="Topic" label="Specific Feed Topic" formik />
+          )}
           {x.feedHash && <ExpandableListItemKey label="Feed hash" value={x.feedHash} />}
           <Box mt={0.75}>
             <ExpandableListItemActions>
