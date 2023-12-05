@@ -20,6 +20,8 @@ import { convertWalletToIdentity, generateWallet, persistIdentity } from '../../
 interface FormValues {
   identityName?: string
   type?: IdentityType
+  website: boolean
+  topic: string
   password?: string
 }
 
@@ -27,6 +29,8 @@ const initialValues: FormValues = {
   identityName: '',
   type: 'PRIVATE_KEY',
   password: '',
+  website: true,
+  topic: '00',
 }
 
 export default function CreateNewFeed(): ReactElement {
@@ -108,7 +112,11 @@ export default function CreateNewFeed(): ReactElement {
             </Box>
             {values.type === 'V3' && <SwarmTextInput name="password" label="Password" password formik />}
             <Box mt={2}>
-              <ExpandableListItemKey label="Topic" value={'00'.repeat(32)} />
+              {values.website ? (
+                <ExpandableListItemKey label="topic" value={'00'.repeat(32)} />
+              ) : (
+                <SwarmTextInput name="topic" label="Specific Feed Topic" formik />
+              )}
             </Box>
             <Box mt={2} sx={{ bgcolor: '#fcf2e8' }} p={2}>
               <Grid container justifyContent="space-between">
