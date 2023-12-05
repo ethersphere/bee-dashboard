@@ -1,5 +1,5 @@
 import { PostageBatchOptions, Utils } from '@ethersphere/bee-js'
-import { Box, Grid, IconButton, Theme, Typography, createStyles, makeStyles } from '@material-ui/core'
+import { Box, Grid, IconButton, Typography, createStyles, makeStyles } from '@material-ui/core'
 import BigNumber from 'bignumber.js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
@@ -35,6 +35,7 @@ const useStyles = makeStyles(() =>
       },
     },
     stampVolumeWrapper: {
+      width: 'fit-content',
       '& button': {
         marginLeft: 4,
         width: 24,
@@ -165,16 +166,10 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
     setDepthInput(validDepthInput)
   }
 
-  function handleStampVolumeInfoClick() {
-    window.open(
-      'https://docs.ethswarm.org/docs/learn/technology/contracts/postage-stamp/#effective-utilisation-table',
-      '_blank',
-      'noopener,noreferrer',
-    )
-  }
+  function renderStampVolumesInfo() {
+    const depth = parseInt(depthInput, 10)
 
-  function getStampVolumesInfo(depth: number) {
-    if (isNaN(depth) || depth < 17 || depth > 255) {
+    if (depthError || isNaN(depth) || depth < 17 || depth > 255) {
       return '-'
     }
 
@@ -182,15 +177,21 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
     const effectiveVolume = getHumanReadableFileSize(Utils.getStampEffectiveBytes(depth))
 
     return (
-      <Grid item>
-        <Grid container alignItems="center" className={classes.stampVolumeWrapper}>
-          <Typography>Theoretical: ~{theoreticalMaximumVolume}</Typography>
-          <Typography>&nbsp;/&nbsp; </Typography>
-          <Typography>Effective: ~{effectiveVolume}</Typography>
-          <IconButton onClick={handleStampVolumeInfoClick}>
-            <Info />
-          </IconButton>
-        </Grid>
+      <Grid item container alignItems="center" className={classes.stampVolumeWrapper}>
+        <Typography>
+          Theoretical: ~{theoreticalMaximumVolume} / Effective: ~{effectiveVolume}
+        </Typography>
+        <IconButton
+          onClick={() =>
+            window.open(
+              'https://docs.ethswarm.org/docs/learn/technology/contracts/postage-stamp/#effective-utilisation-table',
+              '_blank',
+              'noopener,noreferrer',
+            )
+          }
+        >
+          <Info />
+        </IconButton>
       </Grid>
     )
   }
@@ -216,7 +217,7 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
         <Box mt={0.25} sx={{ bgcolor: '#f6f6f6' }} p={2}>
           <Grid container justifyContent="space-between" alignItems="center">
             <Typography>Corresponding file size</Typography>
-            {!depthError && depthInput ? getStampVolumesInfo(parseInt(depthInput, 10)) : '-'}
+            {renderStampVolumesInfo()}
           </Grid>
         </Box>
         {depthError && <Typography>{depthError}</Typography>}
