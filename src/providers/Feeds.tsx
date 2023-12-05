@@ -5,7 +5,8 @@ export type IdentityType = 'V3' | 'PRIVATE_KEY'
 export interface Identity {
   uuid: string
   name: string
-  topic: string,
+  website: boolean
+  topic: string
   feedHash?: string
   identity: string
   address: string
