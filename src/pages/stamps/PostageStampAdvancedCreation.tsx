@@ -1,10 +1,11 @@
-import { PostageBatchOptions } from '@ethersphere/bee-js'
-import { Box, Grid, Typography, createStyles, makeStyles } from '@material-ui/core'
+import { PostageBatchOptions, Utils } from '@ethersphere/bee-js'
+import { Box, Grid, IconButton, Theme, Typography, createStyles, makeStyles } from '@material-ui/core'
 import BigNumber from 'bignumber.js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Check from 'remixicon-react/CheckLineIcon'
+import Info from 'remixicon-react/InformationLineIcon'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmSelect } from '../../components/SwarmSelect'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
@@ -12,13 +13,7 @@ import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as StampsContext } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
-import {
-  calculateStampPrice,
-  convertAmountToSeconds,
-  convertDepthToBytes,
-  secondsToTimeString,
-  waitUntilStampExists,
-} from '../../utils'
+import { calculateStampPrice, convertAmountToSeconds, secondsToTimeString, waitUntilStampExists } from '../../utils'
 import { getHumanReadableFileSize } from '../../utils/file'
 
 interface Props {
@@ -39,6 +34,13 @@ const useStyles = makeStyles(() =>
         },
       },
     },
+    stampVolumeWrapper: {
+      '& button': {
+        marginLeft: 4,
+        width: 24,
+        padding: 2,
+      },
+    },
   }),
 )
 
@@ -57,14 +59,6 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
   const [submitting, setSubmitting] = useState(false)
 
   const { enqueueSnackbar } = useSnackbar()
-
-  function getFileSize(depth: number): string {
-    if (isNaN(depth) || depth < 17 || depth > 255) {
-      return '-'
-    }
-
-    return `~${getHumanReadableFileSize(convertDepthToBytes(depth))}`
-  }
 
   function getTtl(amount: number): string {
     const isCurrentPriceAvailable = chainState && chainState.currentPrice
@@ -171,6 +165,36 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
     setDepthInput(validDepthInput)
   }
 
+  function handleStampVolumeInfoClick() {
+    window.open(
+      'https://docs.ethswarm.org/docs/learn/technology/contracts/postage-stamp/#effective-utilisation-table',
+      '_blank',
+      'noopener,noreferrer',
+    )
+  }
+
+  function getStampVolumesInfo(depth: number) {
+    if (isNaN(depth) || depth < 17 || depth > 255) {
+      return '-'
+    }
+
+    const theoreticalMaximumVolume = getHumanReadableFileSize(Utils.getStampMaximumCapacityBytes(depth))
+    const effectiveVolume = getHumanReadableFileSize(Utils.getStampEffectiveBytes(depth))
+
+    return (
+      <Grid item>
+        <Grid container alignItems="center" className={classes.stampVolumeWrapper}>
+          <Typography>Theoretical: ~{theoreticalMaximumVolume}</Typography>
+          <Typography>&nbsp;/&nbsp; </Typography>
+          <Typography>Effective: ~{effectiveVolume}</Typography>
+          <IconButton onClick={handleStampVolumeInfoClick}>
+            <Info />
+          </IconButton>
+        </Grid>
+      </Grid>
+    )
+  }
+
   return (
     <>
       <Box mb={4}>
@@ -190,9 +214,9 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
       <Box mb={2}>
         <SwarmTextInput name="depth" label="Depth" onChange={event => validateDepthInput(event.target.value)} />
         <Box mt={0.25} sx={{ bgcolor: '#f6f6f6' }} p={2}>
-          <Grid container justifyContent="space-between">
+          <Grid container justifyContent="space-between" alignItems="center">
             <Typography>Corresponding file size</Typography>
-            <Typography>{!depthError && depthInput ? getFileSize(parseInt(depthInput, 10)) : '-'}</Typography>
+            {!depthError && depthInput ? getStampVolumesInfo(parseInt(depthInput, 10)) : '-'}
           </Grid>
         </Box>
         {depthError && <Typography>{depthError}</Typography>}

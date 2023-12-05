@@ -203,10 +203,6 @@ export function secondsToTimeString(seconds: number): string {
   return `${unit.toFixed(1)} years`
 }
 
-export function convertDepthToBytes(depth: number): number {
-  return 2 ** depth * 4096
-}
-
 export function convertAmountToSeconds(amount: number, pricePerBlock: number): number {
   // TODO: blocktime should come directly from the blockchain as it may differ between different networks
   const blockTime = 5 // On mainnet there is 5 seconds between blocks
