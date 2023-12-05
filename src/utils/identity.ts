@@ -37,6 +37,8 @@ export async function convertWalletToIdentity(
     uuid: uuidV4(),
     name,
     type: password ? 'V3' : 'PRIVATE_KEY',
+    topic: '00',
+    website: true,
     address: identity.address,
     identity: identityString,
   }
@@ -50,6 +52,8 @@ export async function importIdentity(name: string, data: string): Promise<Identi
       uuid: uuidV4(),
       name,
       type: 'PRIVATE_KEY',
+      topic: '00',
+      website: true,
       identity: data,
       address: wallet.address,
     }
@@ -58,12 +62,20 @@ export async function importIdentity(name: string, data: string): Promise<Identi
   if (data.length === 66 && data.toLowerCase().startsWith('0x')) {
     const wallet = await getWallet('PRIVATE_KEY', data.slice(2))
 
-    return { uuid: uuidV4(), name, type: 'PRIVATE_KEY', identity: data, address: wallet.address }
+    return {
+      uuid: uuidV4(),
+      name,
+      type: 'PRIVATE_KEY',
+      identity: data,
+      website: true,
+      topic: '00',
+      address: wallet.address,
+    }
   }
   try {
     const { address } = JSON.parse(data)
 
-    return { uuid: uuidV4(), name, type: 'V3', identity: data, address }
+    return { uuid: uuidV4(), name, type: 'V3', identity: data, website: true, topic: '00', address }
   } catch {
     return null
   }
