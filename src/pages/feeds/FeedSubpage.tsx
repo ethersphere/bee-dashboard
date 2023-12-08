@@ -5,6 +5,8 @@ import X from 'remixicon-react/CloseLineIcon'
 import { DocumentationText } from '../../components/DocumentationText'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
+import ExpandableList from '../../components/ExpandableList'
+import ExpandableListItem from '../../components/ExpandableListItem'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { SwarmButton } from '../../components/SwarmButton'
 import { Context as BeeContext } from '../../providers/Bee'
@@ -24,6 +26,34 @@ export function FeedSubpage(): ReactElement {
   const [available, setAvailable] = useState(false)
 
   const identity = identities.find(x => x.uuid === uuid)
+
+  const readPostArray: Array<{
+    Title: String
+    Type: String
+    Category: String
+    Date: String
+    Amount: String
+    Provider: String
+    Place: String
+    DocRef: String
+  }> = []
+
+  const message = {
+    Title: 'PS5',
+    Type: 'Document',
+    Category: 'Loisir',
+    Date: '07/12/2023',
+    Amount: '750€',
+    Provider: 'Sony',
+    Place: 'La Defense',
+    DocRefUrl: '',
+  }
+
+  try {
+    readPostArray.push(...[message])
+  } catch (e) {
+    console.log('Failed to: ', e)
+  }
 
   useEffect(() => {
     if (!identity || !identity.feedHash) {
@@ -72,6 +102,21 @@ export function FeedSubpage(): ReactElement {
           </DocumentationText>
         </Box>
       )}
+      // Posts form
+      {readPostArray.map((x, i) => (
+        <ExpandableList key={i} label={`${x.Title} Website`} defaultOpen>
+          <Box mb={0.5}>
+            <ExpandableList label={x.Title} level={1}>
+              <ExpandableListItem label="Post Type" value={x.Type} />
+              <ExpandableListItem label="Post Date" value={x.Date} />
+              <ExpandableListItem label="Post Amount" value={x.Amount} />
+              <ExpandableListItem label="Post Provider" value={x.Provider} />
+              <ExpandableListItem label="Post Place" value={x.Place} />
+              /* Add a clickable bzz link to a bill scan here */
+            </ExpandableList>
+          </Box>
+        </ExpandableList>
+      ))}
       <ExpandableListItemActions>
         <SwarmButton iconType={X} onClick={onClose} cancel>
           Close
