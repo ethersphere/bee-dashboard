@@ -99,7 +99,7 @@ export function AccountFeeds(): ReactElement {
               <ExpandableListItem label="Identity type" value={formatEnum(x.type)} />
             </ExpandableList>
           </Box>
-          {x.website ? (
+          {x.topic === '' ? (
             <ExpandableListItemKey label="Topic" value={'00'.repeat(32)} />
           ) : (
             <SwarmTextInput name="Topic" label="Specific Feed Topic" formik />
