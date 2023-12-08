@@ -37,6 +37,7 @@ export default function CreateNewFeed(): ReactElement {
   const { beeApi, beeDebugApi } = useContext(SettingsContext)
   const { identities, setIdentities } = useContext(FeedsContext)
   const [loading, setLoading] = useState(false)
+  const [website, setFeedType] = useState(true)
   const { enqueueSnackbar } = useSnackbar()
 
   const navigate = useNavigate()
@@ -112,7 +113,7 @@ export default function CreateNewFeed(): ReactElement {
             </Box>
             {values.type === 'V3' && <SwarmTextInput name="password" label="Password" password formik />}
             <Box mt={2}>
-              {values.website ? (
+              {website ? (
                 <ExpandableListItemKey label="topic" value={'00'.repeat(32)} />
               ) : (
                 <SwarmTextInput name="topic" label="Specific Feed Topic" formik />
