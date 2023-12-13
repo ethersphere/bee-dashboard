@@ -5,7 +5,7 @@ import { getMetadata } from '../utils/file'
 import { resize } from '../utils/image'
 import { PREVIEW_DIMENSIONS } from '../constants'
 
-export type UploadOrigin = { origin: 'UPLOAD' | 'FEED'; uuid?: string }
+export type UploadOrigin = { origin: 'UPLOAD' | 'FEED' | 'POST'; uuid?: string }
 
 export const defaultUploadOrigin: UploadOrigin = { origin: 'UPLOAD' }
 
