@@ -1,4 +1,7 @@
 import { Box } from '@material-ui/core'
+import { Form, Formik } from 'formik'
+import { SwarmSelect } from '../../components/SwarmSelect'
+import { SwarmTextInput } from '../../components/SwarmTextInput'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -8,7 +11,7 @@ import { ProgressIndicator } from '../../components/ProgressIndicator'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { META_FILE_NAME, PREVIEW_FILE_NAME } from '../../constants'
 import { Context as BeeContext, CheckState } from '../../providers/Bee'
-import { Identity, Context as IdentityContext } from '../../providers/Feeds'
+import { Identity, Post, Context as IdentityContext } from '../../providers/Feeds'
 import { Context as FileContext } from '../../providers/File'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { EnrichedPostageBatch, Context as StampsContext } from '../../providers/Stamps'
@@ -23,6 +26,8 @@ import { PostageStampSelector } from '../stamps/PostageStampSelector'
 import { AssetPreview } from './AssetPreview'
 import { StampPreview } from './StampPreview'
 import { UploadActionBar } from './UploadActionBar'
+import ExpandableList from '../../components/ExpandableList'
+import ExpandableListItemInput from '../../components/ExpandableListItemInput'
 
 export function Upload(): ReactElement {
   const [step, setStep] = useState(0)
@@ -41,6 +46,17 @@ export function Upload(): ReactElement {
   const navigate = useNavigate()
 
   const hasAnyStamps = stamps !== null && stamps.length > 0
+  const msg: Post = {
+    Title: 'PS5',
+    Type: 'Document',
+    Category: 'Loisir',
+    Date: '07/12/2023',
+    Amount: '750€',
+    Provider: 'Sony',
+    Place: 'La Defense',
+    reference: '',
+  }
+  const [PostData, setPostData] = useState(msg)
 
   useEffect(() => {
     refresh()
@@ -122,7 +138,6 @@ export function Upload(): ReactElement {
       })
       fls.push(packageFile(previewFile))
     }
-
     setUploading(true)
 
     if (beeDebugApi) {
@@ -133,17 +148,24 @@ export function Upload(): ReactElement {
       .uploadFiles(stamp.batchID, fls, { indexDocument, deferred: true })
       .then(hash => {
         putHistory(HISTORY_KEYS.UPLOAD_HISTORY, hash.reference, getAssetNameFromFiles(files))
-
+        // Load data in the Json/object
+        PostData.reference = hash.reference
         if (uploadOrigin.origin === 'UPLOAD') {
           navigate(ROUTES.HASH.replace(':hash', hash.reference), { replace: true })
         } else {
-          updateFeed(beeApi, beeDebugApi, identity as Identity, hash.reference, stamp.batchID, password as string).then(
-            () => {
-              persistIdentity(identities, identity as Identity)
-              setIdentities([...identities])
-              navigate(ROUTES.ACCOUNT_FEEDS_VIEW.replace(':uuid', uploadOrigin.uuid as string), { replace: true })
-            },
-          )
+          updateFeed(
+            beeApi,
+            beeDebugApi,
+            identity as Identity,
+            hash.reference,
+            stamp.batchID,
+            PostData as Post,
+            password as string,
+          ).then(() => {
+            persistIdentity(identities, identity as Identity)
+            setIdentities([...identities])
+            navigate(ROUTES.ACCOUNT_FEEDS_VIEW.replace(':uuid', uploadOrigin.uuid as string), { replace: true })
+          })
         }
       })
       .catch(e => {
@@ -162,6 +184,10 @@ export function Upload(): ReactElement {
 
   const onFeedPasswordGiven = (password: string) => {
     uploadFiles(password)
+  }
+
+  async function onSubmit(values: Post) {
+    setPostData(values)
   }
 
   return (
@@ -205,6 +231,55 @@ export function Upload(): ReactElement {
         </>
       )}
       {step === 2 && stamp && <StampPreview stamp={stamp} />}
+      // Posts form
+      {uploadOrigin.origin === 'POST' && (
+        <Formik initialValues={msg} onSubmit={onSubmit}>
+          {({ submitForm, values }) => (
+            <Form>
+              <Box mb={0.25}>
+                <SwarmTextInput name="Title" label="" formik />
+              </Box>
+              <Box mb={0.25}>
+                <SwarmSelect
+                  formik
+                  name="Type"
+                  options={[
+                    { label: 'Document', value: 'Document' },
+                    { label: 'Expenditure', value: 'Bill' },
+                  ]}
+                />
+              </Box>
+              <Box mb={0.25}>
+                <SwarmSelect
+                  formik
+                  name="Category"
+                  options={[
+                    { label: 'Groceries', value: 'Groceries' },
+                    { label: 'Petrol', value: 'CarPetrol' },
+                    { label: 'Non Petrol Car', value: 'CarFix' },
+                    { label: 'Travel', value: 'Travel' },
+                    { label: 'Medical', value: 'Medical' },
+                    { label: 'Investment', value: 'Investment' },
+                  ]}
+                />
+              </Box>
+              <Box mb={0.25}>
+                <SwarmTextInput name="Date" label="" formik />
+              </Box>
+              <Box mb={0.25}>
+                <SwarmTextInput name="Amount" label="" formik />
+              </Box>
+              <Box mb={0.25}>
+                <SwarmTextInput name="Provider" label="" formik />
+              </Box>
+              <Box mb={0.25}>
+                <SwarmTextInput name="Place" label="" formik />
+              </Box>
+            </Form>
+          )}
+        </Formik>
+      )}
+      // Post Form
       <UploadActionBar
         step={step}
         onCancel={reset}
