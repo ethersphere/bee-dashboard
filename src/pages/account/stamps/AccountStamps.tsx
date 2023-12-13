@@ -1,4 +1,4 @@
-import { CircularProgress, createStyles, makeStyles } from '@material-ui/core'
+import { CircularProgress, Container, createStyles, makeStyles } from '@material-ui/core'
 import { ReactElement, useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import PlusSquare from 'remixicon-react/AddBoxLineIcon'
@@ -54,7 +54,12 @@ export function AccountStamps(): ReactElement {
       <Header />
       <AccountNavigation active="STAMPS" />
       <div className={classes.root}>
-        {error && <Loading />}
+        {error && (
+          <Container style={{ textAlign: 'center', padding: '50px' }}>
+            <Loading />
+            {error.message}
+          </Container>
+        )}
         {!error && (
           <>
             <div className={classes.actions}>
