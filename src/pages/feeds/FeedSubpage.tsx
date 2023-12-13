@@ -10,15 +10,17 @@ import ExpandableListItem from '../../components/ExpandableListItem'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { SwarmButton } from '../../components/SwarmButton'
 import { Context as BeeContext } from '../../providers/Bee'
-import { Context as IdentityContext } from '../../providers/Feeds'
+import { Identity, Context as IdentityContext } from '../../providers/Feeds'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
 import { UploadArea } from '../files/UploadArea'
+import { readFeed } from '../../utils/identity'
 
 export function FeedSubpage(): ReactElement {
   const { identities } = useContext(IdentityContext)
+  const { posts } = useContext(IdentityContext)
   const { uuid } = useParams()
-  const { beeApi } = useContext(SettingsContext)
+  const { beeApi, beeDebugApi } = useContext(SettingsContext)
   const { status } = useContext(BeeContext)
 
   const navigate = useNavigate()
@@ -27,32 +29,17 @@ export function FeedSubpage(): ReactElement {
 
   const identity = identities.find(x => x.uuid === uuid)
 
-  const readPostArray: Array<{
-    Title: String
-    Type: String
-    Category: String
-    Date: String
-    Amount: String
-    Provider: String
-    Place: String
-    DocRef: String
-  }> = []
-
-  const message = {
-    Title: 'PS5',
-    Type: 'Document',
-    Category: 'Loisir',
-    Date: '07/12/2023',
-    Amount: '750€',
-    Provider: 'Sony',
-    Place: 'La Defense',
-    DocRefUrl: '',
+  if (!beeApi || !beeDebugApi) {
+    return <></>
   }
 
-  try {
-    readPostArray.push(...[message])
-  } catch (e) {
-    console.log('Failed to: ', e)
+  if (identity?.topic === '') {
+  } else {
+    try {
+      const readPostArray = readFeed(beeApi, beeDebugApi, identity as Identity)
+    } catch (error) {
+      return <></>
+    }
   }
 
   useEffect(() => {
@@ -80,7 +67,11 @@ export function FeedSubpage(): ReactElement {
   return (
     <div>
       <HistoryHeader>{`${identity.name} Website`}</HistoryHeader>
-      <UploadArea showHelp={false} uploadOrigin={{ origin: 'FEED', uuid }} />
+      {identity.topic === '' ? (
+        <UploadArea showHelp={false} uploadOrigin={{ origin: 'FEED', uuid }} />
+      ) : (
+        <UploadArea showHelp={false} uploadOrigin={{ origin: 'POST', uuid }} />
+      )}
       {available && identity.feedHash ? (
         <>
           <Box mb={4}>
@@ -103,7 +94,7 @@ export function FeedSubpage(): ReactElement {
         </Box>
       )}
       // Posts form
-      {readPostArray.map((x, i) => (
+      {posts.map((x, i) => (
         <ExpandableList key={i} label={`${x.Title} Website`} defaultOpen>
           <Box mb={0.5}>
             <ExpandableList label={x.Title} level={1}>
