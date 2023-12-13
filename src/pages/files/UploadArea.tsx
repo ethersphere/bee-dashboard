@@ -5,6 +5,7 @@ import { ReactElement, useContext, useState } from 'react'
 import PlusCircle from 'remixicon-react/AddCircleLineIcon'
 import FilePlus from 'remixicon-react/FileAddLineIcon'
 import FolderPlus from 'remixicon-react/FolderAddLineIcon'
+import PlusMail from 'remixicon-react/MailAddFillIcon'
 import { useNavigate } from 'react-router-dom'
 import { DocumentationText } from '../../components/DocumentationText'
 import { SwarmButton } from '../../components/SwarmButton'
@@ -55,7 +56,9 @@ export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
   const [strictWebsiteMode, setStrictWebsiteMode] = useState(false)
+  const [strictPostMode, setStrictPostMode] = useState(false)
   const [version, setVersion] = useState(0)
+  const [postData, setNoData] = useState(false)
 
   const getDropzoneInputDomElement = () => document.querySelector('.MuiDropzoneArea-root input') as HTMLInputElement
 
@@ -80,6 +83,15 @@ export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
     setStrictWebsiteMode(false)
   }
 
+  const onUploadPostDataClick = () => {
+    onUploadCollectionClick()
+    setStrictPostMode(false)
+  }
+
+  const onNewPostClick = () => {
+    navigate(ROUTES.UPLOAD_IN_PROGRESS) // Create a Post Form
+  }
+
   const onUploadFileClick = () => {
     const element = getDropzoneInputDomElement()
 
@@ -98,6 +110,12 @@ export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
     }, 0)
   }
 
+  const resetComponentOnConfirmNoData = () => {
+    setTimeout(() => {
+      setNoData(true)
+    }, 0)
+  }
+
   const handleChange = (files?: File[]) => {
     if (files) {
       const FilePaths = files as FilePath[]
@@ -108,6 +126,18 @@ export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
           variant: 'error',
         })
         resetComponentOnAddingInvalidContent()
+
+        return
+      }
+
+      if (files.length && strictPostMode) {
+        enqueueSnackbar(
+          'To create a new Post you may need to upload some data first, please confirm you have no data to attach to your post!',
+          {
+            variant: 'error',
+          },
+        )
+        resetComponentOnConfirmNoData()
 
         return
       }
@@ -141,6 +171,9 @@ export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
           </SwarmButton>
           <SwarmButton className={classes.button} onClick={onUploadWebsiteClick} iconType={PlusCircle}>
             Add Website
+          </SwarmButton>
+          <SwarmButton className={classes.button} onClick={onNewPostClick} iconType={PlusMail}>
+            New Post
           </SwarmButton>
         </div>
       </div>
