@@ -35,7 +35,7 @@
     "linebreak-style": ["warn", "unix"],
     "no-alert": "error",
     "no-case-declarations": "error",
-    "no-console": "error",
+    //"no-console": "error",
     "no-constant-condition": "error",
     "no-continue": "warn",
     "no-div-regex": "error",
