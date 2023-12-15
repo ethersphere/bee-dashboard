@@ -172,7 +172,7 @@ export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
           <SwarmButton className={classes.button} onClick={onUploadWebsiteClick} iconType={PlusCircle}>
             Add Website
           </SwarmButton>
-          <SwarmButton className={classes.button} onClick={onNewPostClick} iconType={PlusMail}>
+          <SwarmButton className={classes.button} onClick={onUploadPostDataClick} iconType={PlusMail}>
             New Post
           </SwarmButton>
         </div>
