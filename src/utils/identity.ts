@@ -1,10 +1,8 @@
 import { BatchId, Bee, BeeDebug, Reference } from '@ethersphere/bee-js'
 import { Wallet } from 'ethers'
 import { uuidV4, waitUntilStampUsable } from '.'
-import { Identity, IdentityType, Post, Context as IdentityContext } from '../providers/Feeds'
+import { Identity, IdentityType, Post } from '../providers/Feeds'
 import { FeedUploadOptions } from '@ethersphere/bee-js/dist/types/feed'
-import { ReactElement, useContext, useEffect, useState } from 'react'
-import { Context as FileContext } from '../providers/File'
 import { FileUploadOptions } from '@ethersphere/bee-js'
 export function generateWallet(): Wallet {
   return Wallet.createRandom()
@@ -28,6 +26,7 @@ export async function convertWalletToIdentity(
   identity: Wallet,
   type: IdentityType,
   name: string,
+  topic: string,
   password?: string,
 ): Promise<Identity> {
   if (type === 'V3' && !password) {
@@ -40,7 +39,7 @@ export async function convertWalletToIdentity(
     uuid: uuidV4(),
     name,
     type: password ? 'V3' : 'PRIVATE_KEY',
-    topic: '00',
+    topic: topic,
     website: true,
     address: identity.address,
     identity: identityString,
@@ -84,7 +83,7 @@ export async function importIdentity(name: string, data: string): Promise<Identi
   }
 }
 
-function getWalletFromIdentity(identity: Identity, password?: string): Promise<Wallet> {
+export function getWalletFromIdentity(identity: Identity, password?: string): Promise<Wallet> {
   return getWallet(identity.type, identity.identity, password)
 }
 
@@ -98,17 +97,17 @@ export async function updateFeed(
   identity: Identity,
   hash: string,
   stamp: string,
-  msg: Post,
   password?: string,
+  msg?: Post,
+  uporigin?: string,
 ): Promise<void> {
   const wallet = await getWalletFromIdentity(identity, password)
-  const [hexTopic, setTopic] = useState('0x0')
-  const { uploadOrigin } = useContext(FileContext)
+  let hexTopic = '0x0'
 
-  if (uploadOrigin.origin === 'POST') {
-    setTopic(beeApi.makeFeedTopic(identity.topic))
+  if (uporigin === 'POST') {
+    hexTopic = beeApi.makeFeedTopic(identity.topic)
   } else {
-    setTopic('00'.repeat(32))
+    hexTopic = '00'.repeat(32)
   }
 
   if (!identity.feedHash) {
@@ -121,15 +120,14 @@ export async function updateFeed(
     await waitUntilStampUsable(stamp as BatchId, beeDebugApi)
   }
 
-  if (uploadOrigin.origin === 'POST') {
+  if (uporigin === 'POST') {
     const postData = JSON.stringify(msg)
     const fileoptions: FileUploadOptions = {}
     fileoptions.contentType = 'application/json'
     const dirHash = await beeApi.uploadFile(stamp, postData, 'file.json', fileoptions)
 
     if (dirHash) {
-      const result = await writer.upload(stamp, dirHash.reference)
-      console.log('Feed write result hash: ', result)
+      await writer.upload(stamp, dirHash.reference)
     }
   } else {
     await writer.upload(stamp, hash as Reference)
@@ -137,7 +135,7 @@ export async function updateFeed(
 }
 
 function decimalToHex(d: number, padding: number) {
-  var hex = Number(d).toString(16)
+  let hex = Number(d).toString(16)
   padding = typeof padding === 'undefined' || padding === null ? (padding = 2) : padding
 
   while (hex.length < padding) {
@@ -153,40 +151,40 @@ export async function readFeed(
   identity: Identity,
   password?: string,
 ): Promise<Post[]> {
-  const { posts, setPosts } = useContext(IdentityContext)
+  console.log('Inside reading feed')
   const Posts: Post[] = []
+  console.log('read feed: ', identity, 'Password: ', password)
   const wallet = await getWalletFromIdentity(identity, password)
   const topic = beeApi.makeFeedTopic(identity.topic)
-  const reader = beeApi.makeFeedWriter('sequence', topic, wallet.address)
+  const reader = beeApi.makeFeedReader('sequence', topic, wallet.address)
   const options: FeedUploadOptions = {}
 
-  const { reference, feedIndex, feedIndexNext } = await reader.download()
+  const { feedIndex } = await reader.download()
   const I0 = parseInt(feedIndex, 16)
-
+  console.log('I0: ', I0)
   for (let i = 0; i <= I0; i++) {
     options.index = decimalToHex(i, 16).toString()
-    const fv = await reader
+    await reader
       .download(options)
       .then(async fv => {
-        const fjson = await beeApi
+        await beeApi
           .downloadReadableFile(fv.reference, 'file.json')
           .then(fjson => {
             const jdata = JSON.parse(JSON.stringify(fjson.data))
             try {
               Posts.push(...[jdata])
             } catch (e) {
-              console.log('Failed to: ', e)
+              throw e
             }
           })
           .catch(error0 => {
-            console.log(error0)
+            throw error0
           })
       })
       .catch(error1 => {
-        console.log(error1)
+        throw error1
       })
   }
-  setPosts(Posts)
 
   return Posts
 }
