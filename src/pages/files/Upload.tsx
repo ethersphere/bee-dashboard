@@ -1,7 +1,9 @@
-import { Box } from '@material-ui/core'
-import { Form, Formik } from 'formik'
+import { Box, Button } from '@material-ui/core'
+import { Form, Formik, FormikProvider } from 'formik'
 import { SwarmSelect } from '../../components/SwarmSelect'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
+import { SwarmButton } from '../../components/SwarmButton'
+import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -26,8 +28,7 @@ import { PostageStampSelector } from '../stamps/PostageStampSelector'
 import { AssetPreview } from './AssetPreview'
 import { StampPreview } from './StampPreview'
 import { UploadActionBar } from './UploadActionBar'
-import ExpandableList from '../../components/ExpandableList'
-import ExpandableListItemInput from '../../components/ExpandableListItemInput'
+import Check from 'remixicon-react/CheckLineIcon'
 
 export function Upload(): ReactElement {
   const [step, setStep] = useState(0)
@@ -39,8 +40,8 @@ export function Upload(): ReactElement {
   const { stamps, refresh } = useContext(StampsContext)
   const { beeApi, beeDebugApi } = useContext(SettingsContext)
   const { files, setFiles, uploadOrigin, metadata, previewUri, previewBlob } = useContext(FileContext)
-  const { identities, setIdentities } = useContext(IdentityContext)
   const { status } = useContext(BeeContext)
+  const { identities, setIdentities, PostData, setPostData } = useContext(IdentityContext)
 
   const { enqueueSnackbar } = useSnackbar()
   const navigate = useNavigate()
@@ -56,7 +57,6 @@ export function Upload(): ReactElement {
     Place: 'La Defense',
     reference: '',
   }
-  const [PostData, setPostData] = useState(msg)
 
   useEffect(() => {
     refresh()
@@ -150,6 +150,7 @@ export function Upload(): ReactElement {
         putHistory(HISTORY_KEYS.UPLOAD_HISTORY, hash.reference, getAssetNameFromFiles(files))
         // Load data in the Json/object
         PostData.reference = hash.reference
+
         if (uploadOrigin.origin === 'UPLOAD') {
           navigate(ROUTES.HASH.replace(':hash', hash.reference), { replace: true })
         } else {
@@ -159,8 +160,9 @@ export function Upload(): ReactElement {
             identity as Identity,
             hash.reference,
             stamp.batchID,
-            PostData as Post,
             password as string,
+            PostData as Post,
+            uploadOrigin.origin,
           ).then(() => {
             persistIdentity(identities, identity as Identity)
             setIdentities([...identities])
@@ -186,7 +188,8 @@ export function Upload(): ReactElement {
     uploadFiles(password)
   }
 
-  async function onSubmit(values: Post) {
+  function onSubmit(values: Post) {
+    console.log(values)
     setPostData(values)
   }
 
@@ -231,9 +234,8 @@ export function Upload(): ReactElement {
         </>
       )}
       {step === 2 && stamp && <StampPreview stamp={stamp} />}
-      // Posts form
       {uploadOrigin.origin === 'POST' && (
-        <Formik initialValues={msg} onSubmit={onSubmit}>
+        <Formik initialValues={PostData} onSubmit={onSubmit}>
           {({ submitForm, values }) => (
             <Form>
               <Box mb={0.25}>
@@ -275,11 +277,18 @@ export function Upload(): ReactElement {
               <Box mb={0.25}>
                 <SwarmTextInput name="Place" label="" formik />
               </Box>
+
+              <Box mt={1.25}>
+                <ExpandableListItemActions>
+                  <SwarmButton onClick={submitForm} iconType={Check}>
+                    Save Feed Data
+                  </SwarmButton>
+                </ExpandableListItemActions>
+              </Box>
             </Form>
           )}
         </Formik>
       )}
-      // Post Form
       <UploadActionBar
         step={step}
         onCancel={reset}
