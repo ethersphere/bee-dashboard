@@ -2,7 +2,7 @@ import { Box, Typography } from '@material-ui/core'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useContext, useEffect, useRef, useState } from 'react'
+import { ReactElement, useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { Loading } from '../../components/Loading'
@@ -16,7 +16,7 @@ import { ManifestJs } from '../../utils/manifest'
 import { AssetPreview } from './AssetPreview'
 import { AssetSummary } from './AssetSummary'
 import { DownloadActionBar } from './DownloadActionBar'
-import { LinearProgressWithLabel } from '../../components/ProgressBar'
+import { AssetSyncing } from './AssetSyncing'
 
 export function Share(): ReactElement {
   const { apiUrl, beeApi } = useContext(SettingsContext)
@@ -35,9 +35,6 @@ export function Share(): ReactElement {
   const [notFound, setNotFound] = useState(false)
   const [preview, setPreview] = useState<string | undefined>(undefined)
   const [metadata, setMetadata] = useState<Metadata | undefined>()
-  const [syncProgress, setSyncProgress] = useState(0)
-
-  const syncTimer = useRef<NodeJS.Timer>()
 
   async function prepare() {
     if (!beeApi || !status.all) {
@@ -105,51 +102,13 @@ export function Share(): ReactElement {
     navigate(ROUTES.ACCOUNT_FEEDS_UPDATE.replace(':hash', reference))
   }
 
-  async function syncCheck() {
-    if (!beeApi) {
-      return
-    }
-
-    const tags = await beeApi.getAllTags()
-    const tag = tags.find(t => t.address === reference)
-
-    if (tag) {
-      const progress = ((tag.seen + tag.synced) / tag.split) * 100
-      setSyncProgress(progress)
-
-      // Check availablity from 70%
-      // There are occasions when it shows that the content is not synced but already available
-      if (progress > 70 && progress < 100) {
-        const isRetriavable = await beeApi.isReferenceRetrievable(reference)
-
-        if (isRetriavable) {
-          setSyncProgress(100)
-        }
-      }
-    }
-  }
-
   useEffect(() => {
     setLoading(true)
     prepare().finally(() => {
       setLoading(false)
     })
-
-    syncTimer.current = setInterval(syncCheck, 2000)
-
-    return () => {
-      if (syncTimer.current) {
-        clearInterval(syncTimer.current)
-      }
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reference])
-
-  useEffect(() => {
-    if (syncProgress === 100 && syncTimer.current) {
-      clearInterval(syncTimer.current)
-    }
-  }, [syncProgress])
 
   async function onDownload() {
     if (!beeApi) {
@@ -194,13 +153,8 @@ export function Share(): ReactElement {
       <Box mb={4}>
         <AssetSummary isWebsite={metadata?.isWebsite} reference={reference} />
       </Box>
-      <Box mb={2}>
-        Files are not immediately accessible on the Swarm network. Please wait until your upload is synced to the
-        network.
-        <a href="https://docs.ethswarm.org/docs/develop/access-the-swarm/syncing">Learn more about syncing</a>
-      </Box>
       <Box mb={4}>
-        <LinearProgressWithLabel value={syncProgress}></LinearProgressWithLabel>
+        <AssetSyncing reference={reference} />
       </Box>
       <DownloadActionBar
         onOpen={onOpen}
