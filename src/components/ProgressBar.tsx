@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography'
 import Box from '@material-ui/core/Box'
 
 interface Props {
-  linearProgressProps: LinearProgressProps
+  linearProgressProps?: LinearProgressProps
   value: number
 }
 
