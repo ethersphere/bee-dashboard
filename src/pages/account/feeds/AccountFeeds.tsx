@@ -10,7 +10,8 @@ import ExpandableListItem from '../../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../../components/ExpandableListItemKey'
 import { SwarmButton } from '../../../components/SwarmButton'
-import { Context as IdentityContext, Identity } from '../../../providers/Feeds'
+import { SwarmTextInput } from '../../../components/SwarmTextInput'
+import { Post, Context as IdentityContext, Identity } from '../../../providers/Feeds'
 import { ROUTES } from '../../../routes'
 import { formatEnum } from '../../../utils'
 import { persistIdentitiesWithoutUpdate } from '../../../utils/identity'
@@ -21,9 +22,13 @@ import { AccountNavigation } from '../AccountNavigation'
 import { Header } from '../Header'
 import TroubleshootConnectionCard from '../../../components/TroubleshootConnectionCard'
 import { CheckState, Context as BeeContext } from '../../../providers/Bee'
+import { dropDownOption } from '../../../providers/Feeds'
+import { Context as SettingsContext } from '../../../providers/Settings'
+import { readFeed } from '../../../utils/identity'
 
 export function AccountFeeds(): ReactElement {
-  const { identities, setIdentities } = useContext(IdentityContext)
+  const { identities, setIdentities, setDDOptions, isLoadingPosts, setisLoadingPosts, Posts, setPostsList } =
+    useContext(IdentityContext)
   const { status } = useContext(BeeContext)
 
   const navigate = useNavigate()
@@ -32,13 +37,48 @@ export function AccountFeeds(): ReactElement {
   const [showImport, setShowImport] = useState(false)
   const [showExport, setShowExport] = useState(false)
   const [showDelete, setShowDelete] = useState(false)
+  const { beeApi, beeDebugApi } = useContext(SettingsContext)
+  const [pwd, setPasswd] = useState('')
 
   function createNewFeed() {
+    const oa: dropDownOption[] = [{ label: 'Create a new', value: 'New' }]
+    const oa1 = new Set()
+
+    identities.map((x, i) => {
+      if (!oa1.has(x.name)) {
+        oa1.add(x.name)
+        oa.push({ label: x.name, value: x.name })
+      }
+
+      return oa1
+    })
+
+    setDDOptions(oa)
+
     return navigate(ROUTES.ACCOUNT_FEEDS_NEW)
   }
 
   function viewFeed(uuid: string) {
+    const identity = identities.find(x => x.uuid === uuid)
+
+    if (identity?.topic !== '' && beeApi) {
+      try {
+        console.log('ID', identity)
+        readFeed(beeApi, beeDebugApi, identity as Identity, pwd).then(Posts => {
+          console.log('Success', Posts)
+          setPostsList(Posts)
+          setisLoadingPosts(false)
+        })
+      } catch {
+        console.log('Failure')
+        setPostsList([])
+      }
+    }
     navigate(ROUTES.ACCOUNT_FEEDS_VIEW.replace(':uuid', uuid))
+  }
+
+  const onChangePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPasswd(event.target.value)
   }
 
   function onDialogClose() {
@@ -98,7 +138,23 @@ export function AccountFeeds(): ReactElement {
               <ExpandableListItem label="Identity type" value={formatEnum(x.type)} />
             </ExpandableList>
           </Box>
-          <ExpandableListItemKey label="Topic" value={'00'.repeat(32)} />
+          <Box>
+            {x.type === 'V3' && (
+              <SwarmTextInput
+                name="password"
+                label="Password"
+                password
+                onChange={e => {
+                  setPasswd(e.target.value)
+                }}
+              />
+            )}
+          </Box>
+          {x.topic === '00' ? (
+            <ExpandableListItemKey label="Website Topic" value={'00'.repeat(32)} />
+          ) : (
+            <SwarmTextInput name="Topic" label={x.topic} />
+          )}
           {x.feedHash && <ExpandableListItemKey label="Feed hash" value={x.feedHash} />}
           <Box mt={0.75}>
             <ExpandableListItemActions>
