@@ -16,6 +16,7 @@ import { ManifestJs } from '../../utils/manifest'
 import { AssetPreview } from './AssetPreview'
 import { AssetSummary } from './AssetSummary'
 import { DownloadActionBar } from './DownloadActionBar'
+import { AssetSyncing } from './AssetSyncing'
 
 export function Share(): ReactElement {
   const { apiUrl, beeApi } = useContext(SettingsContext)
@@ -151,6 +152,9 @@ export function Share(): ReactElement {
       </Box>
       <Box mb={4}>
         <AssetSummary isWebsite={metadata?.isWebsite} reference={reference} />
+      </Box>
+      <Box mb={4}>
+        <AssetSyncing reference={reference} />
       </Box>
       <DownloadActionBar
         onOpen={onOpen}

@@ -204,7 +204,16 @@ export function Upload(): ReactElement {
           </Box>
         </>
       )}
-      {step === 2 && stamp && <StampPreview stamp={stamp} />}
+      {step === 2 && stamp && (
+        <>
+          <StampPreview stamp={stamp} />
+          <Box mb={4}>
+            <DocumentationText>
+              Please do not close the application until your file is uploaded to your local node!
+            </DocumentationText>
+          </Box>
+        </>
+      )}
       <UploadActionBar
         step={step}
         onCancel={reset}
