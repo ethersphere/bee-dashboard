@@ -2,7 +2,7 @@ import { Button } from '@material-ui/core'
 import { ReactElement, useContext } from 'react'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import Map from '../../components/Map'
-import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../../constants'
+import { BEE_DESKTOP_LATEST_RELEASE_PAGE, BEE_DASHBOARD_VERSION } from '../../constants'
 import { useBeeDesktop, useNewBeeDesktopVersion } from '../../hooks/apiHooks'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
@@ -65,6 +65,7 @@ export default function Status(): ReactElement {
           }
         />
       )}
+      <ExpandableListItem label="Bee Dashboard version" value={BEE_DASHBOARD_VERSION} />
       <ExpandableListItem
         label="Bee version"
         value={
