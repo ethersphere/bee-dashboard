@@ -4,6 +4,7 @@ import { ReactElement, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import FilesIcon from 'remixicon-react/ArrowUpDownLineIcon'
 import DocsIcon from 'remixicon-react/BookOpenLineIcon'
+import GithubIcon from 'remixicon-react/GithubFillIcon'
 import ExternalLinkIcon from 'remixicon-react/ExternalLinkLineIcon'
 import HomeIcon from 'remixicon-react/Home3LineIcon'
 import SettingsIcon from 'remixicon-react/Settings2LineIcon'
@@ -17,6 +18,7 @@ import SideBarItem from './SideBarItem'
 import SideBarStatus from './SideBarStatus'
 import { BeeModes } from '@ethersphere/bee-js'
 import { BEE_DOCS_HOST } from '../constants'
+import { GITHUB_BEE_DASHBOARD_URL } from '../constants'
 
 const drawerWidth = 300
 
@@ -123,6 +125,16 @@ export default function SideBar(): ReactElement {
                 iconStart={<DocsIcon className={classes.icon} />}
                 iconEnd={<ExternalLinkIcon className={classes.icon} color="#595959" />}
                 label={<span>Docs</span>}
+              />
+            </MUILink>
+          </List>
+          <Divider className={classes.divider} />
+          <List>
+            <MUILink href={GITHUB_BEE_DASHBOARD_URL} target="_blank" className={classes.link}>
+              <SideBarItem
+                iconStart={<GithubIcon className={classes.icon} />}
+                iconEnd={<ExternalLinkIcon className={classes.icon} color="#595959" />}
+                label={<span>Github repository</span>}
               />
             </MUILink>
           </List>

@@ -134,14 +134,17 @@ function getStatus(
   error: Error | null,
   isDesktop: boolean,
   startedAt: number,
+  latestPublishedVersion: string | undefined,
+  latestUserVersion: string | undefined,
 ): Status {
   const status: Status = { ...initialValues.status }
 
   // Version check
   status.version.isEnabled = !isDesktop
   status.version.checkState =
-    debugApiHealth &&
-    semver.satisfies(debugApiHealth.version, PackageJson.engines.bee, {
+    latestPublishedVersion &&
+    latestUserVersion &&
+    semver.satisfies(latestPublishedVersion, latestUserVersion, {
       includePrerelease: true,
     })
       ? CheckState.OK
@@ -435,6 +438,8 @@ export function Provider({ children, isDesktop }: Props): ReactElement {
     error,
     Boolean(isDesktop),
     startedAt,
+    latestPublishedVersion,
+    latestUserVersion,
   )
 
   useEffect(() => {
