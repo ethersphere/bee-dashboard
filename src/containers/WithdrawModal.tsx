@@ -13,7 +13,7 @@ export default function WithdrawModal(): ReactElement {
     <WithdrawDepositModal
       successMessage="Successful withdrawal."
       errorMessage="Error with withdrawing."
-      dialogMessage="Specify the amount of xBZZ to withdraw to your node."
+      dialogMessage="Amount of xBZZ to withdraw from the checkbook to your node."
       label="Withdraw"
       icon={<Upload size="1rem" />}
       min={new BigNumber(0)}
