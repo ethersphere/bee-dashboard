@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.26.1](https://github.com/ethersphere/bee-dashboard/compare/v0.26.0...v0.26.1) (2024-06-03)
+
+
+### Bug Fixes
+
+* add bee version ([#659](https://github.com/ethersphere/bee-dashboard/issues/659)) ([a5d4ecf](https://github.com/ethersphere/bee-dashboard/commit/a5d4ecf045f691b9059fcca925d0f30675d12db0))
+
 ## [0.26.0](https://github.com/ethersphere/bee-dashboard/compare/v0.25.0...v0.26.0) (2024-06-03)
 
 
