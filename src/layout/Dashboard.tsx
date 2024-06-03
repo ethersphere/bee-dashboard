@@ -1,14 +1,14 @@
 import { Button, CircularProgress, Container, IconButton } from '@material-ui/core'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import React, { ReactElement, useContext, useEffect } from 'react'
+import { Theme, createStyles, makeStyles } from '@material-ui/core/styles'
 import { useSnackbar } from 'notistack'
+import React, { ReactElement, useContext, useEffect } from 'react'
 import CloseIcon from 'remixicon-react/CloseCircleLineIcon'
 import ErrorBoundary from '../components/ErrorBoundary'
 import SideBar from '../components/SideBar'
+import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../constants'
+import { useBeeDesktop, useNewBeeDesktopVersion } from '../hooks/apiHooks'
 import { Context as BeeContext } from '../providers/Bee'
 import { Context as SettingsContext } from '../providers/Settings'
-import { useBeeDesktop, useNewBeeDesktopVersion } from '../hooks/apiHooks'
-import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../constants'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -27,52 +27,11 @@ interface Props {
 const Dashboard = (props: Props): ReactElement => {
   const classes = useStyles()
 
-  const { isLoading, isLatestBeeVersion, latestBeeRelease, latestBeeVersionUrl, latestUserVersion } =
-    useContext(BeeContext)
+  const { isLoading } = useContext(BeeContext)
   const { isDesktop, desktopUrl } = useContext(SettingsContext)
   const { desktopAutoUpdateEnabled } = useBeeDesktop(isDesktop, desktopUrl)
   const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isDesktop, desktopUrl, desktopAutoUpdateEnabled)
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
-
-  // New version of Bee client notification
-  useEffect(() => {
-    if (!isLoading && !isDesktop && !isLatestBeeVersion && latestBeeRelease && latestUserVersion) {
-      enqueueSnackbar(`There is new Bee version ${latestBeeRelease?.name}!`, {
-        variant: 'warning',
-        preventDuplicate: true,
-        key: 'beeNewVersion',
-        persist: true,
-        action: key => (
-          <React.Fragment>
-            <Button
-              onClick={() => {
-                window.open(latestBeeVersionUrl)
-                closeSnackbar(key)
-              }}
-            >
-              Download release
-            </Button>
-            <IconButton
-              onClick={() => {
-                closeSnackbar(key)
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
-          </React.Fragment>
-        ),
-      })
-    }
-  }, [
-    closeSnackbar,
-    enqueueSnackbar,
-    isLatestBeeVersion,
-    isDesktop,
-    latestBeeRelease,
-    latestBeeVersionUrl,
-    isLoading,
-    latestUserVersion,
-  ])
 
   useEffect(() => {
     // When autoupdate is enabled then we leave the version check for the built-in Electron update mechanism

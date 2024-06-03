@@ -18,9 +18,9 @@ interface Props {
 }
 
 function StampsTable({ postageStamps }: Props): ReactElement | null {
-  const { beeDebugApi } = useContext(Context)
+  const { beeApi } = useContext(Context)
 
-  if (!postageStamps || !beeDebugApi) {
+  if (!postageStamps || !beeApi) {
     return null
   }
 
@@ -53,13 +53,13 @@ function StampsTable({ postageStamps }: Props): ReactElement | null {
                 <StampExtensionModal
                   type="Topup"
                   icon={<TimerFlashFill size="1rem" />}
-                  beeDebug={beeDebugApi}
+                  bee={beeApi}
                   stamp={stamp.batchID}
                 />
                 <StampExtensionModal
                   type="Dilute"
                   icon={<TimerFlashLine size="1rem" />}
-                  beeDebug={beeDebugApi}
+                  bee={beeApi}
                   stamp={stamp.batchID}
                 />
               </ExpandableListItemActions>

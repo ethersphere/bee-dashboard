@@ -2,9 +2,9 @@ import { Box, Grid, Typography } from '@material-ui/core'
 import { Form, Formik } from 'formik'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
+import { useNavigate } from 'react-router'
 import Check from 'remixicon-react/CheckLineIcon'
 import X from 'remixicon-react/CloseLineIcon'
-import { useNavigate } from 'react-router'
 import { DocumentationText } from '../../components/DocumentationText'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
@@ -30,7 +30,7 @@ const initialValues: FormValues = {
 }
 
 export default function CreateNewFeed(): ReactElement {
-  const { beeApi, beeDebugApi } = useContext(SettingsContext)
+  const { beeApi } = useContext(SettingsContext)
   const { identities, setIdentities } = useContext(FeedsContext)
   const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
@@ -47,7 +47,7 @@ export default function CreateNewFeed(): ReactElement {
       return
     }
     const wallet = generateWallet()
-    const stamps = await beeDebugApi?.getAllPostageBatch()
+    const stamps = await beeApi.getAllPostageBatch()
 
     if (!stamps || !stamps.length) {
       enqueueSnackbar(<span>No stamp available</span>, { variant: 'error' })

@@ -6,7 +6,7 @@ import { Context as BeeContext } from '../providers/Bee'
 import { Context as SettingsContext } from '../providers/Settings'
 
 export default function WithdrawModal(): ReactElement {
-  const { beeDebugApi } = useContext(SettingsContext)
+  const { beeApi } = useContext(SettingsContext)
   const { refresh } = useContext(BeeContext)
 
   return (
@@ -18,9 +18,11 @@ export default function WithdrawModal(): ReactElement {
       icon={<Upload size="1rem" />}
       min={new BigNumber(0)}
       action={async (amount: bigint) => {
-        if (!beeDebugApi) throw new Error('Bee Debug URL is not valid')
+        if (!beeApi) {
+          throw new Error('Bee URL is not valid')
+        }
 
-        const transactionHash = await beeDebugApi.withdrawTokens(amount.toString())
+        const transactionHash = await beeApi.withdrawTokens(amount.toString())
         refresh()
 
         return transactionHash

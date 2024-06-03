@@ -6,8 +6,6 @@ import { getJson, postJson } from './net'
 
 export interface BeeConfig {
   'api-addr': string
-  'debug-api-addr': string
-  'debug-api-enable': boolean
   password: string
   'swap-enable': boolean
   'swap-initial-deposit': bigint

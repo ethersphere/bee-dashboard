@@ -1,5 +1,5 @@
 import { Bee, Utils } from '@ethersphere/bee-js'
-import { loadAllNodes, MantarayNode, MetadataMapping, Reference } from 'mantaray-js'
+import { MantarayNode, MetadataMapping, Reference, loadAllNodes } from 'mantaray-js'
 
 interface ValueNode extends MantarayNode {
   getEntry: Reference

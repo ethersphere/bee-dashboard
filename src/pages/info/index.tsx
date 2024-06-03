@@ -12,16 +12,7 @@ import NodeInfoCard from './NodeInfoCard'
 import { WalletInfoCard } from './WalletInfoCard'
 
 export default function Status(): ReactElement {
-  const {
-    debugApiReadiness,
-    status,
-    latestUserVersion,
-    isLatestBeeVersion,
-    latestBeeVersionUrl,
-    topology,
-    nodeInfo,
-    chainId,
-  } = useContext(BeeContext)
+  const { status, topology, nodeInfo, chainId } = useContext(BeeContext)
   const { isDesktop, desktopUrl } = useContext(SettingsContext)
   const { beeDesktopVersion } = useBeeDesktop(isDesktop, desktopUrl)
   const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isDesktop, desktopUrl, false)
@@ -30,14 +21,10 @@ export default function Status(): ReactElement {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'stretch', alignContent: 'stretch' }}>
         <NodeInfoCard />
-        {debugApiReadiness && (
-          <>
-            <div style={{ width: '8px' }}></div>
-            <WalletInfoCard />
-            <div style={{ width: '8px' }}></div>
-            <ChequebookInfoCard />
-          </>
-        )}
+        <div style={{ width: '8px' }}></div>
+        <WalletInfoCard />
+        <div style={{ width: '8px' }}></div>
+        <ChequebookInfoCard />
       </div>
       <div style={{ height: '16px' }} />
       <Map error={status.topology.checkState !== 'OK'} />
@@ -65,29 +52,6 @@ export default function Status(): ReactElement {
           }
         />
       )}
-      <ExpandableListItem
-        label="Bee version"
-        value={
-          <div>
-            <a href="https://github.com/ethersphere/bee" rel="noreferrer" target="_blank">
-              Bee
-            </a>
-            {` ${latestUserVersion ?? '-'} `}
-            {latestUserVersion && !isDesktop && (
-              <Button
-                size="small"
-                variant="outlined"
-                href={latestBeeVersionUrl}
-                disabled={isLatestBeeVersion}
-                target="_blank"
-                style={{ height: '26px' }}
-              >
-                {isLatestBeeVersion ? 'latest' : 'update'}
-              </Button>
-            )}
-          </div>
-        }
-      />
       <ExpandableListItem label="Mode" value={nodeInfo?.beeMode} />
       {chainId !== null && <ExpandableListItem label="Blockchain network" value={chainIdToName(chainId)} />}
     </div>

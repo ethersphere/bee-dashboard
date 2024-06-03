@@ -10,7 +10,7 @@ import { Context as FileContext, defaultUploadOrigin } from '../../providers/Fil
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
 import { recognizeEnsOrSwarmHash, regexpEns } from '../../utils'
-import { determineHistoryName, HISTORY_KEYS, putHistory } from '../../utils/local-storage'
+import { HISTORY_KEYS, determineHistoryName, putHistory } from '../../utils/local-storage'
 import { ManifestJs } from '../../utils/manifest'
 import { FileNavigation } from './FileNavigation'
 

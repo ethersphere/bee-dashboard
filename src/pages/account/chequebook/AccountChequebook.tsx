@@ -1,3 +1,4 @@
+import { Box } from '@material-ui/core'
 import { ReactElement, useContext } from 'react'
 import ExpandableList from '../../../components/ExpandableList'
 import ExpandableListItem from '../../../components/ExpandableListItem'
@@ -7,19 +8,18 @@ import TroubleshootConnectionCard from '../../../components/TroubleshootConnecti
 import DepositModal from '../../../containers/DepositModal'
 import WithdrawModal from '../../../containers/WithdrawModal'
 import { useAccounting } from '../../../hooks/accounting'
-import { CheckState, Context as BeeContext } from '../../../providers/Bee'
+import { Context as BeeContext, CheckState } from '../../../providers/Bee'
 import { Context as SettingsContext } from '../../../providers/Settings'
 import PeerBalances from '../../accounting/PeerBalances'
 import { AccountNavigation } from '../AccountNavigation'
 import { Header } from '../Header'
-import { Box } from '@material-ui/core'
 
 export function AccountChequebook(): ReactElement {
   const { status, nodeAddresses, chequebookAddress, chequebookBalance, settlements, peerBalances } =
     useContext(BeeContext)
-  const { beeDebugApi } = useContext(SettingsContext)
+  const { beeApi } = useContext(SettingsContext)
 
-  const { accounting, totalUncashed, isLoadingUncashed } = useAccounting(beeDebugApi, settlements, peerBalances)
+  const { accounting, totalUncashed, isLoadingUncashed } = useAccounting(beeApi, settlements, peerBalances)
 
   if (status.all === CheckState.ERROR) return <TroubleshootConnectionCard />
 

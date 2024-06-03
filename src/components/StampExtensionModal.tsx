@@ -1,4 +1,4 @@
-import { BeeDebug } from '@ethersphere/bee-js'
+import { Bee } from '@ethersphere/bee-js'
 import { Box } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
@@ -12,11 +12,11 @@ import { ReactElement, ReactNode, useState } from 'react'
 interface Props {
   type: 'Topup' | 'Dilute'
   icon: ReactNode
-  beeDebug: BeeDebug
+  bee: Bee
   stamp: string
 }
 
-export default function StampExtensionModal({ type, icon, beeDebug, stamp }: Props): ReactElement {
+export default function StampExtensionModal({ type, icon, bee, stamp }: Props): ReactElement {
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState('')
   const { enqueueSnackbar } = useSnackbar()
@@ -34,7 +34,7 @@ export default function StampExtensionModal({ type, icon, beeDebug, stamp }: Pro
   const handleAction = async () => {
     if (type === 'Topup') {
       try {
-        await beeDebug.topUpBatch(stamp, amount)
+        await bee.topUpBatch(stamp, amount)
         enqueueSnackbar(`Successfully topped up stamp, your changes will appear soon`, { variant: 'success' })
       } catch (error) {
         enqueueSnackbar(`Failed to topup stamp: ${error || 'Unknown reason'}`, { variant: 'error' })
@@ -43,7 +43,7 @@ export default function StampExtensionModal({ type, icon, beeDebug, stamp }: Pro
 
     if (type === 'Dilute') {
       try {
-        await beeDebug.diluteBatch(stamp, parseInt(amount, 10))
+        await bee.diluteBatch(stamp, parseInt(amount, 10))
         enqueueSnackbar(`Successfully diluted stamp, your changes will appear soon`, { variant: 'success' })
       } catch (error) {
         enqueueSnackbar(`Failed to dilute stamp: ${error || 'Unknown reason'}`, { variant: 'error' })

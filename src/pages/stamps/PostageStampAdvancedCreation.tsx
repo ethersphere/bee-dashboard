@@ -49,7 +49,7 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
   const classes = useStyles()
   const { chainState } = useContext(BeeContext)
   const { refresh } = useContext(StampsContext)
-  const { beeDebugApi } = useContext(SettingsContext)
+  const { beeApi } = useContext(SettingsContext)
 
   const [depthInput, setDepthInput] = useState<string>('')
   const [amountInput, setAmountInput] = useState<string>('')
@@ -94,7 +94,7 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
         return
       }
 
-      if (!beeDebugApi) {
+      if (!beeApi) {
         return
       }
 
@@ -107,8 +107,8 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
         immutableFlag: immutable,
       }
 
-      const batchId = await beeDebugApi.createPostageBatch(amount.toString(), depth, options)
-      await waitUntilStampExists(batchId, beeDebugApi)
+      const batchId = await beeApi.createPostageBatch(amount.toString(), depth, options)
+      await waitUntilStampExists(batchId, beeApi)
       await refresh()
       onFinished()
     } catch (e) {

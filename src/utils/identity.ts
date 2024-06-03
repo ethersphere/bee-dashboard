@@ -1,4 +1,4 @@
-import { BatchId, Bee, BeeDebug, Reference } from '@ethersphere/bee-js'
+import { BatchId, Bee, Reference } from '@ethersphere/bee-js'
 import { Wallet } from 'ethers'
 import { uuidV4, waitUntilStampUsable } from '.'
 import { Identity, IdentityType } from '../providers/Feeds'
@@ -79,7 +79,6 @@ async function getWallet(type: IdentityType, data: string, password?: string): P
 
 export async function updateFeed(
   beeApi: Bee,
-  beeDebugApi: BeeDebug | null,
   identity: Identity,
   hash: string,
   stamp: string,
@@ -93,8 +92,6 @@ export async function updateFeed(
 
   const writer = beeApi.makeFeedWriter('sequence', '00'.repeat(32), wallet.privateKey)
 
-  if (beeDebugApi) {
-    await waitUntilStampUsable(stamp as BatchId, beeDebugApi)
-  }
+  await waitUntilStampUsable(stamp as BatchId, beeApi)
   await writer.upload(stamp, hash as Reference)
 }

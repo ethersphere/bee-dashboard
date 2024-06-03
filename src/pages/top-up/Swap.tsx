@@ -13,13 +13,14 @@ import { Loading } from '../../components/Loading'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmDivider } from '../../components/SwarmDivider'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
-import { BzzToken, BZZ_DECIMAL_PLACES } from '../../models/BzzToken'
+import { BZZ_DECIMAL_PLACES, BzzToken } from '../../models/BzzToken'
 import { DaiToken } from '../../models/DaiToken'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as BalanceProvider } from '../../providers/WalletBalance'
 import { ROUTES } from '../../routes'
 import { sleepMs } from '../../utils'
+import { SwapError, isSwapError, wrapWithSwapError } from '../../utils/SwapError'
 import {
   getBzzPriceAsDai,
   getDesktopConfiguration,
@@ -28,7 +29,6 @@ import {
   upgradeToLightNode,
 } from '../../utils/desktop'
 import { Rpc } from '../../utils/rpc'
-import { isSwapError, SwapError, wrapWithSwapError } from '../../utils/SwapError'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
 
 const MINIMUM_XDAI = '0.1'

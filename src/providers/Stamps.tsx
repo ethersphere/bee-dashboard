@@ -48,7 +48,7 @@ export function enrichStamp(postageBatch: PostageBatch): EnrichedPostageBatch {
 }
 
 export function Provider({ children }: Props): ReactElement {
-  const { beeDebugApi } = useContext(SettingsContext)
+  const { beeApi } = useContext(SettingsContext)
   const [stamps, setStamps] = useState<EnrichedPostageBatch[] | null>(initialValues.stamps)
   const [error, setError] = useState<Error | null>(initialValues.error)
   const [isLoading, setIsLoading] = useState<boolean>(initialValues.isLoading)
@@ -56,14 +56,17 @@ export function Provider({ children }: Props): ReactElement {
   const [frequency, setFrequency] = useState<number | null>(null)
 
   const refresh = async () => {
-    // Don't want to refresh when already refreshing
-    if (isLoading) return
+    if (isLoading) {
+      return
+    }
 
-    if (!beeDebugApi) return
+    if (!beeApi) {
+      return
+    }
 
     try {
       setIsLoading(true)
-      const stamps = await beeDebugApi.getAllPostageBatch()
+      const stamps = await beeApi.getAllPostageBatch()
 
       setStamps(stamps.filter(x => x.exists).map(enrichStamp))
       setLastUpdate(Date.now())
