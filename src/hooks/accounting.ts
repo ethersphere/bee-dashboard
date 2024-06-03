@@ -1,8 +1,8 @@
-import { LastCashoutActionResponse, BeeDebug } from '@ethersphere/bee-js'
+import { Bee, LastCashoutActionResponse } from '@ethersphere/bee-js'
 import { useEffect, useState } from 'react'
 import { Token } from '../models/Token'
+import { Balance, Settlement, Settlements } from '../types'
 import { makeRetriablePromise, unwrapPromiseSettlements } from '../utils'
-import { Balance, Settlements, Settlement } from '../types'
 
 interface UseAccountingHook {
   isLoadingUncashed: boolean
@@ -79,7 +79,7 @@ function mergeAccounting(
 }
 
 export const useAccounting = (
-  beeDebugApi: BeeDebug | null,
+  beeApi: Bee | null,
   settlements: Settlements | null,
   balances: Balance[] | null,
 ): UseAccountingHook => {
@@ -88,19 +88,19 @@ export const useAccounting = (
 
   useEffect(() => {
     // We don't have any settlements loaded yet or we are already loading/have loaded the uncashed amounts
-    if (isLoadingUncashed || !beeDebugApi || !settlements || uncashedAmounts) return
+    if (isLoadingUncashed || !beeApi || !settlements || uncashedAmounts) return
 
     setIsloadingUncashed(true)
     const promises = settlements.settlements
       .filter(({ received }) => received.toBigNumber.gt('0'))
-      .map(({ peer }) => makeRetriablePromise(() => beeDebugApi.getLastCashoutAction(peer)))
+      .map(({ peer }) => makeRetriablePromise(() => beeApi.getLastCashoutAction(peer)))
 
     Promise.allSettled(promises).then(settlements => {
       const results = unwrapPromiseSettlements(settlements)
       setUncashedAmounts(results.fulfilled)
       setIsloadingUncashed(false)
     })
-  }, [settlements, isLoadingUncashed, uncashedAmounts, beeDebugApi])
+  }, [settlements, isLoadingUncashed, uncashedAmounts, beeApi])
 
   const accounting = mergeAccounting(balances, settlements?.settlements, uncashedAmounts)
 

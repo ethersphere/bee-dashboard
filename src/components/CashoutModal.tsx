@@ -19,8 +19,8 @@ interface Props {
 export default function CheckoutModal({ peerId, uncashedAmount }: Props): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const [loadingCashout, setLoadingCashout] = useState<boolean>(false)
+  const { beeApi } = useContext(SettingsContext)
   const { enqueueSnackbar } = useSnackbar()
-  const { beeDebugApi } = useContext(SettingsContext)
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -31,11 +31,9 @@ export default function CheckoutModal({ peerId, uncashedAmount }: Props): ReactE
   }
 
   const handleCashout = () => {
-    if (!beeDebugApi) return
-
-    if (peerId) {
+    if (peerId && beeApi) {
       setLoadingCashout(true)
-      beeDebugApi
+      beeApi
         .cashoutLastCheque(peerId)
         .then(res => {
           setOpen(false)

@@ -1,4 +1,4 @@
-import { BatchId, BeeDebug, PostageBatch } from '@ethersphere/bee-js'
+import { BatchId, Bee, PostageBatch } from '@ethersphere/bee-js'
 import { decodeCid } from '@ethersphere/swarm-cid'
 import { BigNumber } from 'bignumber.js'
 import { BZZ_LINK_DOMAIN } from '../constants'
@@ -232,17 +232,17 @@ interface Options {
   timeout?: number
 }
 
-export function waitUntilStampUsable(batchId: BatchId, beeDebug: BeeDebug, options?: Options): Promise<PostageBatch> {
-  return waitForStamp(batchId, beeDebug, 'usable', options)
+export function waitUntilStampUsable(batchId: BatchId, bee: Bee, options?: Options): Promise<PostageBatch> {
+  return waitForStamp(batchId, bee, 'usable', options)
 }
 
-export function waitUntilStampExists(batchId: BatchId, beeDebug: BeeDebug, options?: Options): Promise<PostageBatch> {
-  return waitForStamp(batchId, beeDebug, 'exists', options)
+export function waitUntilStampExists(batchId: BatchId, bee: Bee, options?: Options): Promise<PostageBatch> {
+  return waitForStamp(batchId, bee, 'exists', options)
 }
 
 async function waitForStamp(
   batchId: BatchId,
-  beeDebug: BeeDebug,
+  bee: Bee,
   field: 'exists' | 'usable',
   options?: Options,
 ): Promise<PostageBatch> {
@@ -251,7 +251,7 @@ async function waitForStamp(
 
   for (let i = 0; i < timeout; i += pollingFrequency) {
     try {
-      const stamp = await beeDebug.getPostageBatch(batchId)
+      const stamp = await bee.getPostageBatch(batchId)
 
       if (stamp[field]) return stamp
     } catch {

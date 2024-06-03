@@ -1,7 +1,7 @@
-import { Bee, BeeDebug } from '@ethersphere/bee-js'
+import { Bee } from '@ethersphere/bee-js'
 import { providers } from 'ethers'
 import { ReactElement, ReactNode, createContext, useEffect, useState } from 'react'
-import { DEFAULT_BEE_API_HOST, DEFAULT_BEE_DEBUG_API_HOST, DEFAULT_RPC_URL } from '../constants'
+import { DEFAULT_BEE_API_HOST, DEFAULT_RPC_URL } from '../constants'
 import { useGetBeeConfig } from '../hooks/apiHooks'
 
 const LocalStorageKeys = {
@@ -10,9 +10,7 @@ const LocalStorageKeys = {
 
 interface ContextInterface {
   apiUrl: string
-  apiDebugUrl: string
   beeApi: Bee | null
-  beeDebugApi: BeeDebug | null
   lockedApiSettings: boolean
   desktopApiKey: string
   isDesktop: boolean
@@ -23,7 +21,6 @@ interface ContextInterface {
   dataDir: string | null
   ensResolver: string | null
   setApiUrl: (url: string) => void
-  setDebugApiUrl: (url: string) => void
   setAndPersistJsonRpcProvider: (url: string) => void
   isLoading: boolean
   error: Error | null
@@ -31,11 +28,8 @@ interface ContextInterface {
 
 const initialValues: ContextInterface = {
   beeApi: null,
-  beeDebugApi: null,
   apiUrl: DEFAULT_BEE_API_HOST,
-  apiDebugUrl: DEFAULT_BEE_DEBUG_API_HOST,
   setApiUrl: () => {}, // eslint-disable-line
-  setDebugApiUrl: () => {}, // eslint-disable-line
   lockedApiSettings: false,
   isDesktop: false,
   desktopApiKey: '',
@@ -55,7 +49,6 @@ export const Consumer = Context.Consumer
 
 interface InitialSettings {
   beeApiUrl?: string
-  beeDebugApiUrl?: string
   lockedApiSettings?: boolean
   isDesktop?: boolean
   desktopUrl?: string
@@ -73,9 +66,7 @@ export function Provider({ children, ...propsSettings }: Props): ReactElement {
     localStorage.getItem(LocalStorageKeys.providerUrl) || propsSettings.defaultRpcUrl || DEFAULT_RPC_URL
 
   const [apiUrl, setApiUrl] = useState<string>(initialValues.apiUrl)
-  const [apiDebugUrl, setDebugApiUrl] = useState<string>(initialValues.apiDebugUrl)
   const [beeApi, setBeeApi] = useState<Bee | null>(null)
-  const [beeDebugApi, setBeeDebugApi] = useState<BeeDebug | null>(null)
   const [desktopApiKey, setDesktopApiKey] = useState<string>(initialValues.desktopApiKey)
   const [rpcProviderUrl, setRpcProviderUrl] = useState(propsProviderUrl)
   const [rpcProvider, setRpcProvider] = useState(new providers.JsonRpcProvider(propsProviderUrl))
@@ -83,12 +74,6 @@ export function Provider({ children, ...propsSettings }: Props): ReactElement {
 
   const url = makeHttpUrl(
     config?.['api-addr'] ?? sessionStorage.getItem('api_host') ?? propsSettings.beeApiUrl ?? apiUrl,
-  )
-  const debugUrl = makeHttpUrl(
-    config?.['debug-api-addr'] ??
-      sessionStorage.getItem('debug_api_host') ??
-      propsSettings.beeDebugApiUrl ??
-      apiDebugUrl,
   )
 
   useEffect(() => {
@@ -111,24 +96,12 @@ export function Provider({ children, ...propsSettings }: Props): ReactElement {
     }
   }, [url])
 
-  useEffect(() => {
-    try {
-      setBeeDebugApi(new BeeDebug(debugUrl))
-      sessionStorage.setItem('debug_api_host', debugUrl)
-    } catch (e) {
-      setBeeDebugApi(null)
-    }
-  }, [debugUrl])
-
   return (
     <Context.Provider
       value={{
         apiUrl: url,
-        apiDebugUrl: debugUrl,
         beeApi,
-        beeDebugApi,
         setApiUrl,
-        setDebugApiUrl,
         lockedApiSettings: Boolean(propsSettings.lockedApiSettings),
         desktopApiKey,
         isDesktop,

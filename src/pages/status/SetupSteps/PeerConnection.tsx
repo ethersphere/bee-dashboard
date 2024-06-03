@@ -1,16 +1,17 @@
 import { ReactElement, ReactNode, useContext } from 'react'
 import ExpandableList from '../../../components/ExpandableList'
 import ExpandableListItemNote from '../../../components/ExpandableListItemNote'
-import TopologyStats from '../../../components/TopologyStats'
 import StatusIcon from '../../../components/StatusIcon'
+import TopologyStats from '../../../components/TopologyStats'
 import { CheckState, Context } from '../../../providers/Bee'
 
 export default function PeerConnection(): ReactElement | null {
   const { status, isLoading, topology } = useContext(Context)
   const { isEnabled, checkState } = status.topology
-  const { checkState: debugApiCheckState } = status.debugApiConnection
 
-  if (!isEnabled || debugApiCheckState === CheckState.ERROR) return null
+  if (!isEnabled) {
+    return null
+  }
 
   let text: ReactNode
   switch (checkState) {

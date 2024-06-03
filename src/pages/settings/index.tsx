@@ -10,9 +10,7 @@ import { getDesktopConfiguration, restartBeeNode, setJsonRpcInDesktop } from '..
 export default function SettingsPage(): ReactElement {
   const {
     apiUrl,
-    apiDebugUrl,
     setApiUrl,
-    setDebugApiUrl,
     lockedApiSettings,
     cors,
     dataDir,
@@ -66,12 +64,6 @@ export default function SettingsPage(): ReactElement {
           label="Bee API"
           value={apiUrl}
           onConfirm={setApiUrl}
-          locked={lockedApiSettings || isDesktop}
-        />
-        <ExpandableListItemInput
-          label="Bee Debug API"
-          value={apiDebugUrl}
-          onConfirm={setDebugApiUrl}
           locked={lockedApiSettings || isDesktop}
         />
         <ExpandableListItemInput

@@ -114,8 +114,8 @@ export function packageFile(file: FilePath, pathOverwrite?: string): FilePath {
     size: file.size,
     type: file.type,
     stream: file.stream,
-    slice: file.slice,
+    slice: (start: number, end: number) => file.slice(start, end),
     text: file.text,
-    arrayBuffer: async () => await file.arrayBuffer(), // This is needed for successful upload and can not simply be { arrayBuffer: file.arrayBuffer }
+    arrayBuffer: async () => await file.arrayBuffer(),
   }
 }
