@@ -12,7 +12,7 @@ import NodeInfoCard from './NodeInfoCard'
 import { WalletInfoCard } from './WalletInfoCard'
 
 export default function Status(): ReactElement {
-  const { status, topology, nodeInfo, chainId } = useContext(BeeContext)
+  const { beeVersion, status, topology, nodeInfo, chainId } = useContext(BeeContext)
   const { isDesktop, desktopUrl } = useContext(SettingsContext)
   const { beeDesktopVersion } = useBeeDesktop(isDesktop, desktopUrl)
   const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isDesktop, desktopUrl, false)
@@ -52,6 +52,7 @@ export default function Status(): ReactElement {
           }
         />
       )}
+      <ExpandableListItem label="Bee version" value={beeVersion} />
       <ExpandableListItem label="Mode" value={nodeInfo?.beeMode} />
       {chainId !== null && <ExpandableListItem label="Blockchain network" value={chainIdToName(chainId)} />}
     </div>
