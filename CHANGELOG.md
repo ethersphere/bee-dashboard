@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.26.0](https://github.com/ethersphere/bee-dashboard/compare/v0.25.0...v0.26.0) (2024-06-03)
+
+
+### Features
+
+* display effective capacity ([#643](https://github.com/ethersphere/bee-dashboard/issues/643)) ([5871223](https://github.com/ethersphere/bee-dashboard/commit/58712232031e084195adf92c40cd41a98eaf16cf))
+* merge api ([#658](https://github.com/ethersphere/bee-dashboard/issues/658)) ([8cbd812](https://github.com/ethersphere/bee-dashboard/commit/8cbd812a2c04706f8f46de5355209b96783723b9))
+* show syncing info ([#647](https://github.com/ethersphere/bee-dashboard/issues/647)) ([cc91f1d](https://github.com/ethersphere/bee-dashboard/commit/cc91f1d64cd48a845fa9fa45ec4b58335eab3893))
+* wait for upload sync ([#649](https://github.com/ethersphere/bee-dashboard/issues/649)) ([79bb315](https://github.com/ethersphere/bee-dashboard/commit/79bb31540196b74f3bc0220b8c844fbd5aaaf488))
+
+
+### Bug Fixes
+
+* correct the bee version detection ([#645](https://github.com/ethersphere/bee-dashboard/issues/645)) ([b3f521c](https://github.com/ethersphere/bee-dashboard/commit/b3f521ca2055b91d7adddf96563cca6bf92e3d59))
+
 ## [0.25.0](https://github.com/ethersphere/bee-dashboard/compare/v0.24.1...v0.25.0) (2023-12-04)
 
 
