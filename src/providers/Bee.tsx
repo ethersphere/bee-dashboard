@@ -41,6 +41,7 @@ interface Status {
 }
 
 interface ContextInterface {
+  beeVersion: string | null
   status: Status
   error: Error | null
   apiHealth: boolean
@@ -65,6 +66,7 @@ interface ContextInterface {
 }
 
 const initialValues: ContextInterface = {
+  beeVersion: null,
   status: {
     all: CheckState.ERROR,
     apiConnection: { isEnabled: false, checkState: CheckState.ERROR },
@@ -164,6 +166,7 @@ interface Props {
 
 export function Provider({ children }: Props): ReactElement {
   const { beeApi } = useContext(SettingsContext)
+  const [beeVersion, setBeeVersion] = useState<string | null>(null)
   const [apiHealth, setApiHealth] = useState<boolean>(false)
   const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses | null>(null)
   const [nodeInfo, setNodeInfo] = useState<NodeInfo | null>(null)
@@ -262,11 +265,13 @@ export function Provider({ children }: Props): ReactElement {
       }
 
       const promises = [
-        // API health
         beeApi
-          .isConnected({ timeout: TIMEOUT })
-          .then(setApiHealth)
-          .catch(() => setApiHealth(false)),
+          .getHealth({ timeout: TIMEOUT })
+          .then(response => setBeeVersion(response.version))
+          .catch(() => setBeeVersion(null)),
+
+        // API health
+        beeApi.isConnected({ timeout: TIMEOUT }).catch(() => setApiHealth(false)),
 
         // Node Addresses
         beeApi
@@ -376,6 +381,7 @@ export function Provider({ children }: Props): ReactElement {
   return (
     <Context.Provider
       value={{
+        beeVersion,
         status,
         error,
         apiHealth,
