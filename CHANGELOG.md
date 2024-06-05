@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.26.2](https://github.com/ethersphere/bee-dashboard/compare/v0.26.1...v0.26.2) (2024-06-05)
+
+
+### Bug Fixes
+
+* merge version and health check ([#662](https://github.com/ethersphere/bee-dashboard/issues/662)) ([cae90c1](https://github.com/ethersphere/bee-dashboard/commit/cae90c1a82e16ee8c7908c43e2fd17f7130eb89d))
+
 ## [0.26.1](https://github.com/ethersphere/bee-dashboard/compare/v0.26.0...v0.26.1) (2024-06-03)
 
 
