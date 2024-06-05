@@ -265,13 +265,15 @@ export function Provider({ children }: Props): ReactElement {
       }
 
       const promises = [
+        // API health
         beeApi
           .getHealth({ timeout: TIMEOUT })
           .then(response => setBeeVersion(response.version))
-          .catch(() => setBeeVersion(null)),
-
-        // API health
-        beeApi.isConnected({ timeout: TIMEOUT }).catch(() => setApiHealth(false)),
+          .then(() => setApiHealth(true))
+          .catch(() => {
+            setBeeVersion(null)
+            setApiHealth(false)
+          }),
 
         // Node Addresses
         beeApi
