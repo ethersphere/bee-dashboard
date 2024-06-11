@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.27.0](https://github.com/ethersphere/bee-dashboard/compare/v0.26.2...v0.27.0) (2024-06-11)
+
+
+### Features
+
+* add redeem shortcut to sidebar ([999399f](https://github.com/ethersphere/bee-dashboard/commit/999399fb08c1a47a671ba0ad50409624654a1082))
+
 ## [0.26.2](https://github.com/ethersphere/bee-dashboard/compare/v0.26.1...v0.26.2) (2024-06-05)
 
 
