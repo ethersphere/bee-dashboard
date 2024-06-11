@@ -1,5 +1,5 @@
 import { BeeModes } from '@ethersphere/bee-js'
-import { Divider, Drawer, Grid, List, Link as MUILink } from '@material-ui/core'
+import { Box, Divider, Drawer, Grid, List, Link as MUILink, Typography } from '@material-ui/core'
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles'
 import { ReactElement, useContext } from 'react'
 import { Link } from 'react-router-dom'
@@ -137,6 +137,12 @@ export default function SideBar(): ReactElement {
               />
             </MUILink>
           </List>
+          <Divider className={classes.divider} />
+          <Box mt={4}>
+            <Link to={ROUTES.TOP_UP_GIFT_CODE}>
+              <Typography align="center">Redeem gift code</Typography>
+            </Link>
+          </Box>
         </Grid>
         <Grid>
           <List>
