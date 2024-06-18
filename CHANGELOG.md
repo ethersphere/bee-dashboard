@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.28.0](https://github.com/ethersphere/bee-dashboard/compare/v0.27.0...v0.28.0) (2024-06-18)
+
+
+### Features
+
+* upgrade bee-js to 7.0.3 ([#666](https://github.com/ethersphere/bee-dashboard/issues/666)) ([e9ebe33](https://github.com/ethersphere/bee-dashboard/commit/e9ebe33d51aa525921eacfad683577605e591531))
+
 ## [0.27.0](https://github.com/ethersphere/bee-dashboard/compare/v0.26.2...v0.27.0) (2024-06-11)
 
 
