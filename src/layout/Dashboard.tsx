@@ -4,6 +4,7 @@ import { useSnackbar } from 'notistack'
 import React, { ReactElement, useContext, useEffect } from 'react'
 import CloseIcon from 'remixicon-react/CloseCircleLineIcon'
 import ErrorBoundary from '../components/ErrorBoundary'
+import { Flex } from '../components/Flex'
 import SideBar from '../components/SideBar'
 import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../constants'
 import { useBeeDesktop, useNewBeeDesktopVersion } from '../hooks/apiHooks'
@@ -81,13 +82,13 @@ const Dashboard = (props: Props): ReactElement => {
   )
 
   return (
-    <div style={{ display: 'flex' }}>
+    <Flex>
       <SideBar />
       <Container className={classes.content}>
         {' '}
         <ErrorBoundary errorReporting={props.errorReporting}>{content}</ErrorBoundary>
       </Container>
-    </div>
+    </Flex>
   )
 }
 

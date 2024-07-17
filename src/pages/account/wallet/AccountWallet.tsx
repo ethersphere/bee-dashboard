@@ -1,4 +1,4 @@
-import { BeeModes } from '@ethersphere/bee-js'
+import { BeeModes, Utils } from '@ethersphere/bee-js'
 import { Box, Grid, Typography } from '@material-ui/core'
 import { ReactElement, useContext } from 'react'
 import { useNavigate } from 'react-router'
@@ -26,7 +26,7 @@ export function AccountWallet(): ReactElement {
   const navigate = useNavigate()
 
   function onCheckTransactions() {
-    window.open(`https://blockscout.com/xdai/mainnet/address/${nodeAddresses?.ethereum}/transactions`, '_blank')
+    window.open(`https://gnosisscan.io/address/${nodeAddresses?.ethereum}`, '_blank')
   }
 
   function onInvite() {
@@ -56,7 +56,11 @@ export function AccountWallet(): ReactElement {
       {balance && nodeAddresses ? (
         <>
           <Box mb={0.25}>
-            <ExpandableListItemKey label="Node wallet address" value={nodeAddresses.ethereum} expanded />
+            <ExpandableListItemKey
+              label="Node wallet address"
+              value={Utils.capitalizeAddressERC55(nodeAddresses.ethereum)}
+              expanded
+            />
           </Box>
           <Box mb={0.25}>
             <ExpandableListItem label="xDAI balance" value={`${balance.dai.toSignificantDigits(4)} xDAI`} />
@@ -72,7 +76,7 @@ export function AccountWallet(): ReactElement {
       )}
       <ExpandableListItemActions>
         <SwarmButton onClick={onCheckTransactions} iconType={Link}>
-          Check transactions on Blockscout
+          Check transactions
         </SwarmButton>
         {isDesktop && (
           <SwarmButton onClick={onInvite} iconType={Gift}>

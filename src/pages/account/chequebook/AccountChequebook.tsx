@@ -1,3 +1,4 @@
+import { Utils } from '@ethersphere/bee-js'
 import { Box } from '@material-ui/core'
 import { ReactElement, useContext } from 'react'
 import ExpandableList from '../../../components/ExpandableList'
@@ -57,7 +58,10 @@ export function AccountChequebook(): ReactElement {
           </ExpandableList>
         )}
         <ExpandableList label="Blockchain" defaultOpen>
-          <ExpandableListItemKey label="Ethereum address" value={nodeAddresses?.ethereum || ''} />
+          <ExpandableListItemKey
+            label="Ethereum address"
+            value={nodeAddresses?.ethereum ? Utils.capitalizeAddressERC55(nodeAddresses.ethereum) : ''}
+          />
           <ExpandableListItemKey
             label="Chequebook contract address"
             value={chequebookAddress?.chequebookAddress || ''}

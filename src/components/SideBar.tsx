@@ -133,7 +133,7 @@ export default function SideBar(): ReactElement {
               <SideBarItem
                 iconStart={<GithubIcon className={classes.icon} />}
                 iconEnd={<ExternalLinkIcon className={classes.icon} color="#595959" />}
-                label={<span>Github repository</span>}
+                label={<span>GitHub</span>}
               />
             </MUILink>
           </List>
