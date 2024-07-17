@@ -13,7 +13,7 @@ export default function DepositModal(): ReactElement {
     <WithdrawDepositModal
       successMessage="Successful deposit."
       errorMessage="Error with depositing"
-      dialogMessage="Specify the amount of xBZZ you would like to deposit to your node."
+      dialogMessage="Amount of xBZZ to deposit to the checkbook, from your node."
       label="Deposit"
       icon={<Download size="1rem" />}
       min={new BigNumber(0)}
