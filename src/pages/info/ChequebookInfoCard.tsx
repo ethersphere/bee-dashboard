@@ -17,12 +17,12 @@ export function ChequebookInfoCard() {
       <Card
         buttonProps={{
           iconType: ExchangeFunds,
-          children: 'View chequebook',
+          children: 'Manage chequebook',
           onClick: () => navigate(ROUTES.ACCOUNT_CHEQUEBOOK),
         }}
         icon={<ExchangeFunds />}
         title={`${chequebookBalance?.availableBalance.toSignificantDigits(4)} xBZZ`}
-        subtitle="Current chequebook balance."
+        subtitle="Network transfer balance."
         status="ok"
       />
     )
@@ -32,7 +32,7 @@ export function ChequebookInfoCard() {
     <Card
       buttonProps={{
         iconType: ExchangeFunds,
-        children: 'View chequebook',
+        children: 'Manage chequebook',
         onClick: () => navigate(ROUTES.ACCOUNT_CHEQUEBOOK),
       }}
       icon={<ExchangeFunds />}

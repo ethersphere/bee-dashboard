@@ -1,5 +1,6 @@
 import { Button } from '@material-ui/core'
 import { ReactElement, useContext } from 'react'
+import { ChainSync } from '../../components/ChainSync'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import Map from '../../components/Map'
 import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../../constants'
@@ -19,11 +20,17 @@ export default function Status(): ReactElement {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'stretch', alignContent: 'stretch' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'stretch',
+          alignContent: 'stretch',
+          gap: '8px',
+        }}
+      >
         <NodeInfoCard />
-        <div style={{ width: '8px' }}></div>
         <WalletInfoCard />
-        <div style={{ width: '8px' }}></div>
         <ChequebookInfoCard />
       </div>
       <div style={{ height: '16px' }} />
@@ -31,6 +38,9 @@ export default function Status(): ReactElement {
       <div style={{ height: '2px' }} />
       <ExpandableListItem label="Connected peers" value={topology?.connected ?? '-'} />
       <ExpandableListItem label="Population" value={topology?.population ?? '-'} />
+      <ExpandableListItem label="Depth" value={topology?.depth ?? '-'} />
+      <ChainSync />
+
       <div style={{ height: '16px' }} />
       {isDesktop && (
         <ExpandableListItem

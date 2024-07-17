@@ -81,17 +81,18 @@ export class Token {
     return asString.slice(0, indexOfSignificantDigit + digits)
   }
 
-  minusBaseUnits(amount: string): Token {
+  minusBaseUnits(amount: string | BigNumber | bigint): Token {
+    const baseUnits = makeBigNumber(amount)
+
     return new Token(
-      this.toBigNumber.minus(new BigNumber(amount).multipliedBy(new BigNumber(10).pow(this.decimals))),
+      this.toBigNumber.minus(baseUnits.multipliedBy(new BigNumber(10).pow(this.decimals))),
       this.decimals,
     )
   }
 
-  plusBaseUnits(amount: string): Token {
-    return new Token(
-      this.toBigNumber.plus(new BigNumber(amount).multipliedBy(new BigNumber(10).pow(this.decimals))),
-      this.decimals,
-    )
+  plusBaseUnits(amount: string | BigNumber | bigint): Token {
+    const baseUnits = makeBigNumber(amount)
+
+    return new Token(this.toBigNumber.plus(baseUnits.multipliedBy(new BigNumber(10).pow(this.decimals))), this.decimals)
   }
 }

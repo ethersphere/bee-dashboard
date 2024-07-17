@@ -1,7 +1,8 @@
-import { ReactElement, ReactNode, useState } from 'react'
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
 import { Collapse, ListItem, ListItemText, Typography } from '@material-ui/core'
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import { ExpandLess, ExpandMore } from '@material-ui/icons'
+import { ReactElement, ReactNode, useState } from 'react'
+import { Flex } from './Flex'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -65,14 +66,14 @@ export default function ExpandableList({ children, label, level, defaultOpen, in
     <div className={`${classes.root} ${rootLevelClass}`}>
       <ListItem button onClick={handleClick} className={classes.header}>
         <ListItemText primary={<Typography variant={typographyVariant}>{label}</Typography>} />
-        <div style={{ display: 'flex' }}>
+        <Flex>
           {!open && (
             <Typography variant="body2" className={classes.infoText}>
               {info}
             </Typography>
           )}
           {open ? <ExpandLess /> : <ExpandMore />}
-        </div>
+        </Flex>
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <div className={contentLevelClass}>{children}</div>

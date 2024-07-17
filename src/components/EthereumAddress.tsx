@@ -1,9 +1,11 @@
+import { Utils } from '@ethersphere/bee-js'
 import { Typography } from '@material-ui/core/'
 import { ReactElement } from 'react'
 import Identicon from 'react-identicons'
-import ClipboardCopy from './ClipboardCopy'
-import QRCodeModal from './QRCodeModal'
 import { BLOCKCHAIN_EXPLORER_URL } from '../constants'
+import ClipboardCopy from './ClipboardCopy'
+import { Flex } from './Flex'
+import QRCodeModal from './QRCodeModal'
 
 interface Props {
   address: string | undefined
@@ -16,10 +18,10 @@ export default function EthereumAddress(props: Props): ReactElement {
   return (
     <Typography component="div" variant="subtitle1">
       {props.address ? (
-        <div style={{ display: 'flex' }}>
+        <Flex>
           {props.hideBlockie ? null : (
             <div style={{ paddingTop: '5px', marginRight: '10px' }}>
-              <Identicon size={20} string={props.address} />
+              <Identicon size={20} string={Utils.capitalizeAddressERC55(props.address)} />
             </div>
           )}
           <div>
@@ -43,9 +45,9 @@ export default function EthereumAddress(props: Props): ReactElement {
               {props.address}
             </a>
           </div>
-          <QRCodeModal value={props.address} label={'Ethereum Address'} />
-          <ClipboardCopy value={props.address} />
-        </div>
+          <QRCodeModal value={Utils.capitalizeAddressERC55(props.address)} label={'Ethereum Address'} />
+          <ClipboardCopy value={Utils.capitalizeAddressERC55(props.address)} />
+        </Flex>
       ) : (
         '-'
       )}

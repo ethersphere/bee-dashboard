@@ -72,7 +72,7 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
 
     return `${secondsToTimeString(
       convertAmountToSeconds(amount, pricePerBlock),
-    )} (with price of ${pricePerBlock.toFixed(0)} per block)`
+    )} (with price of ${pricePerBlock.toFixed(0)} PLUR per block)`
   }
 
   function getPrice(depth: number, amount: bigint): string {

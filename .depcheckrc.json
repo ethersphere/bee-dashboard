@@ -9,7 +9,6 @@
     "file-loader",
     "ts-node",
     "webpack-cli",
-    "assert",
     "buffer",
     "crypto*",
     "stream*",

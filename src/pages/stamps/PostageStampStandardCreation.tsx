@@ -67,7 +67,7 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
 
     return `${secondsToTimeString(
       convertAmountToSeconds(parseInt(amount, 10), pricePerBlock),
-    )} (with price of ${pricePerBlock.toFixed(0)} per block)`
+    )} (with price of ${pricePerBlock.toFixed(0)} PLUR per block)`
   }
 
   function getPrice(depth: number, amount: bigint): string {
@@ -196,7 +196,7 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
         </Box>
         <Box display="flex" justifyContent={'right'} mt={0.5}>
           <Typography style={{ fontSize: '10px', color: 'rgba(0, 0, 0, 0.26)' }}>
-            Current price of 24000 per block
+            Current price of 24000 PLUR per block
           </Typography>
         </Box>
       </Box>
