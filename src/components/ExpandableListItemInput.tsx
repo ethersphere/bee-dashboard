@@ -2,14 +2,14 @@ import { Box, Grid, IconButton, InputBase, ListItem, Typography } from '@materia
 import Collapse from '@material-ui/core/Collapse'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import { ChangeEvent, ReactElement, useState } from 'react'
+import type { RemixiconReactIconProps } from 'remixicon-react'
 import Check from 'remixicon-react/CheckLineIcon'
+import X from 'remixicon-react/CloseLineIcon'
 import Edit from 'remixicon-react/PencilLineIcon'
 import Minus from 'remixicon-react/SubtractLineIcon'
-import X from 'remixicon-react/CloseLineIcon'
 import ExpandableListItemActions from './ExpandableListItemActions'
 import ExpandableListItemNote from './ExpandableListItemNote'
 import { SwarmButton } from './SwarmButton'
-import type { RemixiconReactIconProps } from 'remixicon-react'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -108,12 +108,8 @@ export default function ExpandableListItemKey({
               <div>
                 {!open && value}
                 {!expandedOnly && !locked && (
-                  <IconButton size="small" className={classes.copyValue}>
-                    {open ? (
-                      <Minus onClick={toggleOpen} strokeWidth={1} />
-                    ) : (
-                      <Edit onClick={toggleOpen} strokeWidth={1} />
-                    )}
+                  <IconButton size="small" className={classes.copyValue} onClick={toggleOpen}>
+                    {open ? <Minus strokeWidth={1} /> : <Edit strokeWidth={1} />}
                   </IconButton>
                 )}
               </div>
