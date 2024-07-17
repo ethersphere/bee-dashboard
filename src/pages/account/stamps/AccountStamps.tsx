@@ -2,6 +2,7 @@ import { CircularProgress, Container, createStyles, makeStyles } from '@material
 import { ReactElement, useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import PlusSquare from 'remixicon-react/AddBoxLineIcon'
+import { ChainSync } from '../../../components/ChainSync'
 import { Loading } from '../../../components/Loading'
 import { SwarmButton } from '../../../components/SwarmButton'
 import TroubleshootConnectionCard from '../../../components/TroubleshootConnectionCard'
@@ -57,7 +58,7 @@ export function AccountStamps(): ReactElement {
         {error && (
           <Container style={{ textAlign: 'center', padding: '50px' }}>
             <Loading />
-            {error.message}
+            <ChainSync />
           </Container>
         )}
         {!error && (

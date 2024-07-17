@@ -77,20 +77,18 @@ export default function ExpandableListItemKey({ label, value, expanded }: Props)
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
           {label && <Typography variant="body1">{label}</Typography>}
           <Typography variant="body2">
-            <div>
-              {!open && (
-                <span className={classes.copyValue}>
-                  <Tooltip title={copied ? 'Copied' : 'Copy'} placement="top" arrow onClose={tooltipCloseHandler}>
-                    <CopyToClipboard text={value}>
-                      <span onClick={tooltipClickHandler}>{value ? spanText : ''}</span>
-                    </CopyToClipboard>
-                  </Tooltip>
-                </span>
-              )}
-              <IconButton size="small" className={classes.copyValue}>
-                {open ? <Minus onClick={toggleOpen} strokeWidth={1} /> : <Eye onClick={toggleOpen} strokeWidth={1} />}
-              </IconButton>
-            </div>
+            {!open && (
+              <span className={classes.copyValue}>
+                <Tooltip title={copied ? 'Copied' : 'Copy'} placement="top" arrow onClose={tooltipCloseHandler}>
+                  <CopyToClipboard text={value}>
+                    <span onClick={tooltipClickHandler}>{value ? spanText : ''}</span>
+                  </CopyToClipboard>
+                </Tooltip>
+              </span>
+            )}
+            <IconButton size="small" className={classes.copyValue} onClick={toggleOpen}>
+              {open ? <Minus strokeWidth={1} /> : <Eye strokeWidth={1} />}
+            </IconButton>
           </Typography>
         </Grid>
         <Collapse in={open} timeout="auto" unmountOnExit>

@@ -84,7 +84,7 @@ export function Download(): ReactElement {
     <>
       {nodeInfo?.beeMode !== BeeModes.ULTRA_LIGHT && <FileNavigation active="DOWNLOAD" />}
       <ExpandableListItemInput
-        label="Swarm Hash"
+        label="Swarm Hash or ENS"
         onConfirm={value => onSwarmIdentifier(value)}
         onChange={validateChange}
         helperText={referenceError}

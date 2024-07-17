@@ -19,7 +19,7 @@ export async function sendRequest(
   const authorization = localStorage.getItem('apiKey')
 
   if (!authorization) {
-    throw Error('API key not found in local storage')
+    throw Error('API key not found in local storage. Please reopen via Swarm Desktop > Open Web UI.')
   }
   const headers = {
     authorization,

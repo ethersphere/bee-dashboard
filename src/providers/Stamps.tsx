@@ -70,6 +70,7 @@ export function Provider({ children }: Props): ReactElement {
 
       setStamps(stamps.filter(x => x.exists).map(enrichStamp))
       setLastUpdate(Date.now())
+      setError(null)
     } catch (e) {
       setError(e as Error)
     } finally {

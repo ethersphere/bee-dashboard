@@ -82,22 +82,20 @@ export default function ExpandableListItemLink({
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
           {label && <Typography variant="body1">{label}</Typography>}
           <Typography variant="body2">
-            <div>
-              {allowClipboard && (
-                <span className={classes.copyValue}>
-                  <Tooltip title={copied ? 'Copied' : 'Copy'} placement="top" arrow onClose={tooltipCloseHandler}>
-                    <CopyToClipboard text={value}>
-                      <span onClick={tooltipClickHandler}>{displayValue}</span>
-                    </CopyToClipboard>
-                  </Tooltip>
-                </span>
-              )}
-              {!allowClipboard && <span onClick={onNavigation}>{displayValue}</span>}
-              <IconButton size="small" className={classes.openLinkIcon}>
-                {navigationType === 'NEW_WINDOW' && <OpenInNewSharp onClick={onNavigation} strokeWidth={1} />}
-                {navigationType === 'HISTORY_PUSH' && <ArrowForward onClick={onNavigation} strokeWidth={1} />}
-              </IconButton>
-            </div>
+            {allowClipboard && (
+              <span className={classes.copyValue}>
+                <Tooltip title={copied ? 'Copied' : 'Copy'} placement="top" arrow onClose={tooltipCloseHandler}>
+                  <CopyToClipboard text={value}>
+                    <span onClick={tooltipClickHandler}>{displayValue}</span>
+                  </CopyToClipboard>
+                </Tooltip>
+              </span>
+            )}
+            {!allowClipboard && <span onClick={onNavigation}>{displayValue}</span>}
+            <IconButton size="small" className={classes.openLinkIcon} onClick={onNavigation}>
+              {navigationType === 'NEW_WINDOW' && <OpenInNewSharp strokeWidth={1} />}
+              {navigationType === 'HISTORY_PUSH' && <ArrowForward strokeWidth={1} />}
+            </IconButton>
           </Typography>
         </Grid>
       </Grid>
