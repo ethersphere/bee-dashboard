@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.29.0](https://github.com/ethersphere/bee-dashboard/compare/v0.28.0...v0.29.0) (2024-07-17)
+
+
+### Features
+
+* clarify labels and syncing ([#670](https://github.com/ethersphere/bee-dashboard/issues/670)) ([01b1b39](https://github.com/ethersphere/bee-dashboard/commit/01b1b39c42cc5b68a0132c3696c3c42a27ea2ee4))
+* polish app ([#669](https://github.com/ethersphere/bee-dashboard/issues/669)) ([8558860](https://github.com/ethersphere/bee-dashboard/commit/8558860f0a3baa82c31c091a44c78bb8e97de70d))
+
+
+### Bug Fixes
+
+* clarify withdraw and deposit message ([#654](https://github.com/ethersphere/bee-dashboard/issues/654)) ([b4ebfc7](https://github.com/ethersphere/bee-dashboard/commit/b4ebfc7c3fd449807db47fa25763df464cc45618))
+
 ## [0.28.0](https://github.com/ethersphere/bee-dashboard/compare/v0.27.0...v0.28.0) (2024-06-18)
 
 
