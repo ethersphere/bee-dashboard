@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.29.1](https://github.com/ethersphere/bee-dashboard/compare/v0.29.0...v0.29.1) (2024-10-03)
+
+
+### Bug Fixes
+
+* explicitly define type 0 transaction ([#674](https://github.com/ethersphere/bee-dashboard/issues/674)) ([63f3380](https://github.com/ethersphere/bee-dashboard/commit/63f338075b919cb70d79665c3d86537f2ac1d2e9))
+
 ## [0.29.0](https://github.com/ethersphere/bee-dashboard/compare/v0.28.0...v0.29.0) (2024-07-17)
 
 
