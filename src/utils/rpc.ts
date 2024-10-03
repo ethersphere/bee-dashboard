@@ -66,7 +66,13 @@ export async function sendNativeTransaction(
 ): Promise<TransferResponse> {
   const signer = await makeReadySigner(privateKey, jsonRpcProvider)
   const gasPrice = externalGasPrice ?? (await signer.getGasPrice())
-  const transaction = await signer.sendTransaction({ to, value, gasPrice })
+  const transaction = await signer.sendTransaction({
+    to,
+    value: BN.from(value),
+    gasPrice,
+    gasLimit: BN.from(21000),
+    type: 0,
+  })
   const receipt = await transaction.wait(1)
 
   return { transaction, receipt }
