@@ -73,10 +73,9 @@ jobs:
         uses: ethersphere/swarm-actions/pr-preview@v0
         continue-on-error: true
         with:
-          bee-url: https://unlimited.gateway.ethswarm.org
+          bee-url: ${{ secrets.PRIVATE_BEE_URL }}
           token: ${{ secrets.GHA_PAT_BASIC }}
           error-document: index.html
-          headers: '${{ secrets.GATEWAY_AUTHORIZATION_HEADER }}'
 
       - name: Upload to testnet
         uses: ethersphere/swarm-actions/upload-dir@v0
