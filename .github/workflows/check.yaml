@@ -70,7 +70,7 @@ jobs:
         run: npm run build:component
 
       - name: Create preview
-        uses: ethersphere/swarm-actions/pr-preview@v0
+        uses: ethersphere/swarm-actions/pr-preview@v1
         continue-on-error: true
         with:
           bee-url: https://unlimited.gateway.ethswarm.org
@@ -79,7 +79,7 @@ jobs:
           headers: '${{ secrets.GATEWAY_AUTHORIZATION_HEADER }}'
 
       - name: Upload to testnet
-        uses: ethersphere/swarm-actions/upload-dir@v0
+        uses: ethersphere/swarm-actions/upload-dir@v1
         continue-on-error: true
         with:
           index-document: index.html
