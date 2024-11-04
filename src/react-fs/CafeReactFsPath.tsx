@@ -1,4 +1,4 @@
-import { Strings } from 'cafe-utility'
+import { joinUrl } from './Utility'
 
 interface Props {
   pathParts: string[]
@@ -14,7 +14,7 @@ export function CafeReactFsPath({ pathParts, jumpToDirectory, backgroundColor, r
     if (absolutePaths.length === 0) {
       absolutePaths.push(pathPart)
     } else {
-      absolutePaths.push(Strings.joinUrl(absolutePaths[absolutePaths.length - 1], pathPart))
+      absolutePaths.push(joinUrl(absolutePaths[absolutePaths.length - 1], pathPart))
     }
   }
 

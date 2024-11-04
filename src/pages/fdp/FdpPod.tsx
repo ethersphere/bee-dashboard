@@ -1,8 +1,8 @@
 import { FdpStorage } from '@fairdatasociety/fdp-storage'
-import { Strings } from 'cafe-utility'
 import { useState } from 'react'
 import { CafeReactFs } from '../../react-fs/CafeReactFs'
 import { FsItem, FsItemType } from '../../react-fs/CafeReactType'
+import { joinUrl } from '../../react-fs/Utility'
 
 interface Props {
   fdp: FdpStorage
@@ -44,7 +44,7 @@ export function FdpPod({ fdp, name }: Props) {
             }
             for (const file of Array.from(input.files)) {
               const data = await file.arrayBuffer()
-              await fdp.file.uploadData(name, Strings.joinUrl(path, file.name), new Uint8Array(data))
+              await fdp.file.uploadData(name, joinUrl(path, file.name), new Uint8Array(data))
             }
             reload()
             resolve()
@@ -58,7 +58,7 @@ export function FdpPod({ fdp, name }: Props) {
         if (!newDirectoryName) {
           return
         }
-        await fdp.directory.create(name, Strings.joinUrl(path, newDirectoryName))
+        await fdp.directory.create(name, joinUrl(path, newDirectoryName))
         reload()
       }}
       // eslint-disable-next-line require-await

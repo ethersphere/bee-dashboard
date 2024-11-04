@@ -1,9 +1,9 @@
-import { Strings } from 'cafe-utility'
 import { useState } from 'react'
 import { CafeReactFsDelete } from './CafeReactFsDelete'
 import { CafeReactFsLoading } from './CafeReactFsLoading'
 import { CafeReactFsName } from './CafeReactFsName'
 import { VirtualFile } from './CafeReactType'
+import { joinUrl } from './Utility'
 
 interface Props {
   path: string
@@ -24,12 +24,12 @@ export function CafeReactFsFile({ path, file, download, deleteFile, backgroundCo
   function proxyDelete() {
     setLoading(true)
 
-    return deleteFile(Strings.joinUrl(path, file.name)).finally(() => setLoading(false))
+    return deleteFile(joinUrl(path, file.name)).finally(() => setLoading(false))
   }
 
   return (
     <div
-      onClick={() => download(Strings.joinUrl(path, file.name))}
+      onClick={() => download(joinUrl(path, file.name))}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{

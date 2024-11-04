@@ -2,12 +2,12 @@ import { Bee } from '@ethersphere/bee-js'
 import { FdpStorage } from '@fairdatasociety/fdp-storage'
 import { Pod } from '@fairdatasociety/fdp-storage/dist/pod/types'
 import { CircularProgress, Typography } from '@material-ui/core'
-import { Strings } from 'cafe-utility'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 import ImportIcon from 'remixicon-react/AddBoxLineIcon'
 import PlusCircle from 'remixicon-react/AddCircleLineIcon'
 import { SwarmButton } from '../../components/SwarmButton'
+import { joinUrl } from '../../react-fs/Utility'
 import { ManifestJs } from '../../utils/manifest'
 import { FdpLogin } from './FdpLogin'
 import { FdpPods } from './FdpPods'
@@ -124,7 +124,7 @@ export default function FDP(): ReactElement {
     const entries = await manifestJs.getHashes(importHash)
     await fdp.personalStorage.create(name)
     for (const [path, hash] of Object.entries(entries)) {
-      await fdp.file.uploadData(name, Strings.joinUrl('/', path), await bee.downloadData(hash))
+      await fdp.file.uploadData(name, joinUrl('/', path), await bee.downloadData(hash))
     }
     const pods = await fdp.personalStorage.list()
     setPods(pods.pods)
