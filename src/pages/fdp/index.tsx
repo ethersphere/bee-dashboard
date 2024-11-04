@@ -60,7 +60,7 @@ export default function FDP(): ReactElement {
       }
       setFdp(fdp)
     })
-  }, [])
+  }, [enqueueSnackbar])
 
   useEffect(() => {
     if (fdp && loggedIn) {

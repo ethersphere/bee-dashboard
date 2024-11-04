@@ -5,6 +5,7 @@ interface Props {
 export function CafeReactFsDelete({ onDelete }: Props) {
   return (
     <img
+      alt="Delete"
       style={{
         position: 'absolute',
         top: '2px',

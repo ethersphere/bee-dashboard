@@ -1,3 +1,5 @@
+import { CSSProperties } from 'react'
+
 interface Props {
   backgroundColor: string
 }
@@ -9,7 +11,7 @@ export function CafeReactFsLoading({ backgroundColor }: Props) {
     borderRadius: '2px',
     position: 'relative',
     background: backgroundColor,
-  } as any
+  } as CSSProperties
 
   const bounceStyle = {
     width: '32px',
@@ -21,7 +23,7 @@ export function CafeReactFsLoading({ backgroundColor }: Props) {
     opacity: 0.6,
     position: 'absolute',
     animation: 'bounce 2.0s infinite ease-in-out',
-  } as any
+  } as CSSProperties
 
   const bounceStyle2 = {
     ...bounceStyle,

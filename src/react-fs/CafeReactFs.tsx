@@ -55,7 +55,7 @@ export function CafeReactFs({
     list(path)
       .then(setItemsSorted)
       .finally(() => setLoading(false))
-  }, [reloader])
+  }, [reloader, list, path])
 
   const pathParts = ['/', ...path.split('/').filter(x => x)]
 
