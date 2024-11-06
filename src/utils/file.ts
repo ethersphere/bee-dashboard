@@ -1,3 +1,6 @@
+import { isSupportedImageType } from './image'
+import { isSupportedVideoType } from './video'
+
 const indexHtmls = ['index.html', 'index.htm']
 
 interface DetectedIndex {
@@ -87,8 +90,10 @@ export function getMetadata(files: FilePath[]): Metadata {
   const name = getAssetNameFromFiles(files)
   const type = files.length === 1 ? files[0].type : 'folder'
   const count = files.length
+  const isVideo = isSupportedVideoType(type)
+  const isImage = isSupportedImageType(type)
 
-  return { size, name, type, isWebsite, count }
+  return { size, name, type, isWebsite, count, isVideo, isImage }
 }
 
 export function getPath(file: FilePath): string {

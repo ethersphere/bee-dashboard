@@ -25,6 +25,28 @@ export function getDimensions(imgWidth: number, imgHeight: number, maxWidth?: nu
   return { width: imgWidth / ratio, height: imgHeight / ratio }
 }
 
+function getAllowedTypes(): string[] {
+  return [
+    'image/bmp',
+    'image/gif',
+    'image/vnd.microsoft.icon',
+    'image/jpeg',
+    'image/png',
+    'image/svg+xml',
+    'image/tiff',
+    'image/webp',
+  ]
+}
+
+/**
+ * Check if the image type is supported
+ *
+ * @param type Image MIME type
+ *
+ * @returns True if the type is supported, false otherwise
+ */
+export const isSupportedImageType = (type: string): boolean => getAllowedTypes().includes(type)
+
 /**
  * Resize image passed to fit in the bounding box defined with maxWidth and maxHeight.
  * Note that one or both of the bounding box dimensions may be omitted
@@ -37,16 +59,7 @@ export function getDimensions(imgWidth: number, imgHeight: number, maxWidth?: nu
  */
 export function resize(file: File, maxWidth?: number, maxHeight?: number): Promise<Blob> {
   return new Promise((resolve, reject) => {
-    const allowedTypes = [
-      'image/bmp',
-      'image/gif',
-      'image/vnd.microsoft.icon',
-      'image/jpeg',
-      'image/png',
-      'image/svg+xml',
-      'image/tiff',
-      'image/webp',
-    ]
+    const allowedTypes = getAllowedTypes()
 
     if (!file.size || !file.type || !allowedTypes.includes(file.type)) return reject('File not supported!')
 

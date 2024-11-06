@@ -14,6 +14,8 @@ interface SwarmMetadata {
 interface Metadata extends SwarmMetadata {
   type: string
   isWebsite: boolean
+  isVideo?: boolean
+  isImage?: boolean
   count?: number
   hash?: string
 }
