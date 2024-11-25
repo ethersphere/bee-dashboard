@@ -93,7 +93,7 @@ export function Provider({ children, ...propsSettings }: Props): ReactElement {
     } catch (e) {
       setBeeApi(null)
     }
-  }, [apiUrl])
+  }, [config, apiUrl])
 
   return (
     <Context.Provider
