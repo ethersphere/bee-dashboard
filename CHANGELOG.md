@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.30.0](https://github.com/ethersphere/bee-dashboard/compare/v0.29.0...v0.30.0) (2024-11-25)
+
+
+### Features
+
+* add experimental fdp ([#681](https://github.com/ethersphere/bee-dashboard/issues/681)) ([d0c94b7](https://github.com/ethersphere/bee-dashboard/commit/d0c94b7316ea2b139bddc5481132ea7de7cb840d))
+* update map data ([#684](https://github.com/ethersphere/bee-dashboard/issues/684)) ([fbb2ed8](https://github.com/ethersphere/bee-dashboard/commit/fbb2ed8a576f3519883e71382b7f4e8505fbe139))
+
+
+### Bug Fixes
+
+* allow changing api url ([#676](https://github.com/ethersphere/bee-dashboard/issues/676)) ([6294bb0](https://github.com/ethersphere/bee-dashboard/commit/6294bb0a7be6b9b82354c42da8c84e767fad899e))
+* explicitly define type 0 transaction ([#674](https://github.com/ethersphere/bee-dashboard/issues/674)) ([63f3380](https://github.com/ethersphere/bee-dashboard/commit/63f338075b919cb70d79665c3d86537f2ac1d2e9))
+
 ## [0.29.0](https://github.com/ethersphere/bee-dashboard/compare/v0.28.0...v0.29.0) (2024-07-17)
 
 
