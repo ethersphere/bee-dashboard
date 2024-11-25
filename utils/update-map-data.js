@@ -18,7 +18,9 @@ async function getData(url) {
 function processData(data) {
   const db = new Map()
   data.nodes.forEach(node => {
-    db.set(node.overlay, { lat: node.location.latitude, lng: node.location.longitude })
+    if (node.location) {
+      db.set(node.overlay, { lat: node.location.latitude, lng: node.location.longitude })
+    }
   })
 
   return Object.fromEntries([...db.entries()].sort())
