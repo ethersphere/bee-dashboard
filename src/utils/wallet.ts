@@ -69,7 +69,7 @@ export class ResolvedWallet {
       await Rpc.sendNativeTransaction(
         this.privateKey,
         destination,
-        this.dai.toBigNumber.minus(totalCost.toString()).toString(),
+        '0x' + this.dai.toBigNumber.minus(totalCost.toString()).toString(16),
         jsonRpcProvider,
         gasPrice,
       )
