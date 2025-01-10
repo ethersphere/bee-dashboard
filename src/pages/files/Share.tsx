@@ -17,6 +17,8 @@ import { AssetPreview } from './AssetPreview'
 import { AssetSummary } from './AssetSummary'
 import { DownloadActionBar } from './DownloadActionBar'
 import { AssetSyncing } from './AssetSyncing'
+import { isSupportedVideoType } from '../../utils/video'
+import { isSupportedImageType } from '../../utils/image'
 
 export function Share(): ReactElement {
   const { apiUrl, beeApi } = useContext(SettingsContext)
@@ -50,11 +52,12 @@ export function Share(): ReactElement {
 
       return
     }
+
     const entries = await manifestJs.getHashes(reference)
     const indexDocument = await manifestJs.getIndexDocumentPath(reference)
     setIndexDocument(indexDocument)
 
-    const previewFile = entries[PREVIEW_FILE_NAME]
+    const previewFile = Boolean(entries[PREVIEW_FILE_NAME])
 
     delete entries[META_FILE_NAME]
     delete entries[PREVIEW_FILE_NAME]
@@ -74,7 +77,11 @@ export function Share(): ReactElement {
     try {
       const mtdt = await beeApi.downloadFile(reference, META_FILE_NAME)
       const remoteMetadata = mtdt.data.text()
-      metadata = { ...metadata, ...(JSON.parse(remoteMetadata) as Metadata) }
+      const formattedMetadata = JSON.parse(remoteMetadata) as Metadata
+
+      const isVideo = isSupportedVideoType(formattedMetadata.type)
+      const isImage = isSupportedImageType(formattedMetadata.type)
+      metadata = { ...metadata, ...formattedMetadata, isVideo, isImage }
     } catch (e) {} // eslint-disable-line no-empty
 
     if (previewFile) {

@@ -53,7 +53,10 @@ export function Provider({ children }: Props): ReactElement {
     if (files.length !== 1) return
 
     if (metadata.isVideo) {
-      setPreviewUri(URL.createObjectURL(files[0]))
+      const videoFile = files[0]
+      const videoBlob = new Blob([videoFile], { type: videoFile.type })
+      setPreviewUri(URL.createObjectURL(videoBlob))
+      setPreviewBlob(videoBlob)
     }
 
     if (metadata.isImage) {

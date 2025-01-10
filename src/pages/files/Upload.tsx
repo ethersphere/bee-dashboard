@@ -117,7 +117,7 @@ export function Upload(): ReactElement {
 
     if (previewBlob) {
       const previewFile = new File([previewBlob], PREVIEW_FILE_NAME, {
-        type: 'image/jpeg',
+        type: mtd.type, // This should be always a html5 supported type here
         lastModified,
       })
       fls.push(packageFile(previewFile))
