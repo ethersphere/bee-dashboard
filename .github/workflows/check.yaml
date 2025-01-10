@@ -56,13 +56,6 @@ jobs:
       - name: Types check
         run: npm run check:types
 
-      - name: Update supported Bee action
-        uses: ethersphere/update-supported-bee-action@v1
-        if: github.ref == 'refs/heads/master'
-        with:
-          updateEngine: true
-          token: ${{ secrets.GHA_PAT_BASIC }}
-
       - name: Build
         run: npm run build
 
@@ -70,7 +63,7 @@ jobs:
         run: npm run build:component
 
       - name: Create preview
-        uses: ethersphere/swarm-actions/pr-preview@v0
+        uses: ethersphere/swarm-actions/pr-preview@v1
         continue-on-error: true
         with:
           bee-url: https://unlimited.gateway.ethswarm.org
@@ -79,7 +72,7 @@ jobs:
           headers: '${{ secrets.GATEWAY_AUTHORIZATION_HEADER }}'
 
       - name: Upload to testnet
-        uses: ethersphere/swarm-actions/upload-dir@v0
+        uses: ethersphere/swarm-actions/upload-dir@v1
         continue-on-error: true
         with:
           index-document: index.html
