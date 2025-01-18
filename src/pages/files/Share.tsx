@@ -64,7 +64,7 @@ export function Share(): ReactElement {
       if (formattedMetadata.isVideo || formattedMetadata.isImage) {
         setPreview(`${apiUrl}/bzz/${reference}`)
       }
-      setMetadata(formattedMetadata)
+      setMetadata({ ...formattedMetadata, hash })
     } catch (e) {
       // if metadata is not available or invalid go with the default one
       const count = Object.keys(entries).length
@@ -73,6 +73,10 @@ export function Share(): ReactElement {
         type: count > 1 ? 'folder' : 'unknown',
         name: reference,
         count,
+        isWebsite: Boolean(indexDocument && /.*\.html?$/i.test(indexDocument)),
+        isVideo: Boolean(indexDocument && /.*\.(mp4|webm|ogg|mp3|ogg|wav)$/i.test(indexDocument)),
+        isImage: Boolean(indexDocument && /.*\.(jpg|jpeg|png|gif|webp|svg)$/i.test(indexDocument)),
+        // naive assumption based on indexDocument, we don't want to donwload the whole manifest
       })
     }
   }
