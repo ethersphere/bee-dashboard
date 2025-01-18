@@ -86,10 +86,10 @@ export function getAssetNameFromFiles(files: FilePath[]): string {
 
 export function getMetadata(files: FilePath[]): Metadata {
   const size = files.reduce((total, item) => total + item.size, 0)
-  const isWebsite = Boolean(detectIndexHtml(files))
   const name = getAssetNameFromFiles(files)
   const type = files.length === 1 ? files[0].type : 'folder'
   const count = files.length
+  const isWebsite = Boolean(detectIndexHtml(files))
   const isVideo = isSupportedVideoType(type)
   const isImage = isSupportedImageType(type)
 

@@ -6,14 +6,14 @@ interface LatestBeeRelease {
 }
 
 interface SwarmMetadata {
-  size: number
+  size?: number
   name: string
   type?: string
 }
 
 interface Metadata extends SwarmMetadata {
   type: string
-  isWebsite: boolean
+  isWebsite?: boolean
   isVideo?: boolean
   isImage?: boolean
   count?: number

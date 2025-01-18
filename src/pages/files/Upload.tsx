@@ -6,7 +6,7 @@ import { DocumentationText } from '../../components/DocumentationText'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { ProgressIndicator } from '../../components/ProgressIndicator'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
-import { META_FILE_NAME, PREVIEW_FILE_NAME } from '../../constants'
+import { META_FILE_NAME } from '../../constants'
 import { Context as BeeContext, CheckState } from '../../providers/Bee'
 import { Identity, Context as IdentityContext } from '../../providers/Feeds'
 import { Context as FileContext } from '../../providers/File'
@@ -33,7 +33,7 @@ export function Upload(): ReactElement {
 
   const { stamps, refresh } = useContext(StampsContext)
   const { beeApi } = useContext(SettingsContext)
-  const { files, setFiles, uploadOrigin, metadata, previewUri, previewBlob } = useContext(FileContext)
+  const { files, setFiles, uploadOrigin, metadata, previewUri } = useContext(FileContext)
   const { identities, setIdentities } = useContext(IdentityContext)
   const { status } = useContext(BeeContext)
 
@@ -98,30 +98,14 @@ export function Upload(): ReactElement {
         }
       }
     }
+
     const lastModified = files[0].lastModified
 
-    // We want to store only some metadata
-    const mtd: SwarmMetadata = {
-      name: metadata.name,
-      size: metadata.size,
-    }
-
-    // Type of the file only makes sense for a single file
-    if (files.length === 1) mtd.type = metadata.type
-
-    const metafile = new File([JSON.stringify(mtd)], META_FILE_NAME, {
+    const metafile = new File([JSON.stringify(metadata)], META_FILE_NAME, {
       type: 'application/json',
       lastModified,
     })
     fls.push(packageFile(metafile))
-
-    if (previewBlob) {
-      const previewFile = new File([previewBlob], PREVIEW_FILE_NAME, {
-        type: mtd.type, // This should be always a html5 supported type here
-        lastModified,
-      })
-      fls.push(packageFile(previewFile))
-    }
 
     setUploading(true)
 

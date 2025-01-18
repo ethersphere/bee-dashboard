@@ -25,5 +25,5 @@ export function FitVideo(props: VideoProps): ReactElement {
   props.maxHeight && (inlineStyles.maxHeight = props.maxHeight)
   props.maxWidth && (inlineStyles.maxWidth = props.maxWidth)
 
-  return <video className={classes.video} src={props.src} style={inlineStyles} controls autoPlay loop />
+  return <video className={classes.video} src={props.src} style={inlineStyles} controls />
 }

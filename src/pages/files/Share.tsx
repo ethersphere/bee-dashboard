@@ -7,7 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { Loading } from '../../components/Loading'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
-import { META_FILE_NAME, PREVIEW_FILE_NAME } from '../../constants'
+import { META_FILE_NAME } from '../../constants'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
@@ -17,8 +17,6 @@ import { AssetPreview } from './AssetPreview'
 import { AssetSummary } from './AssetSummary'
 import { DownloadActionBar } from './DownloadActionBar'
 import { AssetSyncing } from './AssetSyncing'
-import { isSupportedVideoType } from '../../utils/video'
-import { isSupportedImageType } from '../../utils/image'
 
 export function Share(): ReactElement {
   const { apiUrl, beeApi } = useContext(SettingsContext)
@@ -53,42 +51,30 @@ export function Share(): ReactElement {
       return
     }
 
-    const entries = await manifestJs.getHashes(reference)
+    const entries = await manifestJs.getHashes(reference, { exclude: [META_FILE_NAME] })
+    setSwarmEntries(entries)
+
     const indexDocument = await manifestJs.getIndexDocumentPath(reference)
     setIndexDocument(indexDocument)
 
-    const previewFile = Boolean(entries[PREVIEW_FILE_NAME])
-
-    delete entries[META_FILE_NAME]
-    delete entries[PREVIEW_FILE_NAME]
-    setSwarmEntries(entries)
-
-    const count = Object.keys(entries).length
-
-    let metadata: Metadata | undefined = {
-      hash,
-      size: 0,
-      type: count > 1 ? 'folder' : 'unknown',
-      name: reference,
-      isWebsite: Boolean(indexDocument) && count > 1,
-      count,
-    }
-
     try {
-      const mtdt = await beeApi.downloadFile(reference, META_FILE_NAME)
-      const remoteMetadata = mtdt.data.text()
-      const formattedMetadata = JSON.parse(remoteMetadata) as Metadata
+      const remoteMetadata = await beeApi.downloadFile(reference, META_FILE_NAME)
+      const formattedMetadata = JSON.parse(remoteMetadata.data.text()) as Metadata
 
-      const isVideo = isSupportedVideoType(formattedMetadata.type)
-      const isImage = isSupportedImageType(formattedMetadata.type)
-      metadata = { ...metadata, ...formattedMetadata, isVideo, isImage }
-    } catch (e) {} // eslint-disable-line no-empty
-
-    if (previewFile) {
-      setPreview(`${apiUrl}/bzz/${reference}/${PREVIEW_FILE_NAME}`)
+      if (formattedMetadata.isVideo || formattedMetadata.isImage) {
+        setPreview(`${apiUrl}/bzz/${reference}`)
+      }
+      setMetadata(formattedMetadata)
+    } catch (e) {
+      // if metadata is not available or invalid go with the default one
+      const count = Object.keys(entries).length
+      setMetadata({
+        hash,
+        type: count > 1 ? 'folder' : 'unknown',
+        name: reference,
+        count,
+      })
     }
-
-    setMetadata(metadata)
   }
 
   function onOpen() {
