@@ -1,5 +1,8 @@
 export function isSupportedVideoType(type: string) {
   const video = document.createElement('video')
 
-  return video.canPlayType(type) !== ''
+  const result = video.canPlayType(type)
+  const isDefinitelySupported = result && result !== 'maybe' && result !== 'probably'
+
+  return Boolean(isDefinitelySupported)
 }
