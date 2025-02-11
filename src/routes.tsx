@@ -27,6 +27,7 @@ import { GiftCardFund } from './pages/top-up/GiftCardFund'
 import { GiftCardTopUpIndex } from './pages/top-up/GiftCardTopUpIndex'
 import { Swap } from './pages/top-up/Swap'
 import { Context as SettingsContext } from './providers/Settings'
+import FM from './pages/filemanager'
 
 export enum ROUTES {
   INFO = '/',
@@ -56,6 +57,7 @@ export enum ROUTES {
   ACCOUNT_FEEDS_VIEW = '/account/feeds/:uuid',
   ACCOUNT_INVITATIONS = '/account/invitations',
   ACCOUNT_STAKING = '/account/staking',
+  FILEMANAGER = '/filemanager',
   FDP = '/fdp',
 }
 
@@ -97,6 +99,7 @@ const BaseRouter = (): ReactElement => {
       <Route path={ROUTES.ACCOUNT_FEEDS_UPDATE} element={<UpdateFeed />} />
       <Route path={ROUTES.ACCOUNT_FEEDS_VIEW} element={<FeedSubpage />} />
       <Route path={ROUTES.ACCOUNT_STAKING} element={<AccountStaking />} />
+      <Route path={ROUTES.FILEMANAGER} element={<FM />} />
       <Route path={ROUTES.FDP} element={<FDP />} />
       {isDesktop && <Route path={ROUTES.ACCOUNT_INVITATIONS} element={<GiftCards />} />}
     </Routes>

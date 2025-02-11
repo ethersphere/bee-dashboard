@@ -84,6 +84,11 @@ export default function SideBar(): ReactElement {
       pathMatcherSubstring: '/fdp',
     },
     {
+      label: 'File Manager',
+      path: ROUTES.FILEMANAGER,
+      icon: FilesIcon,
+    },
+    {
       label: 'Files',
       path: nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT ? ROUTES.DOWNLOAD : ROUTES.UPLOAD,
       icon: FilesIcon,
