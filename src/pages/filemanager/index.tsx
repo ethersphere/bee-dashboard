@@ -2,6 +2,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import { FileInfo, FileManager } from '@solarpunkltd/file-manager-lib'
 import { createStyles, makeStyles, Typography } from '@material-ui/core'
 import FileItem from '../../components/FileItem'
+import FilesHandler from '../../components/FilesHandler'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -51,6 +52,7 @@ export default function FM(): ReactElement {
 
   return (
     <div>
+      <FilesHandler />
       {fileList.length === 0 && <div className={classes.noFilesText}>There’re no items!</div>}
       {fileList.length > 0 && (
         <div className={classes.fileListContainer}>
