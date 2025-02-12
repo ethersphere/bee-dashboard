@@ -7,7 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { Loading } from '../../components/Loading'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
-import { META_FILE_NAME, PREVIEW_FILE_NAME } from '../../constants'
+import { META_FILE_NAME } from '../../constants'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
@@ -50,38 +50,35 @@ export function Share(): ReactElement {
 
       return
     }
-    const entries = await manifestJs.getHashes(reference)
+
+    const entries = await manifestJs.getHashes(reference, { exclude: [META_FILE_NAME] })
+    setSwarmEntries(entries)
+
     const indexDocument = await manifestJs.getIndexDocumentPath(reference)
     setIndexDocument(indexDocument)
 
-    const previewFile = entries[PREVIEW_FILE_NAME]
-
-    delete entries[META_FILE_NAME]
-    delete entries[PREVIEW_FILE_NAME]
-    setSwarmEntries(entries)
-
-    const count = Object.keys(entries).length
-
-    let metadata: Metadata | undefined = {
-      hash,
-      size: 0,
-      type: count > 1 ? 'folder' : 'unknown',
-      name: reference,
-      isWebsite: Boolean(indexDocument) && count > 1,
-      count,
-    }
-
     try {
-      const mtdt = await beeApi.downloadFile(reference, META_FILE_NAME)
-      const remoteMetadata = mtdt.data.text()
-      metadata = { ...metadata, ...(JSON.parse(remoteMetadata) as Metadata) }
-    } catch (e) {} // eslint-disable-line no-empty
+      const remoteMetadata = await beeApi.downloadFile(reference, META_FILE_NAME)
+      const formattedMetadata = JSON.parse(remoteMetadata.data.text()) as Metadata
 
-    if (previewFile) {
-      setPreview(`${apiUrl}/bzz/${reference}/${PREVIEW_FILE_NAME}`)
+      if (formattedMetadata.isVideo || formattedMetadata.isImage) {
+        setPreview(`${apiUrl}/bzz/${reference}`)
+      }
+      setMetadata({ ...formattedMetadata, hash })
+    } catch (e) {
+      // if metadata is not available or invalid go with the default one
+      const count = Object.keys(entries).length
+      setMetadata({
+        hash,
+        type: count > 1 ? 'folder' : 'unknown',
+        name: reference,
+        count,
+        isWebsite: Boolean(indexDocument && /.*\.html?$/i.test(indexDocument)),
+        isVideo: Boolean(indexDocument && /.*\.(mp4|webm|ogg|mp3|ogg|wav)$/i.test(indexDocument)),
+        isImage: Boolean(indexDocument && /.*\.(jpg|jpeg|png|gif|webp|svg)$/i.test(indexDocument)),
+        // naive assumption based on indexDocument, we don't want to donwload the whole manifest
+      })
     }
-
-    setMetadata(metadata)
   }
 
   function onOpen() {

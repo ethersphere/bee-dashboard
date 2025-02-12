@@ -3,6 +3,7 @@ import { Box } from '@material-ui/core'
 import { ReactElement, useContext, useEffect, useRef, useState } from 'react'
 import { DocumentationText } from '../../components/DocumentationText'
 import { LinearProgressWithLabel } from '../../components/ProgressBar'
+import { Tag } from '@ethersphere/bee-js'
 
 interface Props {
   reference: string
@@ -16,12 +17,20 @@ export function AssetSyncing({ reference }: Props): ReactElement {
   const [syncProgress, setSyncProgress] = useState<number>(0)
 
   const syncCheck = async () => {
-    if (!beeApi) {
-      return
-    }
+    if (!beeApi) return
 
-    const tags = await beeApi.getAllTags()
-    const tag = tags.find(t => t.address === reference)
+    let allTags: Tag[] = []
+    let offset = 0
+    const limit = 1000
+    let tagsBatch
+
+    do {
+      tagsBatch = await beeApi.getAllTags({ limit, offset })
+      allTags = allTags.concat(tagsBatch)
+      offset += limit
+    } while (tagsBatch.length === limit) // Continue if the batch is full, stop if fewer than the limit
+
+    const tag = allTags.find(t => t.address === reference)
 
     if (tag) {
       const progress = ((tag.seen + tag.synced) / tag.split) * 100
@@ -51,8 +60,6 @@ export function AssetSyncing({ reference }: Props): ReactElement {
           There are instances when it seems that the content isn't synchronized, despite being already available.
           To ensure it's not due to invalid synchronization data,
           verify availability from at least 70% using one of the stewardship endpoints.
-          
-          TODO: is 70 a good number?
     */
     if (beeApi && !isRetrieveChecking && syncProgress > 10 && syncProgress < 100) {
       // It's a long running task make sure only one run occurs at a time.

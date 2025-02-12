@@ -50,13 +50,19 @@ export class ManifestJs {
   /**
    * Retrieves all paths with the associated hashes from a Swarm manifest
    */
-  public async getHashes(hash: string): Promise<Record<string, string>> {
+  public async getHashes(hash: string, options?: { exclude: string[] }): Promise<Record<string, string>> {
     const data = await this.bee.downloadData(hash)
     const node = new MantarayNode()
     node.deserialize(data)
     await loadAllNodes(this.load.bind(this), node)
-    const result = {}
+    const result: Record<string, string> = {}
     this.extractHashes(result, node)
+
+    if (options?.exclude) {
+      for (const path of options.exclude) {
+        delete result[path]
+      }
+    }
 
     return result
   }
