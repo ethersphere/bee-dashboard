@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.32.0](https://github.com/ethersphere/bee-dashboard/compare/v0.31.0...v0.32.0) (2025-02-12)
+
+
+### Features
+
+* vod display ([#686](https://github.com/ethersphere/bee-dashboard/issues/686)) ([bcd3d50](https://github.com/ethersphere/bee-dashboard/commit/bcd3d50b4209a4f66a259b8a3f6ea5ffd908471f))
+
 ## [0.31.0](https://github.com/ethersphere/bee-dashboard/compare/v0.30.0...v0.31.0) (2025-01-13)
 
 
