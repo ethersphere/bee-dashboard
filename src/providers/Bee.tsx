@@ -233,38 +233,6 @@ export function Provider({ children }: Props): ReactElement {
       isRefreshing = true
       setError(null)
 
-      // Wrap the chequebook balance call to return BZZ values
-      const chequeBalanceWrapper = async () => {
-        const { totalBalance, availableBalance } = await beeApi.getChequebookBalance({ timeout: TIMEOUT })
-
-        return {
-          totalBalance,
-          availableBalance,
-        }
-      }
-
-      // Wrap the balances call to return BZZ values as Token object
-      const peerBalanceWrapper = async () => {
-        const { balances } = await beeApi.getAllBalances({ timeout: TIMEOUT })
-
-        return balances.map(({ peer, balance }) => ({ peer, balance }))
-      }
-
-      // Wrap the settlements call to return BZZ values
-      const settlementsWrapper = async () => {
-        const { totalReceived, settlements, totalSent } = await beeApi.getAllSettlements({ timeout: TIMEOUT })
-
-        return {
-          totalReceived,
-          totalSent,
-          settlements: settlements.map(({ peer, received, sent }) => ({
-            peer,
-            received,
-            sent,
-          })),
-        }
-      }
-
       const promises = [
         // API health
         beeApi
@@ -325,7 +293,8 @@ export function Provider({ children }: Props): ReactElement {
           .catch(() => setChainId(null)),
 
         // Chequebook balance
-        chequeBalanceWrapper()
+        beeApi
+          .getChequebookBalance({ timeout: TIMEOUT })
           .then(setChequebookBalance)
           .catch(() => setChequebookBalance(null)),
 
@@ -335,12 +304,14 @@ export function Provider({ children }: Props): ReactElement {
           .catch(() => setStake(null)),
 
         // Peer balances
-        peerBalanceWrapper()
-          .then(setPeerBalances)
+        beeApi
+          .getAllBalances({ timeout: TIMEOUT })
+          .then(x => setPeerBalances(x.balances))
           .catch(() => setPeerBalances(null)),
 
         // Settlements
-        settlementsWrapper()
+        beeApi
+          .getAllSettlements()
           .then(setSettlements)
           .catch(() => setSettlements(null)),
       ]
