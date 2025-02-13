@@ -1,14 +1,13 @@
-import { Bee } from '@ethersphere/bee-js'
 import { FdpStorage } from '@fairdatasociety/fdp-storage'
 import { Pod } from '@fairdatasociety/fdp-storage/dist/pod/types'
 import { CircularProgress, Typography } from '@material-ui/core'
+import { Bee, MantarayNode } from '@upcoming/bee-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 import ImportIcon from 'remixicon-react/AddBoxLineIcon'
 import PlusCircle from 'remixicon-react/AddCircleLineIcon'
 import { SwarmButton } from '../../components/SwarmButton'
 import { joinUrl } from '../../react-fs/Utility'
-import { ManifestJs } from '../../utils/manifest'
 import { FdpLogin } from './FdpLogin'
 import { FdpPods } from './FdpPods'
 import { Horizontal } from './Horizontal'
@@ -25,7 +24,8 @@ async function makeFdp(): Promise<FdpStorage | null> {
     return null
   }
 
-  return new FdpStorage('http://localhost:1633', highestCapacityBatch.batchID, {
+  // TODO: FDS has bad types
+  return new FdpStorage('http://localhost:1633', highestCapacityBatch.batchID.toHex() as any, {
     ensOptions: {
       rpcUrl: sepolia,
       contractAddresses: {
@@ -120,11 +120,16 @@ export default function FDP(): ReactElement {
     }
     setCreatingPod(true)
     const bee = new Bee('http://localhost:1633')
-    const manifestJs = new ManifestJs(bee)
-    const entries = await manifestJs.getHashes(importHash)
+    const manifest = await MantarayNode.unmarshal(bee, importHash)
+    await manifest.loadRecursively(bee)
+    const nodes = manifest.collect()
     await fdp.personalStorage.create(name)
-    for (const [path, hash] of Object.entries(entries)) {
-      await fdp.file.uploadData(name, joinUrl('/', path), await bee.downloadData(hash))
+    for (const node of nodes) {
+      await fdp.file.uploadData(
+        name,
+        joinUrl('/', node.fullPathString),
+        (await bee.downloadData(node.targetAddress)).toUint8Array(),
+      )
     }
     const pods = await fdp.personalStorage.list()
     setPods(pods.pods)

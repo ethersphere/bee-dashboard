@@ -122,7 +122,7 @@ export default function UpdateFeed(): ReactElement {
         <Grid container>
           {stamps ? (
             <SwarmSelect
-              options={stamps.map(x => ({ value: x.batchID, label: x.batchID.slice(0, 8) }))}
+              options={stamps.map(x => ({ value: x.batchID.toHex(), label: x.batchID.toHex().slice(0, 8) }))}
               onChange={onStampChange}
               label="Stamp"
             />

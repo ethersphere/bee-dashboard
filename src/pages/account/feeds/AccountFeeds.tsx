@@ -1,16 +1,19 @@
 import { Box } from '@material-ui/core'
+import { NULL_TOPIC } from '@upcoming/bee-js'
 import { ReactElement, useContext, useState } from 'react'
-import Download from 'remixicon-react/Download2LineIcon'
-import Info from 'remixicon-react/InformationLineIcon'
+import { useNavigate } from 'react-router'
 import PlusSquare from 'remixicon-react/AddBoxLineIcon'
 import Trash from 'remixicon-react/DeleteBin7LineIcon'
-import { useNavigate } from 'react-router'
+import Download from 'remixicon-react/Download2LineIcon'
+import Info from 'remixicon-react/InformationLineIcon'
 import ExpandableList from '../../../components/ExpandableList'
 import ExpandableListItem from '../../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../../components/ExpandableListItemKey'
 import { SwarmButton } from '../../../components/SwarmButton'
-import { Context as IdentityContext, Identity } from '../../../providers/Feeds'
+import TroubleshootConnectionCard from '../../../components/TroubleshootConnectionCard'
+import { Context as BeeContext, CheckState } from '../../../providers/Bee'
+import { Identity, Context as IdentityContext } from '../../../providers/Feeds'
 import { ROUTES } from '../../../routes'
 import { formatEnum } from '../../../utils'
 import { persistIdentitiesWithoutUpdate } from '../../../utils/identity'
@@ -19,8 +22,6 @@ import { ExportFeedDialog } from '../../feeds/ExportFeedDialog'
 import { ImportFeedDialog } from '../../feeds/ImportFeedDialog'
 import { AccountNavigation } from '../AccountNavigation'
 import { Header } from '../Header'
-import TroubleshootConnectionCard from '../../../components/TroubleshootConnectionCard'
-import { CheckState, Context as BeeContext } from '../../../providers/Bee'
 
 export function AccountFeeds(): ReactElement {
   const { identities, setIdentities } = useContext(IdentityContext)
@@ -98,7 +99,7 @@ export function AccountFeeds(): ReactElement {
               <ExpandableListItem label="Identity type" value={formatEnum(x.type)} />
             </ExpandableList>
           </Box>
-          <ExpandableListItemKey label="Topic" value={'00'.repeat(32)} />
+          <ExpandableListItemKey label="Topic" value={NULL_TOPIC.toHex()} />
           {x.feedHash && <ExpandableListItemKey label="Feed hash" value={x.feedHash} />}
           <Box mt={0.75}>
             <ExpandableListItemActions>

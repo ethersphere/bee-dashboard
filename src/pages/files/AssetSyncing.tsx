@@ -1,9 +1,9 @@
-import { Context as SettingsContext } from '../../providers/Settings'
 import { Box } from '@material-ui/core'
+import { Tag } from '@upcoming/bee-js'
 import { ReactElement, useContext, useEffect, useRef, useState } from 'react'
 import { DocumentationText } from '../../components/DocumentationText'
 import { LinearProgressWithLabel } from '../../components/ProgressBar'
-import { Tag } from '@ethersphere/bee-js'
+import { Context as SettingsContext } from '../../providers/Settings'
 
 interface Props {
   reference: string

@@ -27,7 +27,7 @@ export default function SimpleMenu({ stamps, selectedStamp, setSelected }: Props
       <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
         {stamps.map(stamp => (
           <MenuItem
-            key={stamp.batchID}
+            key={stamp.batchID.toHex()}
             onClick={() => {
               setSelected(stamp)
               handleClose()
@@ -35,7 +35,7 @@ export default function SimpleMenu({ stamps, selectedStamp, setSelected }: Props
             selected={stamp.batchID === selectedStamp?.batchID}
           >
             <ListItemIcon>{stamp.usageText}</ListItemIcon>
-            <Typography variant="body2">{stamp.batchID.slice(0, 8)}[…]</Typography>
+            <Typography variant="body2">{stamp.batchID.toHex().slice(0, 8)}[…]</Typography>
           </MenuItem>
         ))}
       </Menu>

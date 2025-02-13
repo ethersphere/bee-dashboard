@@ -1,4 +1,4 @@
-import { BigNumber } from 'bignumber.js'
+import { BZZ } from '@upcoming/bee-js'
 import { ReactElement, useContext } from 'react'
 import Download from 'remixicon-react/DownloadLineIcon'
 import WithdrawDepositModal from '../components/WithdrawDepositModal'
@@ -21,8 +21,8 @@ export default function StakeModal({ onStarted, onFinished }: Props): ReactEleme
       dialogMessage="Specify the amount of xBZZ you would like to stake. Your first stake must be at least 10 xBZZ. This will lock your tokens."
       label="Stake"
       icon={<Download size="1rem" />}
-      min={new BigNumber(0)}
-      action={async (amount: bigint) => {
+      min={BZZ.fromPLUR('1')}
+      action={async (amount: BZZ) => {
         if (!beeApi) {
           throw new Error('Bee URL is not valid')
         }
@@ -30,13 +30,12 @@ export default function StakeModal({ onStarted, onFinished }: Props): ReactEleme
         onStarted()
 
         try {
-          await beeApi.depositStake(amount.toString())
+          const transactionHash = await beeApi.depositStake(amount)
+          return transactionHash
         } finally {
           refresh()
           onFinished()
         }
-
-        return 'unknown'
       }}
     />
   )
