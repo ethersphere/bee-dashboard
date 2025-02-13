@@ -1,5 +1,4 @@
-import { decodeCid } from '@ethersphere/swarm-cid'
-import { BatchId, Bee, PostageBatch } from '@upcoming/bee-js'
+import { BatchId, Bee, PostageBatch, Reference } from '@upcoming/bee-js'
 import { BigNumber } from 'bignumber.js'
 import { BZZ_LINK_DOMAIN } from '../constants'
 
@@ -130,13 +129,7 @@ export function extractSwarmCid(s: string): string | undefined {
 
   const cid = matches[1]
   try {
-    const decodeResult = decodeCid(cid)
-
-    if (!decodeResult.type) {
-      return
-    }
-
-    return decodeResult.reference
+    return new Reference(cid).toHex()
   } catch (e) {
     return
   }
