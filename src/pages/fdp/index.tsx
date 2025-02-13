@@ -25,6 +25,7 @@ async function makeFdp(): Promise<FdpStorage | null> {
   }
 
   // TODO: FDS has bad types
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return new FdpStorage('http://localhost:1633', highestCapacityBatch.batchID.toHex() as any, {
     ensOptions: {
       rpcUrl: sepolia,
