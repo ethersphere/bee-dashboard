@@ -90,7 +90,7 @@ interface Props {
   expires: string
   preview?: string
   description?: boolean
-  tag?: boolean
+  label?: string
   shared?: 'me' | 'others'
   warning?: boolean
   addedToQueue?: boolean
@@ -104,7 +104,7 @@ const FileItem = ({
   expires,
   preview,
   description,
-  tag,
+  label,
   shared,
   warning,
   addedToQueue,
@@ -129,14 +129,14 @@ const FileItem = ({
           </div>
           <div className={classes.flexDisplay}>
             <div className={classes.fileDataText}>
-              {expires} - {size} GB
+              {expires} - {size}
             </div>
           </div>
         </div>
         <div className={classes.rightSide}>
           <div className={classes.icons}>
             {description ? <FileDescriptionIcon /> : null}
-            {tag ? <FileLabelIcon /> : null}
+            {label ? <FileLabelIcon /> : null}
             {shared ? <SharedIcon sharedBy={shared} /> : null}
             {warning ? <NotificationSign text="!" /> : null}
           </div>

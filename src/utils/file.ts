@@ -124,3 +124,9 @@ export function packageFile(file: FilePath, pathOverwrite?: string): FilePath {
     arrayBuffer: async () => await file.arrayBuffer(),
   }
 }
+
+export function getFileType(input: string): string {
+  const index = input.indexOf('/')
+
+  return index !== -1 ? input.substring(0, index) : input
+}
