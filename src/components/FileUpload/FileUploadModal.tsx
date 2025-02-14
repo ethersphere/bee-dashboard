@@ -1,7 +1,10 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
+import { useState } from 'react'
 import { SwarmTextInput } from '../SwarmTextInput'
-
+import { FileManager } from '@solarpunkltd/file-manager-lib'
+import { getHumanReadableFileSize, getFileType } from '../../utils/file'
+//TODO-Filemanager: volume management
 const useStyles = makeStyles(() =>
   createStyles({
     modal: {
@@ -65,12 +68,35 @@ const useStyles = makeStyles(() =>
   }),
 )
 
-interface VolumeModalProps {
+interface UploadModalProps {
   modalDisplay: (value: boolean) => void
+  fileSize?: number
+  file: File
 }
 
-const UploadModal = (props: VolumeModalProps): ReactElement => {
+const UploadModal = ({ modalDisplay, file }: UploadModalProps): ReactElement => {
   const classes = useStyles()
+  const [description, setDescription] = useState('')
+  const [label, setLabel] = useState('')
+  const filemanager = new FileManager()
+  filemanager.initialize()
+
+  const handleUpload = () => {
+    filemanager.upload('123', '123', {
+      name: file.name,
+      valid: '01/01/2024 00:00',
+      size: getHumanReadableFileSize(file.size),
+      description: description,
+      label: label,
+      shared: 'me',
+      uploaded: 'by user',
+      type: getFileType(file.type),
+      preview: 'true',
+      warning: 'true',
+      addedToQueue: 'false',
+    })
+    modalDisplay(false)
+  }
 
   return (
     <div className={classes.modal}>
@@ -92,7 +118,7 @@ const UploadModal = (props: VolumeModalProps): ReactElement => {
             </div>
             <div className={classes.item}>
               <div>Selected item types:</div>
-              <div className={classes.itemValue}>Files, Folders</div>
+              <div className={classes.itemValue}>{file.type}</div>
             </div>
             <div className={classes.item}>
               <div>Free space:</div>
@@ -100,20 +126,34 @@ const UploadModal = (props: VolumeModalProps): ReactElement => {
             </div>
             <div className={classes.item}>
               <div>Neccessary space:</div>
-              <div className={classes.itemValue}>1.08GB</div>
+              <div className={classes.itemValue}>{file.size}</div>
             </div>
           </div>
-          <SwarmTextInput name="addDetails" label="Add details" multiline={true} rows={4} required={false} />
-          <SwarmTextInput name="addLabels" label="Add labels" multiline={true} rows={4} required={false} />
+          <SwarmTextInput
+            name="addDetails"
+            label="Add details"
+            multiline={true}
+            rows={4}
+            required={false}
+            onChange={e => setDescription(e.target.value)}
+          />
+          <SwarmTextInput
+            name="addLabels"
+            label="Add labels"
+            multiline={true}
+            rows={4}
+            required={false}
+            onChange={e => setLabel(e.target.value)}
+          />
         </div>
         <div style={{ display: 'flex', gap: '25px', justifyContent: 'right' }}>
-          <div className={classes.buttonElement} style={{ width: '160px' }} onClick={() => props.modalDisplay(false)}>
+          <div className={classes.buttonElement} style={{ width: '160px' }} onClick={() => modalDisplay(false)}>
             Cancel
           </div>
           <div
             className={classes.buttonElement}
             style={{ width: '160px', backgroundColor: '#DE7700', color: '#FFFFFF' }}
-            onClick={() => props.modalDisplay(false)}
+            onClick={handleUpload}
           >
             Upload
           </div>

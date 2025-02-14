@@ -3,7 +3,7 @@ import type { ReactElement } from 'react'
 import { useState } from 'react'
 import SwarmIcon from '../../assets/images/swarmIcon.png'
 import FileUploadModal from './FileUploadModal'
-
+//TODO-Filemanager: volume management
 const useStyles = makeStyles(() =>
   createStyles({
     container: {
@@ -86,7 +86,9 @@ const Upload = (): ReactElement => {
       </div>
 
       <input type="file" onChange={handleFileChange} style={{ display: 'none' }} id="file-upload" />
-      {isModalOpen ? <FileUploadModal modalDisplay={value => setIsModalOpen(value)} /> : null}
+      {isModalOpen && selectedFile ? (
+        <FileUploadModal modalDisplay={value => setIsModalOpen(value)} file={selectedFile} />
+      ) : null}
     </div>
   )
 }

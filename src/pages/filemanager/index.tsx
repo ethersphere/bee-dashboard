@@ -1,8 +1,9 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useContext, useEffect, useState } from 'react'
 import { FileInfo, FileManager } from '@solarpunkltd/file-manager-lib'
 import { createStyles, makeStyles, Typography } from '@material-ui/core'
 import FileItem from '../../components/FileItem'
 import FilesHandler from '../../components/FilesHandler'
+import { Context as FileManagerContext } from '../../providers/FileManager'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -31,9 +32,8 @@ const useStyles = makeStyles(() =>
   }),
 )
 export default function FM(): ReactElement {
+  const { filemanager } = useContext(FileManagerContext)
   const classes = useStyles()
-  const filemanager = new FileManager()
-  filemanager.initialize()
   const [fileList, setFileList] = useState<FileInfo[]>([])
   const [fileListError, setFileListError] = useState(false)
 
@@ -75,7 +75,7 @@ export default function FM(): ReactElement {
                 expires={file.customMetadata?.valid ? file.customMetadata.valid : ''}
                 preview={file.customMetadata?.preview ? file.customMetadata.preview : ''}
                 description={file.customMetadata?.description === 'true'}
-                tag={file.customMetadata?.tag === 'true'}
+                label={file.customMetadata?.label}
                 shared={
                   file.customMetadata?.shared === 'me' || file.customMetadata?.shared === 'others'
                     ? file.customMetadata.shared
