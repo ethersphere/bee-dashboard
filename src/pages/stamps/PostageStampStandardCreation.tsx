@@ -1,6 +1,6 @@
-import { PostageBatchOptions, Utils } from '@ethersphere/bee-js'
 import { Box, Button, Grid, Slider, Typography } from '@material-ui/core'
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles'
+import { PostageBatchOptions, Utils } from '@upcoming/bee-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -10,7 +10,7 @@ import { SwarmTextInput } from '../../components/SwarmTextInput'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as StampsContext } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
-import { calculateStampPrice, convertAmountToSeconds, secondsToTimeString, waitUntilStampExists } from '../../utils'
+import { secondsToTimeString, waitUntilStampExists } from '../../utils'
 
 interface Props {
   onFinished: () => void
@@ -47,7 +47,7 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
   const { beeApi } = useContext(SettingsContext)
 
   const [depthInput, setDepthInput] = useState<number>(Utils.getDepthForCapacity(4))
-  const [amountInput, setAmountInput] = useState<string>(Utils.getAmountForTtl(30))
+  const [amountInput, setAmountInput] = useState<bigint>(Utils.getAmountForTtl(30))
   const [labelInput, setLabelInput] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [buttonValue, setButtonValue] = useState(4)
@@ -62,18 +62,18 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
 
   const { enqueueSnackbar } = useSnackbar()
 
-  function getTtl(amount: string): string {
+  function getTtl(amount: bigint): string {
     const pricePerBlock = 24000
 
     return `${secondsToTimeString(
-      convertAmountToSeconds(parseInt(amount, 10), pricePerBlock),
-    )} (with price of ${pricePerBlock.toFixed(0)} PLUR per block)`
+      Utils.getStampTtlSeconds(amount, pricePerBlock),
+    )} (with price of ${pricePerBlock} PLUR per block)`
   }
 
   function getPrice(depth: number, amount: bigint): string {
-    const price = calculateStampPrice(depth, amount)
+    const price = Utils.getStampCost(depth, amount)
 
-    return `${price.toSignificantDigits()} xBZZ`
+    return `${price.toSignificantDigits(4)} xBZZ`
   }
 
   async function submit() {

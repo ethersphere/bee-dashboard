@@ -1,4 +1,5 @@
 import { Box, Tooltip, Typography } from '@material-ui/core'
+import { BZZ, DAI } from '@upcoming/bee-js'
 import { Wallet } from 'ethers'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
@@ -11,15 +12,14 @@ import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { Loading } from '../../components/Loading'
 import { SwarmButton } from '../../components/SwarmButton'
-import { Token } from '../../models/Token'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as TopUpContext } from '../../providers/TopUp'
 import { Context as BalanceProvider } from '../../providers/WalletBalance'
 import { createGiftWallet } from '../../utils/desktop'
 import { ResolvedWallet } from '../../utils/wallet'
 
-const GIFT_WALLET_FUND_DAI_AMOUNT = Token.fromDecimal('0.1', 18)
-const GIFT_WALLET_FUND_BZZ_AMOUNT = Token.fromDecimal('0.5', 16)
+const GIFT_WALLET_FUND_DAI_AMOUNT = DAI.fromDecimalString('0.1')
+const GIFT_WALLET_FUND_BZZ_AMOUNT = BZZ.fromDecimalString('0.5')
 
 export default function Index(): ReactElement {
   const { giftWallets, addGiftWallet } = useContext(TopUpContext)
@@ -72,8 +72,7 @@ export default function Index(): ReactElement {
   }
 
   const notEnoughFundsCheck =
-    balance.dai.toBigNumber.isLessThanOrEqualTo(GIFT_WALLET_FUND_DAI_AMOUNT.toBigNumber) ||
-    balance.bzz.toBigNumber.isLessThan(GIFT_WALLET_FUND_BZZ_AMOUNT.toBigNumber)
+    balance.dai.lte(GIFT_WALLET_FUND_DAI_AMOUNT) || balance.bzz.lt(GIFT_WALLET_FUND_BZZ_AMOUNT)
 
   return (
     <>

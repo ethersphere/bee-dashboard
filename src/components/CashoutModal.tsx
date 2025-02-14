@@ -9,7 +9,6 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import Zap from 'remixicon-react/FlashlightLineIcon'
 import { Context as SettingsContext } from '../providers/Settings'
-import EthereumAddress from './EthereumAddress'
 
 interface Props {
   peerId: string
@@ -37,13 +36,9 @@ export default function CheckoutModal({ peerId, uncashedAmount }: Props): ReactE
         .cashoutLastCheque(peerId)
         .then(res => {
           setOpen(false)
-          enqueueSnackbar(
-            <span>
-              Successfully cashed out cheque. Transaction
-              <EthereumAddress hideBlockie transaction address={res} />
-            </span>,
-            { variant: 'success' },
-          )
+          enqueueSnackbar(<span>Successfully cashed out cheque. Transaction {res.toHex()}</span>, {
+            variant: 'success',
+          })
         })
         .catch((e: Error) => {
           console.error(e) // eslint-disable-line

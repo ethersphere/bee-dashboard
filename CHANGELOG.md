@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.0](https://github.com/ethersphere/bee-dashboard/compare/v0.30.0...v0.31.0) (2025-01-13)
+
+
+### Features
+
+* remove experimental FDP menu item ([#687](https://github.com/ethersphere/bee-dashboard/issues/687)) ([a6125b3](https://github.com/ethersphere/bee-dashboard/commit/a6125b3d0b0b680a9fa61a8edcd75b2ae6c153e0))
+
 ## [0.30.0](https://github.com/ethersphere/bee-dashboard/compare/v0.29.0...v0.30.0) (2024-11-25)
 
 

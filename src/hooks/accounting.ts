@@ -1,22 +1,20 @@
-import { Bee, LastCashoutActionResponse } from '@ethersphere/bee-js'
+import { AllSettlements, Bee, BZZ, LastCashoutActionResponse, PeerBalance, Settlements } from '@upcoming/bee-js'
 import { useEffect, useState } from 'react'
-import { Token } from '../models/Token'
-import { Balance, Settlement, Settlements } from '../types'
 import { makeRetriablePromise, unwrapPromiseSettlements } from '../utils'
 
 interface UseAccountingHook {
   isLoadingUncashed: boolean
-  totalUncashed: Token
+  totalUncashed: BZZ
   accounting: Accounting[] | null
 }
 
 export interface Accounting {
   peer: string
-  uncashedAmount: Token
-  balance: Token
-  received: Token
-  sent: Token
-  total: Token
+  uncashedAmount: BZZ
+  balance: BZZ
+  received: BZZ
+  sent: BZZ
+  total: BZZ
 }
 
 /**
@@ -29,8 +27,8 @@ export interface Accounting {
  * @returns
  */
 function mergeAccounting(
-  balances: Balance[] | null,
-  settlements?: Settlement[],
+  balances: PeerBalance[] | null,
+  settlements?: Settlements[],
   uncashedAmounts?: LastCashoutActionResponse[],
 ): Accounting[] | null {
   // Settlements or balances are still loading or there is an error -> return null
@@ -44,9 +42,9 @@ function mergeAccounting(
       (accounting[peer] = {
         peer,
         balance,
-        sent: new Token('0'),
-        received: new Token('0'),
-        uncashedAmount: new Token('0'),
+        sent: BZZ.fromPLUR('0'),
+        received: BZZ.fromPLUR('0'),
+        uncashedAmount: BZZ.fromPLUR('0'),
         total: balance,
       }),
   )
@@ -57,7 +55,7 @@ function mergeAccounting(
         ...accounting[peer],
         sent,
         received,
-        total: new Token(accounting[peer].balance.toBigNumber.plus(received.toBigNumber).minus(sent.toBigNumber)),
+        total: accounting[peer].balance.plus(received).minus(sent),
       }),
   )
 
@@ -65,14 +63,16 @@ function mergeAccounting(
   if (!uncashedAmounts) return Object.values(accounting).sort((a, b) => (a.peer < b.peer ? -1 : 1))
 
   uncashedAmounts?.forEach(({ peer, uncashedAmount }) => {
-    accounting[peer].uncashedAmount = new Token(uncashedAmount)
+    accounting[peer].uncashedAmount = uncashedAmount
   })
 
   // Return sorted by the uncashed amount first and then by the peer id
   return Object.values(accounting).sort((a, b) => {
-    const diff = b.uncashedAmount.toBigNumber.minus(a.uncashedAmount.toBigNumber).toNumber()
+    const diff = Number(b.uncashedAmount.minus(a.uncashedAmount))
 
-    if (diff !== 0) return diff
+    if (diff !== 0) {
+      return diff
+    }
 
     return a.peer < b.peer ? -1 : 1
   })
@@ -80,8 +80,8 @@ function mergeAccounting(
 
 export const useAccounting = (
   beeApi: Bee | null,
-  settlements: Settlements | null,
-  balances: Balance[] | null,
+  settlements: AllSettlements | null,
+  balances: PeerBalance[] | null,
 ): UseAccountingHook => {
   const [isLoadingUncashed, setIsloadingUncashed] = useState<boolean>(false)
   const [uncashedAmounts, setUncashedAmounts] = useState<LastCashoutActionResponse[] | undefined>(undefined)
@@ -92,7 +92,7 @@ export const useAccounting = (
 
     setIsloadingUncashed(true)
     const promises = settlements.settlements
-      .filter(({ received }) => received.toBigNumber.gt('0'))
+      .filter(({ received }) => received.gt(BZZ.fromPLUR('0')))
       .map(({ peer }) => makeRetriablePromise(() => beeApi.getLastCashoutAction(peer)))
 
     Promise.allSettled(promises).then(settlements => {
@@ -104,10 +104,8 @@ export const useAccounting = (
 
   const accounting = mergeAccounting(balances, settlements?.settlements, uncashedAmounts)
 
-  let totalUncashed: Token = new Token('0')
-  accounting?.forEach(
-    ({ uncashedAmount }) => (totalUncashed = new Token(totalUncashed.toBigNumber.plus(uncashedAmount.toBigNumber))),
-  )
+  let totalUncashed = BZZ.fromPLUR('0')
+  accounting?.forEach(({ uncashedAmount }) => (totalUncashed = totalUncashed.plus(uncashedAmount)))
 
   return {
     isLoadingUncashed,

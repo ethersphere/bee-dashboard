@@ -1,4 +1,4 @@
-import { BeeModes, Utils } from '@ethersphere/bee-js'
+import { BeeModes, MantarayNode, Reference } from '@upcoming/bee-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -11,7 +11,6 @@ import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
 import { recognizeEnsOrSwarmHash, regexpEns } from '../../utils'
 import { HISTORY_KEYS, determineHistoryName, putHistory } from '../../utils/local-storage'
-import { ManifestJs } from '../../utils/manifest'
 import { FileNavigation } from './FileNavigation'
 
 export function Download(): ReactElement {
@@ -26,40 +25,40 @@ export function Download(): ReactElement {
   const navigate = useNavigate()
 
   const validateChange = (value: string) => {
-    if (
-      Utils.isHexString(value, 64) ||
-      Utils.isHexString(value, 128) ||
-      !value.trim().length ||
-      regexpEns.test(value)
-    ) {
+    if (Reference.isValid(value) || regexpEns.test(value)) {
       setReferenceError(undefined)
     } else {
       setReferenceError('Incorrect format of swarm hash. Expected 64 or 128 hexstring characters or ENS domain.')
     }
   }
 
+  // TODO: Test this for feeds, bzz, and bytes
   async function onSwarmIdentifier(identifier: string) {
-    setLoading(true)
-
     if (!beeApi) {
       setLoading(false)
 
       return
     }
 
+    setLoading(true)
+
     try {
-      const manifestJs = new ManifestJs(beeApi)
-      const feedIdentifier = await manifestJs.resolveFeedManifest(identifier)
+      const manifest = await MantarayNode.unmarshal(beeApi, identifier)
+      await manifest.loadRecursively(beeApi)
+      const rootMetadata = manifest.getRootMetadata().getOrThrow()
 
-      if (feedIdentifier) {
-        identifier = feedIdentifier
-      }
-      const isManifest = await manifestJs.isManifest(identifier)
+      if (rootMetadata['swarm-feed-owner'] && rootMetadata['swarm-feed-topic']) {
+        const owner = rootMetadata['swarm-feed-owner']
+        const topic = rootMetadata['swarm-feed-topic']
 
-      if (!isManifest) {
-        throw Error('The specified hash does not contain valid content.')
+        const reader = beeApi.makeFeedReader(topic, owner)
+        const response = await reader.download()
+
+        const reference = new Reference(response.payload)
+        identifier = reference.toHex()
       }
-      const indexDocument = await manifestJs.getIndexDocumentPath(identifier)
+
+      const indexDocument = rootMetadata['swarm-index-document'] ?? null
       putHistory(HISTORY_KEYS.DOWNLOAD_HISTORY, identifier, determineHistoryName(identifier, indexDocument))
       setUploadOrigin(defaultUploadOrigin)
       navigate(ROUTES.HASH.replace(':hash', identifier))

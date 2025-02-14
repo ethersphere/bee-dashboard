@@ -1,24 +1,23 @@
-import { ReactElement, ReactNode, useState } from 'react'
 import Button from '@material-ui/core/Button'
-import Input from '@material-ui/core/Input'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import FormHelperText from '@material-ui/core/FormHelperText'
-import { Token } from '../models/Token'
-import type { BigNumber } from 'bignumber.js'
+import Input from '@material-ui/core/Input'
+import { BZZ, TransactionId } from '@upcoming/bee-js'
 import { useSnackbar } from 'notistack'
+import { ReactElement, ReactNode, useState } from 'react'
 
 interface Props {
   successMessage: string
   errorMessage: string
   dialogMessage: string
   label: string
-  max?: BigNumber
-  min?: BigNumber
-  action: (amount: bigint) => Promise<string>
+  max?: BZZ
+  min?: BZZ
+  action: (amount: BZZ) => Promise<TransactionId>
   icon?: ReactNode
 }
 
@@ -34,7 +33,7 @@ export default function WithdrawDepositModal({
 }: Props): ReactElement {
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState('')
-  const [amountToken, setAmountToken] = useState<Token | null>(null)
+  const [amountToken, setAmountToken] = useState<BZZ | null>(null)
   const [amountError, setAmountError] = useState<Error | null>(null)
   const { enqueueSnackbar } = useSnackbar()
 
@@ -51,7 +50,7 @@ export default function WithdrawDepositModal({
     if (amountToken === null) return
 
     try {
-      const transactionHash = await action(amountToken.toBigInt as bigint)
+      const transactionHash = await action(amountToken)
       setOpen(false)
       enqueueSnackbar(`${successMessage} Transaction ${transactionHash}`, { variant: 'success' })
     } catch (e) {
@@ -65,12 +64,12 @@ export default function WithdrawDepositModal({
     setAmount(value)
     setAmountError(null)
     try {
-      const t = Token.fromDecimal(value)
+      const t = BZZ.fromDecimalString(value)
       setAmountToken(t)
 
-      if (min && t.toDecimal.isLessThan(min)) setAmountError(new Error(`Needs to be more than ${min}`))
+      if (min && t.lt(min)) setAmountError(new Error(`Needs to be more than ${min}`))
 
-      if (max && t.toDecimal.isGreaterThan(max)) setAmountError(new Error(`Needs to be less than ${max}`))
+      if (max && t.gt(max)) setAmountError(new Error(`Needs to be less than ${max}`))
     } catch (e) {
       setAmountError(e as Error)
     }

@@ -1,4 +1,3 @@
-import { Bee } from '@ethersphere/bee-js'
 import { Box } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
@@ -6,6 +5,7 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Input from '@material-ui/core/Input'
+import { BatchId, Bee } from '@upcoming/bee-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, ReactNode, useState } from 'react'
 
@@ -13,14 +13,14 @@ interface Props {
   type: 'Topup' | 'Dilute'
   icon: ReactNode
   bee: Bee
-  stamp: string
+  stamp: BatchId
 }
 
 export default function StampExtensionModal({ type, icon, bee, stamp }: Props): ReactElement {
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState('')
   const { enqueueSnackbar } = useSnackbar()
-  const label = `${type} ${stamp.substring(0, 8)}`
+  const label = `${type} ${stamp.toHex().substring(0, 8)}`
 
   const handleClickOpen = (e: React.MouseEvent<HTMLButtonElement>) => {
     setOpen(true)

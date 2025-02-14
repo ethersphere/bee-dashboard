@@ -1,4 +1,5 @@
 import { Box, Grid, Typography } from '@material-ui/core'
+import { DAI } from '@upcoming/bee-js'
 import { ReactElement, useContext } from 'react'
 import { useNavigate } from 'react-router'
 import Check from 'remixicon-react/CheckLineIcon'
@@ -12,7 +13,7 @@ import { Context } from '../../providers/Bee'
 import { Context as BalanceProvider } from '../../providers/WalletBalance'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
 
-const MINIMUM_XDAI = '0.5'
+const MINIMUM_XDAI = DAI.fromDecimalString('0.5')
 
 interface Props {
   header: string
@@ -30,7 +31,7 @@ export default function Index({ header, title, p, next }: Props): ReactElement {
     return <Loading />
   }
 
-  const disabled = balance.dai.toDecimal.lt(MINIMUM_XDAI)
+  const disabled = balance.dai.lt(MINIMUM_XDAI)
 
   return (
     <>
@@ -44,7 +45,7 @@ export default function Index({ header, title, p, next }: Props): ReactElement {
       <Box mb={4}>{p}</Box>
       <SwarmDivider mb={4} />
       <Box mb={0.25}>
-        <ExpandableListItemKey label="Funding wallet address" value={nodeAddresses.ethereum} expanded />
+        <ExpandableListItemKey label="Funding wallet address" value={nodeAddresses.ethereum.toChecksum()} expanded />
       </Box>
       <Box mb={4}>
         <ExpandableListItem label="xDAI balance" value={balance.dai.toSignificantDigits(4)} />

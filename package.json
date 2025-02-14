@@ -1,6 +1,6 @@
 {
   "name": "@ethersphere/bee-dashboard",
-  "version": "0.30.0",
+  "version": "0.31.0",
   "description": "An app which helps users to setup their Bee node and do actions like cash out cheques",
   "keywords": [
     "bee",
@@ -26,13 +26,12 @@
     "url": "https://github.com/ethersphere/bee-dashboard.git"
   },
   "dependencies": {
-    "@ethersphere/bee-js": "^8.3.1",
-    "@ethersphere/swarm-cid": "^0.1.0",
     "@fairdatasociety/fdp-storage": "^0.19.0",
     "@material-ui/core": "4.12.3",
     "@material-ui/icons": "4.11.2",
     "@material-ui/lab": "4.0.0-alpha.57",
     "@solarpunkltd/file-manager-lib": "^0.0.10",
+    "@upcoming/bee-js": "^0.5.5",
     "axios": "^0.28.1",
     "bignumber.js": "^9.1.2",
     "buffer": "^6.0.3",
@@ -44,7 +43,6 @@
     "formik": "2.2.9",
     "formik-material-ui": "3.0.1",
     "jszip": "^3.10.1",
-    "mantaray-js": "^1.0.3",
     "material-ui-dropzone": "3.5.0",
     "notistack": "^3.0.1",
     "opener": "1.5.2",

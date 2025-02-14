@@ -1,7 +1,7 @@
 import { createContext, ReactChild, ReactElement, useContext, useEffect, useState } from 'react'
-import { Context as SettingsContext } from './Settings'
-import { Context as BeeContext } from './Bee'
 import { WalletAddress } from '../utils/wallet'
+import { Context as BeeContext } from './Bee'
+import { Context as SettingsContext } from './Settings'
 
 interface ContextInterface {
   balance: WalletAddress | null

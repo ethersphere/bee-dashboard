@@ -1,4 +1,4 @@
-import { BigNumber } from 'bignumber.js'
+import { BZZ } from '@upcoming/bee-js'
 import { ReactElement, useContext } from 'react'
 import Upload from 'remixicon-react/UploadLineIcon'
 import WithdrawDepositModal from '../components/WithdrawDepositModal'
@@ -16,13 +16,13 @@ export default function WithdrawModal(): ReactElement {
       dialogMessage="Amount of xBZZ to withdraw from the checkbook to your node."
       label="Withdraw"
       icon={<Upload size="1rem" />}
-      min={new BigNumber(0)}
-      action={async (amount: bigint) => {
+      min={BZZ.fromPLUR('1')}
+      action={async (amount: BZZ) => {
         if (!beeApi) {
           throw new Error('Bee URL is not valid')
         }
 
-        const transactionHash = await beeApi.withdrawTokens(amount.toString())
+        const transactionHash = await beeApi.withdrawTokens(amount)
         refresh()
 
         return transactionHash

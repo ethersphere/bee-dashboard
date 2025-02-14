@@ -1,5 +1,5 @@
-import { PostageBatchOptions, Utils } from '@ethersphere/bee-js'
 import { Box, Grid, IconButton, Typography, createStyles, makeStyles } from '@material-ui/core'
+import { PostageBatchOptions, Utils } from '@upcoming/bee-js'
 import BigNumber from 'bignumber.js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
@@ -13,7 +13,7 @@ import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as StampsContext } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
-import { calculateStampPrice, convertAmountToSeconds, secondsToTimeString, waitUntilStampExists } from '../../utils'
+import { secondsToTimeString, waitUntilStampExists } from '../../utils'
 import { getHumanReadableFileSize } from '../../utils/file'
 
 interface Props {
@@ -61,18 +61,18 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
 
   const { enqueueSnackbar } = useSnackbar()
 
-  function getTtl(amount: number): string {
+  function getTtl(amount: bigint): string {
     const isCurrentPriceAvailable = chainState && chainState.currentPrice
 
     if (amount <= 0 || !isCurrentPriceAvailable) {
       return '-'
     }
 
-    const pricePerBlock = Number.parseInt(chainState.currentPrice, 10)
+    const pricePerBlock = chainState.currentPrice
 
     return `${secondsToTimeString(
-      convertAmountToSeconds(amount, pricePerBlock),
-    )} (with price of ${pricePerBlock.toFixed(0)} PLUR per block)`
+      Utils.getStampTtlSeconds(amount, pricePerBlock),
+    )} (with price of ${pricePerBlock} PLUR per block)`
   }
 
   function getPrice(depth: number, amount: bigint): string {
@@ -82,9 +82,9 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
       return '-'
     }
 
-    const price = calculateStampPrice(depth, amount)
+    const price = Utils.getStampCost(depth, amount)
 
-    return `${price.toSignificantDigits()} xBZZ`
+    return `${price.toSignificantDigits(4)} xBZZ`
   }
 
   async function submit() {
@@ -227,7 +227,7 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
         <Box mt={0.25} sx={{ bgcolor: '#f6f6f6' }} p={2}>
           <Grid container justifyContent="space-between">
             <Typography>Corresponding TTL (Time to live)</Typography>
-            <Typography>{!amountError && amountInput ? getTtl(Number.parseInt(amountInput, 10)) : '-'}</Typography>
+            <Typography>{!amountError && amountInput ? getTtl(BigInt(amountInput)) : '-'}</Typography>
           </Grid>
         </Box>
         {amountError && <Typography>{amountError}</Typography>}
