@@ -12,7 +12,7 @@ interface Props {
 export function AssetSyncing({ reference }: Props): ReactElement {
   const { beeApi } = useContext(SettingsContext)
 
-  const syncTimer = useRef<NodeJS.Timer>()
+  const syncTimer = useRef<ReturnType<typeof setInterval>>()
   const [isRetrieveChecking, setIsRetrieveChecking] = useState<boolean>(false)
   const [syncProgress, setSyncProgress] = useState<number>(0)
 
@@ -56,7 +56,7 @@ export function AssetSyncing({ reference }: Props): ReactElement {
   }, [syncProgress])
 
   useEffect(() => {
-    /*   
+    /*
           There are instances when it seems that the content isn't synchronized, despite being already available.
           To ensure it's not due to invalid synchronization data,
           verify availability from at least 70% using one of the stewardship endpoints.
