@@ -10,7 +10,7 @@ import { SwarmTextInput } from '../../components/SwarmTextInput'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as StampsContext } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
-import { convertAmountToSeconds, secondsToTimeString, waitUntilStampExists } from '../../utils'
+import { secondsToTimeString, waitUntilStampExists } from '../../utils'
 
 interface Props {
   onFinished: () => void
@@ -63,10 +63,10 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
   const { enqueueSnackbar } = useSnackbar()
 
   function getTtl(amount: bigint): string {
-    const pricePerBlock = BigInt(24000)
+    const pricePerBlock = 24000
 
     return `${secondsToTimeString(
-      convertAmountToSeconds(amount, pricePerBlock),
+      Utils.getStampTtlSeconds(amount, pricePerBlock),
     )} (with price of ${pricePerBlock} PLUR per block)`
   }
 

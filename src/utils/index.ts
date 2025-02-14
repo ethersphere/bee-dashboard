@@ -163,43 +163,36 @@ export function formatEnum(string: string): string {
   return (string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()).replaceAll('_', ' ')
 }
 
-export function secondsToTimeString(seconds: number): string {
+export function secondsToTimeString(seconds: number | bigint): string {
+  seconds = BigInt(seconds)
   let unit = seconds
 
   if (unit < 120) {
     return `${seconds} seconds`
   }
-  unit /= 60
+  unit /= BigInt(60)
 
   if (unit < 120) {
-    return `${Math.round(unit)} minutes`
+    return `${unit} minutes`
   }
-  unit /= 60
+  unit /= BigInt(60)
 
   if (unit < 48) {
-    return `${Math.round(unit)} hours`
+    return `${unit} hours`
   }
-  unit /= 24
+  unit /= BigInt(24)
 
   if (unit < 14) {
-    return `${Math.round(unit)} days`
+    return `${unit} days`
   }
-  unit /= 7
+  unit /= BigInt(7)
 
   if (unit < 52) {
-    return `${Math.round(unit)} weeks`
+    return `${unit} weeks`
   }
-  unit /= 52
+  unit /= BigInt(52)
 
-  return `${unit.toFixed(1)} years`
-}
-
-export function convertAmountToSeconds(amount: bigint, pricePerBlock: bigint): number {
-  // TODO: blocktime should come directly from the blockchain as it may differ between different networks
-  const blockTime = BigInt(5) // On mainnet there is 5 seconds between blocks
-
-  // See https://github.com/ethersphere/bee/blob/66f079930d739182c4c79eb6008784afeeba1096/pkg/debugapi/postage.go#L410-L413
-  return Number((amount * blockTime) / pricePerBlock)
+  return `${unit} years`
 }
 
 export function shortenText(text: string, length = 20, separator = '[…]'): string {

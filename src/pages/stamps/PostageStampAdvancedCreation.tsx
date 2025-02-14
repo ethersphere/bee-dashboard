@@ -13,7 +13,7 @@ import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as StampsContext } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
-import { convertAmountToSeconds, secondsToTimeString, waitUntilStampExists } from '../../utils'
+import { secondsToTimeString, waitUntilStampExists } from '../../utils'
 import { getHumanReadableFileSize } from '../../utils/file'
 
 interface Props {
@@ -68,10 +68,10 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
       return '-'
     }
 
-    const pricePerBlock = BigInt(chainState.currentPrice)
+    const pricePerBlock = chainState.currentPrice
 
     return `${secondsToTimeString(
-      convertAmountToSeconds(amount, pricePerBlock),
+      Utils.getStampTtlSeconds(amount, pricePerBlock),
     )} (with price of ${pricePerBlock} PLUR per block)`
   }
 
