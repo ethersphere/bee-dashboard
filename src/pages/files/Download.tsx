@@ -43,23 +43,24 @@ export function Download(): ReactElement {
     setLoading(true)
 
     try {
-      const manifest = await MantarayNode.unmarshal(beeApi, identifier)
+      let manifest = await MantarayNode.unmarshal(beeApi, identifier)
       await manifest.loadRecursively(beeApi)
-      const rootMetadata = manifest.getRootMetadata().getOrThrow()
 
-      if (rootMetadata['swarm-feed-owner'] && rootMetadata['swarm-feed-topic']) {
-        const owner = rootMetadata['swarm-feed-owner']
-        const topic = rootMetadata['swarm-feed-topic']
+      // If the manifest is a feed, resolve it and overwrite the manifest
+      await manifest.resolveFeed(beeApi).then(feed =>
+        feed.ifPresentAsync(async feedUpdate => {
+          manifest = MantarayNode.unmarshalFromData(feedUpdate.payload.toUint8Array())
+          await manifest.loadRecursively(beeApi)
+        }),
+      )
 
-        const reader = beeApi.makeFeedReader(topic, owner)
-        const response = await reader.download()
+      const rootMetadata = manifest.getDocsMetadata()
 
-        const reference = new Reference(response.payload)
-        identifier = reference.toHex()
-      }
-
-      const indexDocument = rootMetadata['swarm-index-document'] ?? null
-      putHistory(HISTORY_KEYS.DOWNLOAD_HISTORY, identifier, determineHistoryName(identifier, indexDocument))
+      putHistory(
+        HISTORY_KEYS.DOWNLOAD_HISTORY,
+        identifier,
+        determineHistoryName(identifier, rootMetadata.indexDocument),
+      )
       setUploadOrigin(defaultUploadOrigin)
       navigate(ROUTES.HASH.replace(':hash', identifier))
     } catch (error: unknown) {
