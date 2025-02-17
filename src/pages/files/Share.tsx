@@ -1,5 +1,5 @@
 import { Box, Typography } from '@material-ui/core'
-import { MantarayNode, Reference } from '@upcoming/bee-js'
+import { MantarayNode } from '@upcoming/bee-js'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 import { useSnackbar } from 'notistack'
@@ -45,19 +45,14 @@ export function Share(): ReactElement {
       const manifest = await MantarayNode.unmarshal(beeApi, reference)
       await manifest.loadRecursively(beeApi)
 
-      let indexDocument = null
-
-      manifest.getRootMetadata().ifPresent(metadata => {
-        indexDocument = metadata['swarm-index-document'] ?? null
-      })
-
-      const nodes = manifest.collect()
-      const entries: Record<string, string> = {}
-      nodes.forEach(node => {
-        entries[node.fullPathString] = new Reference(node.targetAddress).toHex()
-      })
+      const entries = manifest.collectAndMap()
       delete entries[META_FILE_NAME]
       setSwarmEntries(entries)
+
+      const docsMetadata = manifest.getDocsMetadata()
+
+      // needed in catch block, shadows the outer variable
+      const indexDocument = docsMetadata.indexDocument
       setIndexDocument(indexDocument)
 
       try {
