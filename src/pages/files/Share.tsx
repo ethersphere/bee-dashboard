@@ -42,8 +42,17 @@ export function Share(): ReactElement {
     }
 
     try {
-      const manifest = await MantarayNode.unmarshal(beeApi, reference)
+      let manifest = await MantarayNode.unmarshal(beeApi, reference)
       await manifest.loadRecursively(beeApi)
+
+      // If the manifest is a feed, resolve it and overwrite the manifest
+      await manifest.resolveFeed(beeApi).then(
+        async feed =>
+          await feed.ifPresentAsync(async feedUpdate => {
+            manifest = MantarayNode.unmarshalFromData(feedUpdate.payload.toUint8Array())
+            await manifest.loadRecursively(beeApi)
+          }),
+      )
 
       const entries = manifest.collectAndMap()
       delete entries[META_FILE_NAME]
