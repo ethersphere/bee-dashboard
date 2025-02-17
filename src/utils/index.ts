@@ -262,3 +262,11 @@ async function waitForStamp(
 
   throw new Error('Wait until stamp usable timeout has been reached')
 }
+
+export async function getUsableStamps(bee: Bee): Promise<PostageBatch[]> {
+  try {
+    return (await bee.getAllPostageBatch()).filter(s => s.usable)
+  } catch (error: any) {
+    return []
+  }
+}
