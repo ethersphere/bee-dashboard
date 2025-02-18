@@ -67,9 +67,9 @@ export default function WithdrawDepositModal({
       const t = BZZ.fromDecimalString(value)
       setAmountToken(t)
 
-      if (min && t.lt(min)) setAmountError(new Error(`Needs to be more than ${min}`))
+      if (min && t.lt(min)) setAmountError(new Error(`Needs to be more than ${min.toSignificantDigits(4)}`))
 
-      if (max && t.gt(max)) setAmountError(new Error(`Needs to be less than ${max}`))
+      if (max && t.gt(max)) setAmountError(new Error(`Needs to be less than ${max.toSignificantDigits(4)}`))
     } catch (e) {
       setAmountError(e as Error)
     }

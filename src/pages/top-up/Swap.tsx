@@ -102,14 +102,14 @@ export function Swap({ header }: Props): ReactElement {
     }
     const daiAfterSwap = balance.dai.minus(daiToSwap)
     setDaiAfterSwap(daiAfterSwap)
-    const tokensConverted = BZZ.fromDecimalString(daiToSwap.divide(price.toWeiBigInt()).toDecimalString())
+    const tokensConverted = daiToSwap.exchangeToBZZ(price)
     const bzzAfterSwap = tokensConverted.plus(balance.bzz)
     setBzzAfterSwap(bzzAfterSwap)
 
     if (daiAfterSwap.lt(MINIMUM_XDAI)) {
-      setError(`Must keep at least ${MINIMUM_XDAI} xDAI after swap!`)
+      setError(`Must keep at least ${MINIMUM_XDAI.toSignificantDigits(4)} xDAI after swap!`)
     } else if (bzzAfterSwap.lt(MINIMUM_XBZZ)) {
-      setError(`Must have at least ${MINIMUM_XBZZ} xBZZ after swap!`)
+      setError(`Must have at least ${MINIMUM_XBZZ.toSignificantDigits(4)} xBZZ after swap!`)
     }
   }, [error, balance, daiToSwap, price])
 
@@ -213,8 +213,8 @@ export function Swap({ header }: Props): ReactElement {
       </Box>
       <Box mb={4}>
         <Typography>
-          You need to swap xDAI to xBZZ in order to use Swarm. Make sure to keep at least {MINIMUM_XDAI} xDAI in order
-          to pay for transaction costs on the network.
+          You need to swap xDAI to xBZZ in order to use Swarm. Make sure to keep at least{' '}
+          {MINIMUM_XDAI.toSignificantDigits(4)} xDAI in order to pay for transaction costs on the network.
         </Typography>
       </Box>
       <SwarmDivider mb={4} />

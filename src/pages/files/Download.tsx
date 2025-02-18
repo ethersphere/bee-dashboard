@@ -47,11 +47,12 @@ export function Download(): ReactElement {
       await manifest.loadRecursively(beeApi)
 
       // If the manifest is a feed, resolve it and overwrite the manifest
-      await manifest.resolveFeed(beeApi).then(feed =>
-        feed.ifPresentAsync(async feedUpdate => {
-          manifest = MantarayNode.unmarshalFromData(feedUpdate.payload.toUint8Array())
-          await manifest.loadRecursively(beeApi)
-        }),
+      await manifest.resolveFeed(beeApi).then(
+        async feed =>
+          await feed.ifPresentAsync(async feedUpdate => {
+            manifest = MantarayNode.unmarshalFromData(feedUpdate.payload.toUint8Array())
+            await manifest.loadRecursively(beeApi)
+          }),
       )
 
       const rootMetadata = manifest.getDocsMetadata()
