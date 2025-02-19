@@ -1,5 +1,5 @@
-import { BeeModes, Utils } from '@ethersphere/bee-js'
 import { Box, Grid, Typography } from '@material-ui/core'
+import { BeeModes } from '@upcoming/bee-js'
 import { ReactElement, useContext } from 'react'
 import { useNavigate } from 'react-router'
 import Download from 'remixicon-react/DownloadLineIcon'
@@ -56,11 +56,7 @@ export function AccountWallet(): ReactElement {
       {balance && nodeAddresses ? (
         <>
           <Box mb={0.25}>
-            <ExpandableListItemKey
-              label="Node wallet address"
-              value={Utils.capitalizeAddressERC55(nodeAddresses.ethereum)}
-              expanded
-            />
+            <ExpandableListItemKey label="Node wallet address" value={nodeAddresses.ethereum.toChecksum()} expanded />
           </Box>
           <Box mb={0.25}>
             <ExpandableListItem label="xDAI balance" value={`${balance.dai.toSignificantDigits(4)} xDAI`} />

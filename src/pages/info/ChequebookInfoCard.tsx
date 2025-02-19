@@ -1,3 +1,4 @@
+import { BZZ } from '@upcoming/bee-js'
 import { useContext } from 'react'
 import { useNavigate } from 'react-router'
 import ExchangeFunds from 'remixicon-react/ExchangeFundsLineIcon'
@@ -9,10 +10,7 @@ export function ChequebookInfoCard() {
   const { chequebookBalance } = useContext(BeeContext)
   const navigate = useNavigate()
 
-  if (
-    chequebookBalance?.availableBalance !== undefined &&
-    chequebookBalance?.availableBalance.toBigNumber.isGreaterThan(0)
-  ) {
+  if (chequebookBalance?.availableBalance !== undefined && chequebookBalance?.availableBalance.gt(BZZ.fromPLUR('0'))) {
     return (
       <Card
         buttonProps={{

@@ -5,7 +5,7 @@ import ExpandableListItemActions from '../../../components/ExpandableListItemAct
 import { Loading } from '../../../components/Loading'
 import TroubleshootConnectionCard from '../../../components/TroubleshootConnectionCard'
 import StakeModal from '../../../containers/StakeModal'
-import { CheckState, Context as BeeContext } from '../../../providers/Bee'
+import { Context as BeeContext, CheckState } from '../../../providers/Bee'
 import { Context as BalanceContext } from '../../../providers/WalletBalance'
 import { AccountNavigation } from '../AccountNavigation'
 import { Header } from '../Header'
@@ -31,11 +31,11 @@ export function AccountStaking(): ReactElement {
       <Header />
       <AccountNavigation active="STAKING" />
       <div>
-        {loading || stake?.toDecimal === undefined ? (
+        {loading || !stake ? (
           <Loading />
         ) : (
           <ExpandableList label="Staking" defaultOpen>
-            <ExpandableListItem label="Staked BZZ" value={`${stake?.toSignificantDigits()} xBZZ`} />
+            <ExpandableListItem label="Staked BZZ" value={`${stake?.toSignificantDigits(4)} xBZZ`} />
             {balance?.bzz ? (
               <ExpandableListItem
                 label="Available xBZZ balance"

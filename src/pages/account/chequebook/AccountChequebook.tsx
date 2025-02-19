@@ -1,4 +1,3 @@
-import { Utils } from '@ethersphere/bee-js'
 import { Box } from '@material-ui/core'
 import { ReactElement, useContext } from 'react'
 import ExpandableList from '../../../components/ExpandableList'
@@ -35,20 +34,20 @@ export function AccountChequebook(): ReactElement {
           <ExpandableList label="Chequebook" defaultOpen>
             <ExpandableListItem
               label="Total Balance"
-              value={`${chequebookBalance?.totalBalance.toFixedDecimal()} xBZZ`}
+              value={`${chequebookBalance?.totalBalance.toSignificantDigits(4)} xBZZ`}
             />
             <ExpandableListItem
               label="Available Uncommitted Balance"
-              value={`${chequebookBalance?.availableBalance.toFixedDecimal()} xBZZ`}
+              value={`${chequebookBalance?.availableBalance.toSignificantDigits(4)} xBZZ`}
             />
             <ExpandableListItem
               label="Total Cheques Amount Sent"
-              value={`${settlements?.totalSent.toFixedDecimal()} xBZZ`}
+              value={`${settlements?.totalSent.toSignificantDigits(4)} xBZZ`}
             />
             <Box mb={2}>
               <ExpandableListItem
                 label="Total Cheques Amount Received"
-                value={`${settlements?.totalReceived.toFixedDecimal()} xBZZ`}
+                value={`${settlements?.totalReceived.toSignificantDigits(4)} xBZZ`}
               />
             </Box>
             <ExpandableListItemActions>
@@ -60,7 +59,7 @@ export function AccountChequebook(): ReactElement {
         <ExpandableList label="Blockchain" defaultOpen>
           <ExpandableListItemKey
             label="Ethereum address"
-            value={nodeAddresses?.ethereum ? Utils.capitalizeAddressERC55(nodeAddresses.ethereum) : ''}
+            value={nodeAddresses?.ethereum ? nodeAddresses.ethereum.toChecksum() : ''}
           />
           <ExpandableListItemKey
             label="Chequebook contract address"

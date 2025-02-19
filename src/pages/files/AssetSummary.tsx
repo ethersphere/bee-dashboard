@@ -1,5 +1,5 @@
-import { Utils } from '@ethersphere/bee-js'
 import { Box } from '@material-ui/core'
+import { Reference } from '@upcoming/bee-js'
 import { ReactElement } from 'react'
 import { DocumentationText } from '../../components/DocumentationText'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
@@ -11,7 +11,7 @@ interface Props {
 }
 
 export function AssetSummary({ isWebsite, reference }: Props): ReactElement {
-  const isHash = Utils.isHexString(reference) && reference.length === 64
+  const isHash = Reference.isValid(reference)
 
   return (
     <>

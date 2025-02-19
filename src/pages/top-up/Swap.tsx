@@ -1,5 +1,5 @@
-import { BeeModes } from '@ethersphere/bee-js'
 import { Box, Typography } from '@material-ui/core'
+import { BeeModes, BZZ, DAI } from '@upcoming/bee-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
@@ -13,14 +13,12 @@ import { Loading } from '../../components/Loading'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmDivider } from '../../components/SwarmDivider'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
-import { BZZ_DECIMAL_PLACES, BzzToken } from '../../models/BzzToken'
-import { DaiToken } from '../../models/DaiToken'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as BalanceProvider } from '../../providers/WalletBalance'
 import { ROUTES } from '../../routes'
 import { sleepMs } from '../../utils'
-import { SwapError, isSwapError, wrapWithSwapError } from '../../utils/SwapError'
+import { isSwapError, SwapError, wrapWithSwapError } from '../../utils/SwapError'
 import {
   getBzzPriceAsDai,
   getDesktopConfiguration,
@@ -31,8 +29,8 @@ import {
 import { Rpc } from '../../utils/rpc'
 import { TopUpProgressIndicator } from './TopUpProgressIndicator'
 
-const MINIMUM_XDAI = '0.1'
-const MINIMUM_XBZZ = '0.1'
+const MINIMUM_XDAI = DAI.fromDecimalString('0.1')
+const MINIMUM_XBZZ = BZZ.fromDecimalString('0.1')
 
 const GENERIC_SWAP_FAILED_ERROR_MESSAGE = 'Failed to swap. The full error is printed to the console.'
 
@@ -44,11 +42,11 @@ export function Swap({ header }: Props): ReactElement {
   const [loading, setLoading] = useState(false)
   const [hasSwapped, setSwapped] = useState(false)
   const [userInputSwap, setUserInputSwap] = useState<string | null>(null)
-  const [price, setPrice] = useState(DaiToken.fromDecimal('0.6'))
+  const [price, setPrice] = useState(DAI.fromDecimalString('0.3'))
   const [error, setError] = useState<string | null>(null)
-  const [daiToSwap, setDaiToSwap] = useState<DaiToken | null>(null)
-  const [bzzAfterSwap, setBzzAfterSwap] = useState<BzzToken | null>(null)
-  const [daiAfterSwap, setDaiAfterSwap] = useState<DaiToken | null>(null)
+  const [daiToSwap, setDaiToSwap] = useState<DAI | null>(null)
+  const [bzzAfterSwap, setBzzAfterSwap] = useState<BZZ | null>(null)
+  const [daiAfterSwap, setDaiAfterSwap] = useState<DAI | null>(null)
 
   const { rpcProviderUrl, isDesktop, desktopUrl } = useContext(SettingsContext)
   const { nodeAddresses, nodeInfo } = useContext(BeeContext)
@@ -69,14 +67,14 @@ export function Swap({ header }: Props): ReactElement {
       return
     }
 
-    const minimumOptimalValue = DaiToken.fromDecimal('1').plusBaseUnits(MINIMUM_XDAI).toDecimal
+    const minimumOptimalValue = DAI.fromDecimalString('1').plus(MINIMUM_XDAI)
 
-    if (balance.dai.toDecimal.isGreaterThanOrEqualTo(minimumOptimalValue)) {
+    if (balance.dai.gte(minimumOptimalValue)) {
       // Balance has at least 1 + MINIMUM_XDAI xDai
-      setDaiToSwap(balance.dai.minusBaseUnits('1'))
+      setDaiToSwap(balance.dai.minus(DAI.fromDecimalString('1')))
     } else {
       // Balance is low, halve the amount
-      setDaiToSwap(new DaiToken(balance.dai.toBigNumber.dividedToIntegerBy(2)))
+      setDaiToSwap(balance.dai.divide(BigInt(2)))
     }
   }, [balance, userInputSwap])
 
@@ -85,10 +83,10 @@ export function Swap({ header }: Props): ReactElement {
     setError(null)
     try {
       if (userInputSwap) {
-        const dai = DaiToken.fromDecimal(userInputSwap)
+        const dai = DAI.fromDecimalString(userInputSwap)
         setDaiToSwap(dai)
 
-        if (dai.toDecimal.lte(0)) {
+        if (dai.lte(DAI.fromDecimalString('0'))) {
           setError('xDAI to swap must be a positive number')
         }
       }
@@ -102,18 +100,16 @@ export function Swap({ header }: Props): ReactElement {
     if (!balance || !daiToSwap || error) {
       return
     }
-    const daiAfterSwap = new DaiToken(balance.dai.toBigNumber.minus(daiToSwap.toBigNumber))
+    const daiAfterSwap = balance.dai.minus(daiToSwap)
     setDaiAfterSwap(daiAfterSwap)
-    const tokensConverted = BzzToken.fromDecimal(
-      daiToSwap.toBigNumber.dividedBy(price.toBigNumber).decimalPlaces(BZZ_DECIMAL_PLACES),
-    )
-    const bzzAfterSwap = new BzzToken(tokensConverted.toBigNumber.plus(balance.bzz.toBigNumber))
+    const tokensConverted = daiToSwap.exchangeToBZZ(price)
+    const bzzAfterSwap = tokensConverted.plus(balance.bzz)
     setBzzAfterSwap(bzzAfterSwap)
 
-    if (daiAfterSwap.toDecimal.lt(MINIMUM_XDAI)) {
-      setError(`Must keep at least ${MINIMUM_XDAI} xDAI after swap!`)
-    } else if (bzzAfterSwap.toDecimal.lt(MINIMUM_XBZZ)) {
-      setError(`Must have at least ${MINIMUM_XBZZ} xBZZ after swap!`)
+    if (daiAfterSwap.lt(MINIMUM_XDAI)) {
+      setError(`Must keep at least ${MINIMUM_XDAI.toSignificantDigits(4)} xDAI after swap!`)
+    } else if (bzzAfterSwap.lt(MINIMUM_XBZZ)) {
+      setError(`Must have at least ${MINIMUM_XBZZ.toSignificantDigits(4)} xBZZ after swap!`)
     }
   }, [error, balance, daiToSwap, price])
 
@@ -135,9 +131,9 @@ export function Swap({ header }: Props): ReactElement {
     }
   }
 
-  async function sendSwapRequest(daiToSwap: DaiToken) {
+  async function sendSwapRequest(daiToSwap: DAI) {
     try {
-      await performSwap(desktopUrl, daiToSwap.toString)
+      await performSwap(desktopUrl, daiToSwap)
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error)
@@ -145,7 +141,7 @@ export function Swap({ header }: Props): ReactElement {
     }
   }
 
-  async function performSwapWithChecks(daiToSwap: DaiToken) {
+  async function performSwapWithChecks(daiToSwap: DAI) {
     if (!localStorage.getItem('apiKey')) {
       throw new SwapError('API key is not set, reopen dashboard through Swarm Desktop')
     }
@@ -217,8 +213,8 @@ export function Swap({ header }: Props): ReactElement {
       </Box>
       <Box mb={4}>
         <Typography>
-          You need to swap xDAI to xBZZ in order to use Swarm. Make sure to keep at least {MINIMUM_XDAI} xDAI in order
-          to pay for transaction costs on the network.
+          You need to swap xDAI to xBZZ in order to use Swarm. Make sure to keep at least{' '}
+          {MINIMUM_XDAI.toSignificantDigits(4)} xDAI in order to pay for transaction costs on the network.
         </Typography>
       </Box>
       <SwarmDivider mb={4} />
@@ -242,7 +238,7 @@ export function Swap({ header }: Props): ReactElement {
         <ArrowDown size={24} color="#aaaaaa" />
       </Box>
       <Box mb={0.25}>
-        <ExpandableListItemKey label="Funding wallet address" value={nodeAddresses.ethereum} expanded />
+        <ExpandableListItemKey label="Funding wallet address" value={nodeAddresses.ethereum.toChecksum()} expanded />
       </Box>
       <Box mb={0.25}>
         <ExpandableListItem

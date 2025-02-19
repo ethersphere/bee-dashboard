@@ -1,3 +1,4 @@
+import { BZZ } from '@upcoming/bee-js'
 import type { ReactElement } from 'react'
 import CashoutModal from '../../components/CashoutModal'
 import ExpandableList from '../../components/ExpandableList'
@@ -5,44 +6,43 @@ import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import { Accounting } from '../../hooks/accounting'
-import type { Token } from '../../models/Token'
 
 interface Props {
   isLoadingUncashed: boolean
-  totalUncashed: Token
+  totalUncashed: BZZ
   accounting: Accounting[] | null
 }
 
 export default function PeerBalances({ accounting, isLoadingUncashed, totalUncashed }: Props): ReactElement | null {
-  const uncashedPeers = accounting?.filter(({ uncashedAmount }) => uncashedAmount.toBigNumber.isGreaterThan('0')) || []
+  const uncashedPeers = accounting?.filter(({ uncashedAmount }) => uncashedAmount.gt(BZZ.fromPLUR('0'))) || []
 
   return (
     <ExpandableList
       label={`Peers (${uncashedPeers.length})`}
-      info={`${totalUncashed.toFixedDecimal()} xBZZ (uncashed)`}
+      info={`${totalUncashed.toSignificantDigits(4)} xBZZ (uncashed)`}
     >
-      <ExpandableListItem label="Uncashed Amount Total" value={`${totalUncashed.toFixedDecimal()} xBZZ`} />
+      <ExpandableListItem label="Uncashed Amount Total" value={`${totalUncashed.toSignificantDigits(4)} xBZZ`} />
       {uncashedPeers.map(({ peer, balance, received, sent, uncashedAmount, total }) => (
         <ExpandableList
           key={peer}
           label={`Peer ${peer.slice(0, 8)}[…]`}
           level={1}
-          info={`${uncashedAmount.toFixedDecimal()} xBZZ (uncashed)`}
+          info={`${uncashedAmount.toSignificantDigits(4)} xBZZ (uncashed)`}
         >
           <ExpandableListItemKey label="Peer ID" value={peer} />
-          <ExpandableListItem label="Outstanding Balance" value={`${balance.toFixedDecimal()} xBZZ`} />
+          <ExpandableListItem label="Outstanding Balance" value={`${balance.toSignificantDigits(4)} xBZZ`} />
           <ExpandableListItem
             label="Settlements Sent / Received"
-            value={`-${sent.toFixedDecimal()} / ${received.toFixedDecimal()} xBZZ`}
+            value={`-${sent.toSignificantDigits(4)} / ${received.toSignificantDigits(4)} xBZZ`}
           />
-          <ExpandableListItem label="Total" value={`${total.toFixedDecimal()} xBZZ`} />
+          <ExpandableListItem label="Total" value={`${total.toSignificantDigits(4)} xBZZ`} />
           <ExpandableListItem
             label="Uncashed Amount"
-            value={isLoadingUncashed ? 'loading…' : `${uncashedAmount.toFixedDecimal()} xBZZ`}
+            value={isLoadingUncashed ? 'loading…' : `${uncashedAmount.toSignificantDigits(4)} xBZZ`}
           />
-          {uncashedAmount.toBigNumber.isGreaterThan('0') && (
+          {uncashedAmount.gt(BZZ.fromPLUR('0')) && (
             <ExpandableListItemActions>
-              <CashoutModal uncashedAmount={uncashedAmount.toFixedDecimal()} peerId={peer} />
+              <CashoutModal uncashedAmount={uncashedAmount.toSignificantDigits(4)} peerId={peer} />
             </ExpandableListItemActions>
           )}
         </ExpandableList>

@@ -1,18 +1,19 @@
 import {
+  AllSettlements,
   BeeModes,
+  BZZ,
   ChainState,
   ChequebookAddressResponse,
+  ChequebookBalanceResponse,
   LastChequesResponse,
   NodeAddresses,
   NodeInfo,
   Peer,
+  PeerBalance,
   Topology,
-} from '@ethersphere/bee-js'
-import { ReactChild, ReactElement, createContext, useContext, useEffect, useState } from 'react'
+} from '@upcoming/bee-js'
+import { createContext, ReactChild, ReactElement, useContext, useEffect, useState } from 'react'
 import { useLatestBeeRelease } from '../hooks/apiHooks'
-import { BzzToken } from '../models/BzzToken'
-import { Token } from '../models/Token'
-import type { Balance, ChequebookBalance, Settlements } from '../types'
 import { Context as SettingsContext } from './Settings'
 
 const LAUNCH_GRACE_PERIOD = 15_000
@@ -50,11 +51,11 @@ interface ContextInterface {
   topology: Topology | null
   chequebookAddress: ChequebookAddressResponse | null
   peers: Peer[] | null
-  chequebookBalance: ChequebookBalance | null
-  stake: BzzToken | null
-  peerBalances: Balance[] | null
+  chequebookBalance: ChequebookBalanceResponse | null
+  stake: BZZ | null
+  peerBalances: PeerBalance[] | null
   peerCheques: LastChequesResponse | null
-  settlements: Settlements | null
+  settlements: AllSettlements | null
   chainState: ChainState | null
   chainId: number | null
   latestBeeRelease: LatestBeeRelease | null
@@ -107,7 +108,7 @@ function getStatus(
   apiHealth: boolean,
   topology: Topology | null,
   chequebookAddress: ChequebookAddressResponse | null,
-  chequebookBalance: ChequebookBalance | null,
+  chequebookBalance: ChequebookBalanceResponse | null,
   error: Error | null,
   startedAt: number,
 ): Status {
@@ -173,11 +174,11 @@ export function Provider({ children }: Props): ReactElement {
   const [topology, setNodeTopology] = useState<Topology | null>(null)
   const [chequebookAddress, setChequebookAddress] = useState<ChequebookAddressResponse | null>(null)
   const [peers, setPeers] = useState<Peer[] | null>(null)
-  const [chequebookBalance, setChequebookBalance] = useState<ChequebookBalance | null>(null)
-  const [stake, setStake] = useState<BzzToken | null>(null)
-  const [peerBalances, setPeerBalances] = useState<Balance[] | null>(null)
+  const [chequebookBalance, setChequebookBalance] = useState<ChequebookBalanceResponse | null>(null)
+  const [stake, setStake] = useState<BZZ | null>(null)
+  const [peerBalances, setPeerBalances] = useState<PeerBalance[] | null>(null)
   const [peerCheques, setPeerCheques] = useState<LastChequesResponse | null>(null)
-  const [settlements, setSettlements] = useState<Settlements | null>(null)
+  const [settlements, setSettlements] = useState<AllSettlements | null>(null)
   const [chainState, setChainState] = useState<ChainState | null>(null)
   const [chainId, setChainId] = useState<number | null>(null)
   const [startedAt] = useState(Date.now())
@@ -231,38 +232,6 @@ export function Provider({ children }: Props): ReactElement {
     try {
       isRefreshing = true
       setError(null)
-
-      // Wrap the chequebook balance call to return BZZ values as Token object
-      const chequeBalanceWrapper = async () => {
-        const { totalBalance, availableBalance } = await beeApi.getChequebookBalance({ timeout: TIMEOUT })
-
-        return {
-          totalBalance: new Token(totalBalance),
-          availableBalance: new Token(availableBalance),
-        }
-      }
-
-      // Wrap the balances call to return BZZ values as Token object
-      const peerBalanceWrapper = async () => {
-        const { balances } = await beeApi.getAllBalances({ timeout: TIMEOUT })
-
-        return balances.map(({ peer, balance }) => ({ peer, balance: new Token(balance) }))
-      }
-
-      // Wrap the settlements call to return BZZ values as Token object
-      const settlementsWrapper = async () => {
-        const { totalReceived, settlements, totalSent } = await beeApi.getAllSettlements({ timeout: TIMEOUT })
-
-        return {
-          totalReceived: new Token(totalReceived),
-          totalSent: new Token(totalSent),
-          settlements: settlements.map(({ peer, received, sent }) => ({
-            peer,
-            received: new Token(received),
-            sent: new Token(sent),
-          })),
-        }
-      }
 
       const promises = [
         // API health
@@ -324,22 +293,25 @@ export function Provider({ children }: Props): ReactElement {
           .catch(() => setChainId(null)),
 
         // Chequebook balance
-        chequeBalanceWrapper()
+        beeApi
+          .getChequebookBalance({ timeout: TIMEOUT })
           .then(setChequebookBalance)
           .catch(() => setChequebookBalance(null)),
 
         beeApi
           .getStake({ timeout: TIMEOUT })
-          .then(stake => setStake(new BzzToken(stake)))
+          .then(stake => setStake(stake))
           .catch(() => setStake(null)),
 
         // Peer balances
-        peerBalanceWrapper()
-          .then(setPeerBalances)
+        beeApi
+          .getAllBalances({ timeout: TIMEOUT })
+          .then(x => setPeerBalances(x.balances))
           .catch(() => setPeerBalances(null)),
 
         // Settlements
-        settlementsWrapper()
+        beeApi
+          .getAllSettlements()
           .then(setSettlements)
           .catch(() => setSettlements(null)),
       ]

@@ -1,7 +1,6 @@
+import { DAI } from '@upcoming/bee-js'
 import axios from 'axios'
 import { BEE_DESKTOP_LATEST_RELEASE_PAGE_API } from '../constants'
-import { DaiToken } from '../models/DaiToken'
-import { Token } from '../models/Token'
 import { getJson, postJson } from './net'
 
 export interface BeeConfig {
@@ -18,10 +17,10 @@ export interface BeeConfig {
   'blockchain-rpc-endpoint'?: string
 }
 
-export async function getBzzPriceAsDai(desktopUrl: string): Promise<Token> {
+export async function getBzzPriceAsDai(desktopUrl: string): Promise<DAI> {
   const response = await axios.get(`${desktopUrl}/price`)
 
-  return DaiToken.fromDecimal(response.data)
+  return DAI.fromDecimalString(response.data)
 }
 
 export function upgradeToLightNode(desktopUrl: string, rpcProvider: string): Promise<BeeConfig> {
@@ -53,8 +52,8 @@ export async function createGiftWallet(desktopUrl: string, address: string): Pro
   await postJson(`${desktopUrl}/gift-wallet/${address}`)
 }
 
-export async function performSwap(desktopUrl: string, daiAmount: string): Promise<void> {
-  await postJson(`${desktopUrl}/swap`, { dai: daiAmount })
+export async function performSwap(desktopUrl: string, daiAmount: DAI): Promise<void> {
+  await postJson(`${desktopUrl}/swap`, { dai: daiAmount.toWeiString() })
 }
 
 export async function getLatestBeeDesktopVersion(): Promise<string> {

@@ -1,4 +1,4 @@
-import { BeeModes, Utils } from '@ethersphere/bee-js'
+import { BeeModes, MantarayNode, Reference } from '@upcoming/bee-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -11,7 +11,6 @@ import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
 import { recognizeEnsOrSwarmHash, regexpEns } from '../../utils'
 import { HISTORY_KEYS, determineHistoryName, putHistory } from '../../utils/local-storage'
-import { ManifestJs } from '../../utils/manifest'
 import { FileNavigation } from './FileNavigation'
 
 export function Download(): ReactElement {
@@ -26,41 +25,43 @@ export function Download(): ReactElement {
   const navigate = useNavigate()
 
   const validateChange = (value: string) => {
-    if (
-      Utils.isHexString(value, 64) ||
-      Utils.isHexString(value, 128) ||
-      !value.trim().length ||
-      regexpEns.test(value)
-    ) {
+    if (Reference.isValid(value) || regexpEns.test(value)) {
       setReferenceError(undefined)
     } else {
       setReferenceError('Incorrect format of swarm hash. Expected 64 or 128 hexstring characters or ENS domain.')
     }
   }
 
+  // TODO: Test this for feeds, bzz, and bytes
   async function onSwarmIdentifier(identifier: string) {
-    setLoading(true)
-
     if (!beeApi) {
       setLoading(false)
 
       return
     }
 
+    setLoading(true)
+
     try {
-      const manifestJs = new ManifestJs(beeApi)
-      const feedIdentifier = await manifestJs.resolveFeedManifest(identifier)
+      let manifest = await MantarayNode.unmarshal(beeApi, identifier)
+      await manifest.loadRecursively(beeApi)
 
-      if (feedIdentifier) {
-        identifier = feedIdentifier
-      }
-      const isManifest = await manifestJs.isManifest(identifier)
+      // If the manifest is a feed, resolve it and overwrite the manifest
+      await manifest.resolveFeed(beeApi).then(
+        async feed =>
+          await feed.ifPresentAsync(async feedUpdate => {
+            manifest = MantarayNode.unmarshalFromData(feedUpdate.payload.toUint8Array())
+            await manifest.loadRecursively(beeApi)
+          }),
+      )
 
-      if (!isManifest) {
-        throw Error('The specified hash does not contain valid content.')
-      }
-      const indexDocument = await manifestJs.getIndexDocumentPath(identifier)
-      putHistory(HISTORY_KEYS.DOWNLOAD_HISTORY, identifier, determineHistoryName(identifier, indexDocument))
+      const rootMetadata = manifest.getDocsMetadata()
+
+      putHistory(
+        HISTORY_KEYS.DOWNLOAD_HISTORY,
+        identifier,
+        determineHistoryName(identifier, rootMetadata.indexDocument),
+      )
       setUploadOrigin(defaultUploadOrigin)
       navigate(ROUTES.HASH.replace(':hash', identifier))
     } catch (error: unknown) {
