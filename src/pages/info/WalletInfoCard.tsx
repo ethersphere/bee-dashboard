@@ -4,21 +4,18 @@ import Upload from 'remixicon-react/UploadLineIcon'
 import Wallet from 'remixicon-react/Wallet3LineIcon'
 import Card from '../../components/Card'
 import { Context as BeeContext } from '../../providers/Bee'
-import { Context as BalanceProvider } from '../../providers/WalletBalance'
 import { ROUTES } from '../../routes'
 
 export function WalletInfoCard() {
-  const { nodeInfo } = useContext(BeeContext)
-  const { balance, error } = useContext(BalanceProvider)
+  const { nodeInfo, walletBalance } = useContext(BeeContext)
   const navigate = useNavigate()
 
   let balanceText = 'Loading...'
 
-  if (error) {
-    balanceText = 'Could not load...'
-    console.error(error) // eslint-disable-line
-  } else if (balance) {
-    balanceText = `${balance.bzz.toSignificantDigits(4)} xBZZ | ${balance.dai.toSignificantDigits(4)} xDAI`
+  if (walletBalance) {
+    balanceText = `${walletBalance.bzzBalance.toSignificantDigits(
+      4,
+    )} xBZZ | ${walletBalance.nativeTokenBalance.toSignificantDigits(4)} xDAI`
   }
 
   if (nodeInfo?.beeMode && ['light', 'full', 'dev'].includes(nodeInfo.beeMode)) {
