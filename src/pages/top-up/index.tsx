@@ -1,5 +1,5 @@
-import { BeeModes } from '@ethersphere/bee-js'
 import { Box, createStyles, Grid, makeStyles, Typography } from '@material-ui/core'
+import { BeeModes, BZZ, DAI } from '@upcoming/bee-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { useNavigate } from 'react-router'
@@ -33,8 +33,8 @@ const useStyles = makeStyles(() =>
   }),
 )
 
-const MINIMUM_XDAI = '0.05'
-const MINIMUM_XBZZ = '0.1'
+const MINIMUM_XDAI = DAI.fromDecimalString('0.05')
+const MINIMUM_XBZZ = BZZ.fromDecimalString('0.1')
 
 export default function TopUp(): ReactElement {
   const navigate = useNavigate()
@@ -49,8 +49,8 @@ export default function TopUp(): ReactElement {
   const canUpgradeToLightNode =
     isDesktop &&
     nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT &&
-    balance?.dai.toDecimal.gte(MINIMUM_XDAI) &&
-    balance?.bzz.toDecimal.gte(MINIMUM_XBZZ)
+    balance?.dai.gte(MINIMUM_XDAI) &&
+    balance?.bzz.gte(MINIMUM_XBZZ)
 
   async function restart() {
     setLoading(true)

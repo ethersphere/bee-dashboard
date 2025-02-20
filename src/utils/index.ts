@@ -1,8 +1,6 @@
-import { BatchId, Bee, PostageBatch } from '@ethersphere/bee-js'
-import { decodeCid } from '@ethersphere/swarm-cid'
+import { BatchId, Bee, PostageBatch, Reference } from '@upcoming/bee-js'
 import { BigNumber } from 'bignumber.js'
 import { BZZ_LINK_DOMAIN } from '../constants'
-import { Token } from '../models/Token'
 
 /**
  * Test if value is an integer
@@ -131,13 +129,7 @@ export function extractSwarmCid(s: string): string | undefined {
 
   const cid = matches[1]
   try {
-    const decodeResult = decodeCid(cid)
-
-    if (!decodeResult.type) {
-      return
-    }
-
-    return decodeResult.reference
+    return new Reference(cid).toHex()
   } catch (e) {
     return
   }
@@ -171,48 +163,36 @@ export function formatEnum(string: string): string {
   return (string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()).replaceAll('_', ' ')
 }
 
-export function secondsToTimeString(seconds: number): string {
+export function secondsToTimeString(seconds: number | bigint): string {
+  seconds = BigInt(seconds)
   let unit = seconds
 
   if (unit < 120) {
     return `${seconds} seconds`
   }
-  unit /= 60
+  unit /= BigInt(60)
 
   if (unit < 120) {
-    return `${Math.round(unit)} minutes`
+    return `${unit} minutes`
   }
-  unit /= 60
+  unit /= BigInt(60)
 
   if (unit < 48) {
-    return `${Math.round(unit)} hours`
+    return `${unit} hours`
   }
-  unit /= 24
+  unit /= BigInt(24)
 
   if (unit < 14) {
-    return `${Math.round(unit)} days`
+    return `${unit} days`
   }
-  unit /= 7
+  unit /= BigInt(7)
 
   if (unit < 52) {
-    return `${Math.round(unit)} weeks`
+    return `${unit} weeks`
   }
-  unit /= 52
+  unit /= BigInt(52)
 
-  return `${unit.toFixed(1)} years`
-}
-
-export function convertAmountToSeconds(amount: number, pricePerBlock: number): number {
-  // TODO: blocktime should come directly from the blockchain as it may differ between different networks
-  const blockTime = 5 // On mainnet there is 5 seconds between blocks
-
-  // See https://github.com/ethersphere/bee/blob/66f079930d739182c4c79eb6008784afeeba1096/pkg/debugapi/postage.go#L410-L413
-  return (amount * blockTime) / pricePerBlock
-}
-
-export function calculateStampPrice(depth: number, amount: bigint): Token {
-  // See https://github.com/ethersphere/bee/blob/66f079930d739182c4c79eb6008784afeeba1096/pkg/debugapi/postage.go#L410-L413
-  return new Token(amount * BigInt(2 ** depth)) // FIXME: the 2 ** depth should be performed on bigint already
+  return `${unit} years`
 }
 
 export function shortenText(text: string, length = 20, separator = '[…]'): string {
@@ -231,16 +211,16 @@ interface Options {
   timeout?: number
 }
 
-export function waitUntilStampUsable(batchId: BatchId, bee: Bee, options?: Options): Promise<PostageBatch> {
+export function waitUntilStampUsable(batchId: BatchId | string, bee: Bee, options?: Options): Promise<PostageBatch> {
   return waitForStamp(batchId, bee, 'usable', options)
 }
 
-export function waitUntilStampExists(batchId: BatchId, bee: Bee, options?: Options): Promise<PostageBatch> {
+export function waitUntilStampExists(batchId: BatchId | string, bee: Bee, options?: Options): Promise<PostageBatch> {
   return waitForStamp(batchId, bee, 'exists', options)
 }
 
 async function waitForStamp(
-  batchId: BatchId,
+  batchId: BatchId | string,
   bee: Bee,
   field: 'exists' | 'usable',
   options?: Options,

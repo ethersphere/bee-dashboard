@@ -1,5 +1,5 @@
-import { BeeModes } from '@ethersphere/bee-js'
 import { Box, Typography } from '@material-ui/core'
+import { BeeModes } from '@upcoming/bee-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
@@ -108,7 +108,11 @@ export function GiftCardFund(): ReactElement {
         <ArrowDown size={24} color="#aaaaaa" />
       </Box>
       <Box mb={0.25}>
-        <ExpandableListItemKey label="Node wallet address" value={nodeAddresses?.ethereum || 'N/A'} expanded />
+        <ExpandableListItemKey
+          label="Node wallet address"
+          value={nodeAddresses?.ethereum.toChecksum() || 'N/A'}
+          expanded
+        />
       </Box>
       <Box mb={0.25}>
         <ExpandableListItem label="xDAI balance" value={`${balance.dai.toSignificantDigits(4)} xDAI`} />

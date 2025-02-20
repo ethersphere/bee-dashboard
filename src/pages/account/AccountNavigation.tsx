@@ -1,5 +1,5 @@
-import { BeeModes } from '@ethersphere/bee-js'
 import { createStyles, makeStyles, Tab, Tabs, Theme } from '@material-ui/core'
+import { BeeModes } from '@upcoming/bee-js'
 import { ReactElement, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Context } from '../../providers/Bee'

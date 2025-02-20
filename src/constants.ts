@@ -1,5 +1,4 @@
-export const META_FILE_NAME = '.swarmgatewaymeta.json'
-export const PREVIEW_FILE_NAME = '.swarmgatewaypreview.jpeg'
+export const META_FILE_NAME = 'metadata'
 export const PREVIEW_DIMENSIONS = { maxWidth: 250, maxHeight: 175 }
 export const BZZ_LINK_DOMAIN = 'bzz.link'
 export const BLOCKCHAIN_EXPLORER_URL = 'https://blockscout.com/xdai/mainnet'

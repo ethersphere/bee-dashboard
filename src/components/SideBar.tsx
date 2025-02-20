@@ -1,13 +1,12 @@
-import { BeeModes } from '@ethersphere/bee-js'
 import { Box, Divider, Drawer, Grid, List, Link as MUILink, Typography } from '@material-ui/core'
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles'
+import { BeeModes } from '@upcoming/bee-js'
 import { ReactElement, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import FilesIcon from 'remixicon-react/ArrowUpDownLineIcon'
 import DocsIcon from 'remixicon-react/BookOpenLineIcon'
 import ExternalLinkIcon from 'remixicon-react/ExternalLinkLineIcon'
 import GithubIcon from 'remixicon-react/GithubFillIcon'
-import FdpIcon from 'remixicon-react/HardDrive2LineIcon'
 import HomeIcon from 'remixicon-react/Home3LineIcon'
 import SettingsIcon from 'remixicon-react/Settings2LineIcon'
 import AccountIcon from 'remixicon-react/Wallet3LineIcon'
@@ -76,17 +75,6 @@ export default function SideBar(): ReactElement {
       label: 'Info',
       path: ROUTES.INFO,
       icon: HomeIcon,
-    },
-    {
-      label: 'FDP',
-      path: ROUTES.FDP,
-      icon: FdpIcon,
-      pathMatcherSubstring: '/fdp',
-    },
-    {
-      label: 'File Manager',
-      path: ROUTES.FILEMANAGER,
-      icon: FilesIcon,
     },
     {
       label: 'Files',
