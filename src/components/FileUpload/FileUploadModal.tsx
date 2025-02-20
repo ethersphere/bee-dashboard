@@ -1,10 +1,11 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
-import { useState } from 'react'
+import { useContext, useEffect, useState, useRef } from 'react'
 import { SwarmTextInput } from '../SwarmTextInput'
-import { FileManager } from '@solarpunkltd/file-manager-lib'
 import { getHumanReadableFileSize, getFileType } from '../../utils/file'
-import { Reference } from '@ethersphere/bee-js'
+import { Context as FileManagerContext } from '../../providers/FileManager'
+import { BatchId } from '@upcoming/bee-js'
+
 //TODO-Filemanager: volume management
 const useStyles = makeStyles(() =>
   createStyles({
@@ -79,26 +80,38 @@ const UploadModal = ({ modalDisplay, file }: UploadModalProps): ReactElement => 
   const classes = useStyles()
   const [description, setDescription] = useState('')
   const [label, setLabel] = useState('')
-  const filemanager = new FileManager()
-  const ref: Reference = '0000000000000000000000000000000000000000000000000000000000000002' as Reference
+  const [batchIds, setBatchIds] = useState<BatchId[]>([])
+  const { filemanager } = useContext(FileManagerContext)
 
-  filemanager.initialize()
+  const getBatchIDs = async () => {
+    if (!filemanager) {
+      return
+    }
 
-  const handleUpload = () => {
-    filemanager.upload('123', ref, {
-      name: file.name,
-      valid: '01/01/2024 00:00',
-      size: getHumanReadableFileSize(file.size),
-      description: description,
-      label: label,
-      shared: 'me',
-      uploaded: 'by user',
-      type: getFileType(file.type),
-      preview: 'true',
-      warning: 'true',
-      addedToQueue: 'false',
+    // eslint-disable-next-line no-console
+    // eslint-disable-next-line no-console
+    console.log('bagoy UploadModal filemanager')
+    const batchIds = await filemanager.getStamps()
+    batchIds.forEach(b => {
+      // eslint-disable-next-line no-console
+      console.log('bagoy batchId', b.batchID.toString())
     })
-    modalDisplay(false)
+    setBatchIds(batchIds.map(s => s.batchID))
+  }
+
+  useEffect(() => {
+    getBatchIDs()
+  }, [filemanager])
+
+  const handleUpload = async () => {
+    if (filemanager) {
+      const firstFile = new File(['Shh!'], 'secret.txt', { type: 'text/plain' })
+      await filemanager.upload(batchIds[0], [firstFile], {
+        description,
+        label,
+      })
+      modalDisplay(false)
+    }
   }
 
   return (

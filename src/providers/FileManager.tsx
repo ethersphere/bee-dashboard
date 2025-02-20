@@ -1,8 +1,10 @@
-import { createContext, ReactChild, ReactElement, useEffect, useRef } from 'react'
+import { createContext, ReactChild, ReactElement, useContext, useEffect, useRef, useState } from 'react'
+import { Context as SettingsContext } from '../providers/Settings'
+import { BeeDev, PrivateKey } from '@upcoming/bee-js'
 import { FileManager } from '@solarpunkltd/file-manager-lib'
 
 interface ContextInterface {
-  filemanager: FileManager
+  filemanager: FileManager | null
 }
 
 const initialValues: ContextInterface = {
@@ -19,17 +21,24 @@ interface Props {
 export function Provider({ children }: Props): ReactElement {
   const filemanagerRef = useRef<FileManager | null>(null)
 
-  if (filemanagerRef.current === null) {
-    filemanagerRef.current = new FileManager()
+  const init = async () => {
+    if (filemanagerRef.current === null) {
+      const signer = new PrivateKey('634fb5a872396d9693e5c9f9d7233cfa93f395c093371017ff44aa9ae6564cdd')
+      const fm = new FileManager(new BeeDev('http://localhost:1633', { signer }))
+      try {
+        await fm.initialize()
+        filemanagerRef.current = fm
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('error filemanager init: ', error)
+        filemanagerRef.current = null
+      }
+    }
   }
 
   useEffect(() => {
-    if (filemanagerRef.current) {
-      filemanagerRef.current.initialize()
-    }
+    init()
   }, [])
 
-  const filemanager = filemanagerRef.current
-
-  return <Context.Provider value={{ filemanager }}>{children}</Context.Provider>
+  return <Context.Provider value={{ filemanager: filemanagerRef.current }}>{children}</Context.Provider>
 }

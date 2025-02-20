@@ -1,5 +1,5 @@
 import { ReactElement, useContext, useEffect, useState } from 'react'
-import { FileInfo, FileManager } from '@solarpunkltd/file-manager-lib'
+import { FileInfo } from '@solarpunkltd/file-manager-lib'
 import { createStyles, makeStyles, Typography } from '@material-ui/core'
 import FileItem from '../../components/FileItem'
 import FilesHandler from '../../components/FilesHandler'
@@ -39,6 +39,10 @@ export default function FM(): ReactElement {
 
   useEffect(() => {
     function fetchFiles() {
+      if (!filemanager) {
+        return
+      }
+
       try {
         const files = filemanager.getFileInfoList()
         setFileList(files)
@@ -48,7 +52,7 @@ export default function FM(): ReactElement {
     }
 
     fetchFiles()
-  }, [])
+  }, [filemanager])
 
   return (
     <div>
@@ -71,7 +75,7 @@ export default function FM(): ReactElement {
                     : 'other'
                 }
                 size={file.customMetadata?.size ? file.customMetadata.size : ''}
-                hash={file.eFileRef}
+                hash={file.file.reference.toString()}
                 expires={file.customMetadata?.valid ? file.customMetadata.valid : ''}
                 preview={file.customMetadata?.preview ? file.customMetadata.preview : ''}
                 description={file.customMetadata?.description === 'true'}

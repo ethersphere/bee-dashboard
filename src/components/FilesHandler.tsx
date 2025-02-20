@@ -4,7 +4,7 @@ import { ReactElement, useContext } from 'react'
 import FileUpload from './FileUpload/FileUpload'
 import VolumeManage from './VolumeManage/VolumeManage'
 import { Context as StampContext } from '../providers/Stamps'
-import { Bee } from '@ethersphere/bee-js'
+import { Bee } from '@upcoming/bee-js'
 import Volume from './VolumeManage/Volume'
 
 const useStyles = makeStyles(() =>
@@ -30,18 +30,6 @@ const useStyles = makeStyles(() =>
 
 const FilesHandler = (): ReactElement => {
   const classes = useStyles()
-  const bee = new Bee('http://localhost:1633')
-  // const [usableStamps, setUsableStamps] = useState<PostageBatch[]>([])
-
-  // useEffect(() => {
-  //   async function fetchStamps() {
-  //     const stamps = await getUsableStamps(bee)
-  //     setUsableStamps(stamps)
-  //   }
-
-  //   fetchStamps()
-  // }, [])
-  // const bee = new Bee('http://localhost:1633')
   const { usableStamps } = useContext(StampContext)
 
   return (
