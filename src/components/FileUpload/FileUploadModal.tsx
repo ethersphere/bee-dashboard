@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { SwarmTextInput } from '../SwarmTextInput'
 import { FileManager } from '@solarpunkltd/file-manager-lib'
 import { getHumanReadableFileSize, getFileType } from '../../utils/file'
+import { Reference } from '@ethersphere/bee-js'
 //TODO-Filemanager: volume management
 const useStyles = makeStyles(() =>
   createStyles({
@@ -79,10 +80,12 @@ const UploadModal = ({ modalDisplay, file }: UploadModalProps): ReactElement => 
   const [description, setDescription] = useState('')
   const [label, setLabel] = useState('')
   const filemanager = new FileManager()
+  const ref: Reference = '0000000000000000000000000000000000000000000000000000000000000002' as Reference
+
   filemanager.initialize()
 
   const handleUpload = () => {
-    filemanager.upload('123', '123', {
+    filemanager.upload('123', ref, {
       name: file.name,
       valid: '01/01/2024 00:00',
       size: getHumanReadableFileSize(file.size),

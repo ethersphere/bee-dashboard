@@ -1,18 +1,16 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 
-import { ReactElement } from 'react'
-import { useEffect, useState } from 'react'
+import { ReactElement, useContext } from 'react'
 import FileUpload from './FileUpload/FileUpload'
-import { getUsableStamps, secondsToTimeString } from '../utils'
-import { Bee, PostageBatch } from '@ethersphere/bee-js'
-import Volume from './Volume'
+import VolumeManage from './VolumeManage/VolumeManage'
+import { Context as StampContext } from '../providers/Stamps'
+import { Bee } from '@ethersphere/bee-js'
+import Volume from './VolumeManage/Volume'
 
 const useStyles = makeStyles(() =>
   createStyles({
     container: {
       position: 'relative',
-      // paddingTop: '10px',
-      // paddingBottom: '10px',
       height: '65px',
       boxSizing: 'border-box',
       fontSize: '12px',
@@ -33,30 +31,28 @@ const useStyles = makeStyles(() =>
 const FilesHandler = (): ReactElement => {
   const classes = useStyles()
   const bee = new Bee('http://localhost:1633')
-  const [usableStamps, setUsableStamps] = useState<PostageBatch[]>([])
+  // const [usableStamps, setUsableStamps] = useState<PostageBatch[]>([])
 
-  useEffect(() => {
-    async function fetchStamps() {
-      const stamps = await getUsableStamps(bee)
-      setUsableStamps(stamps)
-    }
+  // useEffect(() => {
+  //   async function fetchStamps() {
+  //     const stamps = await getUsableStamps(bee)
+  //     setUsableStamps(stamps)
+  //   }
 
-    fetchStamps()
-  }, [])
+  //   fetchStamps()
+  // }, [])
+  // const bee = new Bee('http://localhost:1633')
+  const { usableStamps } = useContext(StampContext)
 
   return (
     <div className={classes.container}>
       <div className={classes.flex}>
-        {usableStamps.map((stamp, index) => (
+        {usableStamps?.map((stamp, index) => (
           <div key={index} className={classes.flex}>
-            <Volume
-              label={stamp.label}
-              expire={secondsToTimeString(stamp.batchTTL)}
-              size={stamp.amount}
-              notificationText="!"
-            />
+            <Volume label={stamp.label} size={stamp.amount} batchTTL={stamp.batchTTL} notificationText="!" />
           </div>
         ))}
+        <VolumeManage />
       </div>
       <div className={classes.flex}>
         <FileUpload usableStamps={usableStamps} />

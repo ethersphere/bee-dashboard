@@ -3,13 +3,12 @@ import type { ReactElement } from 'react'
 import { useState } from 'react'
 import SwarmIcon from '../../assets/images/swarmIcon.png'
 import FileUploadModal from './FileUploadModal'
-import { PostageBatch } from '@ethersphere/bee-js'
+import { PostageBatch } from '@upcoming/bee-js'
 //TODO-Filemanager: volume management
 
 interface Props {
   usableStamps: PostageBatch[]
 }
-
 const useStyles = makeStyles(() =>
   createStyles({
     container: {
