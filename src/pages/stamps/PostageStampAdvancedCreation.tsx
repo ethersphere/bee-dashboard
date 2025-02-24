@@ -13,7 +13,7 @@ import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as StampsContext } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
-import { secondsToTimeString, waitUntilStampExists } from '../../utils'
+import { secondsToTimeString } from '../../utils'
 import { getHumanReadableFileSize } from '../../utils/file'
 
 interface Props {
@@ -71,7 +71,7 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
     const pricePerBlock = chainState.currentPrice
 
     return `${secondsToTimeString(
-      Utils.getStampTtlSeconds(amount, pricePerBlock),
+      Utils.getStampDuration(amount, pricePerBlock).toSeconds(),
     )} (with price of ${pricePerBlock} PLUR per block)`
   }
 
@@ -107,8 +107,7 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
         immutableFlag: immutable,
       }
 
-      const batchId = await beeApi.createPostageBatch(amount.toString(), depth, options)
-      await waitUntilStampExists(batchId, beeApi)
+      await beeApi.createPostageBatch(amount.toString(), depth, options)
       await refresh()
       onFinished()
     } catch (e) {
@@ -173,7 +172,7 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
       return '-'
     }
 
-    const theoreticalMaximumVolume = getHumanReadableFileSize(Utils.getStampMaximumCapacityBytes(depth))
+    const theoreticalMaximumVolume = getHumanReadableFileSize(Utils.getStampTheoreticalBytes(depth))
     const effectiveVolume = getHumanReadableFileSize(Utils.getStampEffectiveBytes(depth))
 
     return (
