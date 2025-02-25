@@ -15,7 +15,6 @@ import { SwarmDivider } from '../../components/SwarmDivider'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
-import { Context as BalanceProvider } from '../../providers/WalletBalance'
 import { ROUTES } from '../../routes'
 import { sleepMs } from '../../utils'
 import { isSwapError, SwapError, wrapWithSwapError } from '../../utils/SwapError'
@@ -49,8 +48,7 @@ export function Swap({ header }: Props): ReactElement {
   const [daiAfterSwap, setDaiAfterSwap] = useState<DAI | null>(null)
 
   const { rpcProviderUrl, isDesktop, desktopUrl } = useContext(SettingsContext)
-  const { nodeAddresses, nodeInfo } = useContext(BeeContext)
-  const { balance } = useContext(BalanceProvider)
+  const { nodeAddresses, nodeInfo, walletBalance } = useContext(BeeContext)
 
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
@@ -63,20 +61,20 @@ export function Swap({ header }: Props): ReactElement {
 
   // Set the initial xDAI to swap
   useEffect(() => {
-    if (!balance || userInputSwap) {
+    if (!walletBalance || userInputSwap) {
       return
     }
 
     const minimumOptimalValue = DAI.fromDecimalString('1').plus(MINIMUM_XDAI)
 
-    if (balance.dai.gte(minimumOptimalValue)) {
+    if (walletBalance.nativeTokenBalance.gte(minimumOptimalValue)) {
       // Balance has at least 1 + MINIMUM_XDAI xDai
-      setDaiToSwap(balance.dai.minus(DAI.fromDecimalString('1')))
+      setDaiToSwap(walletBalance.nativeTokenBalance.minus(DAI.fromDecimalString('1')))
     } else {
       // Balance is low, halve the amount
-      setDaiToSwap(balance.dai.divide(BigInt(2)))
+      setDaiToSwap(walletBalance.nativeTokenBalance.divide(BigInt(2)))
     }
-  }, [balance, userInputSwap])
+  }, [walletBalance, userInputSwap])
 
   // Set the xDAI to swap based on user input
   useEffect(() => {
@@ -97,13 +95,13 @@ export function Swap({ header }: Props): ReactElement {
 
   // Calculate the amount of tokens after swap
   useEffect(() => {
-    if (!balance || !daiToSwap || error) {
+    if (!walletBalance || !daiToSwap || error) {
       return
     }
-    const daiAfterSwap = balance.dai.minus(daiToSwap)
+    const daiAfterSwap = walletBalance.nativeTokenBalance.minus(daiToSwap)
     setDaiAfterSwap(daiAfterSwap)
     const tokensConverted = daiToSwap.exchangeToBZZ(price)
-    const bzzAfterSwap = tokensConverted.plus(balance.bzz)
+    const bzzAfterSwap = tokensConverted.plus(walletBalance.bzzBalance)
     setBzzAfterSwap(bzzAfterSwap)
 
     if (daiAfterSwap.lt(MINIMUM_XDAI)) {
@@ -111,9 +109,9 @@ export function Swap({ header }: Props): ReactElement {
     } else if (bzzAfterSwap.lt(MINIMUM_XBZZ)) {
       setError(`Must have at least ${MINIMUM_XBZZ.toSignificantDigits(4)} xBZZ after swap!`)
     }
-  }, [error, balance, daiToSwap, price])
+  }, [error, walletBalance, daiToSwap, price])
 
-  if (!balance || !nodeAddresses || !daiToSwap || !bzzAfterSwap || !daiAfterSwap) {
+  if (!walletBalance || !nodeAddresses || !daiToSwap || !bzzAfterSwap || !daiAfterSwap) {
     return <Loading />
   }
 
@@ -182,7 +180,9 @@ export function Swap({ header }: Props): ReactElement {
         : 'Successfully swapped. Balances will refresh soon. You may now navigate away.'
       enqueueSnackbar(message, { variant: 'success' })
 
-      if (canUpgradeToLightNode) await restart()
+      if (canUpgradeToLightNode) {
+        await restart()
+      }
     } catch (error) {
       if (isSwapError(error)) {
         // we have a custom and user friendly error message
@@ -197,7 +197,6 @@ export function Swap({ header }: Props): ReactElement {
         console.error(error) // eslint-disable-line
       }
     } finally {
-      balance?.refresh()
       setLoading(false)
     }
   }
@@ -220,8 +219,8 @@ export function Swap({ header }: Props): ReactElement {
       <SwarmDivider mb={4} />
       <Box mb={4}>
         <Typography>
-          Your current balance is {balance.dai.toSignificantDigits(4)} xDAI and {balance.bzz.toSignificantDigits(4)}{' '}
-          xBZZ.
+          Your current balance is {walletBalance.nativeTokenBalance.toSignificantDigits(4)} xDAI and{' '}
+          {walletBalance.bzzBalance.toSignificantDigits(4)} xBZZ.
         </Typography>
       </Box>
       <Box mb={4}>

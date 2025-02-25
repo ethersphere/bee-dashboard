@@ -13,15 +13,13 @@ import { SwarmButton } from '../../../components/SwarmButton'
 import TroubleshootConnectionCard from '../../../components/TroubleshootConnectionCard'
 import { Context as BeeContext, CheckState } from '../../../providers/Bee'
 import { Context as SettingsContext } from '../../../providers/Settings'
-import { Context as BalanceProvider } from '../../../providers/WalletBalance'
 import { ROUTES } from '../../../routes'
 import { AccountNavigation } from '../AccountNavigation'
 import { Header } from '../Header'
 
 export function AccountWallet(): ReactElement {
-  const { nodeAddresses, nodeInfo, status } = useContext(BeeContext)
+  const { nodeAddresses, nodeInfo, status, walletBalance } = useContext(BeeContext)
   const { isDesktop } = useContext(SettingsContext)
-  const { balance } = useContext(BalanceProvider)
 
   const navigate = useNavigate()
 
@@ -53,16 +51,22 @@ export function AccountWallet(): ReactElement {
           )}
         </Grid>
       </Box>
-      {balance && nodeAddresses ? (
+      {walletBalance && nodeAddresses ? (
         <>
           <Box mb={0.25}>
             <ExpandableListItemKey label="Node wallet address" value={nodeAddresses.ethereum.toChecksum()} expanded />
           </Box>
           <Box mb={0.25}>
-            <ExpandableListItem label="xDAI balance" value={`${balance.dai.toSignificantDigits(4)} xDAI`} />
+            <ExpandableListItem
+              label="xDAI balance"
+              value={`${walletBalance.nativeTokenBalance.toSignificantDigits(4)} xDAI`}
+            />
           </Box>
           <Box mb={2}>
-            <ExpandableListItem label="xBZZ balance" value={`${balance.bzz.toSignificantDigits(4)} xBZZ`} />
+            <ExpandableListItem
+              label="xBZZ balance"
+              value={`${walletBalance.bzzBalance.toSignificantDigits(4)} xBZZ`}
+            />
           </Box>
         </>
       ) : (
