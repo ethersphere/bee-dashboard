@@ -172,7 +172,6 @@ const useStyles = makeStyles(() =>
       height: '64px',
       justifyContent: 'center',
       alignItems: 'center',
-      //   border: '20px solid #CFCDCD',
       backgroundColor: '#FFFFFF',
       cursor: 'pointer',
       '&:hover': {
@@ -230,7 +229,6 @@ interface VolumePropertiesModalProps {
 
 const VolumePropertiesModal = ({ newVolume, modalDisplay, volume }: VolumePropertiesModalProps): ReactElement => {
   const classes = useStyles()
-  const steps = [4, 16, 128, 512]
   const [isHoveredDestroy, setIsHoveredDestroy] = useState(false)
   const [isHoveredDownload, setIsHoveredDownload] = useState(false)
 
@@ -353,6 +351,7 @@ const VolumePropertiesModal = ({ newVolume, modalDisplay, volume }: VolumeProper
             </div>
           ) : null}
         </div>
+        <div>{volume?.validity}</div>
         <VolumeSlider
           type="bytes"
           upperLabel={`Size: `}

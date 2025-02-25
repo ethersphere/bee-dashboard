@@ -30,26 +30,23 @@ const useStyles = makeStyles(() =>
 
 const FilesHandler = (): ReactElement => {
   const classes = useStyles()
-  const bee = new Bee('http://localhost:1633')
-  // const [usableStamps, setUsableStamps] = useState<PostageBatch[]>([])
-
-  // useEffect(() => {
-  //   async function fetchStamps() {
-  //     const stamps = await getUsableStamps(bee)
-  //     setUsableStamps(stamps)
-  //   }
-
-  //   fetchStamps()
-  // }, [])
   // const bee = new Bee('http://localhost:1633')
   const { usableStamps } = useContext(StampContext)
+
+  // eslint-disable-next-line no-alert
+  alert(usableStamps[0].duration.toEndDate(new Date()))
 
   return (
     <div className={classes.container}>
       <div className={classes.flex}>
         {usableStamps?.map((stamp, index) => (
           <div key={index} className={classes.flex}>
-            <Volume label={stamp.label} size={stamp.amount} batchTTL={stamp.batchTTL} notificationText="!" />
+            <Volume
+              label={stamp.label}
+              size={stamp.amount}
+              validity={stamp.duration.toEndDate(new Date()).getTime()}
+              notificationText="!"
+            />
           </div>
         ))}
         <VolumeManage />

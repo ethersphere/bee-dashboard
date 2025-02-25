@@ -121,13 +121,13 @@ const ManageVolumesModal = ({ modalDisplay }: ManageModalProps): ReactElement =>
                   volumeModalDisplay: true,
                   label: stamp.label,
                   size: stamp.depth,
-                  validity: stamp.duration,
+                  validity: stamp.duration.toEndDate(new Date()).getTime(),
                 })
               }
             >
               <div className={classes.buttonElement}>{stamp.label}</div>
               <div className={classes.buttonElementNotificationSign}>
-                {stamp.duration < 10000 ? <NotificationSign text="!" /> : null}
+                {stamp.duration.toEndDate(new Date()).getTime() < 10000 ? <NotificationSign text="!" /> : null}
               </div>
             </div>
           ))}
@@ -156,10 +156,6 @@ const ManageVolumesModal = ({ modalDisplay }: ManageModalProps): ReactElement =>
           modalDisplay={(value: boolean) => setActiveVolume(prev => ({ ...prev, volumeModalDisplay: value }))}
           newVolume={false}
           activeVolume={activeVolume}
-          // name={stamp.label}
-          // size
-          // validity
-          // dataProtection
         />
       )}
     </div>
