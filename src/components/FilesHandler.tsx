@@ -4,8 +4,8 @@ import { ReactElement, useContext } from 'react'
 import FileUpload from './FileUpload/FileUpload'
 import VolumeManage from './VolumeManage/VolumeManage'
 import { Context as StampContext } from '../providers/Stamps'
-import { Bee } from '@ethersphere/bee-js'
 import Volume from './VolumeManage/Volume'
+import { Bee } from '@upcoming/bee-js'
 
 const useStyles = makeStyles(() =>
   createStyles({
