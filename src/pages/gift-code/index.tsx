@@ -12,9 +12,9 @@ import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { Loading } from '../../components/Loading'
 import { SwarmButton } from '../../components/SwarmButton'
+import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as TopUpContext } from '../../providers/TopUp'
-import { Context as BalanceProvider } from '../../providers/WalletBalance'
 import { createGiftWallet } from '../../utils/desktop'
 import { ResolvedWallet } from '../../utils/wallet'
 
@@ -24,7 +24,7 @@ const GIFT_WALLET_FUND_BZZ_AMOUNT = BZZ.fromDecimalString('0.5')
 export default function Index(): ReactElement {
   const { giftWallets, addGiftWallet } = useContext(TopUpContext)
   const { rpcProvider, desktopUrl } = useContext(SettingsContext)
-  const { balance } = useContext(BalanceProvider)
+  const { walletBalance } = useContext(BeeContext)
 
   const [loading, setLoading] = useState(false)
   const [balances, setBalances] = useState<ResolvedWallet[]>([])
@@ -67,12 +67,13 @@ export default function Index(): ReactElement {
     navigate(-1)
   }
 
-  if (!balance) {
+  if (!walletBalance) {
     return <Loading />
   }
 
   const notEnoughFundsCheck =
-    balance.dai.lte(GIFT_WALLET_FUND_DAI_AMOUNT) || balance.bzz.lt(GIFT_WALLET_FUND_BZZ_AMOUNT)
+    walletBalance.nativeTokenBalance.lte(GIFT_WALLET_FUND_DAI_AMOUNT) ||
+    walletBalance.bzzBalance.lt(GIFT_WALLET_FUND_BZZ_AMOUNT)
 
   return (
     <>
@@ -85,10 +86,13 @@ export default function Index(): ReactElement {
         </Typography>
       </Box>
       <Box mb={0.25}>
-        <ExpandableListItem label="xDAI balance" value={`${balance.dai.toSignificantDigits(4)} xDAI`} />
+        <ExpandableListItem
+          label="xDAI balance"
+          value={`${walletBalance.nativeTokenBalance.toSignificantDigits(4)} xDAI`}
+        />
       </Box>
       <Box mb={2}>
-        <ExpandableListItem label="xBZZ balance" value={`${balance.bzz.toSignificantDigits(4)} xBZZ`} />
+        <ExpandableListItem label="xBZZ balance" value={`${walletBalance.bzzBalance.toSignificantDigits(4)} xBZZ`} />
       </Box>
       <Box mb={4}>
         {balances.map((x, i) => (

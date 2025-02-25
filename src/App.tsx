@@ -13,7 +13,6 @@ import { Provider as PlatformProvider } from './providers/Platform'
 import { Provider as SettingsProvider } from './providers/Settings'
 import { Provider as StampsProvider } from './providers/Stamps'
 import { Provider as TopUpProvider } from './providers/TopUp'
-import { Provider as BalanceProvider } from './providers/WalletBalance'
 import BaseRouter from './routes'
 import { theme } from './theme'
 
@@ -46,28 +45,26 @@ const App = ({
         >
           <TopUpProvider>
             <BeeProvider>
-              <BalanceProvider>
-                <StampsProvider>
-                  <FileProvider>
-                    <FeedsProvider>
-                      <FileManagerProvider>
-                        <PlatformProvider>
-                          <SnackbarProvider preventDuplicate anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
-                            <Router>
-                              <>
-                                <CssBaseline />
-                                <Dashboard errorReporting={errorReporting}>
-                                  <BaseRouter />
-                                </Dashboard>
-                              </>
-                            </Router>
-                          </SnackbarProvider>
-                        </PlatformProvider>
-                      </FileManagerProvider>
-                    </FeedsProvider>
-                  </FileProvider>
-                </StampsProvider>
-              </BalanceProvider>
+              <StampsProvider>
+                <FileProvider>
+                  <FeedsProvider>
+                    <FileManagerProvider>
+                      <PlatformProvider>
+                        <SnackbarProvider preventDuplicate anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
+                          <Router>
+                            <>
+                              <CssBaseline />
+                              <Dashboard errorReporting={errorReporting}>
+                                <BaseRouter />
+                              </Dashboard>
+                            </>
+                          </Router>
+                        </SnackbarProvider>
+                      </PlatformProvider>
+                    </FileManagerProvider>
+                  </FeedsProvider>
+                </FileProvider>
+              </StampsProvider>
             </BeeProvider>
           </TopUpProvider>
         </SettingsProvider>

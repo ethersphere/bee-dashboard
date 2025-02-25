@@ -6,15 +6,13 @@ import { Loading } from '../../../components/Loading'
 import TroubleshootConnectionCard from '../../../components/TroubleshootConnectionCard'
 import StakeModal from '../../../containers/StakeModal'
 import { Context as BeeContext, CheckState } from '../../../providers/Bee'
-import { Context as BalanceContext } from '../../../providers/WalletBalance'
 import { AccountNavigation } from '../AccountNavigation'
 import { Header } from '../Header'
 
 export function AccountStaking(): ReactElement {
   const [loading, setLoading] = useState(false)
 
-  const { status, stake } = useContext(BeeContext)
-  const { balance } = useContext(BalanceContext)
+  const { status, stake, walletBalance } = useContext(BeeContext)
 
   if (status.all === CheckState.ERROR) return <TroubleshootConnectionCard />
 
@@ -36,10 +34,10 @@ export function AccountStaking(): ReactElement {
         ) : (
           <ExpandableList label="Staking" defaultOpen>
             <ExpandableListItem label="Staked BZZ" value={`${stake?.toSignificantDigits(4)} xBZZ`} />
-            {balance?.bzz ? (
+            {walletBalance?.bzzBalance ? (
               <ExpandableListItem
                 label="Available xBZZ balance"
-                value={`${balance?.bzz.toSignificantDigits(4)} xBZZ`}
+                value={`${walletBalance.bzzBalance.toSignificantDigits(4)} xBZZ`}
               />
             ) : null}
             <ExpandableListItemActions>
