@@ -11,6 +11,7 @@ import {
   Peer,
   PeerBalance,
   Topology,
+  WalletBalance,
 } from '@upcoming/bee-js'
 import { createContext, ReactChild, ReactElement, useContext, useEffect, useState } from 'react'
 import { useLatestBeeRelease } from '../hooks/apiHooks'
@@ -57,7 +58,7 @@ interface ContextInterface {
   peerCheques: LastChequesResponse | null
   settlements: AllSettlements | null
   chainState: ChainState | null
-  chainId: number | null
+  walletBalance: WalletBalance | null
   latestBeeRelease: LatestBeeRelease | null
   isLoading: boolean
   lastUpdate: number | null
@@ -87,7 +88,7 @@ const initialValues: ContextInterface = {
   peerCheques: null,
   settlements: null,
   chainState: null,
-  chainId: null,
+  walletBalance: null,
   latestBeeRelease: null,
   isLoading: true,
   lastUpdate: null,
@@ -180,7 +181,7 @@ export function Provider({ children }: Props): ReactElement {
   const [peerCheques, setPeerCheques] = useState<LastChequesResponse | null>(null)
   const [settlements, setSettlements] = useState<AllSettlements | null>(null)
   const [chainState, setChainState] = useState<ChainState | null>(null)
-  const [chainId, setChainId] = useState<number | null>(null)
+  const [walletBalance, setWalletBalance] = useState<WalletBalance | null>(null)
   const [startedAt] = useState(Date.now())
 
   const { latestBeeRelease } = useLatestBeeRelease()
@@ -289,8 +290,8 @@ export function Provider({ children }: Props): ReactElement {
         // Wallet
         beeApi
           .getWalletBalance({ timeout: TIMEOUT })
-          .then(({ chainID }) => setChainId(chainID))
-          .catch(() => setChainId(null)),
+          .then(setWalletBalance)
+          .catch(() => setWalletBalance(null)),
 
         // Chequebook balance
         beeApi
@@ -370,7 +371,7 @@ export function Provider({ children }: Props): ReactElement {
         peerCheques,
         settlements,
         chainState,
-        chainId,
+        walletBalance,
         latestBeeRelease,
         isLoading,
         lastUpdate,
