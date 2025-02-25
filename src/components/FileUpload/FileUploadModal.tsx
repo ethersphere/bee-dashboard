@@ -2,7 +2,7 @@ import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
 import { useContext, useEffect, useState, useRef } from 'react'
 import { SwarmTextInput } from '../SwarmTextInput'
-import { getHumanReadableFileSize, getFileType } from '../../utils/file'
+// import { getHumanReadableFileSize, getFileType } from '../../utils/file'
 import { Context as FileManagerContext } from '../../providers/FileManager'
 import { BatchId } from '@upcoming/bee-js'
 
@@ -84,19 +84,13 @@ const UploadModal = ({ modalDisplay, file }: UploadModalProps): ReactElement => 
   const { filemanager } = useContext(FileManagerContext)
 
   const getBatchIDs = async () => {
-    if (!filemanager) {
+    if (!filemanager || !filemanager.getIsInitialized()) {
       return
     }
 
-    // eslint-disable-next-line no-console
-    // eslint-disable-next-line no-console
-    console.log('bagoy UploadModal filemanager')
-    const batchIds = await filemanager.getStamps()
-    batchIds.forEach(b => {
-      // eslint-disable-next-line no-console
-      console.log('bagoy batchId', b.batchID.toString())
-    })
-    setBatchIds(batchIds.map(s => s.batchID))
+    const batchIds = (await filemanager.getStamps()).map(s => s.batchID)
+    batchIds.forEach(b => {})
+    setBatchIds(batchIds)
   }
 
   useEffect(() => {
@@ -105,6 +99,7 @@ const UploadModal = ({ modalDisplay, file }: UploadModalProps): ReactElement => 
 
   const handleUpload = async () => {
     if (filemanager) {
+      // TODO: actually upload the file
       const firstFile = new File(['Shh!'], 'secret.txt', { type: 'text/plain' })
       await filemanager.upload(batchIds[0], [firstFile], {
         description,

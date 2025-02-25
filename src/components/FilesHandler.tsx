@@ -37,7 +37,12 @@ const FilesHandler = (): ReactElement => {
       <div className={classes.flex}>
         {usableStamps?.map((stamp, index) => (
           <div key={index} className={classes.flex}>
-            <Volume label={stamp.label} size={stamp.amount} batchTTL={stamp.batchTTL} notificationText="!" />
+            <Volume
+              label={stamp.label}
+              size={stamp.amount}
+              batchTTL={stamp.duration.toSeconds()}
+              notificationText="!"
+            />
           </div>
         ))}
         <VolumeManage />

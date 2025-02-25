@@ -90,7 +90,7 @@ export function Provider({ children }: Props): ReactElement {
       setIsLoading(true)
       const stamps = await beeApi.getAllPostageBatch()
 
-      setStamps(stamps.filter(x => x.exists).map(enrichStamp))
+      setStamps(stamps.map(enrichStamp))
 
       setLastUpdate(Date.now())
       setError(null)

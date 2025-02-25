@@ -39,7 +39,7 @@ export default function FM(): ReactElement {
 
   useEffect(() => {
     function fetchFiles() {
-      if (!filemanager) {
+      if (!filemanager || !filemanager.getIsInitialized()) {
         return
       }
 

@@ -109,7 +109,7 @@ const ManageVolumesModal = (props: ManageModalProps): ReactElement => {
             <div key={index} className={classes.volumenButtonContainer}>
               <div className={classes.buttonElement}>{stamp.label}</div>
               <div className={classes.buttonElementNotificationSign}>
-                {stamp.batchTTL < 10000 ? <NotificationSign text="!" /> : null}
+                {stamp.duration.toSeconds() < 10000 ? <NotificationSign text="!" /> : null}
               </div>
             </div>
           ))}
