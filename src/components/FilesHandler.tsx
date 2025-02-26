@@ -4,7 +4,6 @@ import { ReactElement, useContext } from 'react'
 import FileUpload from './FileUpload/FileUpload'
 import VolumeManage from './VolumeManage/VolumeManage'
 import { Context as StampContext } from '../providers/Stamps'
-import { Bee } from '@upcoming/bee-js'
 import Volume from './VolumeManage/Volume'
 
 const useStyles = makeStyles(() =>
@@ -32,6 +31,9 @@ const FilesHandler = (): ReactElement => {
   const classes = useStyles()
   const { usableStamps } = useContext(StampContext)
 
+  // eslint-disable-next-line no-alert
+  alert(usableStamps[0].duration.toEndDate(new Date()))
+
   return (
     <div className={classes.container}>
       <div className={classes.flex}>
@@ -40,7 +42,7 @@ const FilesHandler = (): ReactElement => {
             <Volume
               label={stamp.label}
               size={stamp.amount}
-              batchTTL={stamp.duration.toSeconds()}
+              validity={stamp.duration.toEndDate(new Date()).getTime()}
               notificationText="!"
             />
           </div>

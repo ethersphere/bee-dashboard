@@ -5,6 +5,7 @@ import { useContext, useState } from 'react'
 import NotificationSign from '../NotificationSign'
 import NewVolumeModal from './NewVolumeModal'
 import { Context as StampContext } from '../../providers/Stamps'
+import VolumeModal from './VolumeModal'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -90,9 +91,15 @@ interface ManageModalProps {
   modalDisplay: (value: boolean) => void
 }
 
-const ManageVolumesModal = (props: ManageModalProps): ReactElement => {
+const ManageVolumesModal = ({ modalDisplay }: ManageModalProps): ReactElement => {
   const classes = useStyles()
   const [newVolumeModalDisplay, setNewVolumeModalDisplay] = useState(false)
+  const [activeVolume, setActiveVolume] = useState({
+    volumeModalDisplay: false,
+    label: '',
+    size: 0,
+    validity: 0,
+  })
   const { usableStamps } = useContext(StampContext)
 
   return (
@@ -106,10 +113,21 @@ const ManageVolumesModal = (props: ManageModalProps): ReactElement => {
         </div>
         <div className={classes.flexCenter}>
           {usableStamps.map((stamp, index) => (
-            <div key={index} className={classes.volumenButtonContainer}>
+            <div
+              key={index}
+              className={classes.volumenButtonContainer}
+              onClick={() =>
+                setActiveVolume({
+                  volumeModalDisplay: true,
+                  label: stamp.label,
+                  size: stamp.depth,
+                  validity: stamp.duration.toEndDate(new Date()).getTime(),
+                })
+              }
+            >
               <div className={classes.buttonElement}>{stamp.label}</div>
               <div className={classes.buttonElementNotificationSign}>
-                {stamp.duration.toSeconds() < 10000 ? <NotificationSign text="!" /> : null}
+                {stamp.duration.toEndDate(new Date()).getTime() < 10000 ? <NotificationSign text="!" /> : null}
               </div>
             </div>
           ))}
@@ -126,13 +144,20 @@ const ManageVolumesModal = (props: ManageModalProps): ReactElement => {
           <div
             className={classes.buttonElement}
             style={{ width: '160px', zIndex: '110' }}
-            onClick={() => props.modalDisplay(false)}
+            onClick={() => modalDisplay(false)}
           >
             Cancel
           </div>
         </div>
       </div>
       {newVolumeModalDisplay && <NewVolumeModal modalDisplay={(value: boolean) => setNewVolumeModalDisplay(value)} />}
+      {activeVolume.volumeModalDisplay && (
+        <VolumeModal
+          modalDisplay={(value: boolean) => setActiveVolume(prev => ({ ...prev, volumeModalDisplay: value }))}
+          newVolume={false}
+          activeVolume={activeVolume}
+        />
+      )}
     </div>
   )
 }

@@ -3,7 +3,6 @@ import React from 'react'
 import { useState } from 'react'
 import type { ReactElement } from 'react'
 import NotificationSign from '../NotificationSign'
-import { secondsToTimeString } from '../../utils'
 import SwarmCheckedIcon from '../icons/SwarmCheckedIcon'
 import VolumeIcon from '../icons/VolumeIcon'
 
@@ -43,11 +42,11 @@ const useStyles = makeStyles(() =>
 interface Props {
   label: string
   size: string
-  batchTTL: number
+  validity: number
   notificationText?: string
 }
 
-const Volume = ({ label, size, batchTTL, notificationText }: Props): ReactElement => {
+const Volume = ({ label, size, validity, notificationText }: Props): ReactElement => {
   const classes = useStyles()
   const [clicked, setClicked] = useState(false)
 
@@ -55,7 +54,7 @@ const Volume = ({ label, size, batchTTL, notificationText }: Props): ReactElemen
     <Tooltip
       title={
         <React.Fragment>
-          <div>Expire date: {secondsToTimeString(batchTTL)}</div>
+          <div>Expire date: {validity}</div>
           <div>
             Free space: <strong>1.26 of {size}</strong>
           </div>
@@ -72,7 +71,7 @@ const Volume = ({ label, size, batchTTL, notificationText }: Props): ReactElemen
           <VolumeIcon color={clicked ? '#333333' : '#33333333'} />
           {notificationText ? (
             <div className={classes.absoluteRight}>
-              {batchTTL < 1000000000000 ? <NotificationSign text={notificationText} /> : null}
+              {validity < 1000000000000 ? <NotificationSign text={notificationText} /> : null}
             </div>
           ) : null}
         </div>

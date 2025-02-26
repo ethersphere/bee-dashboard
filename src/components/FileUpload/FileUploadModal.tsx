@@ -1,8 +1,8 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
-import { useContext, useEffect, useState, useRef } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { SwarmTextInput } from '../SwarmTextInput'
-// import { getHumanReadableFileSize, getFileType } from '../../utils/file'
+import { getHumanReadableFileSize, getFileType } from '../../utils/file'
 import { Context as FileManagerContext } from '../../providers/FileManager'
 import { BatchId } from '@upcoming/bee-js'
 
@@ -88,17 +88,13 @@ const UploadModal = ({ modalDisplay, file }: UploadModalProps): ReactElement => 
   const [batchIds, setBatchIds] = useState<BatchId[]>([])
   const { filemanager } = useContext(FileManagerContext)
 
-  const getBatchIDs = async () => {
+  useEffect(() => {
     if (!filemanager || !filemanager.getIsInitialized()) {
       return
     }
 
-    const batchIds = (await filemanager.getStamps()).map(s => s.batchID)
-    setBatchIds(batchIds)
-  }
-
-  useEffect(() => {
-    getBatchIDs()
+    const ids = filemanager.getStamps().map(s => s.batchID)
+    setBatchIds(ids)
   }, [filemanager])
 
   const handleUpload = async () => {
@@ -109,6 +105,8 @@ const UploadModal = ({ modalDisplay, file }: UploadModalProps): ReactElement => 
         {
           description,
           label,
+          size: getHumanReadableFileSize(file.size),
+          type: getFileType(file.type),
         },
         // eslint-disable-next-line no-console
         (p: UploadProgress) => console.log(`progress: ${p.processed}/${p.total}`),
