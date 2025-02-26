@@ -28,6 +28,7 @@ export function Provider({ children }: Props): ReactElement {
       try {
         await filemanagerRef.current.initialize()
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log('filemanager init error: ', error)
       }
     }

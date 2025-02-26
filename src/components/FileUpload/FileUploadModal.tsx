@@ -70,6 +70,11 @@ const useStyles = makeStyles(() =>
   }),
 )
 
+interface UploadProgress {
+  total: number
+  processed: number
+}
+
 interface UploadModalProps {
   modalDisplay: (value: boolean) => void
   fileSize?: number
@@ -89,7 +94,6 @@ const UploadModal = ({ modalDisplay, file }: UploadModalProps): ReactElement => 
     }
 
     const batchIds = (await filemanager.getStamps()).map(s => s.batchID)
-    batchIds.forEach(b => {})
     setBatchIds(batchIds)
   }
 
@@ -99,14 +103,18 @@ const UploadModal = ({ modalDisplay, file }: UploadModalProps): ReactElement => 
 
   const handleUpload = async () => {
     if (filemanager) {
-      // TODO: actually upload the file
-      const firstFile = new File(['Shh!'], 'secret.txt', { type: 'text/plain' })
-      await filemanager.upload(batchIds[0], [firstFile], {
-        description,
-        label,
-      })
-      modalDisplay(false)
+      await filemanager.upload(
+        batchIds[0],
+        [file],
+        {
+          description,
+          label,
+        },
+        // eslint-disable-next-line no-console
+        (p: UploadProgress) => console.log(`progress: ${p.processed}/${p.total}`),
+      )
     }
+    modalDisplay(false)
   }
 
   return (
