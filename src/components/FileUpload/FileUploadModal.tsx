@@ -108,6 +108,11 @@ const UploadModal = ({ modalDisplay, file }: UploadModalProps): ReactElement => 
           size: getHumanReadableFileSize(file.size),
           type: getFileType(file.type),
         },
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
         // eslint-disable-next-line no-console
         (p: UploadProgress) => console.log(`progress: ${p.processed}/${p.total}`),
       )

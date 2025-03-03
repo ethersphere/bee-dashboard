@@ -31,9 +31,6 @@ const FilesHandler = (): ReactElement => {
   const classes = useStyles()
   const { usableStamps } = useContext(StampContext)
 
-  // eslint-disable-next-line no-alert
-  alert(usableStamps[0].duration.toEndDate(new Date()))
-
   return (
     <div className={classes.container}>
       <div className={classes.flex}>
