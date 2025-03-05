@@ -1,6 +1,6 @@
 import { Box, Button, Grid, Slider, Typography } from '@material-ui/core'
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles'
-import { Duration, PostageBatchOptions, Utils } from '@upcoming/bee-js'
+import { Duration, PostageBatchOptions, Size, Utils } from '@upcoming/bee-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -46,7 +46,7 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
   const { refresh } = useContext(StampsContext)
   const { beeApi } = useContext(SettingsContext)
 
-  const [depthInput, setDepthInput] = useState<number>(Utils.getDepthForSize(4))
+  const [depthInput, setDepthInput] = useState<number>(Utils.getDepthForSize(Size.fromGigabytes(4)))
   const [amountInput, setAmountInput] = useState<bigint>(Utils.getAmountForDuration(Duration.fromDays(30), 26500))
   const [labelInput, setLabelInput] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -108,7 +108,7 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
 
   function handleBatchSize(gigabytes: number) {
     setButtonValue(gigabytes)
-    const capacity = Utils.getDepthForSize(gigabytes)
+    const capacity = Utils.getDepthForSize(Size.fromGigabytes(gigabytes))
     setDepthInput(capacity)
   }
 
