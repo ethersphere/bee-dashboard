@@ -70,9 +70,13 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
 
     const pricePerBlock = chainState.currentPrice
 
-    return `${secondsToTimeString(
-      Utils.getStampDuration(amount, pricePerBlock).toSeconds(),
-    )} (with price of ${pricePerBlock} PLUR per block)`
+    try {
+      return `${secondsToTimeString(
+        Utils.getStampDuration(amount, pricePerBlock).toSeconds(),
+      )} (with price of ${pricePerBlock} PLUR per block)`
+    } catch {
+      return `0 seconds (with price of ${pricePerBlock} PLUR per block)`
+    }
   }
 
   function getPrice(depth: number, amount: bigint): string {
