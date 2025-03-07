@@ -79,6 +79,7 @@ const UploadModal = ({ modalDisplay, file }: UploadModalProps): ReactElement => 
   const [description, setDescription] = useState('')
   const [label, setLabel] = useState('')
   const filemanager = new FileManager()
+
   filemanager.initialize()
 
   const handleUpload = () => {

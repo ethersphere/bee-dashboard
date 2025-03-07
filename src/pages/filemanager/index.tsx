@@ -91,7 +91,7 @@ export default function FM(): ReactElement {
       {fileListError && (
         <div className={classes.errorTextContainer}>
           <Typography variant="h1" align="center">
-            Uh oh, some error happened
+            Uh oh, an error happened
           </Typography>
         </div>
       )}

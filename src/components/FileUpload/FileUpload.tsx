@@ -3,7 +3,12 @@ import type { ReactElement } from 'react'
 import { useState } from 'react'
 import SwarmIcon from '../../assets/images/swarmIcon.png'
 import FileUploadModal from './FileUploadModal'
+import { PostageBatch } from '@upcoming/bee-js'
 //TODO-Filemanager: volume management
+
+interface Props {
+  usableStamps: PostageBatch[]
+}
 const useStyles = makeStyles(() =>
   createStyles({
     container: {
@@ -53,7 +58,7 @@ const useStyles = makeStyles(() =>
   }),
 )
 
-const Upload = (): ReactElement => {
+const Upload = ({ usableStamps }: Props): ReactElement => {
   const classes = useStyles()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -82,7 +87,11 @@ const Upload = (): ReactElement => {
       <div>Upload</div>
 
       <div className={classes.dropdown}>
-        <div onClick={handleUploadClick}>{'> Vol-1'}</div>
+        {usableStamps.map((stamp, index) => (
+          <div onClick={handleUploadClick} key={index}>
+            {stamp.label}
+          </div>
+        ))}
       </div>
 
       <input type="file" onChange={handleFileChange} style={{ display: 'none' }} id="file-upload" />
