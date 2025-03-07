@@ -4,14 +4,10 @@ import { useState } from 'react'
 import VolumePropertiesModal from './VolumePropertiesModal'
 import VolumeSharingModal from './VolumeSharingModal'
 import { PostageBatch } from '@upcoming/bee-js'
-// import VolumePropertiesModal from './VolumePropertiesModal'
-// import VolumeSharingModal from './VolumeSharingModal'
 
 const useStyles = makeStyles(() =>
   createStyles({
     modal: {
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      backdropFilter: 'blur(5px)',
       position: 'fixed',
       top: 0,
       left: 0,
@@ -26,7 +22,6 @@ const useStyles = makeStyles(() =>
       display: 'flex',
       gap: '20px',
       flexDirection: 'column',
-      // justifyContent: 'space-between',
       backgroundColor: '#EDEDED',
       padding: '20px',
       width: '552px',
@@ -60,15 +55,14 @@ const useStyles = makeStyles(() =>
 
 export interface ActiveVolume {
   volumeModalDisplay: boolean
-  label: string
-  size: number
+  volume: PostageBatch
   validity: number
 }
 
 interface VolumeModalProps {
   modalDisplay: (value: boolean) => void
   newVolume?: boolean
-  activeVolume?: ActiveVolume
+  activeVolume: ActiveVolume
 }
 
 const VolumeModal = ({ modalDisplay, newVolume, activeVolume }: VolumeModalProps): ReactElement => {
@@ -102,7 +96,7 @@ const VolumeModal = ({ modalDisplay, newVolume, activeVolume }: VolumeModalProps
           <VolumePropertiesModal
             modalDisplay={modalDisplay}
             newVolume={newVolume ? newVolume : false}
-            volume={newVolume ? undefined : activeVolume}
+            activeVolume={activeVolume}
           />
         ) : null}
         {activeTab === 'Sharing' ? (

@@ -1,16 +1,12 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
-import { useContext, useEffect, useState } from 'react'
-import DestroyIcon from '../icons/DestroyIcon'
-import DownloadIcon from '../icons/DownloadIcon'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { SwarmTextInput } from '../SwarmTextInput'
-import { ActiveVolume } from './VolumeModal'
 import DateSlider from './DateSlider'
 import SizeSlider from './SizeSlider'
-import { getHumanReadableFileSize } from '../../utils/file'
+import { BZZ, Duration, Size } from '@upcoming/bee-js'
 import { Context as SettingsContext } from '../../providers/Settings'
 import ErrorModal from './ErrorModal'
-import { Duration } from '@upcoming/bee-js'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -70,37 +66,10 @@ const useStyles = makeStyles(() =>
         color: '#FFFFFF',
       },
     },
-    updateButtonEnabled: {
-      backgroundColor: '#DE7700',
-      color: '#FFFFFF',
-      width: '256px',
-      height: '42px',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      '&:hover': {
-        backgroundColor: '#DE7700',
-        color: '#FFFFFF',
-      },
-    },
-    updateButtonDisabled: {
-      backgroundColor: '#878787',
-      color: '#FFFFFF',
-      width: '256px',
-      height: '42px',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      cursor: 'not-allowed',
-    },
     buttonElementNotificationSign: {
       position: 'absolute',
       right: '-25px',
       top: '0',
-    },
-    buttonNewVolume: {
-      backgroundColor: '#DE7700',
-      color: '#FFFFFF',
     },
     buttonContainer: {
       display: 'flex',
@@ -177,21 +146,7 @@ const useStyles = makeStyles(() =>
       padding: '5px 15px',
       fontSize: '14x',
     },
-    downloadButtonContainer: {
-      display: 'flex',
-      padding: '40px 60px',
-      flexDirection: 'column',
-      width: '113px !important',
-      height: '64px',
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#FFFFFF',
-      cursor: 'pointer',
-      '&:hover': {
-        backgroundColor: '#DE7700',
-        color: '#FFFFFF',
-      },
-    },
+
     copyIconContainer: {
       display: 'flex',
       justifyContent: 'center',
@@ -238,83 +193,85 @@ const useStyles = makeStyles(() =>
       alignItems: 'center',
       marginRight: '10px',
     },
+    createButtonEnabled: {
+      backgroundColor: '#DE7700',
+      color: '#FFFFFF',
+      width: '256px',
+      height: '42px',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      '&:hover': {
+        backgroundColor: '#DE7700',
+        color: '#FFFFFF',
+      },
+    },
+    createButtonDisabled: {
+      backgroundColor: '#878787',
+      color: '#FFFFFF',
+      cursor: 'not-allowed',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
   }),
 )
 
 interface VolumePropertiesModalProps {
   newVolume: boolean
   modalDisplay: (value: boolean) => void
-  activeVolume: ActiveVolume
 }
 
-const VolumePropertiesModal = ({ newVolume, modalDisplay, activeVolume }: VolumePropertiesModalProps): ReactElement => {
+const NewVolumePropertiesModal = ({ newVolume, modalDisplay }: VolumePropertiesModalProps): ReactElement => {
   const classes = useStyles()
-  const [isHoveredDestroy, setIsHoveredDestroy] = useState(false)
-  const [isHoveredDownload, setIsHoveredDownload] = useState(false)
-  const [size, setSize] = useState(activeVolume.volume.size)
-  const [validity, setValidity] = useState(new Date(activeVolume.validity))
+  const [size, setSize] = useState(Size.fromBytes(0))
+  const [validity, setValidity] = useState(new Date())
   const [cost, setCost] = useState('')
-  const [showErrorModal, setShowErrorModal] = useState(false)
-  const [isUploadButtonEnabled, setIsUploadButtonEnabled] = useState(false)
-
+  const [label, setLabel] = useState('')
+  const [isCreateEnabled, setIsCreateEnabled] = useState(false)
   const { beeApi } = useContext(SettingsContext)
+  const [showErrorModal, setShowErrorModal] = useState(false)
+  const currentFetch = useRef<Promise<void> | null>(null)
+
+  const createPostageStamp = async () => {
+    try {
+      if (isCreateEnabled) {
+        await beeApi?.buyStorage(size, Duration.fromEndDate(validity), { label: label })
+        modalDisplay(false)
+      }
+    } catch (e) {
+      setShowErrorModal(true)
+    }
+  }
+
+  useEffect(() => {
+    label ? setIsCreateEnabled(true) : setIsCreateEnabled(false)
+  }, [label])
 
   useEffect(() => {
     const fetchCost = async () => {
-      try {
-        const cost = await beeApi?.getExtensionCost(activeVolume.volume.batchID, size, Duration.fromEndDate(validity))
-
-        if (
-          size.toGigabytes() <= activeVolume.volume.size.toGigabytes() &&
-          validity.getTime() <= activeVolume.validity
-        ) {
-          setCost('0')
-          setIsUploadButtonEnabled(false)
-        } else {
-          setCost(cost ? cost.toSignificantDigits(2) : '0')
-          setIsUploadButtonEnabled(true)
-        }
-      } catch (e) {
-        setShowErrorModal(true)
+      if (currentFetch.current) {
+        await currentFetch.current
       }
+      const fetchPromise = (async () => {
+        let cost: BZZ | undefined = undefined
+        try {
+          if (size.toGigabytes() >= 0 && validity.getTime() >= new Date().getTime()) {
+            cost = await beeApi?.getStorageCost(size, Duration.fromEndDate(validity))
+            setCost(cost ? cost.toSignificantDigits(2) : '0')
+          } else {
+            setCost('0')
+          }
+        } catch (e) {
+          setShowErrorModal(true)
+        }
+      })()
+      currentFetch.current = fetchPromise
+      await fetchPromise
+      currentFetch.current = null
     }
-
     fetchCost()
-  }, [activeVolume, size, validity])
-
-  const handleMouseEnterDestroy = () => {
-    setIsHoveredDestroy(true)
-  }
-
-  const handleMouseLeaveDestroy = () => {
-    setIsHoveredDestroy(false)
-  }
-
-  const handleMouseEnterDownload = () => {
-    setIsHoveredDownload(true)
-  }
-
-  const handleMouseLeaveDownload = () => {
-    setIsHoveredDownload(false)
-  }
-
-  const updateVolume = async () => {
-    if (isUploadButtonEnabled) {
-      try {
-        if (size > activeVolume.volume.size) {
-          await beeApi?.extendStorageSize(activeVolume.volume.batchID, size)
-          modalDisplay(false)
-        }
-
-        if (validity.getTime() > activeVolume.validity) {
-          await beeApi?.extendStorageDuration(activeVolume.volume.batchID, Duration.fromEndDate(validity))
-          modalDisplay(false)
-        }
-      } catch (e) {
-        setShowErrorModal(true)
-      }
-    }
-  }
+  }, [size, validity])
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexGrow: '1' }}>
@@ -329,64 +286,20 @@ const VolumePropertiesModal = ({ newVolume, modalDisplay, activeVolume }: Volume
       >
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', gap: '20px' }}>
-            {!newVolume ? (
-              <div className={classes.infoContainer}>
-                <div style={{ fontSize: '10px' }}>Volume</div>
-                <div>{activeVolume?.volume.label}</div>
-              </div>
-            ) : (
-              <div style={{}}>
-                <SwarmTextInput name="name" label="Volume name (max. 6 char)" required={false} />
-              </div>
-            )}
-          </div>
-          {!newVolume ? (
-            <div
-              style={{
-                display: 'flex',
-                gap: '20px',
-                backgroundColor: '#CFCDCD',
-                padding: '20px',
-                boxSizing: 'border-box',
-              }}
-            >
-              <div
-                className={classes.downloadButtonContainer}
-                onMouseEnter={handleMouseEnterDestroy}
-                onMouseLeave={handleMouseLeaveDestroy}
-              >
-                <DestroyIcon color={isHoveredDestroy ? '#FFFFFF' : '#333333'} />
-                <div style={{ textAlign: 'center' }}>Destroy volume</div>
-              </div>
-              <div
-                className={classes.downloadButtonContainer}
-                onMouseEnter={handleMouseEnterDownload}
-                onMouseLeave={handleMouseLeaveDownload}
-              >
-                <DownloadIcon color={isHoveredDownload ? '#FFFFFF' : '#333333'} />
-                <div style={{ textAlign: 'center' }}>Download now</div>
-              </div>
+            <div style={{}}>
+              <SwarmTextInput name="name" label="label" required={true} onChange={e => setLabel(e.target.value)} />
             </div>
-          ) : null}
+          </div>
         </div>
         <div className={classes.volumeSliders}>
-          <SizeSlider
-            onChange={value => setSize(value)}
-            exactValue={activeVolume?.volume.size ?? 0}
-            lowerLabel={`Current/used: ${getHumanReadableFileSize(
-              activeVolume?.volume.size.toBytes() ?? 0,
-            )}/${getHumanReadableFileSize(activeVolume?.volume.remainingSize.toBytes() ?? 0)}`}
-            newVolume={false}
-          />
+          <SizeSlider onChange={value => setSize(value)} exactValue={Size.fromBytes(0)} newVolume={true} />
           <DateSlider
             type="date"
-            upperLabel="Extend validity to:"
-            exactValue={new Date(activeVolume.validity)}
+            upperLabel="Validity:"
+            exactValue={new Date()}
             lowerLabel="Current:"
-            onDateChange={date => {
-              setValidity(date)
-            }}
-            newVolume={false}
+            onDateChange={value => setValidity(new Date(value))}
+            newVolume={true}
           />
         </div>
         <div className={classes.costContainer}>
@@ -398,12 +311,13 @@ const VolumePropertiesModal = ({ newVolume, modalDisplay, activeVolume }: Volume
             Cancel
           </div>
           <div
-            className={isUploadButtonEnabled ? classes.updateButtonEnabled : classes.updateButtonDisabled}
+            className={isCreateEnabled ? classes.createButtonEnabled : classes.createButtonDisabled}
             style={{ width: '160px' }}
-            onClick={() => updateVolume()}
+            onClick={createPostageStamp}
           >
-            Update
-          </div>
+            Create
+          </div>{' '}
+          :
         </div>
       </div>
       {showErrorModal ? <ErrorModal modalDisplay={value => setShowErrorModal(value)} /> : null}
@@ -411,4 +325,4 @@ const VolumePropertiesModal = ({ newVolume, modalDisplay, activeVolume }: Volume
   )
 }
 
-export default VolumePropertiesModal
+export default NewVolumePropertiesModal

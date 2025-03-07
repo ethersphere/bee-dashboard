@@ -87,9 +87,6 @@ export function Provider({ children, ...propsSettings }: Props): ReactElement {
   }, [])
 
   useEffect(() => {
-    // eslint-disable-next-line no-console
-    console.log('bee API', beeApi)
-
     try {
       const url = makeHttpUrl(config?.['api-addr'] ?? apiUrl)
       setBeeApi(new Bee(url))

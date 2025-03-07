@@ -1,5 +1,9 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
+import { useState } from 'react'
+import VolumeSharingModal from './VolumeSharingModal'
+import { PostageBatch } from '@upcoming/bee-js'
+import NewVolumePropertiesModal from './NewVolumePropertiesModal'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -9,8 +13,6 @@ const useStyles = makeStyles(() =>
       left: 0,
       width: '100%',
       height: '100%',
-      //   backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      //   backdropFilter: 'blur(5px)',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
@@ -18,59 +20,12 @@ const useStyles = makeStyles(() =>
     },
     modalContainer: {
       display: 'flex',
+      gap: '20px',
       flexDirection: 'column',
-      justifyContent: 'space-between',
       backgroundColor: '#EDEDED',
       padding: '20px',
       width: '552px',
       height: '696px',
-    },
-    modalHeader: {
-      fontFamily: '"iAWriterMonoV", monospace',
-      fontSize: '20px',
-      fontWeight: 700,
-      lineHeight: '26px',
-    },
-    modalContent: {
-      fontFamily: '"iAWriterMonoV", monospace',
-      fontSize: '14px',
-      fontWeight: 400,
-      lineHeight: '28px',
-    },
-    flexCenter: {
-      display: 'flex',
-      gap: '20px',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    volumenButtonContainer: {
-      position: 'relative',
-    },
-    buttonElement: {
-      backgroundColor: '#FFFFFF',
-      width: '256px',
-      height: '42px',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      '&:hover': {
-        backgroundColor: '#DE7700',
-        color: '#FFFFFF',
-      },
-    },
-    buttonElementNotificationSign: {
-      position: 'absolute',
-      right: '-25px',
-      top: '0',
-    },
-    buttonNewVolume: {
-      backgroundColor: '#DE7700',
-      color: '#FFFFFF',
-    },
-    cancelButtonContainer: {
-      display: 'flex',
-      justifyContent: 'right',
     },
     tabPanel: {
       display: 'flex',
@@ -81,40 +36,70 @@ const useStyles = makeStyles(() =>
       fontFamily: '"iAWriterMonoV", monospace',
     },
     tabPanelItem: {
+      cursor: 'pointer',
       display: 'flex',
       width: '100%',
       justifyContent: 'center',
       alignItems: 'center',
     },
     tabPanelItemActive: {
+      display: 'flex',
+      width: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
       backgroundColor: '#FFFFFF',
-      color: '#FFFFFF',
+      color: 'black',
     },
   }),
 )
 
-interface NewVolumeModalProps {
-  modalDisplay: (value: boolean) => void
+export interface ActiveVolume {
+  volumeModalDisplay: boolean
+  volume: PostageBatch
+  validity: number
 }
 
-const NewVolumeModal = (props: NewVolumeModalProps): ReactElement => {
+interface VolumeModalProps {
+  modalDisplay: (value: boolean) => void
+  newVolume?: boolean
+}
+
+const VolumeModal = ({ modalDisplay, newVolume }: VolumeModalProps): ReactElement => {
   const classes = useStyles()
+  const [activeTab, setActiveTab] = useState('Properties')
+
+  const alreadyAddedWithACT = [
+    '0x9cbDe6569BA1220E46f256371368A05f480bb78C',
+    '0x9cbDe6569BA1220E46f256371368A05f480bb78C',
+    '0x9cbDe6569BA1220E46f256371368A05f480bb78C',
+  ]
 
   return (
     <div className={classes.modal}>
       <div className={classes.modalContainer}>
         <div className={classes.tabPanel}>
-          <div className={classes.tabPanelItem}>Properties</div>
-          <div className={classes.tabPanelItem}>Sharing</div>
-        </div>
-        <div className={classes.cancelButtonContainer}>
-          <div className={classes.buttonElement} style={{ width: '160px' }} onClick={() => props.modalDisplay(false)}>
-            Cancel
+          <div
+            className={`${classes.tabPanelItem} ${activeTab === 'Properties' ? classes.tabPanelItemActive : null}`}
+            onClick={() => setActiveTab('Properties')}
+          >
+            Properties
+          </div>
+          <div
+            className={`${classes.tabPanelItem} ${activeTab === 'Sharing' ? classes.tabPanelItemActive : null}`}
+            onClick={() => setActiveTab('Sharing')}
+          >
+            Sharing
           </div>
         </div>
+        {activeTab === 'Properties' ? (
+          <NewVolumePropertiesModal modalDisplay={modalDisplay} newVolume={newVolume ? newVolume : false} />
+        ) : null}
+        {activeTab === 'Sharing' ? (
+          <VolumeSharingModal textToBeDisabled={alreadyAddedWithACT} modalDisplay={value => modalDisplay(value)} />
+        ) : null}
       </div>
     </div>
   )
 }
 
-export default NewVolumeModal
+export default VolumeModal

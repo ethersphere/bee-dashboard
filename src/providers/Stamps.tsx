@@ -58,13 +58,8 @@ export function Provider({ children }: Props): ReactElement {
   const [lastUpdate, setLastUpdate] = useState<number | null>(initialValues.lastUpdate)
   const [frequency, setFrequency] = useState<number | null>(3000)
 
-  const bee = new Bee('http://localhost:1633')
-
   async function getUsableStamps(bee: Bee): Promise<PostageBatch[]> {
     try {
-      // eslint-disable-next-line no-alert
-      // alert('fsdfs')
-
       return (await bee.getAllPostageBatch())
         .filter(s => s.usable)
         .sort((a, b) => (a.label || '').localeCompare(b.label || ''))
@@ -83,7 +78,7 @@ export function Provider({ children }: Props): ReactElement {
     }
 
     try {
-      const uStamps = await getUsableStamps(bee)
+      const uStamps = await getUsableStamps(beeApi)
 
       setUsableStamps(uStamps)
 
