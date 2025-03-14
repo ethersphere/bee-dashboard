@@ -6,7 +6,6 @@ import { getHumanReadableFileSize, getFileType, formatDate } from '../../utils/f
 import { Context as FileManagerContext } from '../../providers/FileManager'
 import { PostageBatch } from '@upcoming/bee-js'
 
-//TODO-Filemanager: volume management
 const useStyles = makeStyles(() =>
   createStyles({
     modal: {
@@ -130,8 +129,6 @@ const UploadModal = ({ modalDisplay, files, actualPostageBatch, onUpload }: Uplo
         )
       }
 
-      // eslint-disable-next-line no-console
-      console.log('Upload complete')
       modalDisplay(false)
     }
   }

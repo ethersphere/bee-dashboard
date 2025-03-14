@@ -54,21 +54,15 @@ export default function FM(): ReactElement {
 
   useEffect(() => {
     const handleFileUploaded = (data: FileInfo) => {
-      // eslint-disable-next-line no-console
-      console.log('EMITTER RUN')
       setFileList(fileList ? [...fileList, data] : [])
     }
 
     if (filemanager) {
       filemanager.emitter.on(FileManagerEvents.FILE_UPLOADED, handleFileUploaded)
-      // eslint-disable-next-line no-console
-      console.log('Emitter initialized')
     }
 
     return () => {
       filemanager?.emitter.off(FileManagerEvents.FILE_UPLOADED, handleFileUploaded)
-      // eslint-disable-next-line no-console
-      console.log('Emitter UNinitialized')
     }
   }, [filemanager])
 
