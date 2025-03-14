@@ -2,7 +2,6 @@ import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
 import { useState } from 'react'
 import VolumeSharingModal from './VolumeSharingModal'
-import { PostageBatch } from '@upcoming/bee-js'
 import NewVolumePropertiesModal from './NewVolumePropertiesModal'
 
 const useStyles = makeStyles(() =>
@@ -52,12 +51,6 @@ const useStyles = makeStyles(() =>
     },
   }),
 )
-
-export interface ActiveVolume {
-  volumeModalDisplay: boolean
-  volume: PostageBatch
-  validity: number
-}
 
 interface VolumeModalProps {
   modalDisplay: (value: boolean) => void

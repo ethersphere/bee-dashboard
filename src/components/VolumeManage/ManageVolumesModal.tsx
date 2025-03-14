@@ -6,6 +6,7 @@ import NotificationSign from '../NotificationSign'
 import NewVolumeModal from './NewVolumeModal'
 import { Context as StampContext } from '../../providers/Stamps'
 import VolumeModal from './VolumeModal'
+import { PostageBatch } from '@upcoming/bee-js'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -86,6 +87,12 @@ const useStyles = makeStyles(() =>
     },
   }),
 )
+
+export interface ActiveVolume {
+  volumeModalDisplay: boolean
+  volume: PostageBatch
+  validity: number
+}
 
 interface ManageModalProps {
   modalDisplay: (value: boolean) => void

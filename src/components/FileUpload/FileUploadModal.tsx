@@ -2,9 +2,9 @@ import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
 import { useContext, useEffect, useState } from 'react'
 import { SwarmTextInput } from '../SwarmTextInput'
-import { getHumanReadableFileSize, getFileType } from '../../utils/file'
+import { getHumanReadableFileSize, getFileType, formatDate } from '../../utils/file'
 import { Context as FileManagerContext } from '../../providers/FileManager'
-import { BatchId } from '@upcoming/bee-js'
+import { PostageBatch } from '@upcoming/bee-js'
 
 //TODO-Filemanager: volume management
 const useStyles = makeStyles(() =>
@@ -78,46 +78,62 @@ interface UploadProgress {
 interface UploadModalProps {
   modalDisplay: (value: boolean) => void
   fileSize?: number
-  file: File
+  files: FileList
+  actualPostageBatch: PostageBatch
+  onUpload: (value: number, isUploadingInProgress: boolean) => void
 }
 
-const UploadModal = ({ modalDisplay, file }: UploadModalProps): ReactElement => {
+const UploadModal = ({ modalDisplay, files, actualPostageBatch, onUpload }: UploadModalProps): ReactElement => {
   const classes = useStyles()
   const [description, setDescription] = useState('')
   const [label, setLabel] = useState('')
-  const [batchIds, setBatchIds] = useState<BatchId[]>([])
   const { filemanager } = useContext(FileManagerContext)
+  const [filesSize, setFilesSize] = useState(0)
+  const [filesCount, setFilesCount] = useState(0)
+
+  const type = files.length > 1 ? 'multiple' : files[0].type
 
   useEffect(() => {
-    if (!filemanager || !filemanager.getIsInitialized()) {
-      return
+    let size = 0
+    for (const file of Array.from(files)) {
+      setFilesCount(filesCount + 1)
+      size += file.size
     }
+    setFilesSize(size)
+  }, [])
 
-    const ids = filemanager.getStamps().map(s => s.batchID)
-    setBatchIds(ids)
-  }, [filemanager])
-
-  const handleUpload = async () => {
+  const handleUpload = () => {
     if (filemanager) {
-      await filemanager.upload(
-        batchIds[0],
-        [file],
-        {
-          description,
-          label,
-          size: getHumanReadableFileSize(file.size),
-          type: getFileType(file.type),
-        },
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        // eslint-disable-next-line no-console
-        (p: UploadProgress) => console.log(`progress: ${p.processed}/${p.total}`),
-      )
+      const filesArray = Array.from(files)
+
+      for (const file of filesArray) {
+        filemanager.upload(
+          actualPostageBatch.batchID,
+          [file],
+          file.name,
+          {
+            description,
+            label,
+            size: getHumanReadableFileSize(file.size),
+            type: getFileType(file.type),
+          },
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          (p: UploadProgress) => {
+            // eslint-disable-next-line no-console
+            console.log(`progress: ${p.processed / (p.total / 100)}`)
+            onUpload(Math.floor(p.processed / (p.total / 100)), true)
+          },
+        )
+      }
+
+      // eslint-disable-next-line no-console
+      console.log('Upload complete')
+      modalDisplay(false)
     }
-    modalDisplay(false)
   }
 
   return (
@@ -128,27 +144,27 @@ const UploadModal = ({ modalDisplay, file }: UploadModalProps): ReactElement => 
           <div className={classes.fileInfoContainer}>
             <div className={classes.item}>
               <div>Target Volume:</div>
-              <div className={classes.itemValue}>MYVID</div>
+              <div className={classes.itemValue}>{actualPostageBatch.label}</div>
             </div>
             <div className={classes.item}>
               <div>Selected items count:</div>
-              <div className={classes.itemValue}>1</div>
+              <div className={classes.itemValue}>{filesCount}</div>
             </div>
             <div className={classes.item}>
               <div>Validity:</div>
-              <div className={classes.itemValue}>2025/12/31</div>
+              <div className={classes.itemValue}>{formatDate(actualPostageBatch.duration.toEndDate())}</div>
             </div>
             <div className={classes.item}>
               <div>Selected item types:</div>
-              <div className={classes.itemValue}>{file.type}</div>
+              <div className={classes.itemValue}>{type}</div>
             </div>
             <div className={classes.item}>
               <div>Free space:</div>
-              <div className={classes.itemValue}>3.64GB</div>
+              <div className={classes.itemValue}>{getHumanReadableFileSize(actualPostageBatch.size.toBytes())}</div>
             </div>
             <div className={classes.item}>
               <div>Neccessary space:</div>
-              <div className={classes.itemValue}>{file.size}</div>
+              <div className={classes.itemValue}>{getHumanReadableFileSize(filesSize)}</div>
             </div>
           </div>
           <SwarmTextInput

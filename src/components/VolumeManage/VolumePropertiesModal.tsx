@@ -4,13 +4,13 @@ import { useContext, useEffect, useState } from 'react'
 import DestroyIcon from '../icons/DestroyIcon'
 import DownloadIcon from '../icons/DownloadIcon'
 import { SwarmTextInput } from '../SwarmTextInput'
-import { ActiveVolume } from './VolumeModal'
 import DateSlider from './DateSlider'
 import SizeSlider from './SizeSlider'
 import { getHumanReadableFileSize } from '../../utils/file'
 import { Context as SettingsContext } from '../../providers/Settings'
 import ErrorModal from './ErrorModal'
 import { Duration } from '@upcoming/bee-js'
+import { ActiveVolume } from './ManageVolumesModal'
 
 const useStyles = makeStyles(() =>
   createStyles({

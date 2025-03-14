@@ -4,6 +4,7 @@ import { useState } from 'react'
 import VolumePropertiesModal from './VolumePropertiesModal'
 import VolumeSharingModal from './VolumeSharingModal'
 import { PostageBatch } from '@upcoming/bee-js'
+import { ActiveVolume } from './ManageVolumesModal'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -52,12 +53,6 @@ const useStyles = makeStyles(() =>
     },
   }),
 )
-
-export interface ActiveVolume {
-  volumeModalDisplay: boolean
-  volume: PostageBatch
-  validity: number
-}
 
 interface VolumeModalProps {
   modalDisplay: (value: boolean) => void
