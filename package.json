@@ -35,7 +35,7 @@
     "@solarpunkltd/file-manager-lib": "file:../file-manager-lib",
     "@mui/material": "^6.4.7",
     "@mui/x-date-pickers": "^7.27.1",
-    "@upcoming/bee-js": "^0.17.0",
+    "@ethersphere/bee-js": "^9.0.3",
     "axios": "^0.28.1",
     "bignumber.js": "^9.1.2",
     "buffer": "^6.0.3",

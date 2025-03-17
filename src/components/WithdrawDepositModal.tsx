@@ -6,7 +6,7 @@ import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import Input from '@material-ui/core/Input'
-import { BZZ, TransactionId } from '@upcoming/bee-js'
+import { BZZ, TransactionId } from '@ethersphere/bee-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, ReactNode, useState } from 'react'
 

@@ -1,5 +1,5 @@
 import { Box, Tooltip, Typography } from '@material-ui/core'
-import { BZZ, DAI } from '@upcoming/bee-js'
+import { BZZ, DAI } from '@ethersphere/bee-js'
 import { Wallet } from 'ethers'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'

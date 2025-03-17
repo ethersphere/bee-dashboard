@@ -1,4 +1,4 @@
-import { Bee, PostageBatch } from '@upcoming/bee-js'
+import { Bee, PostageBatch } from '@ethersphere/bee-js'
 import { createContext, ReactChild, ReactElement, useContext, useEffect, useState } from 'react'
 import { Context as SettingsContext } from './Settings'
 

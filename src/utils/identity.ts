@@ -1,4 +1,4 @@
-import { BatchId, Bee, NULL_TOPIC, Reference } from '@upcoming/bee-js'
+import { BatchId, Bee, NULL_TOPIC, Reference } from '@ethersphere/bee-js'
 import { Wallet } from 'ethers'
 import { uuidV4, waitUntilStampUsable } from '.'
 import { Identity, IdentityType } from '../providers/Feeds'

@@ -1,10 +1,10 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useState } from 'react'
 import { SwarmTextInput } from '../SwarmTextInput'
 import { getHumanReadableFileSize, getFileType } from '../../utils/file'
 import { Context as FileManagerContext } from '../../providers/FileManager'
-import { BatchId } from '@upcoming/bee-js'
+import { BatchId } from '@ethersphere/bee-js'
 
 //TODO-Filemanager: volume management
 const useStyles = makeStyles(() =>
@@ -85,37 +85,23 @@ const UploadModal = ({ modalDisplay, file }: UploadModalProps): ReactElement => 
   const classes = useStyles()
   const [description, setDescription] = useState('')
   const [label, setLabel] = useState('')
-  const [batchIds, setBatchIds] = useState<BatchId[]>([])
-  const { filemanager } = useContext(FileManagerContext)
+  const { filemanager, initialized } = useContext(FileManagerContext)
 
-  useEffect(() => {
-    if (!filemanager || !filemanager.getIsInitialized()) {
-      return
-    }
-
-    const ids = filemanager.getStamps().map(s => s.batchID)
-    setBatchIds(ids)
-  }, [filemanager])
-
-  const handleUpload = async () => {
-    if (filemanager) {
-      await filemanager.upload(
-        batchIds[0],
-        [file],
-        {
+  const handleUpload = () => {
+    if (filemanager && initialized) {
+      filemanager.upload({
+        batchId: new BatchId('58ae77f6de3acea8ec0e4ff91dbc6f203984af9011a8be4ee94de6eedf005b41'),
+        files: [file],
+        name: file.name,
+        customMetadata: {
           description,
           label,
           size: getHumanReadableFileSize(file.size),
           type: getFileType(file.type),
         },
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
         // eslint-disable-next-line no-console
-        (p: UploadProgress) => console.log(`progress: ${p.processed}/${p.total}`),
-      )
+        onUploadProgress: (p: UploadProgress) => console.log(`progress: ${p.processed}/${p.total}`),
+      })
     }
     modalDisplay(false)
   }

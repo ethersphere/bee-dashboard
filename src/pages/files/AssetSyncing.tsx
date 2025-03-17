@@ -1,5 +1,5 @@
 import { Box } from '@material-ui/core'
-import { Tag } from '@upcoming/bee-js'
+import { Tag } from '@ethersphere/bee-js'
 import { ReactElement, useContext, useEffect, useRef, useState } from 'react'
 import { DocumentationText } from '../../components/DocumentationText'
 import { LinearProgressWithLabel } from '../../components/ProgressBar'
