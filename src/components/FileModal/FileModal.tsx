@@ -1,5 +1,8 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
+import { useState } from 'react'
+import FileSharingModal from './FileSharingModal'
+import FilePropertiesModal from './FilePropertiesModal'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -20,6 +23,7 @@ const useStyles = makeStyles(() =>
       display: 'flex',
       gap: '20px',
       flexDirection: 'column',
+      // justifyContent: 'space-between',
       backgroundColor: '#EDEDED',
       padding: '20px',
       width: '552px',
@@ -93,13 +97,64 @@ const useStyles = makeStyles(() =>
 )
 
 interface FileModalProps {
+  volumeName: string
+  volumeValidity: Date
+  fileName: string
+  fileDetails?: string
+  fileLabels?: string
   modalDisplay: (value: boolean) => void
 }
 
-const FileModal = (props: FileModalProps): ReactElement => {
+const FileModal = ({
+  volumeName,
+  volumeValidity,
+  fileName,
+  fileDetails,
+  fileLabels,
+  modalDisplay,
+}: FileModalProps): ReactElement => {
   const classes = useStyles()
+  const [activeTab, setActiveTab] = useState('Properties')
 
-  return <div className={classes.modal}></div>
+  const alreadyAddedWithACT = [
+    '0x9cbDe6569BA1220E46f256371368A05f480bb78C',
+    '0x9cbDe6569BA1220E46f256371368A05f480bb78C',
+    '0x9cbDe6569BA1220E46f256371368A05f480bb78C',
+  ]
+
+  return (
+    <div className={classes.modal}>
+      <div className={classes.modalContainer}>
+        <div className={classes.tabPanel}>
+          <div
+            className={`${classes.tabPanelItem} ${activeTab === 'Properties' ? classes.tabPanelItemActive : null}`}
+            onClick={() => setActiveTab('Properties')}
+          >
+            Properties
+          </div>
+          <div
+            className={`${classes.tabPanelItem} ${activeTab === 'Sharing' ? classes.tabPanelItemActive : null}`}
+            onClick={() => setActiveTab('Sharing')}
+          >
+            Sharing
+          </div>
+        </div>
+        {activeTab === 'Properties' ? (
+          <FilePropertiesModal
+            volumeName={volumeName}
+            volumeValidity={volumeValidity}
+            fileName={fileName}
+            fileDetails={fileDetails}
+            fileLabels={fileLabels}
+            modalDisplay={modalDisplay}
+          />
+        ) : null}
+        {activeTab === 'Sharing' ? (
+          <FileSharingModal textToBeDisabled={alreadyAddedWithACT} modalDisplay={value => modalDisplay(value)} />
+        ) : null}
+      </div>
+    </div>
+  )
 }
 
 export default FileModal

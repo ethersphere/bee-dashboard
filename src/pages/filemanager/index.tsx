@@ -4,6 +4,7 @@ import { createStyles, makeStyles, Typography } from '@material-ui/core'
 import FileItem from '../../components/FileItem'
 import FilesHandler from '../../components/FilesHandler'
 import { Context as FileManagerContext } from '../../providers/FileManager'
+import { Context as StampContext } from '../../providers/Stamps'
 import { FileManagerEvents } from '@solarpunkltd/file-manager-lib'
 
 const useStyles = makeStyles(() =>
@@ -33,16 +34,17 @@ const useStyles = makeStyles(() =>
   }),
 )
 export default function FM(): ReactElement {
-  const { filemanager, initialized } = useContext(FileManagerContext)
+  const { filemanager, initialized, choosedBatchIds, getFilesForChoosedBatchIDs } = useContext(FileManagerContext)
   const classes = useStyles()
   const [fileList, setFileList] = useState<FileInfo[] | null>(filemanager ? [...filemanager.getFileInfoList()] : null)
   const [fileListError, setFileListError] = useState(false)
+  const { usableStamps } = useContext(StampContext)
 
   useEffect(() => {
     function fetchFiles() {
-      if (filemanager && initialized) {
+      if (filemanager && initialized && choosedBatchIds.length === 0) {
         try {
-          const files = filemanager.getFileInfoList()
+          const files = getFilesForChoosedBatchIDs(null)
           setFileList(files ? files : [])
         } catch (error) {
           setFileListError(true)
@@ -51,6 +53,10 @@ export default function FM(): ReactElement {
     }
     fetchFiles()
   }, [filemanager, fileList, initialized])
+
+  useEffect(() => {
+    setFileList(getFilesForChoosedBatchIDs(choosedBatchIds ? choosedBatchIds : []))
+  }, [choosedBatchIds])
 
   useEffect(() => {
     const handleFileUploaded = (data: FileInfo) => {
@@ -76,6 +82,16 @@ export default function FM(): ReactElement {
               {fileList?.map((file, index) => (
                 <div key={index}>
                   <FileItem
+                    volumeName={
+                      usableStamps.find(item => item?.batchID?.toString() === file?.batchId?.toString())?.label ??
+                      'No volume name'
+                    }
+                    volumeValidity={
+                      // new Date()
+                      usableStamps
+                        .find(item => item?.batchID?.toString() === file?.batchId?.toString())
+                        ?.duration.toEndDate() ?? new Date()
+                    }
                     name={file.name ? file.name : ''}
                     type={
                       file.customMetadata?.type === 'video' ||
@@ -93,6 +109,7 @@ export default function FM(): ReactElement {
                     preview={file.customMetadata?.preview ? file.customMetadata.preview : ''}
                     description={file.customMetadata?.description === 'true'}
                     label={file.customMetadata?.label}
+                    details={file.customMetadata?.details}
                     shared={
                       file.customMetadata?.shared === 'me' || file.customMetadata?.shared === 'others'
                         ? file.customMetadata.shared

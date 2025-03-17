@@ -84,8 +84,8 @@ interface UploadModalProps {
 
 const UploadModal = ({ modalDisplay, files, actualPostageBatch, onUpload }: UploadModalProps): ReactElement => {
   const classes = useStyles()
-  const [description, setDescription] = useState('')
   const [label, setLabel] = useState('')
+  const [details, setDetails] = useState('')
   const { filemanager } = useContext(FileManagerContext)
   const [filesSize, setFilesSize] = useState(0)
   const [filesCount, setFilesCount] = useState(0)
@@ -111,8 +111,8 @@ const UploadModal = ({ modalDisplay, files, actualPostageBatch, onUpload }: Uplo
           [file],
           file.name,
           {
-            description,
             label,
+            details,
             size: getHumanReadableFileSize(file.size),
             type: getFileType(file.type),
           },
@@ -170,7 +170,7 @@ const UploadModal = ({ modalDisplay, files, actualPostageBatch, onUpload }: Uplo
             multiline={true}
             rows={4}
             required={false}
-            onChange={e => setDescription(e.target.value)}
+            onChange={e => setDetails(e.target.value)}
           />
           <SwarmTextInput
             name="addLabels"

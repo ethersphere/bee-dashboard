@@ -5,6 +5,8 @@ import FileUpload from './FileUpload/FileUpload'
 import VolumeManage from './VolumeManage/VolumeManage'
 import { Context as StampContext } from '../providers/Stamps'
 import Volume from './VolumeManage/Volume'
+import { Context as FileManagerContext } from '../providers/FileManager'
+import { BatchId } from '@upcoming/bee-js'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -30,6 +32,22 @@ const useStyles = makeStyles(() =>
 const FilesHandler = (): ReactElement => {
   const classes = useStyles()
   const { usableStamps } = useContext(StampContext)
+  const { choosedBatchIds, setChoosedBatchIds } = useContext(FileManagerContext)
+
+  const handlerChoosedBatchIds = (batchId: BatchId, isChoosed: boolean) => {
+    const newChoosedBatchIds = Array.from(choosedBatchIds)
+
+    if (isChoosed) {
+      newChoosedBatchIds.push(batchId)
+    } else {
+      newChoosedBatchIds.splice(
+        newChoosedBatchIds.findIndex(item => item.toString() === batchId.toString()),
+        1,
+      )
+    }
+
+    setChoosedBatchIds(newChoosedBatchIds)
+  }
 
   return (
     <div className={classes.container}>
@@ -41,6 +59,7 @@ const FilesHandler = (): ReactElement => {
               size={stamp.amount}
               validity={stamp.duration.toEndDate(new Date()).getTime()}
               notificationText="!"
+              onClick={isChoosed => handlerChoosedBatchIds(stamp.batchID, isChoosed)}
             />
           </div>
         ))}

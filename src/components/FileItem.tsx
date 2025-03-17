@@ -83,6 +83,8 @@ const useStyles = makeStyles(() =>
 )
 
 interface Props {
+  volumeName: string
+  volumeValidity: Date
   name: string
   type: 'video' | 'audio' | 'image' | 'document' | 'folder' | 'other'
   size: string
@@ -91,12 +93,15 @@ interface Props {
   preview?: string
   description?: boolean
   label?: string
+  details?: string
   shared?: 'me' | 'others'
   warning?: boolean
   addedToQueue?: boolean
 }
 
 const FileItem = ({
+  volumeName,
+  volumeValidity,
   name,
   type,
   size,
@@ -105,6 +110,7 @@ const FileItem = ({
   preview,
   description,
   label,
+  details,
   shared,
   warning,
   addedToQueue,
@@ -143,7 +149,16 @@ const FileItem = ({
           <FileItemEdit />
         </div>
       </div>
-      {showFileModal ? <FileModal modalDisplay={value => setShowFileModal(value)} /> : null}
+      {showFileModal ? (
+        <FileModal
+          volumeName={volumeName}
+          volumeValidity={volumeValidity}
+          fileName={name}
+          fileLabels={label}
+          fileDetails={details}
+          modalDisplay={value => setShowFileModal(value)}
+        />
+      ) : null}
     </div>
   )
 }

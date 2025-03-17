@@ -36,6 +36,9 @@ const useStyles = makeStyles(() =>
       right: '5px',
       top: '2px',
     },
+    volumeLabel: {
+      textAlign: 'center',
+    },
   }),
 )
 
@@ -44,11 +47,12 @@ interface Props {
   size: string
   validity: number
   notificationText?: string
+  onClick: (isActive: boolean) => void
 }
 
-const Volume = ({ label, size, validity, notificationText }: Props): ReactElement => {
+const Volume = ({ label, size, validity, notificationText, onClick }: Props): ReactElement => {
   const classes = useStyles()
-  const [clicked, setClicked] = useState(false)
+  const [isChoosed, setIsChoosed] = useState(false)
 
   return (
     <Tooltip
@@ -63,19 +67,25 @@ const Volume = ({ label, size, validity, notificationText }: Props): ReactElemen
       placement="top"
       arrow
     >
-      <div className={classes.container} onClick={() => setClicked(!clicked)}>
+      <div
+        className={classes.container}
+        onClick={() => {
+          onClick(!isChoosed)
+          setIsChoosed(!isChoosed)
+        }}
+      >
         <div className={classes.flex}>
           <div className={classes.absoluteLeft}>
-            <SwarmCheckedIcon color={clicked ? '#DE7700' : '#33333333'} />
+            <SwarmCheckedIcon color={isChoosed ? '#DE7700' : '#33333333'} />
           </div>
-          <VolumeIcon color={clicked ? '#333333' : '#33333333'} />
+          <VolumeIcon color={isChoosed ? '#333333' : '#33333333'} />
           {notificationText ? (
             <div className={classes.absoluteRight}>
               {validity < 1000000000000 ? <NotificationSign text={notificationText} /> : null}
             </div>
           ) : null}
         </div>
-        <div>{label}</div>
+        <div className={classes.volumeLabel}>{label}</div>
       </div>
     </Tooltip>
   )
