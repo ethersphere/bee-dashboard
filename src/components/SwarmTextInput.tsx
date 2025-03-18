@@ -19,7 +19,9 @@ interface Props {
   color?: string
   disabled?: boolean
   textToBeDisabled?: string[]
+  value?: string
   onChange?: (event: ChangeEvent<HTMLTextAreaElement>) => void
+  onTextChange?: (newText: string) => void
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -67,6 +69,7 @@ export function SwarmTextInput({
   color,
   disabled,
   textToBeDisabled,
+  value,
 }: Props): ReactElement {
   const padding = textToBeDisabled !== undefined ? (textToBeDisabled.length + 1) * 20 : undefined
   const classes = useStyles({ padding })
@@ -124,6 +127,7 @@ export function SwarmTextInput({
         rows={rows}
         className={classes.field}
         defaultValue={defaultValue || ''}
+        value={value ?? defaultValue}
         onChange={onChange}
         disabled={disabled || false}
         InputProps={{

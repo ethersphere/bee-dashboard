@@ -3,79 +3,40 @@ import type { ReactElement } from 'react'
 import { useState } from 'react'
 import DownloadIcon from '../icons/DownloadIcon'
 import { SwarmTextInput } from '../SwarmTextInput'
-import { Tab } from '../../constants'
 
 const useStyles = makeStyles(() =>
   createStyles({
-    modal: {
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      backdropFilter: 'blur(5px)',
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      zIndex: 1000,
-    },
     modalContainer: {
       display: 'flex',
       gap: '20px',
       flexDirection: 'column',
-      // justifyContent: 'space-between',
       backgroundColor: '#EDEDED',
       padding: '20px',
       width: '552px',
       height: '696px',
     },
-    modalHeader: {
-      fontFamily: '"iAWriterMonoV", monospace',
-      fontSize: '20px',
-      fontWeight: 700,
-      lineHeight: '26px',
-    },
-    modalContent: {
-      fontFamily: '"iAWriterMonoV", monospace',
-      fontSize: '14px',
-      fontWeight: 400,
-      lineHeight: '28px',
-    },
-    flexCenter: {
-      display: 'flex',
-      gap: '20px',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    volumenButtonContainer: {
-      position: 'relative',
-    },
-    buttonElement: {
-      backgroundColor: '#FFFFFF',
+    buttonElementBase: {
       width: '256px',
       height: '42px',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    cancelButtonElement: {
+      backgroundColor: '#FFFFFF',
       '&:hover': {
         backgroundColor: '#DE7700',
         color: '#FFFFFF',
       },
     },
-    buttonElementNotificationSign: {
-      position: 'absolute',
-      right: '-25px',
-      top: '0',
-    },
-    buttonNewVolume: {
+    updateButtonElement: {
       backgroundColor: '#DE7700',
       color: '#FFFFFF',
     },
-    cancelButtonContainer: {
-      display: 'flex',
-      justifyContent: 'right',
+    disabledUpdateButtonElement: {
+      backgroundColor: 'gray',
+      color: '#FFFFFF',
+      cursor: 'not-allowed',
     },
     tabPanel: {
       display: 'flex',
@@ -92,53 +53,10 @@ const useStyles = makeStyles(() =>
       justifyContent: 'center',
       alignItems: 'center',
     },
-    tabPanelItemActive: {
+    bottomButtonContainer: {
       display: 'flex',
-      width: '100%',
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#FFFFFF',
-      color: 'black',
-    },
-    flex: {
-      display: 'flex',
+      justifyContent: 'right',
       gap: '20px',
-    },
-    inputContainer: {
-      display: 'flex',
-      flexDirection: 'column',
-      width: '100%',
-      height: '168px',
-      backgroundColor: '#ffffff',
-      justifyContent: 'left',
-      alignItems: 'top',
-      padding: '5px 15px',
-      fontFamily: '"iAWriterMonoV", monospace',
-      fontSize: '10px',
-    },
-    inputContainerName: {
-      display: 'flex',
-      flexDirection: 'column',
-      width: '100%',
-      height: '42px',
-      backgroundColor: '#ffffff',
-      justifyContent: 'left',
-      alignItems: 'top',
-      padding: '5px 15px',
-      fontFamily: '"iAWriterMonoV", monospace',
-      fontSize: '10px',
-    },
-    textarea: {
-      paddingLeft: '0px',
-      height: '100%',
-      resize: 'none',
-      border: 'none',
-      width: '100%',
-      '&:focus': {
-        outline: 'none',
-      },
-      fontFamily: '"iAWriterMonoV", monospace',
-      fontSize: '14px',
     },
     infoContainer: {
       width: '129px',
@@ -164,15 +82,6 @@ const useStyles = makeStyles(() =>
         color: '#FFFFFF',
       },
     },
-    copyIconContainer: {
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      cursor: 'pointer',
-      backgroundColor: '#FFFFFF',
-      height: '53px',
-      width: '53px',
-    },
   }),
 )
 
@@ -194,8 +103,11 @@ const FilePropertiesModal = ({
   modalDisplay,
 }: FilePropertiesModalProps): ReactElement => {
   const classes = useStyles()
-  const [activeTab, setActiveTab] = useState<Tab>(Tab.Properties)
   const [isHovered, setIsHovered] = useState(false)
+  const [isUpdateButtonDisabled, setIsUpdateButtonDisabled] = useState(false)
+  const [updatedFileName, setUpdatedFileName] = useState(fileName)
+  const [updatedFileDetails, setUpdatedFileDetails] = useState(fileDetails)
+  const [updatedFileLabels, setUpdatedFileLabels] = useState(fileLabels)
 
   const handleMouseEnter = () => {
     setIsHovered(true)
@@ -203,6 +115,33 @@ const FilePropertiesModal = ({
 
   const handleMouseLeave = () => {
     setIsHovered(false)
+  }
+
+  const handlerTextChanges = (type: 'name' | 'details' | 'labels', value: string) => {
+    switch (type) {
+      case 'name':
+        if (value !== '') {
+          setIsUpdateButtonDisabled(false)
+        } else {
+          setIsUpdateButtonDisabled(true)
+        }
+        setUpdatedFileName(value)
+        break
+      case 'details':
+        setUpdatedFileDetails(value)
+        break
+      case 'labels':
+        setUpdatedFileLabels(value)
+        break
+      default:
+        break
+    }
+  }
+
+  const handlerUpdate = () => {
+    if (!isUpdateButtonDisabled) {
+      modalDisplay(false)
+    }
   }
 
   const alreadyAddedWithACT = [
@@ -248,30 +187,51 @@ const FilePropertiesModal = ({
             <div style={{ textAlign: 'center' }}>Download now</div>
           </div>
         </div>
-        <SwarmTextInput name="Name" label="Name" required={false} defaultValue={fileName} />
+        <SwarmTextInput
+          name="Name"
+          label="Name"
+          required={true}
+          value={updatedFileName}
+          onChange={event => handlerTextChanges('name', event.target.value)}
+        />
         <SwarmTextInput
           name="Name"
           label="Details"
-          defaultValue={fileDetails}
+          value={updatedFileDetails}
           required={false}
           multiline={true}
           rows={6}
           placeholder="Lorem ipsum"
+          onChange={event => handlerTextChanges('name', event.target.value)}
         />
 
         <SwarmTextInput
           name="Name"
           label="Labels"
-          defaultValue={fileLabels}
+          value={updatedFileLabels}
           required={false}
           multiline={true}
           rows={6}
           placeholder="Lorem ipsum"
+          onChange={event => handlerTextChanges('name', event.target.value)}
         />
-
-        <div className={classes.cancelButtonContainer}>
-          <div className={classes.buttonElement} style={{ width: '160px' }} onClick={() => modalDisplay(false)}>
+        <div className={classes.bottomButtonContainer}>
+          <div
+            className={`${classes.buttonElementBase} ${classes.cancelButtonElement}`}
+            style={{ width: '160px' }}
+            onClick={() => modalDisplay(false)}
+          >
             Cancel
+          </div>
+
+          <div
+            className={`${classes.buttonElementBase} ${
+              isUpdateButtonDisabled ? classes.disabledUpdateButtonElement : classes.updateButtonElement
+            }`}
+            style={{ width: '160px' }}
+            onClick={() => handlerUpdate()}
+          >
+            Update
           </div>
         </div>
       </div>

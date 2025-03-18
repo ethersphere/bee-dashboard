@@ -117,6 +117,8 @@ const ManageVolumesModal = ({ modalDisplay }: ManageModalProps): ReactElement =>
     volume: usableStamps[0],
     validity: 0,
   })
+  const notificationThresholdDate = new Date()
+  notificationThresholdDate.setDate(new Date().getDate() + 7)
 
   // (date: Date) => date,
   // (date: Date) => date.setDate(date.getDate() + 7),
@@ -151,7 +153,7 @@ const ManageVolumesModal = ({ modalDisplay }: ManageModalProps): ReactElement =>
             >
               <div className={classes.buttonElement}>{stamp.label}</div>
               <div className={classes.buttonElementNotificationSign}>
-                {stamp.duration.toEndDate().getTime() < 10000 ? <NotificationSign text="!" /> : null}
+                {stamp.duration.toEndDate() < notificationThresholdDate ? <NotificationSign text="!" /> : null}
               </div>
             </div>
           ))}
