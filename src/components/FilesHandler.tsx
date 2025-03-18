@@ -37,13 +37,12 @@ const FilesHandler = (): ReactElement => {
   const handlerSelectedBatchIds = (batchId: BatchId, isSelected: boolean) => {
     const newSelectedBatchIds = Array.from(selectedBatchIds)
 
-    if (isSelected) {
+    const ix = newSelectedBatchIds.findIndex(item => item.toString() === batchId.toString())
+
+    if (isSelected && ix === -1) {
       newSelectedBatchIds.push(batchId)
     } else {
-      newSelectedBatchIds.splice(
-        newSelectedBatchIds.findIndex(item => item.toString() === batchId.toString()),
-        1,
-      )
+      newSelectedBatchIds.splice(ix, 1)
     }
 
     setSelectedBatchIds(newSelectedBatchIds)

@@ -49,6 +49,7 @@ export function enrichStamp(postageBatch: PostageBatch): EnrichedPostageBatch {
   }
 }
 
+// TODO: remove stamps provider and only fetch usable stamps if a new volume is created, no need to refresh it because it keeps rerendering the FM
 export function Provider({ children }: Props): ReactElement {
   const { beeApi } = useContext(SettingsContext)
   const [stamps, setStamps] = useState<EnrichedPostageBatch[] | null>(initialValues.stamps)
@@ -63,6 +64,7 @@ export function Provider({ children }: Props): ReactElement {
       return (await bee.getAllPostageBatch())
         .filter(s => s.usable)
         .sort((a, b) => (a.label || '').localeCompare(b.label || ''))
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       return []
     }

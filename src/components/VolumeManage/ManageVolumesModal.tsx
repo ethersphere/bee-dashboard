@@ -120,9 +120,6 @@ const ManageVolumesModal = ({ modalDisplay }: ManageModalProps): ReactElement =>
   const notificationThresholdDate = new Date()
   notificationThresholdDate.setDate(new Date().getDate() + 7)
 
-  // (date: Date) => date,
-  // (date: Date) => date.setDate(date.getDate() + 7),
-
   const handlerCreateNewVolume = (value: boolean) => {
     if (usableStampsCount < 5) {
       setNewVolumeModalDisplay(value)
