@@ -3,8 +3,8 @@ import type { ReactElement } from 'react'
 import { useState } from 'react'
 import VolumePropertiesModal from './VolumePropertiesModal'
 import VolumeSharingModal from './VolumeSharingModal'
-import { PostageBatch } from '@upcoming/bee-js'
 import { ActiveVolume } from './ManageVolumesModal'
+import { Tab } from '../../constants'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -62,7 +62,7 @@ interface VolumeModalProps {
 
 const VolumeModal = ({ modalDisplay, newVolume, activeVolume }: VolumeModalProps): ReactElement => {
   const classes = useStyles()
-  const [activeTab, setActiveTab] = useState('Properties')
+  const [activeTab, setActiveTab] = useState<Tab>(Tab.Properties)
 
   const alreadyAddedWithACT = [
     '0x9cbDe6569BA1220E46f256371368A05f480bb78C',
@@ -75,26 +75,26 @@ const VolumeModal = ({ modalDisplay, newVolume, activeVolume }: VolumeModalProps
       <div className={classes.modalContainer}>
         <div className={classes.tabPanel}>
           <div
-            className={`${classes.tabPanelItem} ${activeTab === 'Properties' ? classes.tabPanelItemActive : null}`}
-            onClick={() => setActiveTab('Properties')}
+            className={`${classes.tabPanelItem} ${activeTab === Tab.Properties ? classes.tabPanelItemActive : null}`}
+            onClick={() => setActiveTab(Tab.Properties)}
           >
             Properties
           </div>
           <div
-            className={`${classes.tabPanelItem} ${activeTab === 'Sharing' ? classes.tabPanelItemActive : null}`}
-            onClick={() => setActiveTab('Sharing')}
+            className={`${classes.tabPanelItem} ${activeTab === Tab.Sharing ? classes.tabPanelItemActive : null}`}
+            onClick={() => setActiveTab(Tab.Sharing)}
           >
             Sharing
           </div>
         </div>
-        {activeTab === 'Properties' ? (
+        {activeTab === Tab.Properties ? (
           <VolumePropertiesModal
             modalDisplay={modalDisplay}
             newVolume={newVolume ? newVolume : false}
             activeVolume={activeVolume}
           />
         ) : null}
-        {activeTab === 'Sharing' ? (
+        {activeTab === Tab.Sharing ? (
           <VolumeSharingModal textToBeDisabled={alreadyAddedWithACT} modalDisplay={value => modalDisplay(value)} />
         ) : null}
       </div>

@@ -77,6 +77,15 @@ const useStyles = makeStyles(() =>
       backgroundColor: '#DE7700',
       color: '#FFFFFF',
     },
+    buttonNewVolumeDisabled: {
+      backgroundColor: '#878787;',
+      color: '#FFFFFF',
+      cursor: 'not-allowed',
+      '&:hover': {
+        backgroundColor: '#878787;',
+        color: '#FFFFFF',
+      },
+    },
     newButtonContainer: {
       display: 'flex',
       justifyContent: 'center',
@@ -102,11 +111,21 @@ const ManageVolumesModal = ({ modalDisplay }: ManageModalProps): ReactElement =>
   const classes = useStyles()
   const [newVolumeModalDisplay, setNewVolumeModalDisplay] = useState(false)
   const { usableStamps } = useContext(StampContext)
+  const usableStampsCount = usableStamps.length
   const [activeVolume, setActiveVolume] = useState({
     volumeModalDisplay: false,
     volume: usableStamps[0],
     validity: 0,
   })
+
+  // (date: Date) => date,
+  // (date: Date) => date.setDate(date.getDate() + 7),
+
+  const handlerCreateNewVolume = (value: boolean) => {
+    if (usableStampsCount < 5) {
+      setNewVolumeModalDisplay(value)
+    }
+  }
 
   return (
     <div className={classes.modal}>
@@ -132,19 +151,23 @@ const ManageVolumesModal = ({ modalDisplay }: ManageModalProps): ReactElement =>
             >
               <div className={classes.buttonElement}>{stamp.label}</div>
               <div className={classes.buttonElementNotificationSign}>
-                {stamp.duration.toEndDate(new Date()).getTime() < 10000 ? <NotificationSign text="!" /> : null}
+                {stamp.duration.toEndDate().getTime() < 10000 ? <NotificationSign text="!" /> : null}
               </div>
             </div>
           ))}
         </div>
+
         <div className={classes.newButtonContainer}>
           <div
-            className={`${classes.buttonElement} ${classes.buttonNewVolume}`}
-            onClick={() => setNewVolumeModalDisplay(true)}
+            className={`${classes.buttonElement} ${
+              usableStampsCount < 5 ? classes.buttonNewVolume : classes.buttonNewVolumeDisabled
+            }`}
+            onClick={() => handlerCreateNewVolume(true)}
           >
             New volume
           </div>
         </div>
+
         <div className={classes.cancelButtonContainer}>
           <div
             className={classes.buttonElement}

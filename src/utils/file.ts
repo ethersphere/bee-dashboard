@@ -128,7 +128,20 @@ export function packageFile(file: FilePath, pathOverwrite?: string): FilePath {
 export function getFileType(input: string): string {
   const index = input.indexOf('/')
 
-  return index !== -1 ? input.substring(0, index) : input
+  const type = index !== -1 ? input.substring(0, index) : input
+
+  switch (type) {
+    case 'video':
+      return 'video'
+    case 'audio':
+      return 'audio'
+    case 'image':
+      return 'image'
+    case 'application':
+      return 'application'
+    default:
+      return 'other'
+  }
 }
 
 export const fromBytesConversion = (size: number, metric: string) => {

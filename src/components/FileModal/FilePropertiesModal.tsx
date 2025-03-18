@@ -3,6 +3,7 @@ import type { ReactElement } from 'react'
 import { useState } from 'react'
 import DownloadIcon from '../icons/DownloadIcon'
 import { SwarmTextInput } from '../SwarmTextInput'
+import { Tab } from '../../constants'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -193,7 +194,7 @@ const FilePropertiesModal = ({
   modalDisplay,
 }: FilePropertiesModalProps): ReactElement => {
   const classes = useStyles()
-  const [activeTab, setActiveTab] = useState('Properties')
+  const [activeTab, setActiveTab] = useState<Tab>(Tab.Properties)
   const [isHovered, setIsHovered] = useState(false)
 
   const handleMouseEnter = () => {
@@ -257,10 +258,7 @@ const FilePropertiesModal = ({
           rows={6}
           placeholder="Lorem ipsum"
         />
-        {/* <div className={classes.inputContainer}>
-              <label htmlFor="find-input">Details</label>
-              <textarea className={classes.textarea} id="find-input" placeholder="Lorem ipsum" />
-              </div> */}
+
         <SwarmTextInput
           name="Name"
           label="Labels"
@@ -270,10 +268,7 @@ const FilePropertiesModal = ({
           rows={6}
           placeholder="Lorem ipsum"
         />
-        {/* <div className={classes.inputContainer}>
-              <label htmlFor="find-input">Labels</label>
-              <textarea className={classes.textarea} id="find-input" placeholder="Lorem ipsum" />
-              </div> */}
+
         <div className={classes.cancelButtonContainer}>
           <div className={classes.buttonElement} style={{ width: '160px' }} onClick={() => modalDisplay(false)}>
             Cancel

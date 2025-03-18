@@ -3,6 +3,7 @@ import type { ReactElement } from 'react'
 import { useState } from 'react'
 import FileSharingModal from './FileSharingModal'
 import FilePropertiesModal from './FilePropertiesModal'
+import { Tab } from '../../constants'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -114,7 +115,7 @@ const FileModal = ({
   modalDisplay,
 }: FileModalProps): ReactElement => {
   const classes = useStyles()
-  const [activeTab, setActiveTab] = useState('Properties')
+  const [activeTab, setActiveTab] = useState<Tab>(Tab.Properties)
 
   const alreadyAddedWithACT = [
     '0x9cbDe6569BA1220E46f256371368A05f480bb78C',
@@ -127,19 +128,19 @@ const FileModal = ({
       <div className={classes.modalContainer}>
         <div className={classes.tabPanel}>
           <div
-            className={`${classes.tabPanelItem} ${activeTab === 'Properties' ? classes.tabPanelItemActive : null}`}
-            onClick={() => setActiveTab('Properties')}
+            className={`${classes.tabPanelItem} ${activeTab === Tab.Properties ? classes.tabPanelItemActive : null}`}
+            onClick={() => setActiveTab(Tab.Properties)}
           >
             Properties
           </div>
           <div
-            className={`${classes.tabPanelItem} ${activeTab === 'Sharing' ? classes.tabPanelItemActive : null}`}
-            onClick={() => setActiveTab('Sharing')}
+            className={`${classes.tabPanelItem} ${activeTab === Tab.Sharing ? classes.tabPanelItemActive : null}`}
+            onClick={() => setActiveTab(Tab.Sharing)}
           >
             Sharing
           </div>
         </div>
-        {activeTab === 'Properties' ? (
+        {activeTab === Tab.Properties ? (
           <FilePropertiesModal
             volumeName={volumeName}
             volumeValidity={volumeValidity}
@@ -149,7 +150,7 @@ const FileModal = ({
             modalDisplay={modalDisplay}
           />
         ) : null}
-        {activeTab === 'Sharing' ? (
+        {activeTab === Tab.Sharing ? (
           <FileSharingModal textToBeDisabled={alreadyAddedWithACT} modalDisplay={value => modalDisplay(value)} />
         ) : null}
       </div>

@@ -52,7 +52,7 @@ interface Props {
 
 const Volume = ({ label, size, validity, notificationText, onClick }: Props): ReactElement => {
   const classes = useStyles()
-  const [isChoosed, setIsChoosed] = useState(false)
+  const [isSelected, setIsSelected] = useState(false)
 
   return (
     <Tooltip
@@ -70,15 +70,15 @@ const Volume = ({ label, size, validity, notificationText, onClick }: Props): Re
       <div
         className={classes.container}
         onClick={() => {
-          onClick(!isChoosed)
-          setIsChoosed(!isChoosed)
+          onClick(!isSelected)
+          setIsSelected(!isSelected)
         }}
       >
         <div className={classes.flex}>
           <div className={classes.absoluteLeft}>
-            <SwarmCheckedIcon color={isChoosed ? '#DE7700' : '#33333333'} />
+            <SwarmCheckedIcon color={isSelected ? '#DE7700' : '#33333333'} />
           </div>
-          <VolumeIcon color={isChoosed ? '#333333' : '#33333333'} />
+          <VolumeIcon color={isSelected ? '#333333' : '#33333333'} />
           {notificationText ? (
             <div className={classes.absoluteRight}>
               {validity < 1000000000000 ? <NotificationSign text={notificationText} /> : null}

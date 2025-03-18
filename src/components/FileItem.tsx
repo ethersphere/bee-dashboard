@@ -86,7 +86,7 @@ interface Props {
   volumeName: string
   volumeValidity: Date
   name: string
-  type: 'video' | 'audio' | 'image' | 'document' | 'folder' | 'other'
+  type: string
   size: string
   hash: string
   expires: string
@@ -121,9 +121,8 @@ const FileItem = ({
   return (
     <div>
       <div className={classes.container} onClick={() => setShowFileModal(true)}>
-        <div className={type !== 'folder' ? classes.leftSide : classes.folderLeftSide}>
-          {type !== 'folder' && preview ? <Preview /> : null}
-          {type === 'folder' ? <FolderEnteringIcon /> : null}
+        <div className={classes.leftSide}>
+          <Preview />
           <div className={classes.fileTypeIcon}>
             <FileTypeIcon type={type} />
           </div>

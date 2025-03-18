@@ -5,17 +5,17 @@ import { FileInfo, FileManager, FileManagerBrowser, FileManagerEvents } from '@s
 interface ContextInterface {
   filemanager: FileManager
   initialized: boolean
-  choosedBatchIds: BatchId[]
-  setChoosedBatchIds: (batchId: BatchId[]) => void
-  getFilesForChoosedBatchIDs: (batchIds: BatchId[] | null) => FileInfo[] | null
+  selectedBatchIds: BatchId[]
+  setSelectedBatchIds: (batchId: BatchId[]) => void
+  getFilesForSelectedBatchIDs: (batchIds: BatchId[] | null) => FileInfo[] | null
 }
 const initialValues: ContextInterface = {
   filemanager: {} as FileManager,
   initialized: false,
-  choosedBatchIds: [],
+  selectedBatchIds: [],
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  setChoosedBatchIds: () => {},
-  getFilesForChoosedBatchIDs: (batchIds: BatchId[] | null) => {
+  setSelectedBatchIds: () => {},
+  getFilesForSelectedBatchIDs: (batchIds: BatchId[] | null) => {
     return null
   },
 }
@@ -29,8 +29,8 @@ export function Provider({ children }: Props): ReactElement {
   const signer = new PrivateKey('634fb5a872396d9693e5c9f9d7233cfa93f395c093371017ff44aa9ae6564cdd')
   const filemanagerRef = useRef<FileManager>(new FileManagerBrowser(new BeeDev('http://localhost:1633', { signer })))
   const [initialized, setInitialized] = useState<boolean>(false)
-  const [choosedBatchIds, setChoosedBatchIds] = useState<BatchId[]>([])
-  const getFilesForChoosedBatchIDs = (batchIds: BatchId[] | null): FileInfo[] | null => {
+  const [selectedBatchIds, setSelectedBatchIds] = useState<BatchId[]>([])
+  const getFilesForSelectedBatchIDs = (batchIds: BatchId[] | null): FileInfo[] | null => {
     if (batchIds === null) {
       return filemanagerRef.current.getFileInfoList()
     }
@@ -60,9 +60,9 @@ export function Provider({ children }: Props): ReactElement {
       value={{
         filemanager: filemanagerRef.current,
         initialized,
-        choosedBatchIds: choosedBatchIds,
-        setChoosedBatchIds: setChoosedBatchIds,
-        getFilesForChoosedBatchIDs: getFilesForChoosedBatchIDs,
+        selectedBatchIds: selectedBatchIds,
+        setSelectedBatchIds: setSelectedBatchIds,
+        getFilesForSelectedBatchIDs: getFilesForSelectedBatchIDs,
       }}
     >
       {children}

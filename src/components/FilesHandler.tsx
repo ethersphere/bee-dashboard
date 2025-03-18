@@ -32,21 +32,21 @@ const useStyles = makeStyles(() =>
 const FilesHandler = (): ReactElement => {
   const classes = useStyles()
   const { usableStamps } = useContext(StampContext)
-  const { choosedBatchIds, setChoosedBatchIds } = useContext(FileManagerContext)
+  const { selectedBatchIds, setSelectedBatchIds } = useContext(FileManagerContext)
 
-  const handlerChoosedBatchIds = (batchId: BatchId, isChoosed: boolean) => {
-    const newChoosedBatchIds = Array.from(choosedBatchIds)
+  const handlerSelectedBatchIds = (batchId: BatchId, isSelected: boolean) => {
+    const newSelectedBatchIds = Array.from(selectedBatchIds)
 
-    if (isChoosed) {
-      newChoosedBatchIds.push(batchId)
+    if (isSelected) {
+      newSelectedBatchIds.push(batchId)
     } else {
-      newChoosedBatchIds.splice(
-        newChoosedBatchIds.findIndex(item => item.toString() === batchId.toString()),
+      newSelectedBatchIds.splice(
+        newSelectedBatchIds.findIndex(item => item.toString() === batchId.toString()),
         1,
       )
     }
 
-    setChoosedBatchIds(newChoosedBatchIds)
+    setSelectedBatchIds(newSelectedBatchIds)
   }
 
   return (
@@ -59,7 +59,7 @@ const FilesHandler = (): ReactElement => {
               size={stamp.amount}
               validity={stamp.duration.toEndDate(new Date()).getTime()}
               notificationText="!"
-              onClick={isChoosed => handlerChoosedBatchIds(stamp.batchID, isChoosed)}
+              onClick={isSelected => handlerSelectedBatchIds(stamp.batchID, isSelected)}
             />
           </div>
         ))}

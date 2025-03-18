@@ -34,29 +34,26 @@ const useStyles = makeStyles(() =>
   }),
 )
 export default function FM(): ReactElement {
-  const { filemanager, initialized, choosedBatchIds, getFilesForChoosedBatchIDs } = useContext(FileManagerContext)
+  const { filemanager, initialized, selectedBatchIds, getFilesForSelectedBatchIDs } = useContext(FileManagerContext)
   const classes = useStyles()
   const [fileList, setFileList] = useState<FileInfo[] | null>(filemanager ? [...filemanager.getFileInfoList()] : null)
   const [fileListError, setFileListError] = useState(false)
   const { usableStamps } = useContext(StampContext)
 
   useEffect(() => {
-    function fetchFiles() {
-      if (filemanager && initialized && choosedBatchIds.length === 0) {
-        try {
-          const files = getFilesForChoosedBatchIDs(null)
-          setFileList(files ? files : [])
-        } catch (error) {
-          setFileListError(true)
-        }
+    if (filemanager && initialized && selectedBatchIds.length === 0) {
+      try {
+        const files = getFilesForSelectedBatchIDs(null)
+        setFileList(files ? files : [])
+      } catch (error) {
+        setFileListError(true)
       }
     }
-    fetchFiles()
   }, [filemanager, fileList, initialized])
 
   useEffect(() => {
-    setFileList(getFilesForChoosedBatchIDs(choosedBatchIds ? choosedBatchIds : []))
-  }, [choosedBatchIds])
+    setFileList(getFilesForSelectedBatchIDs(selectedBatchIds ? selectedBatchIds : []))
+  }, [selectedBatchIds])
 
   useEffect(() => {
     const handleFileUploaded = (data: FileInfo) => {
@@ -82,27 +79,18 @@ export default function FM(): ReactElement {
               {fileList?.map((file, index) => (
                 <div key={index}>
                   <FileItem
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     volumeName={
                       usableStamps.find(item => item?.batchID?.toString() === file?.batchId?.toString())?.label ??
                       'No volume name'
                     }
                     volumeValidity={
-                      // new Date()
                       usableStamps
                         .find(item => item?.batchID?.toString() === file?.batchId?.toString())
                         ?.duration.toEndDate() ?? new Date()
                     }
                     name={file.name ? file.name : ''}
-                    type={
-                      file.customMetadata?.type === 'video' ||
-                      file.customMetadata?.type === 'audio' ||
-                      file.customMetadata?.type === 'image' ||
-                      file.customMetadata?.type === 'document' ||
-                      file.customMetadata?.type === 'folder' ||
-                      file.customMetadata?.type === 'other'
-                        ? file.customMetadata.type
-                        : 'other'
-                    }
+                    type={file.customMetadata?.type ? file.customMetadata.type : 'other'}
                     size={file.customMetadata?.size ? file.customMetadata.size : ''}
                     hash={file.file?.reference ? file.file.reference.toString() : ''}
                     expires={file.customMetadata?.valid ? file.customMetadata.valid : ''}
