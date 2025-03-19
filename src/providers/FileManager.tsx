@@ -1,16 +1,23 @@
-import { createContext, ReactChild, ReactElement, useEffect, useRef, useState } from 'react'
+import { createContext, ReactChild, ReactElement, useContext, useEffect, useRef, useState } from 'react'
 import { BatchId, BeeDev, PrivateKey } from '@upcoming/bee-js'
 import { FileInfo, FileManager, FileManagerBrowser, FileManagerEvents } from '@solarpunkltd/file-manager-lib'
+import { Context as StampContext } from './Stamps'
 
 interface ContextInterface {
   filemanager: FileManager
   initialized: boolean
+  isGroupingOn: boolean
+  setIsGroupingOn: (isGroupingOn: boolean) => void
   selectedBatchIds: BatchId[]
   setSelectedBatchIds: (batchId: BatchId[]) => void
 }
 const initialValues: ContextInterface = {
   filemanager: {} as FileManager,
   initialized: false,
+  isGroupingOn: false,
+  setIsGroupingOn: (_: boolean): void => {
+    return
+  },
   selectedBatchIds: [],
   setSelectedBatchIds: (_: BatchId[]): void => {
     return
@@ -29,6 +36,7 @@ export function Provider({ children }: Props): ReactElement {
   const filemanagerRef = useRef<FileManager>(new FileManagerBrowser(new BeeDev('http://localhost:1633', { signer })))
   const [initialized, setInitialized] = useState<boolean>(false)
   const [selectedBatchIds, setSelectedBatchIds] = useState<BatchId[]>([])
+  const [isGroupingOn, setIsGroupingOn] = useState(false)
 
   const init = () => {
     if (filemanagerRef.current !== null) {
@@ -47,6 +55,8 @@ export function Provider({ children }: Props): ReactElement {
       value={{
         filemanager: filemanagerRef.current,
         initialized,
+        isGroupingOn,
+        setIsGroupingOn: setIsGroupingOn,
         selectedBatchIds: selectedBatchIds,
         setSelectedBatchIds: setSelectedBatchIds,
       }}

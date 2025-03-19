@@ -1,8 +1,9 @@
 import { createStyles, makeStyles } from '@material-ui/core'
-import { useState } from 'react'
+import { useContext } from 'react'
 import type { ReactElement } from 'react'
 import SwarmCheckedIcon from '../icons/SwarmCheckedIcon'
 import GroupingIcon from '../icons/GroupingIcon'
+import { Context as FileManagerContext } from '../../providers/FileManager'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -34,15 +35,15 @@ const useStyles = makeStyles(() =>
 
 const Grouping = (): ReactElement => {
   const classes = useStyles()
-  const [clicked, setClicked] = useState(false)
+  const { isGroupingOn, setIsGroupingOn } = useContext(FileManagerContext)
 
   return (
-    <div className={classes.container} onClick={() => setClicked(!clicked)}>
+    <div className={classes.container} onClick={() => setIsGroupingOn(!isGroupingOn)}>
       <div className={classes.flex}>
         <div className={classes.absolute}>
-          <SwarmCheckedIcon color={clicked ? '#DE7700' : '#33333333'} />
+          <SwarmCheckedIcon color={isGroupingOn ? '#DE7700' : '#33333333'} />
         </div>
-        <GroupingIcon color={clicked ? '#333333' : '#33333333'} />
+        <GroupingIcon color={isGroupingOn ? '#333333' : '#33333333'} />
       </div>
       <div>Grouping</div>
     </div>

@@ -7,6 +7,7 @@ import { BatchId } from '@upcoming/bee-js'
 import Volume from './VolumeManage/Volume'
 import VolumeManage from './VolumeManage/VolumeManage'
 import FileUpload from './FileUpload/FileUpload'
+import Grouping from './Grouping'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -34,15 +35,31 @@ const FilesHandler = (): ReactElement => {
   const { usableStamps } = useContext(StampContext)
   const { selectedBatchIds, setSelectedBatchIds } = useContext(FileManagerContext)
 
+  if (selectedBatchIds.length === 0) {
+    const newBatchIds: BatchId[] = []
+    usableStamps?.forEach(stamp => {
+      newBatchIds.push(stamp.batchID)
+    })
+    setSelectedBatchIds(newBatchIds)
+  }
   const handlerSelectedBatchIds = (batchId: BatchId, isSelected: boolean) => {
     const newSelectedBatchIds = Array.from(selectedBatchIds)
 
     const ix = newSelectedBatchIds.findIndex(item => item.toString() === batchId.toString())
 
-    if (isSelected && ix === -1) {
+    if (isSelected && ix !== -1) {
+      newSelectedBatchIds.splice(0, newSelectedBatchIds.length)
+      newSelectedBatchIds.push(batchId)
+    } else if (isSelected && ix === -1) {
       newSelectedBatchIds.push(batchId)
     } else {
       newSelectedBatchIds.splice(ix, 1)
+
+      if (newSelectedBatchIds.length === 0) {
+        usableStamps?.forEach(stamp => {
+          newSelectedBatchIds.push(stamp.batchID)
+        })
+      }
     }
 
     setSelectedBatchIds(newSelectedBatchIds)
@@ -51,6 +68,7 @@ const FilesHandler = (): ReactElement => {
   return (
     <div className={classes.container}>
       <div className={classes.flex}>
+        <Grouping />
         {usableStamps?.map((stamp, index) => (
           <div key={index} className={classes.flex}>
             <Volume
