@@ -68,41 +68,36 @@ export default function FM(): ReactElement {
       {fileList.length === 0 && <div className={classes.noFilesText}>There’re no items!</div>}
       {fileList.length > 0 && (
         <div className={classes.fileListContainer}>
-          {fileList.map((file, index) => {
-            // eslint-disable-next-line no-console
-            console.log('bagoy index: ', index, ' bagoy file: ', file)
-
-            return (
-              <div key={index}>
-                <FileItem
-                  name={file.customMetadata?.name ? file.customMetadata.name : ''}
-                  type={
-                    file.customMetadata?.type === 'video' ||
-                    file.customMetadata?.type === 'audio' ||
-                    file.customMetadata?.type === 'image' ||
-                    file.customMetadata?.type === 'document' ||
-                    file.customMetadata?.type === 'folder' ||
-                    file.customMetadata?.type === 'other'
-                      ? file.customMetadata.type
-                      : 'other'
-                  }
-                  size={file.customMetadata?.size ? file.customMetadata.size : ''}
-                  hash={'bagoy'}
-                  expires={file.customMetadata?.valid ? file.customMetadata.valid : ''}
-                  preview={file.customMetadata?.preview ? file.customMetadata.preview : ''}
-                  description={file.customMetadata?.description === 'true'}
-                  label={file.customMetadata?.label}
-                  shared={
-                    file.customMetadata?.shared === 'me' || file.customMetadata?.shared === 'others'
-                      ? file.customMetadata.shared
-                      : undefined
-                  }
-                  warning={file.customMetadata?.warning === 'true'}
-                  addedToQueue={file.customMetadata?.addedToQueue === 'true'}
-                ></FileItem>
-              </div>
-            )
-          })}
+          {fileList.map((file, index) => (
+            <div key={index}>
+              <FileItem
+                name={file.customMetadata?.name ? file.customMetadata.name : ''}
+                type={
+                  file.customMetadata?.type === 'video' ||
+                  file.customMetadata?.type === 'audio' ||
+                  file.customMetadata?.type === 'image' ||
+                  file.customMetadata?.type === 'document' ||
+                  file.customMetadata?.type === 'folder' ||
+                  file.customMetadata?.type === 'other'
+                    ? file.customMetadata.type
+                    : 'other'
+                }
+                size={file.customMetadata?.size ? file.customMetadata.size : ''}
+                hash={'bagoy'}
+                expires={file.customMetadata?.valid ? file.customMetadata.valid : ''}
+                preview={file.customMetadata?.preview ? file.customMetadata.preview : ''}
+                description={file.customMetadata?.description === 'true'}
+                label={file.customMetadata?.label}
+                shared={
+                  file.customMetadata?.shared === 'me' || file.customMetadata?.shared === 'others'
+                    ? file.customMetadata.shared
+                    : undefined
+                }
+                warning={file.customMetadata?.warning === 'true'}
+                addedToQueue={file.customMetadata?.addedToQueue === 'true'}
+              ></FileItem>
+            </div>
+          ))}
         </div>
       )}
     </div>
