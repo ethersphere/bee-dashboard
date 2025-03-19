@@ -1,7 +1,7 @@
 import { createStyles, makeStyles, Slider } from '@material-ui/core'
 import type { ReactElement } from 'react'
 import { useEffect, useState } from 'react'
-import OverMaxRangeIcon from '../icons/OverMaxRangeIcon'
+import OverMaxRangeIcon from '../../icons/OverMaxRangeIcon'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'

@@ -1,8 +1,8 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core'
 import type { ReactElement } from 'react'
-import CopyIcon from '../icons/CopyIcon'
-import { SwarmCheckbox } from '../SwarmCheckbox'
-import { SwarmTextInput } from '../SwarmTextInput'
+import CopyIcon from '../../../icons/CopyIcon'
+import { SwarmCheckbox } from '../../../SwarmCheckbox'
+import { SwarmTextInput } from '../../../SwarmTextInput'
 
 interface Props {
   textToBeDisabled?: string[]

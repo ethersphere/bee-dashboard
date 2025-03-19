@@ -4,7 +4,7 @@ import { useState } from 'react'
 import VolumePropertiesModal from './VolumePropertiesModal'
 import VolumeSharingModal from './VolumeSharingModal'
 import { ActiveVolume } from './ManageVolumesModal'
-import { Tab } from '../../constants'
+import { Tab } from '../../../constants'
 
 const useStyles = makeStyles(() =>
   createStyles({

@@ -1,13 +1,15 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
 import { useState } from 'react'
-import VolumeSharingModal from './VolumeSharingModal'
-import NewVolumePropertiesModal from './NewVolumePropertiesModal'
-import { Tab } from '../../constants'
+import FileSharingModal from './FileSharingModal'
+import FilePropertiesModal from './FilePropertiesModal'
+import { Tab } from '../../../../constants'
 
 const useStyles = makeStyles(() =>
   createStyles({
     modal: {
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      backdropFilter: 'blur(5px)',
       position: 'fixed',
       top: 0,
       left: 0,
@@ -22,10 +24,48 @@ const useStyles = makeStyles(() =>
       display: 'flex',
       gap: '20px',
       flexDirection: 'column',
+      // justifyContent: 'space-between',
       backgroundColor: '#EDEDED',
       padding: '20px',
       width: '552px',
       height: '696px',
+    },
+    modalHeader: {
+      fontFamily: '"iAWriterMonoV", monospace',
+      fontSize: '20px',
+      fontWeight: 700,
+      lineHeight: '26px',
+    },
+    modalContent: {
+      fontFamily: '"iAWriterMonoV", monospace',
+      fontSize: '14px',
+      fontWeight: 400,
+      lineHeight: '28px',
+    },
+    flexCenter: {
+      display: 'flex',
+      gap: '20px',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    buttonElement: {
+      backgroundColor: '#FFFFFF',
+      width: '256px',
+      height: '42px',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      '&:hover': {
+        backgroundColor: '#DE7700',
+        color: '#FFFFFF',
+      },
+    },
+    buttonElementNotificationSign: {
+      position: 'absolute',
+      right: '-25px',
+      top: '0',
     },
     tabPanel: {
       display: 'flex',
@@ -50,15 +90,30 @@ const useStyles = makeStyles(() =>
       backgroundColor: '#FFFFFF',
       color: 'black',
     },
+    flex: {
+      display: 'flex',
+      gap: '20px',
+    },
   }),
 )
 
-interface VolumeModalProps {
+interface FileModalProps {
+  volumeName: string
+  volumeValidity: Date
+  fileName: string
+  fileDetails?: string
+  fileLabels?: string
   modalDisplay: (value: boolean) => void
-  newVolume?: boolean
 }
 
-const VolumeModal = ({ modalDisplay, newVolume }: VolumeModalProps): ReactElement => {
+const FileModal = ({
+  volumeName,
+  volumeValidity,
+  fileName,
+  fileDetails,
+  fileLabels,
+  modalDisplay,
+}: FileModalProps): ReactElement => {
   const classes = useStyles()
   const [activeTab, setActiveTab] = useState<Tab>(Tab.Properties)
 
@@ -86,14 +141,21 @@ const VolumeModal = ({ modalDisplay, newVolume }: VolumeModalProps): ReactElemen
           </div>
         </div>
         {activeTab === Tab.Properties ? (
-          <NewVolumePropertiesModal modalDisplay={modalDisplay} newVolume={newVolume ? newVolume : false} />
+          <FilePropertiesModal
+            volumeName={volumeName}
+            volumeValidity={volumeValidity}
+            fileName={fileName}
+            fileDetails={fileDetails}
+            fileLabels={fileLabels}
+            modalDisplay={modalDisplay}
+          />
         ) : null}
         {activeTab === Tab.Sharing ? (
-          <VolumeSharingModal textToBeDisabled={alreadyAddedWithACT} modalDisplay={value => modalDisplay(value)} />
+          <FileSharingModal textToBeDisabled={alreadyAddedWithACT} modalDisplay={value => modalDisplay(value)} />
         ) : null}
       </div>
     </div>
   )
 }
 
-export default VolumeModal
+export default FileModal

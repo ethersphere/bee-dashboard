@@ -1,12 +1,12 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 
 import { ReactElement, useContext } from 'react'
-import FileUpload from './FileUpload/FileUpload'
-import VolumeManage from './VolumeManage/VolumeManage'
-import { Context as StampContext } from '../providers/Stamps'
-import Volume from './VolumeManage/Volume'
-import { Context as FileManagerContext } from '../providers/FileManager'
+import { Context as StampContext } from '../../providers/Stamps'
+import { Context as FileManagerContext } from '../../providers/FileManager'
 import { BatchId } from '@upcoming/bee-js'
+import Volume from './VolumeManage/Volume'
+import VolumeManage from './VolumeManage/VolumeManage'
+import FileUpload from './FileUpload/FileUpload'
 
 const useStyles = makeStyles(() =>
   createStyles({

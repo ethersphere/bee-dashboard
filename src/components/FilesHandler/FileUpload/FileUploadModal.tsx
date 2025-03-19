@@ -1,10 +1,10 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
 import { useContext, useEffect, useState } from 'react'
-import { SwarmTextInput } from '../SwarmTextInput'
-import { getHumanReadableFileSize, getFileType, formatDate } from '../../utils/file'
-import { Context as FileManagerContext } from '../../providers/FileManager'
+import { getHumanReadableFileSize, getFileType, formatDate } from '../../../utils/file'
+import { Context as FileManagerContext } from '../../../providers/FileManager'
 import { PostageBatch } from '@upcoming/bee-js'
+import { SwarmTextInput } from '../../SwarmTextInput'
 
 const useStyles = makeStyles(() =>
   createStyles({

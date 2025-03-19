@@ -1,8 +1,8 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
 import { useState } from 'react'
-import DownloadIcon from '../icons/DownloadIcon'
-import { SwarmTextInput } from '../SwarmTextInput'
+import DownloadIcon from '../../../icons/DownloadIcon'
+import { SwarmTextInput } from '../../../SwarmTextInput'
 
 const useStyles = makeStyles(() =>
   createStyles({

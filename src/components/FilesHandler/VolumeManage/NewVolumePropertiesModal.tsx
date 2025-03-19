@@ -1,11 +1,11 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
 import { useContext, useEffect, useRef, useState } from 'react'
-import { SwarmTextInput } from '../SwarmTextInput'
+import { SwarmTextInput } from '../../SwarmTextInput'
 import DateSlider from './DateSlider'
 import SizeSlider from './SizeSlider'
 import { BZZ, Duration, Size } from '@upcoming/bee-js'
-import { Context as SettingsContext } from '../../providers/Settings'
+import { Context as SettingsContext } from '../../../providers/Settings'
 import ErrorModal from './ErrorModal'
 
 const useStyles = makeStyles(() =>

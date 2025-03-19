@@ -1,16 +1,16 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
 import { useState } from 'react'
+import FileTypeIcon from '../../icons/FileTypeIcon'
+import SharedIcon from '../../icons/SharedIcon'
+import DownloadQueueIcon from '../../icons/DownloadQueueIcon'
+import FolderEnteringIcon from '../../icons/FolderEnteringIcon'
+import FileLabelIcon from '../../icons/FileLabelIcon'
+import NotificationSign from '../../NotificationSign'
+import FileDescriptionIcon from '../../icons/FileDescriptionIcon'
 import Preview from './FileItemPreview'
-import FileTypeIcon from './icons/FileTypeIcon'
 import FileItemEdit from './FileItemEdit'
-import SharedIcon from './icons/SharedIcon'
-import DownloadQueueIcon from './icons/DownloadQueueIcon'
-import FolderEnteringIcon from './icons/FolderEnteringIcon'
-import FileLabelIcon from './icons/FileLabelIcon'
-import NotificationSign from './NotificationSign'
 import FileModal from './FileModal/FileModal'
-import FileDescriptionIcon from './icons/FileDescriptionIcon'
 
 const useStyles = makeStyles(() =>
   createStyles({

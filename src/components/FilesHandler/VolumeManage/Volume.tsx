@@ -2,9 +2,9 @@ import { createStyles, makeStyles, Tooltip } from '@material-ui/core'
 import React from 'react'
 import { useState } from 'react'
 import type { ReactElement } from 'react'
-import NotificationSign from '../NotificationSign'
-import SwarmCheckedIcon from '../icons/SwarmCheckedIcon'
-import VolumeIcon from '../icons/VolumeIcon'
+import SwarmCheckedIcon from '../../icons/SwarmCheckedIcon'
+import VolumeIcon from '../../icons/VolumeIcon'
+import NotificationSign from '../../NotificationSign'
 
 const useStyles = makeStyles(() =>
   createStyles({

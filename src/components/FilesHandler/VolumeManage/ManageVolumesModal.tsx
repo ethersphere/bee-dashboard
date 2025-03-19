@@ -2,11 +2,11 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
 import { useContext, useState } from 'react'
-import NotificationSign from '../NotificationSign'
 import NewVolumeModal from './NewVolumeModal'
-import { Context as StampContext } from '../../providers/Stamps'
+import { Context as StampContext } from '../../../providers/Stamps'
 import VolumeModal from './VolumeModal'
 import { PostageBatch } from '@upcoming/bee-js'
+import NotificationSign from '../../NotificationSign'
 
 const useStyles = makeStyles(() =>
   createStyles({

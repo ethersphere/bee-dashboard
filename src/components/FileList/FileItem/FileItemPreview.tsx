@@ -1,6 +1,6 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
-import PreviewIcon from './icons/PreviewIcon'
+import PreviewIcon from '../../icons/PreviewIcon'
 
 const useStyles = makeStyles(() =>
   createStyles({

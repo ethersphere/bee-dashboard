@@ -1,7 +1,7 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
 import { useState } from 'react'
-import SwarmIcon from '../../assets/images/swarmIcon.png'
+import SwarmIcon from '../../../assets/images/swarmIcon.png'
 import FileUploadModal from './FileUploadModal'
 import { PostageBatch } from '@upcoming/bee-js'
 import CircularProgressBar from './CircularProgressBar'
