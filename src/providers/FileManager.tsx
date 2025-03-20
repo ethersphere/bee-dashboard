@@ -10,10 +10,16 @@ interface ContextInterface {
   setIsGroupingOn: (isGroupingOn: boolean) => void
   selectedBatchIds: BatchId[]
   setSelectedBatchIds: (batchId: BatchId[]) => void
+  fileOrder: string
+  setFileOrder: (order: string) => void
 }
 const initialValues: ContextInterface = {
   filemanager: {} as FileManager,
   initialized: false,
+  fileOrder: 'nameAsc',
+  setFileOrder: (_: string): void => {
+    return
+  },
   isGroupingOn: false,
   setIsGroupingOn: (_: boolean): void => {
     return
@@ -37,6 +43,7 @@ export function Provider({ children }: Props): ReactElement {
   const [initialized, setInitialized] = useState<boolean>(false)
   const [selectedBatchIds, setSelectedBatchIds] = useState<BatchId[]>([])
   const [isGroupingOn, setIsGroupingOn] = useState(false)
+  const [fileOrder, setFileOrder] = useState('nameAsc')
 
   const init = () => {
     if (filemanagerRef.current !== null) {
@@ -59,6 +66,8 @@ export function Provider({ children }: Props): ReactElement {
         setIsGroupingOn: setIsGroupingOn,
         selectedBatchIds: selectedBatchIds,
         setSelectedBatchIds: setSelectedBatchIds,
+        fileOrder,
+        setFileOrder,
       }}
     >
       {children}

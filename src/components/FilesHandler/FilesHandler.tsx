@@ -1,6 +1,6 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 
-import { ReactElement, useContext } from 'react'
+import { ReactElement, useContext, useEffect, useState } from 'react'
 import { Context as StampContext } from '../../providers/Stamps'
 import { Context as FileManagerContext } from '../../providers/FileManager'
 import { BatchId } from '@upcoming/bee-js'
@@ -8,6 +8,7 @@ import Volume from './VolumeManage/Volume'
 import VolumeManage from './VolumeManage/VolumeManage'
 import FileUpload from './FileUpload/FileUpload'
 import Grouping from './Grouping'
+import Order from './Order/Order'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -35,13 +36,23 @@ const FilesHandler = (): ReactElement => {
   const { usableStamps } = useContext(StampContext)
   const { selectedBatchIds, setSelectedBatchIds } = useContext(FileManagerContext)
 
-  if (selectedBatchIds.length === 0) {
-    const newBatchIds: BatchId[] = []
-    usableStamps?.forEach(stamp => {
-      newBatchIds.push(stamp.batchID)
-    })
-    setSelectedBatchIds(newBatchIds)
-  }
+  useEffect(() => {
+    if (selectedBatchIds.length === 0) {
+      const newBatchIds: BatchId[] = []
+      usableStamps?.forEach(stamp => {
+        newBatchIds.push(stamp.batchID)
+      })
+      setSelectedBatchIds(newBatchIds)
+    }
+  })
+
+  // if (selectedBatchIds.length === 0) {
+  //   const newBatchIds: BatchId[] = []
+  //   usableStamps?.forEach(stamp => {
+  //     newBatchIds.push(stamp.batchID)
+  //   })
+  //   setSelectedBatchIds(newBatchIds)
+  // }
   const handlerSelectedBatchIds = (batchId: BatchId, isSelected: boolean) => {
     const newSelectedBatchIds = Array.from(selectedBatchIds)
 
@@ -84,6 +95,7 @@ const FilesHandler = (): ReactElement => {
       </div>
       <div className={classes.flex}>
         <FileUpload usableStamps={usableStamps} />
+        <Order />
       </div>
     </div>
   )
