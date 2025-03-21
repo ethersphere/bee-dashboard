@@ -31,6 +31,7 @@ const useStyles = makeStyles(() =>
       backgroundColor: '#ffffff',
       position: 'absolute',
       top: '100%',
+      right: '0px',
       zIndex: 1,
       width: '150px',
       flexDirection: 'column',
@@ -49,24 +50,39 @@ const useStyles = makeStyles(() =>
         color: '#ffffff',
       },
     },
+    activeOrder: {
+      color: '#DE7700',
+    },
   }),
 )
 
 const Order = (): ReactElement => {
   const classes = useStyles()
-  const { setFileOrder } = useContext(FileManagerContext)
+  const { fileOrder, setFileOrder } = useContext(FileManagerContext)
 
   return (
     <div className={classes.container}>
       <OrderIcon />
       <div>Order</div>
       <div className={classes.dropdown}>
-        <div onClick={() => setFileOrder('nameAsc')}>Alphabet inc.</div>
-        <div onClick={() => setFileOrder('nameDesc')}>Alphabet dec.</div>
-        <div onClick={() => setFileOrder('sizeAsc')}>Size inc.</div>
-        <div onClick={() => setFileOrder('sizeDesc')}>Size dec.</div>
-        {/* <div>Date/time inc.</div>
-        <div>Date/time dec.</div> */}
+        <div onClick={() => setFileOrder('nameAsc')} className={fileOrder === 'nameAsc' ? classes.activeOrder : ''}>
+          Alphabet inc.
+        </div>
+        <div onClick={() => setFileOrder('nameDesc')} className={fileOrder === 'nameDesc' ? classes.activeOrder : ''}>
+          Alphabet dec.
+        </div>
+        <div onClick={() => setFileOrder('sizeAsc')} className={fileOrder === 'sizeAsc' ? classes.activeOrder : ''}>
+          Size inc.
+        </div>
+        <div onClick={() => setFileOrder('sizeDesc')} className={fileOrder === 'sizeDesc' ? classes.activeOrder : ''}>
+          Size dec.
+        </div>
+        <div onClick={() => setFileOrder('dateAsc')} className={fileOrder === 'dateAsc' ? classes.activeOrder : ''}>
+          Date/time inc.
+        </div>
+        <div onClick={() => setFileOrder('dateDesc')} className={fileOrder === 'dateDesc' ? classes.activeOrder : ''}>
+          Date/time dec.
+        </div>
       </div>
     </div>
   )

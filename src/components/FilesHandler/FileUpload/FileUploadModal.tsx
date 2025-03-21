@@ -113,8 +113,9 @@ const UploadModal = ({ modalDisplay, files, actualPostageBatch, onUpload }: Uplo
           {
             label,
             details,
-            size: getHumanReadableFileSize(file.size),
+            size: file.size.toString(),
             type: getFileType(file.type),
+            date: actualPostageBatch.duration.toEndDate().getTime().toString(),
           },
           undefined,
           undefined,

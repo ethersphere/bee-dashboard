@@ -6,6 +6,7 @@ import FileItem from './FileItem/FileItem'
 import { Context as FileManagerContext } from '../../providers/FileManager'
 import { Context as StampContext } from '../../providers/Stamps'
 import GroupingLabel from './GroupingLabel'
+import { getHumanReadableFileSize } from '../../utils/file'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -47,16 +48,24 @@ const useStyles = makeStyles(() =>
 const sortFiles = (a: FileInfo, b: FileInfo, sortType: string): number => {
   switch (sortType) {
     case 'nameAsc':
-      return a.name.localeCompare(b.name)
+      return a.name?.localeCompare(b.name)
     case 'nameDesc':
-      return b.name.localeCompare(a.name)
+      return b.name?.localeCompare(a.name)
     case 'sizeAsc':
       return a?.customMetadata?.size && b?.customMetadata?.size
-        ? a.customMetadata.size.localeCompare(b?.customMetadata?.size)
+        ? Number(a.customMetadata.sizeInBytes) - Number(b?.customMetadata?.sizeInBytes)
         : 0
     case 'sizeDesc':
       return a?.customMetadata?.size && b?.customMetadata?.size
-        ? b.customMetadata.size.localeCompare(a?.customMetadata?.size)
+        ? Number(b.customMetadata.sizeInBytes) - Number(a?.customMetadata?.sizeInBytes)
+        : 0
+    case 'dateAsc':
+      return a?.customMetadata?.date && b?.customMetadata?.date
+        ? Number(a.customMetadata.date) - Number(b?.customMetadata?.date)
+        : 0
+    case 'dateDesc':
+      return a?.customMetadata?.date && b?.customMetadata?.date
+        ? Number(b.customMetadata.date) - Number(a?.customMetadata?.date)
         : 0
 
     default:
@@ -132,7 +141,9 @@ const FileList = (): ReactElement => {
                               }
                               name={file?.name || 'No name'}
                               type={file.customMetadata?.type ? file.customMetadata.type : 'other'}
-                              size={file.customMetadata?.size ? file.customMetadata.size : ''}
+                              size={getHumanReadableFileSize(
+                                Number(file.customMetadata?.size ? file.customMetadata.size : ''),
+                              )}
                               hash={file.file?.reference ? file.file.reference.toString() : ''}
                               expires={file.customMetadata?.valid ? file.customMetadata.valid : ''}
                               preview={file.customMetadata?.preview ? file.customMetadata.preview : ''}
@@ -170,7 +181,7 @@ const FileList = (): ReactElement => {
                       }
                       name={file?.name || 'No name'}
                       type={file.customMetadata?.type ? file.customMetadata.type : 'other'}
-                      size={file.customMetadata?.size ? file.customMetadata.size : ''}
+                      size={getHumanReadableFileSize(Number(file.customMetadata?.size ? file.customMetadata.size : ''))}
                       hash={file.file?.reference ? file.file.reference.toString() : ''}
                       expires={file.customMetadata?.valid ? file.customMetadata.valid : ''}
                       preview={file.customMetadata?.preview ? file.customMetadata.preview : ''}
