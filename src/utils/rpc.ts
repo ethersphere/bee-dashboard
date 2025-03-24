@@ -1,8 +1,8 @@
 import { debounce } from '@material-ui/core'
-import { Contract, providers, Wallet, BigNumber as BN } from 'ethers'
+import { BigNumber as BN, Contract, providers, Wallet } from 'ethers'
 import { bzzABI, BZZ_TOKEN_ADDRESS } from './bzz-abi'
 
-const NETWORK_ID = 100
+const NETWORK_ID = 5
 
 async function getNetworkChainId(url: string): Promise<number> {
   const provider = new providers.JsonRpcProvider(url, NETWORK_ID)
