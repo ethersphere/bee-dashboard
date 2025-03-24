@@ -1,4 +1,4 @@
-import { ChainState } from '@upcoming/bee-js'
+import { ChainState } from '@ethersphere/bee-js'
 import { useContext, useEffect, useState } from 'react'
 import { Context } from '../providers/Settings'
 import ExpandableListItem from './ExpandableListItem'

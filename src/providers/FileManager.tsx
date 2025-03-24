@@ -1,8 +1,17 @@
 import { createContext, ReactChild, ReactElement, useContext, useEffect, useRef, useState } from 'react'
-import { BatchId, BeeDev, PrivateKey, Reference } from '@upcoming/bee-js'
-import { FileInfo, FileManager, FileManagerBrowser, FileManagerEvents } from '@solarpunkltd/file-manager-lib'
+import { BatchId, BeeDev, PrivateKey, Reference } from '@ethersphere/bee-js'
+import {
+  FileInfo,
+  FileManager,
+  FileManagerFactory,
+  FileManagerBrowser,
+  FileManagerEvents,
+  FileManagerType,
+  EventEmitter,
+} from '@solarpunkltd/file-manager-lib'
 import { Context as StampContext } from './Stamps'
 import { ReferenceWithHistory } from '@solarpunkltd/file-manager-lib/dist/types/utils/types'
+import { Context as SettingsContext } from './Settings'
 
 interface ContextInterface {
   filemanager: FileManager
@@ -45,25 +54,48 @@ interface Props {
 }
 
 export function Provider({ children }: Props): ReactElement {
-  const signer = new PrivateKey('634fb5a872396d9693e5c9f9d7233cfa93f395c093371017ff44aa9ae6564cdd')
-  const filemanagerRef = useRef<FileManager>(new FileManagerBrowser(new BeeDev('http://localhost:1633', { signer })))
+  const { apiUrl } = useContext(SettingsContext)
+  const [filemanager, setFilemanager] = useState<FileManager | null>(null)
   const [initialized, setInitialized] = useState<boolean>(false)
+
+  const getSigner = (): PrivateKey | undefined => {
+    const pkItem = localStorage.getItem('fmPrivateKey')
+
+    if (pkItem) {
+      try {
+        return new PrivateKey(pkItem)
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error(`fmPrivateKey is invalid: ${error}`)
+      }
+    }
+    // eslint-disable-next-line no-console
+    console.log(`missing fmPrivateKey `)
+  }
+
   const [selectedBatchIds, setSelectedBatchIds] = useState<BatchId[]>([])
   const [isGroupingOn, setIsGroupingOn] = useState(false)
   const [fileOrder, setFileOrder] = useState('nameAsc')
   const [fileDownLoadQueue, setFileDownLoadQueue] = useState([] as (string | Reference)[])
 
-  const init = () => {
-    if (filemanagerRef.current !== null) {
-      filemanagerRef.current.emitter.on(FileManagerEvents.FILEMANAGER_INITIALIZED, (e: boolean) => {
-        setInitialized(e)
-      })
-      filemanagerRef.current.initialize()
-    }
-  }
   useEffect(() => {
+    const init = async () => {
+      const signer = getSigner()
+
+      if (signer) {
+        const fmEmitter = new EventEmitter()
+        fmEmitter.on(FileManagerEvents.FILEMANAGER_INITIALIZED, (e: boolean) => {
+          setInitialized(e)
+        })
+        // TOOD: use Bee instead of BeeDev
+        const bee = new BeeDev(apiUrl, { signer })
+        const fm = await FileManagerFactory.create(FileManagerType.Browser, bee, fmEmitter)
+        setFilemanager(fm)
+      }
+    }
+
     init()
-  }, [])
+  }, [apiUrl])
 
   return (
     <Context.Provider

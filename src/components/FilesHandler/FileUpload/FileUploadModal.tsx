@@ -3,7 +3,7 @@ import type { ReactElement } from 'react'
 import { useContext, useEffect, useState } from 'react'
 import { getHumanReadableFileSize, getFileType, formatDate } from '../../../utils/file'
 import { Context as FileManagerContext } from '../../../providers/FileManager'
-import { PostageBatch } from '@upcoming/bee-js'
+import { BatchId } from '@ethersphere/bee-js'
 import { SwarmTextInput } from '../../SwarmTextInput'
 
 const useStyles = makeStyles(() =>
@@ -86,7 +86,7 @@ const UploadModal = ({ modalDisplay, files, actualPostageBatch, onUpload }: Uplo
   const classes = useStyles()
   const [label, setLabel] = useState('')
   const [details, setDetails] = useState('')
-  const { filemanager } = useContext(FileManagerContext)
+  const { filemanager, initialized } = useContext(FileManagerContext)
   const [filesSize, setFilesSize] = useState(0)
   const [filesCount, setFilesCount] = useState(0)
 

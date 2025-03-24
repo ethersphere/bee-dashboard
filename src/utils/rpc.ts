@@ -1,5 +1,5 @@
 import { debounce } from '@material-ui/core'
-import { BZZ, DAI, EthAddress, PrivateKey } from '@upcoming/bee-js'
+import { BZZ, DAI, EthAddress, PrivateKey } from '@ethersphere/bee-js'
 import { BigNumber as BN, Contract, providers, Wallet } from 'ethers'
 import { BZZ_TOKEN_ADDRESS, bzzABI } from './bzz-abi'
 

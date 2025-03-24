@@ -3,7 +3,7 @@ import type { ReactElement } from 'react'
 import { useState } from 'react'
 import SwarmIcon from '../../../assets/images/swarmIcon.png'
 import FileUploadModal from './FileUploadModal'
-import { PostageBatch } from '@upcoming/bee-js'
+import { PostageBatch } from '@ethersphere/bee-js'
 import CircularProgressBar from './CircularProgressBar'
 
 interface Props {

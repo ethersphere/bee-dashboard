@@ -3,6 +3,7 @@ import type { ReactElement } from 'react'
 import { useState } from 'react'
 import VolumePropertiesModal from './VolumePropertiesModal'
 import VolumeSharingModal from './VolumeSharingModal'
+import { PostageBatch } from '@ethersphere/bee-js'
 import { ActiveVolume } from './ManageVolumesModal'
 import { Tab } from '../../../constants'
 

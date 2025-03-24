@@ -2,7 +2,7 @@ import { createStyles, makeStyles, Slider } from '@material-ui/core'
 import type { ReactElement } from 'react'
 import { useEffect, useState } from 'react'
 import { fromBytesConversion } from '../../../utils/file'
-import { Size, Utils } from '@upcoming/bee-js'
+import { Size, Utils } from '@ethersphere/bee-js'
 
 const useStyles = makeStyles(() =>
   createStyles({

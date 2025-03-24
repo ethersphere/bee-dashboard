@@ -2,6 +2,7 @@ import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
 import { useState } from 'react'
 import VolumeSharingModal from './VolumeSharingModal'
+import { PostageBatch } from '@ethersphere/bee-js'
 import NewVolumePropertiesModal from './NewVolumePropertiesModal'
 import { Tab } from '../../../constants'
 

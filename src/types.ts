@@ -1,4 +1,4 @@
-import type { NodeAddresses, Topology } from '@upcoming/bee-js'
+import type { NodeAddresses, Topology } from '@ethersphere/bee-js'
 import { CheckState } from './providers/Bee'
 
 export interface StatusHookCommon {

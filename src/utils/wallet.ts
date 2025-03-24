@@ -1,4 +1,4 @@
-import { BZZ, DAI, EthAddress } from '@upcoming/bee-js'
+import { BZZ, DAI, EthAddress } from '@ethersphere/bee-js'
 import { providers, Wallet } from 'ethers'
 import { estimateNativeTransferTransactionCost, Rpc } from './rpc'
 
