@@ -1,7 +1,8 @@
 import { createContext, ReactChild, ReactElement, useContext, useEffect, useRef, useState } from 'react'
-import { BatchId, BeeDev, PrivateKey } from '@upcoming/bee-js'
+import { BatchId, BeeDev, PrivateKey, Reference } from '@upcoming/bee-js'
 import { FileInfo, FileManager, FileManagerBrowser, FileManagerEvents } from '@solarpunkltd/file-manager-lib'
 import { Context as StampContext } from './Stamps'
+import { ReferenceWithHistory } from '@solarpunkltd/file-manager-lib/dist/types/utils/types'
 
 interface ContextInterface {
   filemanager: FileManager
@@ -12,6 +13,8 @@ interface ContextInterface {
   setSelectedBatchIds: (batchId: BatchId[]) => void
   fileOrder: string
   setFileOrder: (order: string) => void
+  fileDownLoadQueue: (string | Reference)[]
+  setFileDownLoadQueue: (queue: (string | Reference)[]) => void
 }
 const initialValues: ContextInterface = {
   filemanager: {} as FileManager,
@@ -26,6 +29,10 @@ const initialValues: ContextInterface = {
   },
   selectedBatchIds: [],
   setSelectedBatchIds: (_: BatchId[]): void => {
+    return
+  },
+  fileDownLoadQueue: [],
+  setFileDownLoadQueue: (_: (string | Reference)[]): void => {
     return
   },
 }
@@ -44,6 +51,7 @@ export function Provider({ children }: Props): ReactElement {
   const [selectedBatchIds, setSelectedBatchIds] = useState<BatchId[]>([])
   const [isGroupingOn, setIsGroupingOn] = useState(false)
   const [fileOrder, setFileOrder] = useState('nameAsc')
+  const [fileDownLoadQueue, setFileDownLoadQueue] = useState([] as (string | Reference)[])
 
   const init = () => {
     if (filemanagerRef.current !== null) {
@@ -68,6 +76,8 @@ export function Provider({ children }: Props): ReactElement {
         setSelectedBatchIds: setSelectedBatchIds,
         fileOrder,
         setFileOrder,
+        fileDownLoadQueue: fileDownLoadQueue,
+        setFileDownLoadQueue: setFileDownLoadQueue,
       }}
     >
       {children}

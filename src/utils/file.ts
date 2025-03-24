@@ -1,3 +1,4 @@
+import { Reference } from '@upcoming/bee-js'
 import { isSupportedImageType } from './image'
 import { isSupportedVideoType } from './video'
 
@@ -172,4 +173,10 @@ export const formatDate = (date: Date): string => {
   const year = date.getFullYear()
 
   return `${day}/${month}/${year}`
+}
+
+export const startDownloadingQueue = (refs: (string | Reference)[]) => {
+  refs.forEach(ref => {
+    downloadFiles(ref)
+  })
 }

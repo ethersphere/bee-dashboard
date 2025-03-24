@@ -1,16 +1,17 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import FileTypeIcon from '../../icons/FileTypeIcon'
 import SharedIcon from '../../icons/SharedIcon'
 import DownloadQueueIcon from '../../icons/DownloadQueueIcon'
-import FolderEnteringIcon from '../../icons/FolderEnteringIcon'
 import FileLabelIcon from '../../icons/FileLabelIcon'
 import NotificationSign from '../../NotificationSign'
 import FileDescriptionIcon from '../../icons/FileDescriptionIcon'
 import Preview from './FileItemPreview'
 import FileItemEdit from './FileItemEdit'
 import FileModal from './FileModal/FileModal'
+import { Context as FileManagerContext } from '../../../providers/FileManager'
+import { Reference } from '@upcoming/bee-js'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -88,7 +89,7 @@ interface Props {
   name: string
   type: string
   size: string
-  hash: string
+  hash: string | Reference
   expires: string
   preview?: string
   description?: boolean
@@ -117,6 +118,7 @@ const FileItem = ({
 }: Props): ReactElement => {
   const classes = useStyles()
   const [showFileModal, setShowFileModal] = useState(false)
+  const { fileDownLoadQueue, setFileDownLoadQueue } = useContext(FileManagerContext)
 
   return (
     <div>
@@ -130,7 +132,9 @@ const FileItem = ({
         <div className={classes.middleSide}>
           <div className={classes.fileNameRow}>
             {name}
-            <DownloadQueueIcon added={addedToQueue} />
+            <div onClick={() => setFileDownLoadQueue([...fileDownLoadQueue, hash])}>
+              <DownloadQueueIcon added={addedToQueue} />
+            </div>
           </div>
           <div className={classes.flexDisplay}>
             <div className={classes.fileDataText}>

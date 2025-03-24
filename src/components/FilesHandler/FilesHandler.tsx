@@ -9,6 +9,7 @@ import VolumeManage from './VolumeManage/VolumeManage'
 import FileUpload from './FileUpload/FileUpload'
 import Grouping from './Grouping'
 import Order from './Order/Order'
+import Download from './Download'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -94,6 +95,7 @@ const FilesHandler = (): ReactElement => {
         <VolumeManage />
       </div>
       <div className={classes.flex}>
+        <Download />
         <FileUpload usableStamps={usableStamps} />
         <Order />
       </div>
