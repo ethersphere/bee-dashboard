@@ -12,7 +12,6 @@ import FileItemEdit from './FileItemEdit'
 import FileModal from './FileModal/FileModal'
 import { Context as FileManagerContext } from '../../../providers/FileManager'
 import { Reference } from '@ethersphere/bee-js'
-import { file } from 'jszip'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -178,6 +177,7 @@ const FileItem = ({
           fileName={name}
           fileLabels={label}
           fileDetails={details}
+          fileRef={hash}
           modalDisplay={value => setShowFileModal(value)}
         />
       ) : null}

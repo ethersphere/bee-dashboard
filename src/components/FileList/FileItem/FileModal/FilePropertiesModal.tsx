@@ -1,8 +1,12 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import DownloadIcon from '../../../icons/DownloadIcon'
 import { SwarmTextInput } from '../../../SwarmTextInput'
+import { startDownloadingQueue } from '../../../../utils/file'
+import { Context as FileManagerContext } from '../../../../providers/FileManager'
+import { Reference } from '@ethersphere/bee-js'
+import { file } from 'jszip'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -91,6 +95,7 @@ interface FilePropertiesModalProps {
   fileName: string
   fileDetails?: string
   fileLabels?: string
+  fileRef: string | Reference
   modalDisplay: (value: boolean) => void
 }
 
@@ -100,9 +105,11 @@ const FilePropertiesModal = ({
   fileName,
   fileDetails,
   fileLabels,
+  fileRef,
   modalDisplay,
 }: FilePropertiesModalProps): ReactElement => {
   const classes = useStyles()
+  const { filemanager } = useContext(FileManagerContext)
   const [isHovered, setIsHovered] = useState(false)
   const [isUpdateButtonDisabled, setIsUpdateButtonDisabled] = useState(false)
   const [updatedFileName, setUpdatedFileName] = useState(fileName)
@@ -182,6 +189,11 @@ const FilePropertiesModal = ({
             className={classes.downloadButtonContainer}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
+            onClick={() => {
+              if (filemanager) {
+                startDownloadingQueue(filemanager, [fileRef])
+              }
+            }}
           >
             <DownloadIcon color={isHovered ? '#FFFFFF' : '#333333'} />
             <div style={{ textAlign: 'center' }}>Download now</div>

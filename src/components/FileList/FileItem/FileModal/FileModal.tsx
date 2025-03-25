@@ -4,6 +4,7 @@ import { useState } from 'react'
 import FileSharingModal from './FileSharingModal'
 import FilePropertiesModal from './FilePropertiesModal'
 import { Tab } from '../../../../constants'
+import { Reference } from '@ethersphere/bee-js'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -103,6 +104,7 @@ interface FileModalProps {
   fileName: string
   fileDetails?: string
   fileLabels?: string
+  fileRef: string | Reference
   modalDisplay: (value: boolean) => void
 }
 
@@ -112,6 +114,7 @@ const FileModal = ({
   fileName,
   fileDetails,
   fileLabels,
+  fileRef,
   modalDisplay,
 }: FileModalProps): ReactElement => {
   const classes = useStyles()
@@ -147,6 +150,7 @@ const FileModal = ({
             fileName={fileName}
             fileDetails={fileDetails}
             fileLabels={fileLabels}
+            fileRef={fileRef}
             modalDisplay={modalDisplay}
           />
         ) : null}
