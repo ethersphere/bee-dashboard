@@ -5,7 +5,7 @@ import { useContext, useState } from 'react'
 import NewVolumeModal from './NewVolumeModal'
 import { Context as StampContext } from '../../../providers/Stamps'
 import VolumeModal from './VolumeModal'
-import { PostageBatch } from '@upcoming/bee-js'
+import { PostageBatch } from '@ethersphere/bee-js'
 import NotificationSign from '../../NotificationSign'
 
 const useStyles = makeStyles(() =>

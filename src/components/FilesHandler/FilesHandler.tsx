@@ -3,7 +3,7 @@ import { createStyles, makeStyles } from '@material-ui/core'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { Context as StampContext } from '../../providers/Stamps'
 import { Context as FileManagerContext } from '../../providers/FileManager'
-import { BatchId } from '@upcoming/bee-js'
+import { BatchId } from '@ethersphere/bee-js'
 import Volume from './VolumeManage/Volume'
 import VolumeManage from './VolumeManage/VolumeManage'
 import FileUpload from './FileUpload/FileUpload'
@@ -19,15 +19,20 @@ const useStyles = makeStyles(() =>
       boxSizing: 'border-box',
       fontSize: '12px',
       display: 'flex',
-      gap: '10px',
-      justifyContent: 'space-between',
+      gap: '5px',
+      justifyContent: 'right',
       alignItems: 'center',
-      backgroundColor: 'white',
       marginBottom: '20px',
     },
     flex: {
       display: 'flex',
       height: '100%',
+      backgroundColor: 'white',
+    },
+    leftContainer: {
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'right',
     },
   }),
 )
@@ -47,13 +52,6 @@ const FilesHandler = (): ReactElement => {
     }
   })
 
-  // if (selectedBatchIds.length === 0) {
-  //   const newBatchIds: BatchId[] = []
-  //   usableStamps?.forEach(stamp => {
-  //     newBatchIds.push(stamp.batchID)
-  //   })
-  //   setSelectedBatchIds(newBatchIds)
-  // }
   const handlerSelectedBatchIds = (batchId: BatchId, isSelected: boolean) => {
     const newSelectedBatchIds = Array.from(selectedBatchIds)
 
@@ -79,7 +77,7 @@ const FilesHandler = (): ReactElement => {
 
   return (
     <div className={classes.container}>
-      <div className={classes.flex}>
+      <div className={`${classes.flex} ${classes.leftContainer}`}>
         <Grouping />
         {usableStamps?.map((stamp, index) => (
           <div key={index} className={classes.flex}>

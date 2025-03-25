@@ -2,7 +2,6 @@ import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
 import { useContext, useEffect, useState } from 'react'
 import DestroyIcon from '../../icons/DestroyIcon'
-import DownloadIcon from '../../icons/DownloadIcon'
 import { SwarmTextInput } from '../../SwarmTextInput'
 import DateSlider from './DateSlider'
 import SizeSlider from './SizeSlider'
@@ -11,6 +10,7 @@ import { Context as SettingsContext } from '../../../providers/Settings'
 import ErrorModal from './ErrorModal'
 import { Duration } from '@ethersphere/bee-js'
 import { ActiveVolume } from './ManageVolumesModal'
+import DownloadIcon from '../../icons/DownloadIcon'
 
 const useStyles = makeStyles(() =>
   createStyles({

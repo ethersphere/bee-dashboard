@@ -3,7 +3,7 @@ import type { ReactElement } from 'react'
 import { useContext, useEffect, useState } from 'react'
 import { getHumanReadableFileSize, getFileType, formatDate } from '../../../utils/file'
 import { Context as FileManagerContext } from '../../../providers/FileManager'
-import { BatchId } from '@ethersphere/bee-js'
+import { BatchId, PostageBatch } from '@ethersphere/bee-js'
 import { SwarmTextInput } from '../../SwarmTextInput'
 
 const useStyles = makeStyles(() =>
@@ -106,28 +106,24 @@ const UploadModal = ({ modalDisplay, files, actualPostageBatch, onUpload }: Uplo
       const filesArray = Array.from(files)
 
       for (const file of filesArray) {
-        filemanager.upload(
-          actualPostageBatch.batchID,
-          [file],
-          file.name,
-          {
+        filemanager.upload({
+          batchId: actualPostageBatch.batchID,
+          files: [file],
+          name: file.name,
+          customMetadata: {
             label,
             details,
             size: file.size.toString(),
             type: getFileType(file.type),
             date: actualPostageBatch.duration.toEndDate().getTime().toString(),
           },
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          (p: UploadProgress) => {
+
+          onUploadProgress: (p: UploadProgress) => {
             // eslint-disable-next-line no-console
             console.log(`progress: ${p.processed / (p.total / 100)}`)
             onUpload(Math.floor(p.processed / (p.total / 100)), true)
           },
-        )
+        })
       }
 
       modalDisplay(false)

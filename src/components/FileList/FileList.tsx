@@ -1,5 +1,4 @@
 import { createStyles, makeStyles } from '@material-ui/core'
-import { FileInfo, FileManagerEvents } from '@solarpunkltd/file-manager-lib'
 import type { ReactElement } from 'react'
 import { useContext, useEffect, useState } from 'react'
 import FileItem from './FileItem/FileItem'
@@ -7,6 +6,8 @@ import { Context as FileManagerContext } from '../../providers/FileManager'
 import { Context as StampContext } from '../../providers/Stamps'
 import GroupingLabel from './GroupingLabel'
 import { getHumanReadableFileSize } from '../../utils/file'
+import { FileInfo } from '@solarpunkltd/file-manager-lib'
+import { FileManagerEvents } from '@solarpunkltd/file-manager-lib'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -82,7 +83,7 @@ const FileList = (): ReactElement => {
 
   useEffect(() => {
     if (filemanager && initialized) {
-      const allFiles = filemanager.getFileInfoList()
+      const allFiles = filemanager.fileInfoList
 
       if (selectedBatchIds.length === 0) {
         setFileList(allFiles)

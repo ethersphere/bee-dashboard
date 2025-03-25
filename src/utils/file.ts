@@ -1,6 +1,7 @@
-import { Reference } from '@upcoming/bee-js'
+import { Bytes, Reference } from '@ethersphere/bee-js'
 import { isSupportedImageType } from './image'
 import { isSupportedVideoType } from './video'
+import { FileManager } from '@solarpunkltd/file-manager-lib'
 
 const indexHtmls = ['index.html', 'index.htm']
 
@@ -175,8 +176,33 @@ export const formatDate = (date: Date): string => {
   return `${day}/${month}/${year}`
 }
 
-export const startDownloadingQueue = (refs: (string | Reference)[]) => {
-  refs.forEach(ref => {
-    downloadFiles(ref)
-  })
+export const startDownloadingQueue = async (
+  filemanager: FileManager,
+  refs: (string | Reference)[],
+): Promise<string[][] | undefined> => {
+  try {
+    const dataPromises: Promise<string[]>[] = []
+    for (const ref of refs) {
+      dataPromises.push(filemanager.download(new Reference(ref)))
+      // eslint-disable-next-line no-console
+      console.log('Downloading file with reference: ', ref)
+    }
+
+    const files: string[][] = []
+    await Promise.allSettled(dataPromises).then(results => {
+      results.forEach(result => {
+        if (result.status === 'fulfilled') {
+          files.push(result.value)
+        } else {
+          // eslint-disable-next-line no-console
+          console.error('Failed dowload file: ', result.reason)
+        }
+      })
+    })
+
+    return files
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('Error downloading file with reference: ', refs, e)
+  }
 }

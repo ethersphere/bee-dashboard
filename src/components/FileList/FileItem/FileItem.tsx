@@ -11,7 +11,8 @@ import Preview from './FileItemPreview'
 import FileItemEdit from './FileItemEdit'
 import FileModal from './FileModal/FileModal'
 import { Context as FileManagerContext } from '../../../providers/FileManager'
-import { Reference } from '@upcoming/bee-js'
+import { Reference } from '@ethersphere/bee-js'
+import { file } from 'jszip'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -80,6 +81,9 @@ const useStyles = makeStyles(() =>
     fileTypeIcon: {
       marginTop: 'auto',
     },
+    downloadIconContainer: {
+      display: 'flex',
+    },
   }),
 )
 
@@ -118,7 +122,8 @@ const FileItem = ({
 }: Props): ReactElement => {
   const classes = useStyles()
   const [showFileModal, setShowFileModal] = useState(false)
-  const { fileDownLoadQueue, setFileDownLoadQueue } = useContext(FileManagerContext)
+  const { fileDownLoadQueue, setFileDownLoadQueue, filemanager } = useContext(FileManagerContext)
+  const [added, setAdded] = useState<boolean>(addedToQueue ? addedToQueue : false)
 
   return (
     <div>
@@ -132,8 +137,22 @@ const FileItem = ({
         <div className={classes.middleSide}>
           <div className={classes.fileNameRow}>
             {name}
-            <div onClick={() => setFileDownLoadQueue([...fileDownLoadQueue, hash])}>
-              <DownloadQueueIcon added={addedToQueue} />
+            <div
+              onClick={e => {
+                e.stopPropagation()
+                // eslint-disable-next-line no-console
+                console.log('Added to queue')
+                setAdded(!added)
+
+                if (!added) {
+                  setFileDownLoadQueue([...fileDownLoadQueue, hash])
+                } else {
+                  setFileDownLoadQueue(fileDownLoadQueue.filter(item => item !== hash))
+                }
+              }}
+              className={classes.downloadIconContainer}
+            >
+              <DownloadQueueIcon added={added} />
             </div>
           </div>
           <div className={classes.flexDisplay}>

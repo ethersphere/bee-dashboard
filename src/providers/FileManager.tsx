@@ -1,17 +1,9 @@
 import { createContext, ReactChild, ReactElement, useContext, useEffect, useRef, useState } from 'react'
 import { BatchId, BeeDev, PrivateKey, Reference } from '@ethersphere/bee-js'
-import {
-  FileInfo,
-  FileManager,
-  FileManagerFactory,
-  FileManagerBrowser,
-  FileManagerEvents,
-  FileManagerType,
-  EventEmitter,
-} from '@solarpunkltd/file-manager-lib'
-import { Context as StampContext } from './Stamps'
-import { ReferenceWithHistory } from '@solarpunkltd/file-manager-lib/dist/types/utils/types'
+
+import { FileManager, FileManagerBase } from '@solarpunkltd/file-manager-lib'
 import { Context as SettingsContext } from './Settings'
+import { FileManagerEvents } from '@solarpunkltd/file-manager-lib'
 
 interface ContextInterface {
   filemanager: FileManager
@@ -83,14 +75,14 @@ export function Provider({ children }: Props): ReactElement {
       const signer = getSigner()
 
       if (signer) {
-        const fmEmitter = new EventEmitter()
-        fmEmitter.on(FileManagerEvents.FILEMANAGER_INITIALIZED, (e: boolean) => {
-          setInitialized(e)
-        })
         // TOOD: use Bee instead of BeeDev
         const bee = new BeeDev(apiUrl, { signer })
-        const fm = await FileManagerFactory.create(FileManagerType.Browser, bee, fmEmitter)
-        setFilemanager(fm)
+        const fm = new FileManagerBase(bee)
+        fm.emitter.on(FileManagerEvents.FILEMANAGER_INITIALIZED, (e: boolean) => {
+          setInitialized(e)
+          setFilemanager(fm)
+        })
+        await fm.initialize()
       }
     }
 
@@ -100,7 +92,7 @@ export function Provider({ children }: Props): ReactElement {
   return (
     <Context.Provider
       value={{
-        filemanager: filemanagerRef.current,
+        filemanager: filemanager as FileManager,
         initialized,
         isGroupingOn,
         setIsGroupingOn: setIsGroupingOn,

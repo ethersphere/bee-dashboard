@@ -4,6 +4,7 @@ import NotificationSign from '../NotificationSign'
 import DownloadIcon from '../icons/DownloadIcon'
 import { Context as FileManagerContext } from '../../providers/FileManager'
 import { useContext } from 'react'
+import { startDownloadingQueue } from '../../utils/file'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -66,7 +67,7 @@ interface Props {
 
 const Download = (props: Props): ReactElement => {
   const classes = useStyles()
-  const { fileDownLoadQueue } = useContext(FileManagerContext)
+  const { fileDownLoadQueue, filemanager } = useContext(FileManagerContext)
 
   return (
     <div className={classes.container}>
@@ -81,7 +82,7 @@ const Download = (props: Props): ReactElement => {
       <div className={classes.dropdown}>
         <div
           onClick={() => {
-            startDownloadingQueue()
+            startDownloadingQueue(filemanager, fileDownLoadQueue)
           }}
         >
           Start downloading queue
