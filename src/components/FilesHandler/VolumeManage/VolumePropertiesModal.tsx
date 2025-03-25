@@ -5,8 +5,9 @@ import DestroyIcon from '../../icons/DestroyIcon'
 import { SwarmTextInput } from '../../SwarmTextInput'
 import DateSlider from './DateSlider'
 import SizeSlider from './SizeSlider'
-import { getHumanReadableFileSize } from '../../../utils/file'
+import { getHumanReadableFileSize, startDownloadingQueue } from '../../../utils/file'
 import { Context as SettingsContext } from '../../../providers/Settings'
+import { Context as FileManagerContext } from '../../../providers/FileManager'
 import ErrorModal from './ErrorModal'
 import { Duration } from '@ethersphere/bee-js'
 import { ActiveVolume } from './ManageVolumesModal'
@@ -258,6 +259,7 @@ const VolumePropertiesModal = ({ newVolume, modalDisplay, activeVolume }: Volume
   const [isUploadButtonEnabled, setIsUploadButtonEnabled] = useState(false)
 
   const { beeApi } = useContext(SettingsContext)
+  const { filemanager } = useContext(FileManagerContext)
 
   useEffect(() => {
     const fetchCost = async () => {
@@ -362,6 +364,15 @@ const VolumePropertiesModal = ({ newVolume, modalDisplay, activeVolume }: Volume
                 className={classes.downloadButtonContainer}
                 onMouseEnter={handleMouseEnterDownload}
                 onMouseLeave={handleMouseLeaveDownload}
+                onClick={() => {
+                  if (filemanager) {
+                    const filesUnderVolume = filemanager.fileInfoList.filter(
+                      file => file.batchId.toString() === activeVolume.volume.batchID.toString(),
+                    )
+                    const filesUnderVolumeRefs = filesUnderVolume.map(file => file.file.reference)
+                    startDownloadingQueue(filemanager, filesUnderVolumeRefs)
+                  }
+                }}
               >
                 <DownloadIcon color={isHoveredDownload ? '#FFFFFF' : '#333333'} />
                 <div style={{ textAlign: 'center' }}>Download now</div>
