@@ -1,4 +1,4 @@
-import { BatchId, Bee, PostageBatch, Reference } from '@upcoming/bee-js'
+import { BatchId, Bee, PostageBatch, Reference } from '@ethersphere/bee-js'
 import { BigNumber } from 'bignumber.js'
 import { BZZ_LINK_DOMAIN } from '../constants'
 

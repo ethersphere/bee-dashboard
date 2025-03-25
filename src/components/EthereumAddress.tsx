@@ -1,5 +1,5 @@
 import { Typography } from '@material-ui/core/'
-import { EthAddress } from '@upcoming/bee-js'
+import { EthAddress } from '@ethersphere/bee-js'
 import { ReactElement } from 'react'
 import Identicon from 'react-identicons'
 import { BLOCKCHAIN_EXPLORER_URL } from '../constants'

@@ -1,12 +1,14 @@
-import { createContext, ReactChild, ReactElement, useEffect, useRef } from 'react'
-import { FileManager } from '@solarpunkltd/file-manager-lib'
+import { createContext, ReactChild, ReactElement, useContext, useEffect, useState } from 'react'
+import { BeeDev, PrivateKey } from '@ethersphere/bee-js'
+import { FileManager, FileManagerBase, FileManagerEvents } from '@solarpunkltd/file-manager-lib'
+import { Context as SettingsContext } from '../providers/Settings'
 
 interface ContextInterface {
-  filemanager: FileManager
+  filemanager: FileManager | null
 }
 
 const initialValues: ContextInterface = {
-  filemanager: {} as FileManager,
+  filemanager: null,
 }
 
 export const Context = createContext<ContextInterface>(initialValues)
@@ -17,19 +19,41 @@ interface Props {
 }
 
 export function Provider({ children }: Props): ReactElement {
-  const filemanagerRef = useRef<FileManager | null>(null)
+  const { apiUrl } = useContext(SettingsContext)
+  const [filemanager, setFilemanager] = useState<FileManager | null>(null)
 
-  if (filemanagerRef.current === null) {
-    filemanagerRef.current = new FileManager()
+  const getSigner = (): PrivateKey | undefined => {
+    const pkItem = localStorage.getItem('fmPrivateKey')
+
+    if (pkItem) {
+      try {
+        return new PrivateKey(pkItem)
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error(`fmPrivateKey is invalid: ${error}`)
+      }
+    }
+    // eslint-disable-next-line no-console
+    console.log(`missing fmPrivateKey `)
   }
 
   useEffect(() => {
-    if (filemanagerRef.current) {
-      filemanagerRef.current.initialize()
+    const init = async () => {
+      const signer = getSigner()
+
+      if (signer) {
+        // TODO: use Bee instead of BeeDev
+        const bee = new BeeDev(apiUrl, { signer })
+        const fm = new FileManagerBase(bee)
+        fm.emitter.on(FileManagerEvents.FILEMANAGER_INITIALIZED, (e: boolean) => {
+          setFilemanager(fm)
+        })
+        await fm.initialize()
+      }
     }
-  }, [])
 
-  const filemanager = filemanagerRef.current
+    init()
+  }, [apiUrl])
 
-  return <Context.Provider value={{ filemanager }}>{children}</Context.Provider>
+  return <Context.Provider value={{ filemanager: filemanager }}>{children}</Context.Provider>
 }

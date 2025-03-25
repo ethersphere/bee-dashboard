@@ -10,7 +10,7 @@ import SizeSlider from './SizeSlider'
 import { getHumanReadableFileSize } from '../../utils/file'
 import { Context as SettingsContext } from '../../providers/Settings'
 import ErrorModal from './ErrorModal'
-import { Duration } from '@upcoming/bee-js'
+import { Duration } from '@ethersphere/bee-js'
 
 const useStyles = makeStyles(() =>
   createStyles({

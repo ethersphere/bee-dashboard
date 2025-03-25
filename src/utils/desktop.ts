@@ -1,4 +1,4 @@
-import { DAI } from '@upcoming/bee-js'
+import { DAI } from '@ethersphere/bee-js'
 import axios from 'axios'
 import { BEE_DESKTOP_LATEST_RELEASE_PAGE_API } from '../constants'
 import { getJson, postJson } from './net'

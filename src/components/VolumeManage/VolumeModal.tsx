@@ -3,7 +3,7 @@ import type { ReactElement } from 'react'
 import { useState } from 'react'
 import VolumePropertiesModal from './VolumePropertiesModal'
 import VolumeSharingModal from './VolumeSharingModal'
-import { PostageBatch } from '@upcoming/bee-js'
+import { PostageBatch } from '@ethersphere/bee-js'
 
 const useStyles = makeStyles(() =>
   createStyles({

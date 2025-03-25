@@ -12,7 +12,7 @@ import {
   PeerBalance,
   Topology,
   WalletBalance,
-} from '@upcoming/bee-js'
+} from '@ethersphere/bee-js'
 import { createContext, ReactChild, ReactElement, useContext, useEffect, useState } from 'react'
 import { useLatestBeeRelease } from '../hooks/apiHooks'
 import { Context as SettingsContext } from './Settings'

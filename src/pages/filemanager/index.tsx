@@ -1,9 +1,9 @@
 import { ReactElement, useContext, useEffect, useState } from 'react'
-import { FileInfo, FileManager } from '@solarpunkltd/file-manager-lib'
-import { createStyles, makeStyles, Typography } from '@material-ui/core'
+import { createStyles, makeStyles } from '@material-ui/core'
 import FileItem from '../../components/FileItem'
 import FilesHandler from '../../components/FilesHandler'
 import { Context as FileManagerContext } from '../../providers/FileManager'
+import { FileInfo, FileManagerEvents } from '@solarpunkltd/file-manager-lib'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -35,20 +35,31 @@ export default function FM(): ReactElement {
   const { filemanager } = useContext(FileManagerContext)
   const classes = useStyles()
   const [fileList, setFileList] = useState<FileInfo[]>([])
-  const [fileListError, setFileListError] = useState(false)
 
   useEffect(() => {
-    function fetchFiles() {
-      try {
-        const files = filemanager.getFileInfoList()
-        setFileList(files)
-      } catch (error) {
-        setFileListError(true)
-      }
+    if (!filemanager) {
+      return
     }
 
-    fetchFiles()
-  }, [])
+    const files = filemanager.fileInfoList
+    setFileList(files)
+  }, [filemanager])
+
+  useEffect(() => {
+    if (!filemanager) {
+      return
+    }
+
+    const listener = (e: FileInfo) => {
+      setFileList([...fileList, e])
+    }
+
+    filemanager.emitter.on(FileManagerEvents.FILE_UPLOADED, listener)
+
+    return () => {
+      filemanager.emitter.off(FileManagerEvents.FILE_UPLOADED, listener)
+    }
+  }, [filemanager, fileList])
 
   return (
     <div>
@@ -71,7 +82,7 @@ export default function FM(): ReactElement {
                     : 'other'
                 }
                 size={file.customMetadata?.size ? file.customMetadata.size : ''}
-                hash={file.eFileRef}
+                hash={file.file.reference.toString()}
                 expires={file.customMetadata?.valid ? file.customMetadata.valid : ''}
                 preview={file.customMetadata?.preview ? file.customMetadata.preview : ''}
                 description={file.customMetadata?.description === 'true'}
@@ -86,13 +97,6 @@ export default function FM(): ReactElement {
               ></FileItem>
             </div>
           ))}
-        </div>
-      )}
-      {fileListError && (
-        <div className={classes.errorTextContainer}>
-          <Typography variant="h1" align="center">
-            Uh oh, an error happened
-          </Typography>
         </div>
       )}
     </div>

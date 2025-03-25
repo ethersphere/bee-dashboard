@@ -1,9 +1,12 @@
 import { createStyles, makeStyles } from '@material-ui/core'
+import { UploadProgress } from '@solarpunkltd/file-manager-lib'
 import type { ReactElement } from 'react'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { SwarmTextInput } from '../SwarmTextInput'
-import { FileManager } from '@solarpunkltd/file-manager-lib'
 import { getHumanReadableFileSize, getFileType } from '../../utils/file'
+import { Context as FileManagerContext } from '../../providers/FileManager'
+import { BatchId } from '@ethersphere/bee-js'
+
 //TODO-Filemanager: volume management
 const useStyles = makeStyles(() =>
   createStyles({
@@ -78,24 +81,24 @@ const UploadModal = ({ modalDisplay, file }: UploadModalProps): ReactElement => 
   const classes = useStyles()
   const [description, setDescription] = useState('')
   const [label, setLabel] = useState('')
-  const filemanager = new FileManager()
-
-  filemanager.initialize()
+  const { filemanager } = useContext(FileManagerContext)
 
   const handleUpload = () => {
-    filemanager.upload('123', '123', {
-      name: file.name,
-      valid: '01/01/2024 00:00',
-      size: getHumanReadableFileSize(file.size),
-      description: description,
-      label: label,
-      shared: 'me',
-      uploaded: 'by user',
-      type: getFileType(file.type),
-      preview: 'true',
-      warning: 'true',
-      addedToQueue: 'false',
-    })
+    if (filemanager) {
+      filemanager.upload({
+        batchId: new BatchId('b6af9424d5177113f364759cadedce3a0d50681607ed900178553be8a7496771'),
+        files: [file],
+        name: file.name,
+        customMetadata: {
+          description,
+          label,
+          size: getHumanReadableFileSize(file.size),
+          type: getFileType(file.type),
+        },
+        // eslint-disable-next-line no-console
+        onUploadProgress: (p: UploadProgress) => console.log(`progress: ${p.processed}/${p.total}`),
+      })
+    }
     modalDisplay(false)
   }
 

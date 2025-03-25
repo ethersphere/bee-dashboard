@@ -1,6 +1,6 @@
 import { Box, Button, Grid, Slider, Typography } from '@material-ui/core'
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles'
-import { Duration, PostageBatchOptions, Size, Utils } from '@upcoming/bee-js'
+import { Duration, PostageBatchOptions, Size, Utils } from '@ethersphere/bee-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { Link } from 'react-router-dom'

@@ -1,5 +1,5 @@
 import { Box, Typography } from '@material-ui/core'
-import { MantarayNode } from '@upcoming/bee-js'
+import { MantarayNode } from '@ethersphere/bee-js'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 import { useSnackbar } from 'notistack'

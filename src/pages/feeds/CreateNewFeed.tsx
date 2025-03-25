@@ -1,5 +1,5 @@
 import { Box, Grid, Typography } from '@material-ui/core'
-import { NULL_TOPIC } from '@upcoming/bee-js'
+import { NULL_TOPIC } from '@ethersphere/bee-js'
 import { Form, Formik } from 'formik'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'

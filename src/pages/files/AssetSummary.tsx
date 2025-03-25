@@ -1,5 +1,5 @@
 import { Box } from '@material-ui/core'
-import { Reference } from '@upcoming/bee-js'
+import { Reference } from '@ethersphere/bee-js'
 import { ReactElement } from 'react'
 import { DocumentationText } from '../../components/DocumentationText'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
