@@ -356,6 +356,9 @@ const VolumePropertiesModal = ({ newVolume, modalDisplay, activeVolume }: Volume
                 className={classes.downloadButtonContainer}
                 onMouseEnter={handleMouseEnterDestroy}
                 onMouseLeave={handleMouseLeaveDestroy}
+                onClick={() => {
+                  filemanager.destroyVolume(activeVolume.volume.batchID)
+                }}
               >
                 <DestroyIcon color={isHoveredDestroy ? '#FFFFFF' : '#333333'} />
                 <div style={{ textAlign: 'center' }}>Destroy volume</div>
