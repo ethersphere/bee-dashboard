@@ -220,9 +220,14 @@ const useStyles = makeStyles(() =>
 interface VolumePropertiesModalProps {
   newVolume: boolean
   modalDisplay: (value: boolean) => void
+  newVolumeCreated: (value: boolean) => void
 }
 
-const NewVolumePropertiesModal = ({ newVolume, modalDisplay }: VolumePropertiesModalProps): ReactElement => {
+const NewVolumePropertiesModal = ({
+  newVolume,
+  modalDisplay,
+  newVolumeCreated,
+}: VolumePropertiesModalProps): ReactElement => {
   const classes = useStyles()
   const [size, setSize] = useState(Size.fromBytes(0))
   const [validity, setValidity] = useState(new Date())
@@ -237,6 +242,7 @@ const NewVolumePropertiesModal = ({ newVolume, modalDisplay }: VolumePropertiesM
     try {
       if (isCreateEnabled) {
         await beeApi?.buyStorage(size, Duration.fromEndDate(validity), { label: label })
+        newVolumeCreated(true)
         modalDisplay(false)
       }
     } catch (e) {

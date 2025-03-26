@@ -57,9 +57,10 @@ const useStyles = makeStyles(() =>
 interface VolumeModalProps {
   modalDisplay: (value: boolean) => void
   newVolume?: boolean
+  newVolumeCreated: (value: boolean) => void
 }
 
-const VolumeModal = ({ modalDisplay, newVolume }: VolumeModalProps): ReactElement => {
+const VolumeModal = ({ modalDisplay, newVolume, newVolumeCreated }: VolumeModalProps): ReactElement => {
   const classes = useStyles()
   const [activeTab, setActiveTab] = useState<Tab>(Tab.Properties)
 
@@ -87,7 +88,11 @@ const VolumeModal = ({ modalDisplay, newVolume }: VolumeModalProps): ReactElemen
           </div>
         </div>
         {activeTab === Tab.Properties ? (
-          <NewVolumePropertiesModal modalDisplay={modalDisplay} newVolume={newVolume ? newVolume : false} />
+          <NewVolumePropertiesModal
+            modalDisplay={modalDisplay}
+            newVolume={newVolume ? newVolume : false}
+            newVolumeCreated={newVolumeCreated}
+          />
         ) : null}
         {activeTab === Tab.Sharing ? (
           <VolumeSharingModal textToBeDisabled={alreadyAddedWithACT} modalDisplay={value => modalDisplay(value)} />

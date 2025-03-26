@@ -1,4 +1,4 @@
-import { Bytes, Reference } from '@ethersphere/bee-js'
+import { Bee, Bytes, PostageBatch, Reference } from '@ethersphere/bee-js'
 import { isSupportedImageType } from './image'
 import { isSupportedVideoType } from './video'
 import { FileManager } from '@solarpunkltd/file-manager-lib'
@@ -204,5 +204,22 @@ export const startDownloadingQueue = async (
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error('Error downloading file with reference: ', refs, e)
+  }
+}
+
+export const getUsableStamps = async (bee: Bee | null): Promise<PostageBatch[]> => {
+  if (!bee) {
+    return []
+  }
+  try {
+    return (await bee.getAllPostageBatch())
+      .filter(s => s.usable)
+      .sort((a, b) => (a.label || '').localeCompare(b.label || ''))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    // eslint-disable-next-line no-console
+    console.error('Error getting usable stamps: ', error)
+
+    return []
   }
 }

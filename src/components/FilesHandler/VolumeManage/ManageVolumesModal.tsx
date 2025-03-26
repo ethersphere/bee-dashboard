@@ -1,12 +1,13 @@
 /* eslint-disable no-alert */
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import NewVolumeModal from './NewVolumeModal'
-import { Context as StampContext } from '../../../providers/Stamps'
+import { Context as SettingsContext } from '../../../providers/Settings'
 import VolumeModal from './VolumeModal'
 import { PostageBatch } from '@ethersphere/bee-js'
 import NotificationSign from '../../NotificationSign'
+import { getUsableStamps } from '../../../utils/file'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -110,21 +111,34 @@ interface ManageModalProps {
 const ManageVolumesModal = ({ modalDisplay }: ManageModalProps): ReactElement => {
   const classes = useStyles()
   const [newVolumeModalDisplay, setNewVolumeModalDisplay] = useState(false)
-  const { usableStamps } = useContext(StampContext)
-  const usableStampsCount = usableStamps.length
-  const [activeVolume, setActiveVolume] = useState({
-    volumeModalDisplay: false,
-    volume: usableStamps[0],
-    validity: 0,
-  })
+  const [isNewVolumeCreated, setIsNewVolumeCreated] = useState(false)
+  const { beeApi } = useContext(SettingsContext)
+  const [uStamps, setUStamps] = useState<PostageBatch[]>([])
+  const [activeVolume, setActiveVolume] = useState<ActiveVolume>({} as ActiveVolume)
   const notificationThresholdDate = new Date()
   notificationThresholdDate.setDate(new Date().getDate() + 7)
 
   const handlerCreateNewVolume = (value: boolean) => {
-    if (usableStampsCount < 5) {
+    if (uStamps && uStamps.length < 5) {
       setNewVolumeModalDisplay(value)
     }
   }
+
+  useEffect(() => {
+    if (isNewVolumeCreated) {
+      const getUStamps = async () => {
+        const usableStamps = await getUsableStamps(beeApi)
+        setUStamps([...usableStamps])
+        setActiveVolume({
+          volumeModalDisplay: false,
+          volume: usableStamps[0],
+          validity: 0,
+        })
+      }
+      getUStamps()
+      setIsNewVolumeCreated(false)
+    }
+  }, [beeApi, isNewVolumeCreated])
 
   return (
     <div className={classes.modal}>
@@ -136,7 +150,7 @@ const ManageVolumesModal = ({ modalDisplay }: ManageModalProps): ReactElement =>
           }
         </div>
         <div className={classes.flexCenter}>
-          {usableStamps.map((stamp, index) => (
+          {uStamps.map((stamp, index) => (
             <div
               key={index}
               className={classes.volumenButtonContainer}
@@ -159,7 +173,7 @@ const ManageVolumesModal = ({ modalDisplay }: ManageModalProps): ReactElement =>
         <div className={classes.newButtonContainer}>
           <div
             className={`${classes.buttonElement} ${
-              usableStampsCount < 5 ? classes.buttonNewVolume : classes.buttonNewVolumeDisabled
+              uStamps.length < 5 ? classes.buttonNewVolume : classes.buttonNewVolumeDisabled
             }`}
             onClick={() => handlerCreateNewVolume(true)}
           >
@@ -177,7 +191,12 @@ const ManageVolumesModal = ({ modalDisplay }: ManageModalProps): ReactElement =>
           </div>
         </div>
       </div>
-      {newVolumeModalDisplay && <NewVolumeModal modalDisplay={(value: boolean) => setNewVolumeModalDisplay(value)} />}
+      {newVolumeModalDisplay && (
+        <NewVolumeModal
+          modalDisplay={(value: boolean) => setNewVolumeModalDisplay(value)}
+          newVolumeCreated={value => setIsNewVolumeCreated(value)}
+        />
+      )}
       {activeVolume.volumeModalDisplay && (
         <VolumeModal
           modalDisplay={(value: boolean) => setActiveVolume(prev => ({ ...prev, volumeModalDisplay: value }))}
