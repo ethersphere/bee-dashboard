@@ -119,8 +119,6 @@ const UploadModal = ({ modalDisplay, files, actualPostageBatch, onUpload }: Uplo
           },
 
           onUploadProgress: (p: UploadProgress) => {
-            // eslint-disable-next-line no-console
-            console.log(`progress: ${p.processed / (p.total / 100)}`)
             onUpload(Math.floor(p.processed / (p.total / 100)), true)
           },
         })

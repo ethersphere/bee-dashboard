@@ -2,6 +2,8 @@ import { Bee, Bytes, PostageBatch, Reference } from '@ethersphere/bee-js'
 import { isSupportedImageType } from './image'
 import { isSupportedVideoType } from './video'
 import { FileManager } from '@solarpunkltd/file-manager-lib'
+import { FileTypes } from '../constants'
+import { file } from 'jszip'
 
 const indexHtmls = ['index.html', 'index.htm']
 
@@ -131,19 +133,13 @@ export function getFileType(input: string): string {
   const index = input.indexOf('/')
 
   const type = index !== -1 ? input.substring(0, index) : input
+  const fileTypes = Object.values(FileTypes)
 
-  switch (type) {
-    case 'video':
-      return 'video'
-    case 'audio':
-      return 'audio'
-    case 'image':
-      return 'image'
-    case 'application':
-      return 'application'
-    default:
-      return 'other'
+  if (fileTypes.includes(type as FileTypes)) {
+    return type
   }
+
+  return 'other'
 }
 
 export const fromBytesConversion = (size: number, metric: string) => {

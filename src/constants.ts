@@ -15,3 +15,10 @@ export enum Tab {
   Properties = 'Properties',
   Sharing = 'Sharing',
 }
+
+export enum FileTypes {
+  Image = 'image',
+  Video = 'video',
+  Audio = 'audio',
+  Application = 'application',
+}

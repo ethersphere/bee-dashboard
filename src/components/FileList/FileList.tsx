@@ -8,7 +8,7 @@ import GroupingLabel from './GroupingLabel'
 import { getHumanReadableFileSize, getUsableStamps } from '../../utils/file'
 import { FileInfo } from '@solarpunkltd/file-manager-lib'
 import { FileManagerEvents } from '@solarpunkltd/file-manager-lib'
-import { PostageBatch } from '@ethersphere/bee-js'
+import { BatchId, PostageBatch } from '@ethersphere/bee-js'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -50,16 +50,16 @@ const useStyles = makeStyles(() =>
 const sortFiles = (a: FileInfo, b: FileInfo, sortType: string): number => {
   switch (sortType) {
     case 'nameAsc':
-      return a.name?.localeCompare(b.name)
+      return a.name.localeCompare(b.name)
     case 'nameDesc':
-      return b.name?.localeCompare(a.name)
+      return b.name.localeCompare(a.name)
     case 'sizeAsc':
       return a?.customMetadata?.size && b?.customMetadata?.size
-        ? Number(a.customMetadata.sizeInBytes) - Number(b?.customMetadata?.sizeInBytes)
+        ? Number(a.customMetadata.size) - Number(b?.customMetadata?.size)
         : 0
     case 'sizeDesc':
       return a?.customMetadata?.size && b?.customMetadata?.size
-        ? Number(b.customMetadata.sizeInBytes) - Number(a?.customMetadata?.sizeInBytes)
+        ? Number(b.customMetadata.size) - Number(a?.customMetadata?.size)
         : 0
     case 'dateAsc':
       return a?.customMetadata?.date && b?.customMetadata?.date
@@ -83,6 +83,16 @@ const FileList = (): ReactElement => {
   const [usableStamps, setUStamps] = useState<PostageBatch[]>([])
   const { fileOrder } = useContext(FileManagerContext)
   const { beeApi } = useContext(SettingsContext)
+  const filesUnderVolumes = (allFiles: FileInfo[], selectedBatchIds: BatchId[]) => {
+    if (selectedBatchIds.length === 0) {
+      setFileList(allFiles)
+    } else {
+      const filesPerVolume = allFiles.filter(fi =>
+        selectedBatchIds.some(batchId => fi.batchId.toString() === batchId.toString()),
+      )
+      setFileList(filesPerVolume)
+    }
+  }
 
   useEffect(() => {
     if (filemanager && initialized) {
@@ -92,21 +102,14 @@ const FileList = (): ReactElement => {
         console.log('File', file.name)
       }
 
-      if (selectedBatchIds.length === 0) {
-        setFileList(allFiles)
-      } else {
-        const filesPerVolume = allFiles.filter(fi =>
-          selectedBatchIds.some(batchId => fi.batchId.toString() === batchId.toString()),
-        )
-        setFileList(filesPerVolume)
-      }
+      filesUnderVolumes(allFiles, selectedBatchIds)
     }
   }, [filemanager, initialized, selectedBatchIds])
 
   useEffect(() => {
     if (filemanager) {
-      const handleFileUploaded = (data: FileInfo) => {
-        setFileList(prev => [...prev, data])
+      const handleFileUploaded = (_: FileInfo) => {
+        filesUnderVolumes(filemanager.fileInfoList, selectedBatchIds)
       }
 
       filemanager.emitter.on(FileManagerEvents.FILE_UPLOADED, handleFileUploaded)
@@ -115,7 +118,7 @@ const FileList = (): ReactElement => {
         filemanager.emitter.off(FileManagerEvents.FILE_UPLOADED, handleFileUploaded)
       }
     }
-  }, [filemanager])
+  }, [filemanager, selectedBatchIds])
 
   useEffect(() => {
     const getUStamps = async () => {
@@ -130,13 +133,11 @@ const FileList = (): ReactElement => {
       {fileList.length > 0 ? (
         <div className={classes.fileListContainer}>
           {isGroupingOn
-            ? selectedBatchIds.map((batchId, batchIndex) => (
+            ? //TODO This needs to be refactored
+              selectedBatchIds.map((batchId, batchIndex) => (
                 <div key={batchIndex} className={classes.groupContainer}>
                   <GroupingLabel
-                    label={
-                      usableStamps.find(item => item?.batchID?.toString() === batchId.toString())?.label ??
-                      'No volume name'
-                    }
+                    label={usableStamps.find(item => item.batchID.toString() === batchId.toString())?.label}
                   />
                   {fileList
                     .sort((a, b) => sortFiles(a, b, fileOrder))
@@ -147,18 +148,18 @@ const FileList = (): ReactElement => {
                             <FileItem
                               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                               volumeName={
-                                usableStamps.find(item => item?.batchID?.toString() === file?.batchId?.toString())
-                                  ?.label ?? 'No volume name'
+                                usableStamps.find(item => item.batchID.toString() === file.batchId.toString())?.label ||
+                                file.batchId.toString()
                               }
                               volumeValidity={
                                 usableStamps
-                                  .find(item => item?.batchID?.toString() === file?.batchId?.toString())
-                                  ?.duration.toEndDate() ?? new Date()
+                                  .find(item => item.batchID.toString() === file.batchId.toString())
+                                  ?.duration.toEndDate() || new Date(0)
                               }
-                              name={file?.name || 'No name'}
+                              name={file.name}
                               type={file.customMetadata?.type ? file.customMetadata.type : 'other'}
                               size={getHumanReadableFileSize(
-                                Number(file.customMetadata?.size ? file.customMetadata.size : ''),
+                                Number(file.customMetadata?.size ? file.customMetadata.size : '0'),
                               )}
                               hash={file.file.reference}
                               expires={file.customMetadata?.valid ? file.customMetadata.valid : ''}
