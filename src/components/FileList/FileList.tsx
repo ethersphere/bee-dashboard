@@ -3,11 +3,12 @@ import type { ReactElement } from 'react'
 import { useContext, useEffect, useState } from 'react'
 import FileItem from './FileItem/FileItem'
 import { Context as FileManagerContext } from '../../providers/FileManager'
-import { Context as StampContext } from '../../providers/Stamps'
+import { Context as SettingsContext } from '../../providers/Settings'
 import GroupingLabel from './GroupingLabel'
-import { getHumanReadableFileSize } from '../../utils/file'
+import { getHumanReadableFileSize, getUsableStamps } from '../../utils/file'
 import { FileInfo } from '@solarpunkltd/file-manager-lib'
 import { FileManagerEvents } from '@solarpunkltd/file-manager-lib'
+import { PostageBatch } from '@ethersphere/bee-js'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -76,14 +77,20 @@ const sortFiles = (a: FileInfo, b: FileInfo, sortType: string): number => {
 
 const FileList = (): ReactElement => {
   const classes = useStyles()
-  const { filemanager, initialized, selectedBatchIds, isGroupingOn } = useContext(FileManagerContext)
+  const { filemanager, initialized, selectedBatchIds, isGroupingOn, isNewVolumeCreated } =
+    useContext(FileManagerContext)
   const [fileList, setFileList] = useState<FileInfo[]>([])
-  const { usableStamps } = useContext(StampContext)
+  const [usableStamps, setUStamps] = useState<PostageBatch[]>([])
   const { fileOrder } = useContext(FileManagerContext)
+  const { beeApi } = useContext(SettingsContext)
 
   useEffect(() => {
     if (filemanager && initialized) {
       const allFiles = filemanager.fileInfoList
+      for (const file of allFiles) {
+        // eslint-disable-next-line no-console
+        console.log('File', file.name)
+      }
 
       if (selectedBatchIds.length === 0) {
         setFileList(allFiles)
@@ -109,6 +116,14 @@ const FileList = (): ReactElement => {
       }
     }
   }, [filemanager])
+
+  useEffect(() => {
+    const getUStamps = async () => {
+      const usableStamps = await getUsableStamps(beeApi)
+      setUStamps([...usableStamps])
+    }
+    getUStamps()
+  }, [beeApi, isNewVolumeCreated])
 
   return (
     <div className={classes.container}>

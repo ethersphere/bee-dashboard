@@ -4,6 +4,7 @@ import type { ReactElement } from 'react'
 import { useContext, useEffect, useState } from 'react'
 import NewVolumeModal from './NewVolumeModal'
 import { Context as SettingsContext } from '../../../providers/Settings'
+import { Context as FileManagerContext } from '../../../providers/FileManager'
 import VolumeModal from './VolumeModal'
 import { PostageBatch } from '@ethersphere/bee-js'
 import NotificationSign from '../../NotificationSign'
@@ -111,10 +112,10 @@ interface ManageModalProps {
 const ManageVolumesModal = ({ modalDisplay }: ManageModalProps): ReactElement => {
   const classes = useStyles()
   const [newVolumeModalDisplay, setNewVolumeModalDisplay] = useState(false)
-  const [isNewVolumeCreated, setIsNewVolumeCreated] = useState(false)
   const { beeApi } = useContext(SettingsContext)
   const [uStamps, setUStamps] = useState<PostageBatch[]>([])
   const [activeVolume, setActiveVolume] = useState<ActiveVolume>({} as ActiveVolume)
+  const { isNewVolumeCreated, setIsNewVolumeCreated } = useContext(FileManagerContext)
   const notificationThresholdDate = new Date()
   notificationThresholdDate.setDate(new Date().getDate() + 7)
 
@@ -191,12 +192,7 @@ const ManageVolumesModal = ({ modalDisplay }: ManageModalProps): ReactElement =>
           </div>
         </div>
       </div>
-      {newVolumeModalDisplay && (
-        <NewVolumeModal
-          modalDisplay={(value: boolean) => setNewVolumeModalDisplay(value)}
-          newVolumeCreated={value => setIsNewVolumeCreated(value)}
-        />
-      )}
+      {newVolumeModalDisplay && <NewVolumeModal modalDisplay={(value: boolean) => setNewVolumeModalDisplay(value)} />}
       {activeVolume.volumeModalDisplay && (
         <VolumeModal
           modalDisplay={(value: boolean) => setActiveVolume(prev => ({ ...prev, volumeModalDisplay: value }))}

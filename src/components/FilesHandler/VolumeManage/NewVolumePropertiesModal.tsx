@@ -6,6 +6,7 @@ import DateSlider from './DateSlider'
 import SizeSlider from './SizeSlider'
 import { BZZ, Duration, Size } from '@ethersphere/bee-js'
 import { Context as SettingsContext } from '../../../providers/Settings'
+import { Context as FileManagerContext } from '../../../providers/FileManager'
 import ErrorModal from './ErrorModal'
 
 const useStyles = makeStyles(() =>
@@ -220,14 +221,9 @@ const useStyles = makeStyles(() =>
 interface VolumePropertiesModalProps {
   newVolume: boolean
   modalDisplay: (value: boolean) => void
-  newVolumeCreated: (value: boolean) => void
 }
 
-const NewVolumePropertiesModal = ({
-  newVolume,
-  modalDisplay,
-  newVolumeCreated,
-}: VolumePropertiesModalProps): ReactElement => {
+const NewVolumePropertiesModal = ({ newVolume, modalDisplay }: VolumePropertiesModalProps): ReactElement => {
   const classes = useStyles()
   const [size, setSize] = useState(Size.fromBytes(0))
   const [validity, setValidity] = useState(new Date())
@@ -236,13 +232,14 @@ const NewVolumePropertiesModal = ({
   const [isCreateEnabled, setIsCreateEnabled] = useState(false)
   const { beeApi } = useContext(SettingsContext)
   const [showErrorModal, setShowErrorModal] = useState(false)
+  const { setIsNewVolumeCreated } = useContext(FileManagerContext)
   const currentFetch = useRef<Promise<void> | null>(null)
 
   const createPostageStamp = async () => {
     try {
       if (isCreateEnabled) {
         await beeApi?.buyStorage(size, Duration.fromEndDate(validity), { label: label })
-        newVolumeCreated(true)
+        setIsNewVolumeCreated(true)
         modalDisplay(false)
       }
     } catch (e) {

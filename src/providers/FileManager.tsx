@@ -16,6 +16,8 @@ interface ContextInterface {
   setFileOrder: (order: string) => void
   fileDownLoadQueue: (string | Reference)[]
   setFileDownLoadQueue: (queue: (string | Reference)[]) => void
+  isNewVolumeCreated: boolean
+  setIsNewVolumeCreated: (isNewVolumeCreated: boolean) => void
 }
 const initialValues: ContextInterface = {
   filemanager: {} as FileManager,
@@ -34,6 +36,10 @@ const initialValues: ContextInterface = {
   },
   fileDownLoadQueue: [],
   setFileDownLoadQueue: (_: (string | Reference)[]): void => {
+    return
+  },
+  isNewVolumeCreated: false,
+  setIsNewVolumeCreated: (_: boolean): void => {
     return
   },
 }
@@ -69,6 +75,7 @@ export function Provider({ children }: Props): ReactElement {
   const [isGroupingOn, setIsGroupingOn] = useState(false)
   const [fileOrder, setFileOrder] = useState('nameAsc')
   const [fileDownLoadQueue, setFileDownLoadQueue] = useState([] as (string | Reference)[])
+  const [isNewVolumeCreated, setIsNewVolumeCreated] = useState(false)
 
   useEffect(() => {
     const init = async () => {
@@ -102,6 +109,8 @@ export function Provider({ children }: Props): ReactElement {
         setFileOrder,
         fileDownLoadQueue: fileDownLoadQueue,
         setFileDownLoadQueue: setFileDownLoadQueue,
+        isNewVolumeCreated: isNewVolumeCreated,
+        setIsNewVolumeCreated: setIsNewVolumeCreated,
       }}
     >
       {children}

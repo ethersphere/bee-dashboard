@@ -1,15 +1,16 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 
 import { ReactElement, useContext, useEffect, useState } from 'react'
-import { Context as StampContext } from '../../providers/Stamps'
+import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as FileManagerContext } from '../../providers/FileManager'
-import { BatchId } from '@ethersphere/bee-js'
+import { BatchId, PostageBatch } from '@ethersphere/bee-js'
 import Volume from './VolumeManage/Volume'
 import VolumeManage from './VolumeManage/VolumeManage'
 import FileUpload from './FileUpload/FileUpload'
 import Grouping from './Grouping'
 import Order from './Order/Order'
 import Download from './Download'
+import { getUsableStamps } from '../../utils/file'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -39,18 +40,31 @@ const useStyles = makeStyles(() =>
 
 const FilesHandler = (): ReactElement => {
   const classes = useStyles()
-  const { usableStamps } = useContext(StampContext)
-  const { selectedBatchIds, setSelectedBatchIds } = useContext(FileManagerContext)
+  const [uStamps, setUStamps] = useState<PostageBatch[]>([])
+  const { selectedBatchIds, setSelectedBatchIds, isNewVolumeCreated } = useContext(FileManagerContext)
+  const { beeApi } = useContext(SettingsContext)
 
   useEffect(() => {
     if (selectedBatchIds.length === 0) {
       const newBatchIds: BatchId[] = []
-      usableStamps?.forEach(stamp => {
+      uStamps?.forEach(stamp => {
         newBatchIds.push(stamp.batchID)
       })
       setSelectedBatchIds(newBatchIds)
     }
   })
+
+  useEffect(() => {
+    const getUStamps = async () => {
+      const usableStamps = await getUsableStamps(beeApi)
+      setUStamps([...usableStamps])
+      for (const stamp of usableStamps) {
+        // eslint-disable-next-line no-console
+        console.log('STAMP', stamp.label)
+      }
+    }
+    getUStamps()
+  }, [beeApi, isNewVolumeCreated])
 
   const handlerSelectedBatchIds = (batchId: BatchId, isSelected: boolean) => {
     const newSelectedBatchIds = Array.from(selectedBatchIds)
@@ -66,7 +80,7 @@ const FilesHandler = (): ReactElement => {
       newSelectedBatchIds.splice(ix, 1)
 
       if (newSelectedBatchIds.length === 0) {
-        usableStamps?.forEach(stamp => {
+        uStamps?.forEach(stamp => {
           newSelectedBatchIds.push(stamp.batchID)
         })
       }
@@ -79,7 +93,7 @@ const FilesHandler = (): ReactElement => {
     <div className={classes.container}>
       <div className={`${classes.flex} ${classes.leftContainer}`}>
         <Grouping />
-        {usableStamps?.map((stamp, index) => (
+        {uStamps?.map((stamp, index) => (
           <div key={index} className={classes.flex}>
             <Volume
               label={stamp.label}
@@ -94,7 +108,7 @@ const FilesHandler = (): ReactElement => {
       </div>
       <div className={classes.flex}>
         <Download />
-        <FileUpload usableStamps={usableStamps} />
+        <FileUpload usableStamps={uStamps} />
         <Order />
       </div>
     </div>
