@@ -219,16 +219,37 @@ export const startDownloadingQueue = async (
   }
 }
 
-function downloadFile(data: Blob | string, fileName: string, mimeType = 'application/octet-stream'): void {
-  const blob = new Blob([data], { type: mimeType })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = fileName
-  document.body.appendChild(a)
-  a.click()
-  window.URL.revokeObjectURL(url)
-  document.body.removeChild(a)
+async function downloadFile(
+  data: Blob | string,
+  fileName: string,
+  mimeType = 'application/octet-stream',
+): Promise<void> {
+  try {
+    const handle = await window.showSaveFilePicker({
+      suggestedName: fileName,
+      types: [
+        {
+          description: 'File',
+          accept: {
+            [mimeType]: [`.${fileName.split('.').pop()}`],
+          },
+        },
+      ],
+    })
+    const writable = await handle.createWritable()
+    await writable.write(data)
+    await writable.close()
+  } catch (error) {
+    const blob = new Blob([data], { type: mimeType })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = fileName
+    document.body.appendChild(a)
+    a.click()
+    window.URL.revokeObjectURL(url)
+    document.body.removeChild(a)
+  }
 }
 
 export const getUsableStamps = async (bee: Bee | null): Promise<PostageBatch[]> => {
