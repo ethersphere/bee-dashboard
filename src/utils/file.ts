@@ -116,6 +116,7 @@ export function packageFile(file: FilePath, pathOverwrite?: string): FilePath {
   return {
     path: path,
     fullPath: path,
+    // bytes: file.bytes, // recently added
     webkitRelativePath: path,
     lastModified: file.lastModified,
     name: file.name,
@@ -177,28 +178,36 @@ export const startDownloadingQueue = async (
 ): Promise<string[][] | undefined> => {
   try {
     const dataPromises: Promise<string[]>[] = []
-    for (const infoItem of fileInfoList) {
-      dataPromises.push(
-        filemanager.download(new Reference(infoItem.file.reference), {
-          actPublisher: infoItem.actPublisher.toString(),
-          actHistoryAddress: infoItem.file.historyRef.toString(),
-        }),
-      )
-      // eslint-disable-next-line no-console
-      console.log('Downloading file item: ', JSON.stringify(infoItem))
-    }
+    // eslint-disable-next-line no-console
+    console.log('fileInfoList', fileInfoList)
+    const downloadTasks = fileInfoList.map(infoItem => ({
+      promise: filemanager.download(new Reference(infoItem.file.reference), {
+        actPublisher: infoItem.actPublisher.toString(),
+        actHistoryAddress: infoItem.file.historyRef.toString(),
+      }),
+      fileInfo: infoItem,
+    }))
 
     const data: string[][] = []
-    await Promise.allSettled(dataPromises).then(results => {
-      results.forEach(result => {
+    await Promise.allSettled(downloadTasks.map(task => task.promise)).then(results => {
+      results.forEach((result, index) => {
         if (result.status === 'fulfilled') {
           data.push(result.value)
 
+          const fileInfo = downloadTasks[index].fileInfo
           // eslint-disable-next-line no-console
-          console.log('bagoy result.value: ', result.value)
+          console.log('Processing download result for:', fileInfo.name, fileInfo.customMetadata)
+
+          downloadFile(
+            new Blob([result.value[0]], { type: fileInfo.customMetadata?.type || 'application/octet-stream' }),
+            fileInfo.name,
+          )
         } else {
           // eslint-disable-next-line no-console
-          console.error('Failed dowload file: ', result.reason)
+          console.error('Failed to download file:', {
+            fileName: downloadTasks[index].fileInfo.name,
+            error: result.reason,
+          })
         }
       })
     })
@@ -208,6 +217,18 @@ export const startDownloadingQueue = async (
     // eslint-disable-next-line no-console
     console.error('Error downloading file with: ', error)
   }
+}
+
+function downloadFile(data: Blob | string, fileName: string, mimeType = 'application/octet-stream'): void {
+  const blob = new Blob([data], { type: mimeType })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = fileName
+  document.body.appendChild(a)
+  a.click()
+  window.URL.revokeObjectURL(url)
+  document.body.removeChild(a)
 }
 
 export const getUsableStamps = async (bee: Bee | null): Promise<PostageBatch[]> => {

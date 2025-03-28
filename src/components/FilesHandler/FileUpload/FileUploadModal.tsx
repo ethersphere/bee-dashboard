@@ -102,6 +102,8 @@ const UploadModal = ({ modalDisplay, files, actualPostageBatch, onUpload }: Uplo
       const filesArray = Array.from(files)
 
       for (const file of filesArray) {
+        // eslint-disable-next-line no-console
+        console.log('file', getFileType(file.type))
         filemanager.upload({
           batchId: actualPostageBatch.batchID,
           files: [file],
