@@ -6,7 +6,7 @@ import { SwarmTextInput } from '../../../SwarmTextInput'
 import { startDownloadingQueue } from '../../../../utils/file'
 import { Context as FileManagerContext } from '../../../../providers/FileManager'
 import { Reference } from '@ethersphere/bee-js'
-import { file } from 'jszip'
+import { FileInfo } from '@solarpunkltd/file-manager-lib'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -96,6 +96,10 @@ interface FilePropertiesModalProps {
   fileDetails?: string
   fileLabels?: string
   fileRef: string | Reference
+  histroyRef: string | Reference
+  owner: string
+  actPublisher: string
+  batchId: string
   modalDisplay: (value: boolean) => void
 }
 
@@ -106,6 +110,10 @@ const FilePropertiesModal = ({
   fileDetails,
   fileLabels,
   fileRef,
+  histroyRef,
+  owner,
+  actPublisher,
+  batchId,
   modalDisplay,
 }: FilePropertiesModalProps): ReactElement => {
   const classes = useStyles()
@@ -191,7 +199,18 @@ const FilePropertiesModal = ({
             onMouseLeave={handleMouseLeave}
             onClick={() => {
               if (filemanager) {
-                startDownloadingQueue(filemanager, [fileRef])
+                startDownloadingQueue(filemanager, [
+                  {
+                    batchId,
+                    name: fileName,
+                    owner,
+                    actPublisher,
+                    file: {
+                      reference: fileRef,
+                      historyRef: histroyRef,
+                    },
+                  } as FileInfo,
+                ])
               }
             }}
           >

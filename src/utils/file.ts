@@ -1,9 +1,8 @@
-import { Bee, Bytes, PostageBatch, Reference } from '@ethersphere/bee-js'
+import { Bee, PostageBatch, Reference } from '@ethersphere/bee-js'
 import { isSupportedImageType } from './image'
 import { isSupportedVideoType } from './video'
-import { FileManager } from '@solarpunkltd/file-manager-lib'
+import { FileInfo, FileManager } from '@solarpunkltd/file-manager-lib'
 import { FileTypes } from '../constants'
-import { file } from 'jszip'
 
 const indexHtmls = ['index.html', 'index.htm']
 
@@ -174,21 +173,29 @@ export const formatDate = (date: Date): string => {
 
 export const startDownloadingQueue = async (
   filemanager: FileManager,
-  refs: (string | Reference)[],
+  fileInfoList: FileInfo[],
 ): Promise<string[][] | undefined> => {
   try {
     const dataPromises: Promise<string[]>[] = []
-    for (const ref of refs) {
-      dataPromises.push(filemanager.download(new Reference(ref)))
+    for (const infoItem of fileInfoList) {
+      dataPromises.push(
+        filemanager.download(new Reference(infoItem.file.reference), {
+          actPublisher: infoItem.actPublisher.toString(),
+          actHistoryAddress: infoItem.file.historyRef.toString(),
+        }),
+      )
       // eslint-disable-next-line no-console
-      console.log('Downloading file with reference: ', ref)
+      console.log('Downloading file item: ', JSON.stringify(infoItem))
     }
 
-    const files: string[][] = []
+    const data: string[][] = []
     await Promise.allSettled(dataPromises).then(results => {
       results.forEach(result => {
         if (result.status === 'fulfilled') {
-          files.push(result.value)
+          data.push(result.value)
+
+          // eslint-disable-next-line no-console
+          console.log('bagoy result.value: ', result.value)
         } else {
           // eslint-disable-next-line no-console
           console.error('Failed dowload file: ', result.reason)
@@ -196,10 +203,10 @@ export const startDownloadingQueue = async (
       })
     })
 
-    return files
-  } catch (e) {
+    return data
+  } catch (error: unknown) {
     // eslint-disable-next-line no-console
-    console.error('Error downloading file with reference: ', refs, e)
+    console.error('Error downloading file with: ', error)
   }
 }
 
@@ -211,8 +218,7 @@ export const getUsableStamps = async (bee: Bee | null): Promise<PostageBatch[]> 
     return (await bee.getAllPostageBatch())
       .filter(s => s.usable)
       .sort((a, b) => (a.label || '').localeCompare(b.label || ''))
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
+  } catch (error: unknown) {
     // eslint-disable-next-line no-console
     console.error('Error getting usable stamps: ', error)
 

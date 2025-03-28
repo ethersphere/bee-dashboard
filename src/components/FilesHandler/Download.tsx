@@ -82,7 +82,9 @@ const Download = (props: Props): ReactElement => {
       <div className={classes.dropdown}>
         <div
           onClick={() => {
-            startDownloadingQueue(filemanager, fileDownLoadQueue)
+            if (filemanager) {
+              startDownloadingQueue(filemanager, fileDownLoadQueue)
+            }
           }}
         >
           Start downloading queue

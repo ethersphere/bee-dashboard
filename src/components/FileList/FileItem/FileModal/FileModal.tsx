@@ -105,6 +105,10 @@ interface FileModalProps {
   fileDetails?: string
   fileLabels?: string
   fileRef: string | Reference
+  histroyRef: string | Reference
+  owner: string
+  actPublisher: string
+  batchId: string
   modalDisplay: (value: boolean) => void
 }
 
@@ -115,6 +119,10 @@ const FileModal = ({
   fileDetails,
   fileLabels,
   fileRef,
+  histroyRef,
+  owner,
+  actPublisher,
+  batchId,
   modalDisplay,
 }: FileModalProps): ReactElement => {
   const classes = useStyles()
@@ -152,6 +160,10 @@ const FileModal = ({
             fileLabels={fileLabels}
             fileRef={fileRef}
             modalDisplay={modalDisplay}
+            batchId={batchId}
+            owner={owner}
+            actPublisher={actPublisher}
+            histroyRef={histroyRef}
           />
         ) : null}
         {activeTab === Tab.Sharing ? (

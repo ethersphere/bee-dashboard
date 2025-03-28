@@ -282,7 +282,7 @@ const VolumePropertiesModal = ({ newVolume, modalDisplay, activeVolume }: Volume
     }
 
     fetchCost()
-  }, [activeVolume, size, validity])
+  }, [activeVolume, beeApi, size, validity])
 
   const handleMouseEnterDestroy = () => {
     setIsHoveredDestroy(true)
@@ -357,7 +357,7 @@ const VolumePropertiesModal = ({ newVolume, modalDisplay, activeVolume }: Volume
                 onMouseEnter={handleMouseEnterDestroy}
                 onMouseLeave={handleMouseLeaveDestroy}
                 onClick={() => {
-                  filemanager.destroyVolume(activeVolume.volume.batchID)
+                  filemanager?.destroyVolume(activeVolume.volume.batchID)
                 }}
               >
                 <DestroyIcon color={isHoveredDestroy ? '#FFFFFF' : '#333333'} />
@@ -369,11 +369,10 @@ const VolumePropertiesModal = ({ newVolume, modalDisplay, activeVolume }: Volume
                 onMouseLeave={handleMouseLeaveDownload}
                 onClick={() => {
                   if (filemanager) {
-                    const filesUnderVolume = filemanager.fileInfoList.filter(
+                    const fileInfoListsOfVolume = filemanager.fileInfoList.filter(
                       file => file.batchId.toString() === activeVolume.volume.batchID.toString(),
                     )
-                    const filesUnderVolumeRefs = filesUnderVolume.map(file => file.file.reference)
-                    startDownloadingQueue(filemanager, filesUnderVolumeRefs)
+                    startDownloadingQueue(filemanager, fileInfoListsOfVolume)
                   }
                 }}
               >

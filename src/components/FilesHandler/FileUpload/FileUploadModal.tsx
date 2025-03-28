@@ -3,8 +3,9 @@ import type { ReactElement } from 'react'
 import { useContext, useEffect, useState } from 'react'
 import { getHumanReadableFileSize, getFileType, formatDate } from '../../../utils/file'
 import { Context as FileManagerContext } from '../../../providers/FileManager'
-import { BatchId, PostageBatch } from '@ethersphere/bee-js'
+import { PostageBatch } from '@ethersphere/bee-js'
 import { SwarmTextInput } from '../../SwarmTextInput'
+import { UploadProgress } from '@solarpunkltd/file-manager-lib'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -69,11 +70,6 @@ const useStyles = makeStyles(() =>
   }),
 )
 
-interface UploadProgress {
-  total: number
-  processed: number
-}
-
 interface UploadModalProps {
   modalDisplay: (value: boolean) => void
   fileSize?: number
@@ -86,7 +82,7 @@ const UploadModal = ({ modalDisplay, files, actualPostageBatch, onUpload }: Uplo
   const classes = useStyles()
   const [label, setLabel] = useState('')
   const [details, setDetails] = useState('')
-  const { filemanager, initialized } = useContext(FileManagerContext)
+  const { filemanager } = useContext(FileManagerContext)
   const [filesSize, setFilesSize] = useState(0)
   const [filesCount, setFilesCount] = useState(0)
 
@@ -117,7 +113,6 @@ const UploadModal = ({ modalDisplay, files, actualPostageBatch, onUpload }: Uplo
             type: getFileType(file.type),
             date: actualPostageBatch.duration.toEndDate().getTime().toString(),
           },
-
           onUploadProgress: (p: UploadProgress) => {
             onUpload(Math.floor(p.processed / (p.total / 100)), true)
           },

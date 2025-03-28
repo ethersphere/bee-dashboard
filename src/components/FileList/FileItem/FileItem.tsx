@@ -12,6 +12,7 @@ import FileItemEdit from './FileItemEdit'
 import FileModal from './FileModal/FileModal'
 import { Context as FileManagerContext } from '../../../providers/FileManager'
 import { Reference } from '@ethersphere/bee-js'
+import { FileInfo } from '@solarpunkltd/file-manager-lib'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -87,12 +88,16 @@ const useStyles = makeStyles(() =>
 )
 
 interface Props {
+  batchId: string
+  owner: string
+  actPublisher: string
   volumeName: string
   volumeValidity: Date
   name: string
   type: string
   size: string
   hash: string | Reference
+  historyHash: string | Reference
   expires: string
   preview?: string
   description?: boolean
@@ -104,12 +109,16 @@ interface Props {
 }
 
 const FileItem = ({
+  batchId,
+  owner,
+  actPublisher,
   volumeName,
   volumeValidity,
   name,
   type,
   size,
   hash,
+  historyHash,
   expires,
   preview,
   description,
@@ -121,7 +130,7 @@ const FileItem = ({
 }: Props): ReactElement => {
   const classes = useStyles()
   const [showFileModal, setShowFileModal] = useState(false)
-  const { fileDownLoadQueue, setFileDownLoadQueue, filemanager } = useContext(FileManagerContext)
+  const { fileDownLoadQueue, setFileDownLoadQueue } = useContext(FileManagerContext)
   const [added, setAdded] = useState<boolean>(addedToQueue ? addedToQueue : false)
 
   return (
@@ -144,9 +153,21 @@ const FileItem = ({
                 setAdded(!added)
 
                 if (!added) {
-                  setFileDownLoadQueue([...fileDownLoadQueue, hash])
+                  setFileDownLoadQueue([
+                    ...fileDownLoadQueue,
+                    {
+                      batchId,
+                      name,
+                      owner,
+                      actPublisher,
+                      file: {
+                        reference: hash,
+                        historyRef: historyHash,
+                      },
+                    } as FileInfo,
+                  ])
                 } else {
-                  setFileDownLoadQueue(fileDownLoadQueue.filter(item => item !== hash))
+                  setFileDownLoadQueue(fileDownLoadQueue.filter(item => item.file.reference.toString() !== hash))
                 }
               }}
               className={classes.downloadIconContainer}
@@ -178,6 +199,10 @@ const FileItem = ({
           fileLabels={label}
           fileDetails={details}
           fileRef={hash}
+          histroyRef={historyHash}
+          owner={owner}
+          actPublisher={actPublisher}
+          batchId={batchId}
           modalDisplay={value => setShowFileModal(value)}
         />
       ) : null}

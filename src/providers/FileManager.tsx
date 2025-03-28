@@ -1,27 +1,25 @@
-import { createContext, ReactChild, ReactElement, useContext, useEffect, useRef, useState } from 'react'
-import { BatchId, BeeDev, PrivateKey, Reference } from '@ethersphere/bee-js'
+import { createContext, ReactChild, ReactElement, useContext, useEffect, useState } from 'react'
+import { BatchId, BeeDev, PrivateKey } from '@ethersphere/bee-js'
 
-import { FileManager, FileManagerBase } from '@solarpunkltd/file-manager-lib'
+import { FileInfo, FileManager, FileManagerBase } from '@solarpunkltd/file-manager-lib'
 import { Context as SettingsContext } from './Settings'
 import { FileManagerEvents } from '@solarpunkltd/file-manager-lib'
 
 interface ContextInterface {
-  filemanager: FileManager
-  initialized: boolean
+  filemanager: FileManager | null
   isGroupingOn: boolean
   setIsGroupingOn: (isGroupingOn: boolean) => void
   selectedBatchIds: BatchId[]
   setSelectedBatchIds: (batchId: BatchId[]) => void
   fileOrder: string
   setFileOrder: (order: string) => void
-  fileDownLoadQueue: (string | Reference)[]
-  setFileDownLoadQueue: (queue: (string | Reference)[]) => void
+  fileDownLoadQueue: FileInfo[]
+  setFileDownLoadQueue: (queue: FileInfo[]) => void
   isNewVolumeCreated: boolean
   setIsNewVolumeCreated: (isNewVolumeCreated: boolean) => void
 }
 const initialValues: ContextInterface = {
-  filemanager: {} as FileManager,
-  initialized: false,
+  filemanager: null,
   fileOrder: 'nameAsc',
   setFileOrder: (_: string): void => {
     return
@@ -35,7 +33,7 @@ const initialValues: ContextInterface = {
     return
   },
   fileDownLoadQueue: [],
-  setFileDownLoadQueue: (_: (string | Reference)[]): void => {
+  setFileDownLoadQueue: (_: FileInfo[]): void => {
     return
   },
   isNewVolumeCreated: false,
@@ -54,7 +52,11 @@ interface Props {
 export function Provider({ children }: Props): ReactElement {
   const { apiUrl } = useContext(SettingsContext)
   const [filemanager, setFilemanager] = useState<FileManager | null>(null)
-  const [initialized, setInitialized] = useState<boolean>(false)
+  const [selectedBatchIds, setSelectedBatchIds] = useState<BatchId[]>([])
+  const [isGroupingOn, setIsGroupingOn] = useState<boolean>(false)
+  const [fileOrder, setFileOrder] = useState<string>('nameAsc')
+  const [fileDownLoadQueue, setFileDownLoadQueue] = useState<FileInfo[]>([])
+  const [isNewVolumeCreated, setIsNewVolumeCreated] = useState<boolean>(false)
 
   const getSigner = (): PrivateKey | undefined => {
     const pkItem = localStorage.getItem('fmPrivateKey')
@@ -71,22 +73,15 @@ export function Provider({ children }: Props): ReactElement {
     console.log(`missing fmPrivateKey `)
   }
 
-  const [selectedBatchIds, setSelectedBatchIds] = useState<BatchId[]>([])
-  const [isGroupingOn, setIsGroupingOn] = useState(false)
-  const [fileOrder, setFileOrder] = useState('nameAsc')
-  const [fileDownLoadQueue, setFileDownLoadQueue] = useState([] as (string | Reference)[])
-  const [isNewVolumeCreated, setIsNewVolumeCreated] = useState(false)
-
   useEffect(() => {
     const init = async () => {
       const signer = getSigner()
 
       if (signer) {
-        // TOOD: use Bee instead of BeeDev
+        // TODO: use Bee instead of BeeDev
         const bee = new BeeDev(apiUrl, { signer })
         const fm = new FileManagerBase(bee)
         fm.emitter.on(FileManagerEvents.FILEMANAGER_INITIALIZED, (e: boolean) => {
-          setInitialized(e)
           setFilemanager(fm)
         })
         await fm.initialize()
@@ -99,18 +94,17 @@ export function Provider({ children }: Props): ReactElement {
   return (
     <Context.Provider
       value={{
-        filemanager: filemanager as FileManager,
-        initialized,
+        filemanager,
         isGroupingOn,
-        setIsGroupingOn: setIsGroupingOn,
-        selectedBatchIds: selectedBatchIds,
-        setSelectedBatchIds: setSelectedBatchIds,
+        setIsGroupingOn,
+        selectedBatchIds,
+        setSelectedBatchIds,
         fileOrder,
         setFileOrder,
-        fileDownLoadQueue: fileDownLoadQueue,
-        setFileDownLoadQueue: setFileDownLoadQueue,
-        isNewVolumeCreated: isNewVolumeCreated,
-        setIsNewVolumeCreated: setIsNewVolumeCreated,
+        fileDownLoadQueue,
+        setFileDownLoadQueue,
+        isNewVolumeCreated,
+        setIsNewVolumeCreated,
       }}
     >
       {children}
