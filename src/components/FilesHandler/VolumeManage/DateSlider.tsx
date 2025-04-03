@@ -1,11 +1,12 @@
 import { createStyles, makeStyles, Slider } from '@material-ui/core'
 import type { ReactElement } from 'react'
 import { useEffect, useState } from 'react'
-import OverMaxRangeIcon from '../icons/OverMaxRangeIcon'
+import OverMaxRangeIcon from '../../icons/OverMaxRangeIcon'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs, { Dayjs } from 'dayjs'
+import { useFileManagerGlobalStyles } from '../../../styles/globalFileManagerStyles'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -17,69 +18,17 @@ const useStyles = makeStyles(() =>
       fontSize: '10px',
       fontFamily: '"iAWriterMonoV", monospace',
     },
-    mark: {
-      height: 16,
-      width: 2,
-      backgroundColor: '#878787',
-      marginTop: -7,
-    },
-    markLabel: {
-      fontSize: '10px',
-      color: '#333333',
-      fontFamily: '"iAWriterMonoV", monospace',
-    },
-    thumb: {
-      height: 24,
-      width: 24,
-      backgroundColor: 'red',
-      borderRadius: '50%',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      '&:focus, &:hover, &$active': {
-        boxShadow: 'inherit',
-      },
-    },
-    boldSliderLabel: {
-      fontWeight: 'bold',
-      textDecoration: 'underline',
-      textUnderlineOffset: '2px',
-    },
-    rightRangeIcon: {
-      position: 'relative',
-      top: '6px',
-      right: '0',
-      marginLeft: '2px',
-      width: '7px',
-    },
-    input: {
-      color: '#333333',
-      fontFamily: '"iAWriterMonoV", monospace',
-      fontSize: '10px',
-      padding: '0px',
-      paddingBottom: '2px',
-      margin: '0px',
-      marginTop: '1px',
-      marginLeft: '5px',
-      border: '0px',
-      '&:hover': {
-        cursor: 'pointer',
-      },
-    },
-    thumbVisible: {
-      display: 'block',
-    },
-    thumbInvisible: {
-      display: 'none',
-    },
-    overMaxRangeIconPlaceholder: {
-      display: 'flex',
-      width: '7px',
-    },
+
     upperLabelContainer: {
       display: 'flex',
       gap: '5px',
       alignItems: 'center',
+    },
+
+    dateCurrentLabel: {
+      width: '135px',
+      display: 'flex',
+      justifyContent: 'right',
     },
   }),
 )
@@ -102,6 +51,7 @@ interface Props {
 
 const DateSlider = ({ upperLabel, exactValue, onDateChange, newVolume }: Props): ReactElement => {
   const classes = useStyles()
+  const classesGlobal = useFileManagerGlobalStyles()
   const [dateValue, setDateValue] = useState<number>(exactValue.getTime())
   const [sliderValue, setSliderValue] = useState<number>(0)
   const [isThumbVisible, setIsThumbVisible] = useState(true)
@@ -239,21 +189,28 @@ const DateSlider = ({ upperLabel, exactValue, onDateChange, newVolume }: Props):
           valueLabelDisplay="off"
           onChange={handleChange}
           classes={{
-            mark: classes.mark,
-            markLabel: classes.markLabel,
-            thumb: isThumbVisible ? classes.thumbVisible : classes.thumbInvisible,
+            mark: classesGlobal.mark,
+            markLabel: classesGlobal.markLabel,
+            thumb: isThumbVisible ? classesGlobal.thumbVisible : classesGlobal.thumbInvisible,
           }}
         />
-        <div className={classes.rightRangeIcon}>
-          {isOverMaxIconVisible ? <OverMaxRangeIcon /> : <div className={classes.overMaxRangeIconPlaceholder}></div>}
+        <div className={classesGlobal.rightRangeIcon}>
+          {isOverMaxIconVisible ? (
+            <OverMaxRangeIcon />
+          ) : (
+            <div className={classesGlobal.overMaxRangeIconPlaceholder}></div>
+          )}
         </div>
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'right' }}>
         {newVolume ? null : (
-          <div style={{ width: '135px', display: 'flex', justifyContent: 'right' }}>
+          <div className={classes.dateCurrentLabel}>
             (Current:{' '}
-            <span className={classes.boldSliderLabel}>{new Date(exactValue ?? 0).toLocaleDateString('en-GB')}</span>)
+            <span className={classesGlobal.boldSliderLabel}>
+              {new Date(exactValue ?? 0).toLocaleDateString('en-GB')}
+            </span>
+            )
           </div>
         )}
       </div>

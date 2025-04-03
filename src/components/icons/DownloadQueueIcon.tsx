@@ -5,7 +5,9 @@ import React from 'react'
 const useStyles = makeStyles(() =>
   createStyles({
     downloadQueueIconContainer: {
-      position: 'relative',
+      display: 'flex',
+      width: 'auto',
+      height: 'auto',
     },
   }),
 )

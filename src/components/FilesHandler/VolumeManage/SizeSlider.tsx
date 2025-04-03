@@ -1,87 +1,9 @@
 import { createStyles, makeStyles, Slider } from '@material-ui/core'
 import type { ReactElement } from 'react'
 import { useEffect, useState } from 'react'
-import { fromBytesConversion } from '../../utils/file'
+import { fromBytesConversion } from '../../../utils/file'
 import { Size, Utils } from '@ethersphere/bee-js'
-
-const useStyles = makeStyles(() =>
-  createStyles({
-    container: {
-      width: '93%',
-      position: 'relative',
-      display: 'flex',
-      flexDirection: 'column',
-      height: '16px',
-      fontSize: '10px',
-      fontFamily: '"iAWriterMonoV", monospace',
-    },
-    mark: {
-      height: 16,
-      width: 2,
-      backgroundColor: '#878787',
-      marginTop: -7,
-    },
-    markLabel: {
-      fontSize: '10px',
-      color: '#333333',
-      fontFamily: '"iAWriterMonoV", monospace',
-    },
-    thumb: {
-      height: 24,
-      width: 24,
-      backgroundColor: 'red',
-      borderRadius: '50%',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      '&:focus, &:hover, &$active': {
-        boxShadow: 'inherit',
-      },
-    },
-    boldSliderLabel: {
-      display: 'inline-box',
-      fontWeight: 'bold',
-      textDecoration: 'underline',
-      textUnderlineOffset: '2px',
-    },
-    upperBoldSliderLabel: {
-      cursor: 'pointer',
-      display: 'inline-box',
-      fontWeight: 'bold',
-      textDecoration: 'underline',
-      textUnderlineOffset: '2px',
-    },
-    lowerBoldSliderLabel: {
-      width: '100%',
-      cursor: 'pointer',
-      fontWeight: 'bold',
-      textDecoration: 'underline',
-      textUnderlineOffset: '2px',
-    },
-    thumbVisible: {
-      display: 'block',
-    },
-    thumbInvisible: {
-      display: 'none',
-    },
-    leftRangeIcon: {
-      position: 'relative',
-      top: '6px',
-      left: '0',
-    },
-    rightRangeIcon: {
-      position: 'relative',
-      top: '6px',
-      right: '0',
-      marginLeft: '2px',
-      width: '7px',
-    },
-    overMaxRangeIconPlaceholder: {
-      display: 'flex',
-      width: '7px',
-    },
-  }),
-)
+import { useFileManagerGlobalStyles } from '../../../styles/globalFileManagerStyles'
 
 interface Props {
   onChange: (value: Size) => void
@@ -95,7 +17,7 @@ interface Props {
 const SizeSlider = ({ onChange, lowerLabel, step, exactValue, newVolume }: Props): ReactElement => {
   const sizesMap = Utils.getStampEffectiveBytesBreakpoints()
   const sizes = Array.from(sizesMap.values())
-  const classes = useStyles()
+  const classes = useFileManagerGlobalStyles()
   const [value, setValue] = useState<number>(0)
   const [selectedSize, setSelectedSize] = useState(exactValue)
   const metric = 'GB'
@@ -132,7 +54,7 @@ const SizeSlider = ({ onChange, lowerLabel, step, exactValue, newVolume }: Props
   const sliderMax = sizeMarks[sizeMarks.length - 1].value
 
   return (
-    <div className={classes.container}>
+    <div className={classes.sliderContainer}>
       <div>
         <div>
           Size:{' '}
@@ -157,9 +79,13 @@ const SizeSlider = ({ onChange, lowerLabel, step, exactValue, newVolume }: Props
         />
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'right' }}>
+      <div style={{ display: 'flex', justifyContent: 'right', position: 'relative', right: '-2px' }}>
         <div style={{ display: 'flex', justifyContent: 'right' }}>
-          <div className={classes.lowerBoldSliderLabel}>{lowerLabel}</div>
+          {newVolume ? null : (
+            <div className={classes.lowerBoldSliderLabel}>
+              (Current/used: <span style={{ fontWeight: 'bold' }}>{lowerLabel})</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

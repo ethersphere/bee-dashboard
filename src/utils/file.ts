@@ -1,5 +1,8 @@
+import { Bee, PostageBatch, Reference } from '@ethersphere/bee-js'
 import { isSupportedImageType } from './image'
 import { isSupportedVideoType } from './video'
+import { FileInfo, FileManager } from '@solarpunkltd/file-manager-lib'
+import { FileTypes } from '../constants'
 
 const indexHtmls = ['index.html', 'index.htm']
 
@@ -128,7 +131,14 @@ export function packageFile(file: FilePath, pathOverwrite?: string): FilePath {
 export function getFileType(input: string): string {
   const index = input.indexOf('/')
 
-  return index !== -1 ? input.substring(0, index) : input
+  const type = index !== -1 ? input.substring(0, index) : input
+  const fileTypes = Object.values(FileTypes)
+
+  if (fileTypes.includes(type as FileTypes)) {
+    return type
+  }
+
+  return 'other'
 }
 
 export const fromBytesConversion = (size: number, metric: string) => {
@@ -150,5 +160,63 @@ export const sizeToBytes = (size: number, metric: string) => {
       return size * 1000 * 1000
     default:
       return 0
+  }
+}
+
+export const formatDate = (date: Date): string => {
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const year = date.getFullYear()
+
+  return `${day}/${month}/${year}`
+}
+
+export const startDownloadingQueue = async (
+  filemanager: FileManager,
+  fileInfoList: FileInfo[],
+): Promise<string[][] | undefined> => {
+  try {
+    const dataPromises: Promise<string[]>[] = []
+    for (const infoItem of fileInfoList) {
+      dataPromises.push(
+        filemanager.download(new Reference(infoItem.file.reference), {
+          actPublisher: infoItem.actPublisher.toString(),
+          actHistoryAddress: infoItem.file.historyRef.toString(),
+        }),
+      )
+    }
+
+    const data: string[][] = []
+    await Promise.allSettled(dataPromises).then(results => {
+      results.forEach(result => {
+        if (result.status === 'fulfilled') {
+          data.push(result.value)
+        } else {
+          // eslint-disable-next-line no-console
+          console.error('Failed dowload file: ', result.reason)
+        }
+      })
+    })
+
+    return data
+  } catch (error: unknown) {
+    // eslint-disable-next-line no-console
+    console.error('Error downloading file with: ', error)
+  }
+}
+
+export const getUsableStamps = async (bee: Bee | null): Promise<PostageBatch[]> => {
+  if (!bee) {
+    return []
+  }
+  try {
+    return (await bee.getAllPostageBatch())
+      .filter(s => s.usable)
+      .sort((a, b) => (a.label || '').localeCompare(b.label || ''))
+  } catch (error: unknown) {
+    // eslint-disable-next-line no-console
+    console.error('Error getting usable stamps: ', error)
+
+    return []
   }
 }

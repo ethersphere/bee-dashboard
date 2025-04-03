@@ -1,5 +1,6 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
+import { useFileManagerGlobalStyles } from '../../../styles/globalFileManagerStyles'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -47,18 +48,6 @@ const useStyles = makeStyles(() =>
       lineHeight: '18px',
       letterSpacing: '0%',
     },
-    buttonElementCancel: {
-      backgroundColor: '#FFFFFF',
-      width: '256px',
-      height: '42px',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      '&:hover': {
-        backgroundColor: '#DE7700',
-        color: '#FFFFFF',
-      },
-    },
   }),
 )
 
@@ -66,20 +55,27 @@ interface InvalidValueModalProps {
   modalDisplay: (value: boolean) => void
 }
 
-const InvalidValueModal = ({ modalDisplay }: InvalidValueModalProps): ReactElement => {
+const ErrorModal = ({ modalDisplay }: InvalidValueModalProps): ReactElement => {
   const classes = useStyles()
+  const classesGlobal = useFileManagerGlobalStyles()
 
   return (
     <div className={classes.modalContainer}>
       <div className={classes.modalContent}>
-        <div className={classes.modalHeader}>Warning</div>
-        <div className={classes.modalContentText}>You cannot set smaller value then the original!</div>
-        <div className={classes.buttonElementCancel} style={{ width: '160px' }} onClick={() => modalDisplay(false)}>
-          Cancel
+        <div className={classesGlobal.modalHeader}>Warning!</div>
+        <div className={classes.modalContentText}>Uh oh, an error happened</div>
+        <div className={classesGlobal.bottomButtonContainer}>
+          <div
+            className={`${classesGlobal.buttonElementBase} ${classesGlobal.generalButtonElement}`}
+            style={{ width: '160px' }}
+            onClick={() => modalDisplay(false)}
+          >
+            Cancel
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
-export default InvalidValueModal
+export default ErrorModal

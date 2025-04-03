@@ -1,6 +1,6 @@
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
-import EditIcon from './icons/EditIcon'
+import EditIcon from '../../icons/EditIcon'
 
 const useStyles = makeStyles(() =>
   createStyles({

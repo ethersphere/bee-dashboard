@@ -1,11 +1,15 @@
-/* eslint-disable no-alert */
 import { createStyles, makeStyles } from '@material-ui/core'
 import type { ReactElement } from 'react'
-import { useContext, useState } from 'react'
-import NotificationSign from '../NotificationSign'
+import { useContext, useEffect, useState } from 'react'
 import NewVolumeModal from './NewVolumeModal'
-import { Context as StampContext } from '../../providers/Stamps'
+import { Context as SettingsContext } from '../../../providers/Settings'
+import { Context as FileManagerContext } from '../../../providers/FileManager'
 import VolumeModal from './VolumeModal'
+import { PostageBatch } from '@ethersphere/bee-js'
+import NotificationSign from '../../NotificationSign'
+import { getUsableStamps } from '../../../utils/file'
+import { useFileManagerGlobalStyles } from '../../../styles/globalFileManagerStyles'
+import VolumeItem from './VolumeItem'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -52,8 +56,9 @@ const useStyles = makeStyles(() =>
       alignItems: 'center',
       overflowY: 'scroll',
     },
-    volumenButtonContainer: {
+    volumeButtonContainer: {
       position: 'relative',
+      cursor: 'pointer',
     },
     buttonElement: {
       backgroundColor: '#FFFFFF',
@@ -76,16 +81,28 @@ const useStyles = makeStyles(() =>
       backgroundColor: '#DE7700',
       color: '#FFFFFF',
     },
+    buttonNewVolumeDisabled: {
+      backgroundColor: '#878787;',
+      color: '#FFFFFF',
+      cursor: 'not-allowed',
+      '&:hover': {
+        backgroundColor: '#878787;',
+        color: '#FFFFFF',
+      },
+    },
     newButtonContainer: {
       display: 'flex',
       justifyContent: 'center',
-    },
-    cancelButtonContainer: {
-      display: 'flex',
-      justifyContent: 'right',
+      cursor: 'pointer',
     },
   }),
 )
+
+export interface ActiveVolume {
+  volumeModalDisplay: boolean
+  volume: PostageBatch
+  validity: number
+}
 
 interface ManageModalProps {
   modalDisplay: (value: boolean) => void
@@ -93,18 +110,50 @@ interface ManageModalProps {
 
 const ManageVolumesModal = ({ modalDisplay }: ManageModalProps): ReactElement => {
   const classes = useStyles()
+  const classesGlobal = useFileManagerGlobalStyles()
   const [newVolumeModalDisplay, setNewVolumeModalDisplay] = useState(false)
-  const { usableStamps } = useContext(StampContext)
-  const [activeVolume, setActiveVolume] = useState({
-    volumeModalDisplay: false,
-    volume: usableStamps[0],
-    validity: 0,
-  })
+  const { beeApi } = useContext(SettingsContext)
+  const [usableStamps, setUsableStamps] = useState<PostageBatch[]>([])
+  const [activeVolume, setActiveVolume] = useState<ActiveVolume>({} as ActiveVolume)
+  const [volumeCreation, setVolumeCreation] = useState(false)
+  const { isNewVolumeCreated, setIsNewVolumeCreated } = useContext(FileManagerContext)
+  const notificationThresholdDate = new Date()
+  notificationThresholdDate.setDate(new Date().getDate() + 7)
+  const handlerCreateNewVolume = (value: boolean) => {
+    if (usableStamps && usableStamps.length < 5) {
+      setNewVolumeModalDisplay(value)
+    }
+  }
+
+  useEffect(() => {
+    const getStamps = async () => {
+      const stamps = await getUsableStamps(beeApi)
+      setUsableStamps([...stamps])
+    }
+    getStamps()
+  }, [beeApi])
+
+  useEffect(() => {
+    if (isNewVolumeCreated) {
+      setVolumeCreation(true)
+      const getStamps = async () => {
+        const stamps = await getUsableStamps(beeApi)
+        setUsableStamps([...stamps])
+        setActiveVolume({
+          volumeModalDisplay: false,
+          volume: stamps[0],
+          validity: 0,
+        })
+      }
+      getStamps()
+      setIsNewVolumeCreated(false)
+    }
+  }, [beeApi, isNewVolumeCreated, setIsNewVolumeCreated])
 
   return (
-    <div className={classes.modal}>
-      <div className={classes.modalContainer}>
-        <div className={classes.modalHeader}>Manage volumes</div>
+    <div className={classesGlobal.modal}>
+      <div className={classesGlobal.modalContainer}>
+        <div className={classesGlobal.modalHeader}>Manage volumes</div>
         <div className={classes.modalContent}>
           {
             "Info, Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s..."
@@ -112,39 +161,34 @@ const ManageVolumesModal = ({ modalDisplay }: ManageModalProps): ReactElement =>
         </div>
         <div className={classes.flexCenter}>
           {usableStamps.map((stamp, index) => (
-            <div
-              key={index}
-              className={classes.volumenButtonContainer}
-              onClick={() =>
-                setActiveVolume({
-                  volumeModalDisplay: true,
-                  volume: stamp,
-                  validity: stamp.duration.toEndDate(new Date()).getTime(),
-                })
-              }
-            >
-              <div className={classes.buttonElement}>{stamp.label}</div>
-              <div className={classes.buttonElementNotificationSign}>
-                {stamp.duration.toEndDate(new Date()).getTime() < 10000 ? <NotificationSign text="!" /> : null}
-              </div>
+            <div key={index}>
+              <VolumeItem
+                setActiveVolume={setActiveVolume}
+                stamp={stamp}
+                notificationThresholdDate={notificationThresholdDate}
+              />
             </div>
           ))}
         </div>
+
         <div className={classes.newButtonContainer}>
           <div
-            className={`${classes.buttonElement} ${classes.buttonNewVolume}`}
-            onClick={() => setNewVolumeModalDisplay(true)}
+            className={`${classes.buttonElement} ${
+              usableStamps.length < 5 ? classes.buttonNewVolume : classes.buttonNewVolumeDisabled
+            }`}
+            onClick={() => handlerCreateNewVolume(true)}
           >
             New volume
           </div>
         </div>
-        <div className={classes.cancelButtonContainer}>
+
+        <div className={classesGlobal.bottomButtonContainer}>
           <div
-            className={classes.buttonElement}
+            className={`${classesGlobal.buttonElementBase} ${classesGlobal.generalButtonElement}`}
             style={{ width: '160px', zIndex: '110' }}
             onClick={() => modalDisplay(false)}
           >
-            Cancel
+            {volumeCreation ? 'Ok' : 'Cancel'}
           </div>
         </div>
       </div>

@@ -12,7 +12,7 @@ const useStyles = makeStyles(() =>
 interface Props {
   color?: string
   size?: number
-  sharedBy?: 'me' | 'others'
+  sharedBy?: string
 }
 
 const SharedIcon = ({ color, size, sharedBy }: Props): ReactElement => {
