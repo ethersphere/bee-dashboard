@@ -17,7 +17,6 @@ const useStyles = makeStyles(() =>
       flexDirection: 'column',
       gap: '20px',
     },
-
     noFilesText: {
       width: '100%',
       textAlign: 'center',

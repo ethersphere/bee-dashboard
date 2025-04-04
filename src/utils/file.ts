@@ -1,4 +1,4 @@
-import { Bee, PostageBatch, Reference } from '@ethersphere/bee-js'
+import { Bee, Bytes, PostageBatch } from '@ethersphere/bee-js'
 import { isSupportedImageType } from './image'
 import { isSupportedVideoType } from './video'
 import { FileInfo, FileManager } from '@solarpunkltd/file-manager-lib'
@@ -9,6 +9,13 @@ const indexHtmls = ['index.html', 'index.htm']
 interface DetectedIndex {
   indexPath: string
   commonPrefix?: string
+}
+
+interface FilePath extends Omit<File, 'bytes'> {
+  bytes?: Uint8Array
+  path?: string
+  fullPath?: string
+  webkitRelativePath: string
 }
 
 export function detectIndexHtml(files: FilePath[]): DetectedIndex | false {
@@ -116,6 +123,7 @@ export function packageFile(file: FilePath, pathOverwrite?: string): FilePath {
   return {
     path: path,
     fullPath: path,
+    // bytes: file.bytes, // recently added
     webkitRelativePath: path,
     lastModified: file.lastModified,
     name: file.name,
@@ -171,38 +179,73 @@ export const formatDate = (date: Date): string => {
   return `${day}/${month}/${year}`
 }
 
-export const startDownloadingQueue = async (
-  filemanager: FileManager,
-  fileInfoList: FileInfo[],
-): Promise<string[][] | undefined> => {
+export const startDownloadingQueue = async (filemanager: FileManager, fileInfoList: FileInfo[]): Promise<void> => {
   try {
-    const dataPromises: Promise<string[]>[] = []
+    const dataPromises: Promise<Bytes[]>[] = []
     for (const infoItem of fileInfoList) {
       dataPromises.push(
-        filemanager.download(new Reference(infoItem.file.reference), {
+        filemanager.download(infoItem, undefined, {
           actPublisher: infoItem.actPublisher.toString(),
           actHistoryAddress: infoItem.file.historyRef.toString(),
         }),
       )
     }
 
-    const data: string[][] = []
     await Promise.allSettled(dataPromises).then(results => {
       results.forEach(result => {
         if (result.status === 'fulfilled') {
-          data.push(result.value)
+          if (result.value.length !== 0) {
+            downloadToDisk(result.value[0], 'todo_dummy_name', undefined)
+          }
         } else {
           // eslint-disable-next-line no-console
-          console.error('Failed dowload file: ', result.reason)
+          console.error('Failed to dowload file: ', result.reason)
         }
       })
     })
-
-    return data
   } catch (error: unknown) {
     // eslint-disable-next-line no-console
     console.error('Error downloading file with: ', error)
   }
+}
+
+async function downloadToDisk(data: Bytes, fileName: string, mimeType = 'application/octet-stream'): Promise<void> {
+  const uint8Array = data.toUint8Array()
+  const blob = new Blob([uint8Array], { type: mimeType })
+
+  try {
+    const handle = await (window as any).showSaveFilePicker({
+      suggestedName: fileName,
+      types: [
+        {
+          description: 'File',
+          accept: {
+            [mimeType]: [`.${fileName.split('.').pop()}`],
+          },
+        },
+      ],
+    })
+    const writable = await handle.createWritable()
+    await writable.write(blob)
+    await writable.close()
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      return
+    }
+    // Fallback for browsers that do not support the File System Access API
+    downloadFileFallback(blob, fileName, mimeType)
+  }
+}
+
+function downloadFileFallback(blob: Blob, fileName: string, mimeType = 'application/octet-stream') {
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = fileName
+  document.body.appendChild(a)
+  a.click()
+  window.URL.revokeObjectURL(url)
+  document.body.removeChild(a)
 }
 
 export const getUsableStamps = async (bee: Bee | null): Promise<PostageBatch[]> => {

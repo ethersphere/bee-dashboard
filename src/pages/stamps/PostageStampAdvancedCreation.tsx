@@ -15,6 +15,7 @@ import { Context as StampsContext } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
 import { secondsToTimeString } from '../../utils'
 import { getHumanReadableFileSize } from '../../utils/file'
+import { DUMMMY_BLOCK_TIME } from '../../constants'
 
 interface Props {
   onFinished: () => void
@@ -71,7 +72,7 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
     const pricePerBlock = chainState.currentPrice
 
     return `${secondsToTimeString(
-      Utils.getStampDuration(amount, pricePerBlock).toSeconds(),
+      Utils.getStampDuration(amount, pricePerBlock, DUMMMY_BLOCK_TIME).toSeconds(),
     )} (with price of ${pricePerBlock} PLUR per block)`
   }
 
