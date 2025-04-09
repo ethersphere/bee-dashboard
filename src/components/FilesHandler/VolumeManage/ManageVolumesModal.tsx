@@ -150,6 +150,21 @@ const ManageVolumesModal = ({ modalDisplay }: ManageModalProps): ReactElement =>
     }
   }, [beeApi, isNewVolumeCreated, setIsNewVolumeCreated])
 
+  // Escape will close the modal
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        modalDisplay(false)
+      }
+    }
+
+    document.addEventListener('keydown', handleEscKey)
+
+    return () => {
+      document.removeEventListener('keydown', handleEscKey)
+    }
+  }, [modalDisplay])
+
   return (
     <div className={classesGlobal.modal}>
       <div className={classesGlobal.modalContainer}>
