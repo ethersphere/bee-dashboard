@@ -1,4 +1,4 @@
-import { createStyles, makeStyles } from '@material-ui/core'
+import { createStyles, makeStyles, Tooltip } from '@material-ui/core'
 import type { ReactElement } from 'react'
 import { PostageBatch } from '@ethersphere/bee-js'
 import NotificationSign from '../../NotificationSign'
@@ -57,7 +57,13 @@ const VolumeItem = ({ setActiveVolume, stamp, notificationThresholdDate }: Volum
     >
       <div className={classes.buttonElement}>{stamp.label}</div>
       <div className={classes.buttonElementNotificationSign}>
-        {stamp.duration.toEndDate() < notificationThresholdDate ? <NotificationSign text="!" /> : null}
+        {stamp.duration.toEndDate() < notificationThresholdDate ? (
+          <Tooltip title={`Postage batch will expire at ${stamp.duration.toEndDate()}`} placement="right">
+            <div>
+              <NotificationSign text="!" />
+            </div>
+          </Tooltip>
+        ) : null}{' '}
       </div>
     </div>
   )
