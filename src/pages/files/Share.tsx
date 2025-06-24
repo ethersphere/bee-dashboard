@@ -1,5 +1,5 @@
 import { Box, Typography } from '@material-ui/core'
-import { MantarayNode } from '@upcoming/bee-js'
+import { MantarayNode, NULL_ADDRESS } from '@upcoming/bee-js'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 import { useSnackbar } from 'notistack'
@@ -49,7 +49,7 @@ export function Share(): ReactElement {
       await manifest.resolveFeed(beeApi).then(
         async feed =>
           await feed.ifPresentAsync(async feedUpdate => {
-            manifest = MantarayNode.unmarshalFromData(feedUpdate.payload.toUint8Array())
+            manifest = MantarayNode.unmarshalFromData(feedUpdate.payload.toUint8Array(), NULL_ADDRESS)
             await manifest.loadRecursively(beeApi)
           }),
       )

@@ -47,7 +47,7 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
   const { beeApi } = useContext(SettingsContext)
 
   const [depthInput, setDepthInput] = useState<number>(Utils.getDepthForSize(Size.fromGigabytes(4)))
-  const [amountInput, setAmountInput] = useState<bigint>(Utils.getAmountForDuration(Duration.fromDays(30), 26500))
+  const [amountInput, setAmountInput] = useState<bigint>(Utils.getAmountForDuration(Duration.fromDays(30), 26500, 5))
   const [labelInput, setLabelInput] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [buttonValue, setButtonValue] = useState(4)
@@ -56,7 +56,7 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
     if (typeof newValue !== 'number') {
       return
     }
-    const amountValue = Utils.getAmountForDuration(Duration.fromDays(newValue), 26500)
+    const amountValue = Utils.getAmountForDuration(Duration.fromDays(newValue), 26500, 5)
     setAmountInput(amountValue)
   }
 
@@ -66,7 +66,7 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
     const pricePerBlock = 24000
 
     return `${secondsToTimeString(
-      Utils.getStampDuration(amount, pricePerBlock).toSeconds(),
+      Utils.getStampDuration(amount, pricePerBlock, 5).toSeconds(),
     )} (with price of ${pricePerBlock} PLUR per block)`
   }
 

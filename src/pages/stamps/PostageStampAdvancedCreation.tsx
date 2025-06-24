@@ -72,7 +72,7 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
 
     try {
       return `${secondsToTimeString(
-        Utils.getStampDuration(amount, pricePerBlock).toSeconds(),
+        Utils.getStampDuration(amount, pricePerBlock, 5).toSeconds(),
       )} (with price of ${pricePerBlock} PLUR per block)`
     } catch {
       return `0 seconds (with price of ${pricePerBlock} PLUR per block)`

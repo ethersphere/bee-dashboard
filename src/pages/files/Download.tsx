@@ -1,4 +1,4 @@
-import { BeeModes, MantarayNode, Reference } from '@upcoming/bee-js'
+import { BeeModes, MantarayNode, NULL_ADDRESS, Reference } from '@upcoming/bee-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -50,7 +50,7 @@ export function Download(): ReactElement {
       await manifest.resolveFeed(beeApi).then(
         async feed =>
           await feed.ifPresentAsync(async feedUpdate => {
-            manifest = MantarayNode.unmarshalFromData(feedUpdate.payload.toUint8Array())
+            manifest = MantarayNode.unmarshalFromData(feedUpdate.payload.toUint8Array(), NULL_ADDRESS)
             await manifest.loadRecursively(beeApi)
           }),
       )
