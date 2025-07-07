@@ -1,0 +1,53 @@
+.fm-header-container {
+  display: flex;
+  align-items: center;
+  background: rgb(33, 33, 33);
+  height: 60px;
+  padding: 10px 16px;
+  gap: 16px;
+}
+
+.fm-header-logo {
+  background: rgb(237, 129, 49);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(229, 231, 235);
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 4px;
+}
+
+.fm-header-title {
+  color: rgb(229, 231, 235);
+  font-weight: 500;
+}
+
+.fm-header-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  border: none;
+  background: rgb(62, 62, 62);
+  outline: none;
+  height: 26px;
+  padding-left: 8px;
+  padding-right: 8px;
+  color: rgb(157, 163, 174);
+  border: 1px solid rgb(157, 163, 174);
+  border-radius: 4px;
+
+  input {
+    border: none;
+    background: rgb(62, 62, 62);
+    outline: none;
+    height: 22px;
+    color: rgb(157, 163, 174);
+  }
+  &:focus-within {
+    border: 1px solid rgb(237, 129, 49);
+  }
+}

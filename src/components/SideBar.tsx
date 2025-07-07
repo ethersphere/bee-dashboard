@@ -83,6 +83,12 @@ export default function SideBar(): ReactElement {
       pathMatcherSubstring: '/files/',
     },
     {
+      label: 'File Manager 2',
+      path: ROUTES.FILEMANAGER,
+      icon: FilesIcon,
+      pathMatcherSubstring: '/filemanager/',
+    },
+    {
       label: 'Account',
       path: ROUTES.ACCOUNT_WALLET,
       icon: AccountIcon,

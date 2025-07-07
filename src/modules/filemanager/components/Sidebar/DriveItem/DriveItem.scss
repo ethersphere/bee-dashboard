@@ -1,0 +1,65 @@
+.fm-drive-item-info {
+  display: flex;
+  gap: 4px;
+  flex-direction: column;
+  color: rgb(31, 41, 55);
+  font-weight: 500;
+  transition: background-color 0.3s;
+
+  .fm-drive-item-icon {
+    display: flex;
+    align-items: center;
+    color: rgb(237, 129, 49);
+    font-weight: 700;
+  }
+}
+
+.fm-drive-item-header {
+  display: flex;
+  font-weight: 700;
+  gap: 8px;
+  align-items: center;
+}
+
+.fm-drive-item-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+}
+
+.fm-drive-item-container {
+  display: flex;
+  position: relative;
+  justify-content: space-between;
+  padding: 16px;
+  padding-left: 40px;
+
+  &:hover {
+    background-color: rgb(209, 209, 209);
+    cursor: pointer;
+  }
+}
+
+.fm-drive-item-capacity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fm-drive-item-actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: end;
+  margin-bottom: 2px;
+}
+
+.fm-pointer {
+  cursor: pointer;
+}
+
+.fm-drive-item-context-menu {
+  position: fixed;
+  z-index: 1000;
+}

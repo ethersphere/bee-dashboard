@@ -1,0 +1,64 @@
+.fm-owner-status-bar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgb(33, 33, 33);
+  height: 60px;
+  padding: 10px 16px;
+}
+
+.fm-owner-status-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: rgb(229, 231, 235);
+}
+
+.fm-owner-status-bar-upgrade-button {
+  padding: 6px;
+  background-color: rgb(237, 237, 237);
+  border-radius: 0px;
+  text-align: center;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.fm-owner-status-bar-info-tooltip-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+
+  .fm-owner-status-bar-tooltip {
+    visibility: hidden;
+    opacity: 0;
+    width: max-content;
+    max-width: 500px;
+    background: #fff;
+    color: #222;
+    text-align: center;
+    border-radius: 4px;
+    padding: 6px 12px;
+    position: absolute;
+    z-index: 10;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    font-size: 13px;
+    pointer-events: none;
+    transition: opacity 0.2s, visibility 0.2s;
+    border: 1px solid #e0e0e0;
+  }
+
+  &:hover .fm-owner-status-bar-tooltip,
+  .fm-owner-status-bar-tooltip:hover {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
+}

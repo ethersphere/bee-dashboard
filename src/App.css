@@ -26,3 +26,7 @@ button {
   font-family: 'iAWriterMonoV' !important;
   color: #dd7700;
 }
+
+.MuiContainer-maxWidthLg > .fm {
+  padding: 0px !important;
+}

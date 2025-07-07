@@ -1,0 +1,60 @@
+.fm-sidebar {
+  min-width: 370px;
+  box-sizing: border-box;
+  height: calc(100vh - 120px);
+  background-color: rgb(237, 237, 237);
+  border-right: 1px solid rgb(146, 146, 146);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.fm-sidebar-item {
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgb(31, 41, 55);
+  font-weight: 700;
+  transition: background-color 0.3s;
+
+  .fm-sidebar-item-icon {
+    display: flex;
+    align-items: center;
+    color: rgb(237, 129, 49);
+    font-weight: 700;
+  }
+
+  &:hover {
+    background-color: rgb(209, 209, 209);
+    cursor: pointer;
+  }
+
+  &.fm-trash-item {
+    padding: 8px;
+    padding-left: 36px;
+  }
+}
+
+.fm-sidebar-drive-creation {
+  padding: 12px;
+  border-top: 1px solid rgb(146, 146, 146);
+}
+
+.fm-drive-items-container {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.3s, max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity, max-height;
+
+  &.fm-drive-items-container-open {
+    opacity: 1;
+    max-height: 200px;
+  }
+}
+
+.fm-trash-item {
+  color: rgb(31, 41, 55);
+  font-weight: 500;
+}
