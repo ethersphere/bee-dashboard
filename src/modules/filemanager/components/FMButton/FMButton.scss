@@ -26,6 +26,16 @@
   }
 }
 
+.fm-button-danger {
+  background-color: #dc2626;
+  color: white;
+  border: 1px solid #dc2626;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
 .fm-button-small {
   font-size: 10px;
   padding: 2px 3px;
@@ -37,4 +47,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.fm-button-disabled {
+  background-color: rgb(156, 163, 175);
+  border: 1px solid rgb(156, 163, 175);
+
+  &:hover {
+    opacity: 1;
+    cursor: not-allowed;
+  }
 }

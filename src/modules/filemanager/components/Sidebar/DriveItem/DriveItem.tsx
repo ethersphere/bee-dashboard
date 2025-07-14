@@ -8,9 +8,11 @@ import { ProgressBar } from '../../ProgressBar/ProgressBar'
 import { ContextMenu } from '../../ContextMenu/ContextMenu'
 import { useContextMenu } from '../../../hooks/useContextMenu'
 import { FMButton } from '../../FMButton/FMButton'
+import { DestroyDriveModal } from '../../DestroyDriveModal/DestroyDriveModal'
 
 export function DriveItem(): ReactElement {
   const [isHovered, setIsHovered] = useState(false)
+  const [isDestroyDriveModalOpen, setIsDestroyDriveModalOpen] = useState(false)
 
   const { showContext, pos, contextRef, setPos, handleCloseContext, setShowContext } = useContextMenu<HTMLDivElement>()
 
@@ -18,6 +20,12 @@ export function DriveItem(): ReactElement {
     setShowContext(true)
     setPos({ x: e.clientX, y: e.clientY })
   }
+
+  function handleDestroyDriveClick() {
+    setShowContext(false)
+  }
+
+  const fmMainDiv = document.querySelector('.fm-main')
 
   return (
     <div className="fm-drive-item-container">
@@ -53,16 +61,28 @@ export function DriveItem(): ReactElement {
                 <div className="fm-context-item" onClick={handleCloseContext}>
                   Rename
                 </div>
-                <div className="fm-context-item red" onClick={handleCloseContext}>
+                <div
+                  className="fm-context-item red"
+                  onClick={() => {
+                    handleDestroyDriveClick()
+                    setIsDestroyDriveModalOpen(true)
+                  }}
+                >
                   Destroy entire drive
                 </div>
               </ContextMenu>
             </div>,
+
             document.body,
           )}
 
         <FMButton label="Upgrade" variant="primary" size="small" />
       </div>
+      {isDestroyDriveModalOpen &&
+        createPortal(
+          <DestroyDriveModal driveName="Drive A" onCancelClick={() => setIsDestroyDriveModalOpen(false)} />,
+          fmMainDiv || document.body,
+        )}
     </div>
   )
 }

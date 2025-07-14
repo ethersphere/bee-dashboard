@@ -47,7 +47,6 @@ export function Sidebar(): ReactElement {
             <DriveItem />
           </div>
         )}
-
         <div
           className="fm-sidebar-item"
           onMouseEnter={() => setHovered('trash')}

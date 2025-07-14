@@ -6,12 +6,22 @@ interface FMButtonProps {
   onClick?: () => void
 
   size?: 'small' | 'medium'
-  variant?: 'primary' | 'secondary'
+  variant?: 'primary' | 'secondary' | 'danger'
+  disabled?: boolean
 }
 
-export function FMButton({ label, size = 'medium', variant = 'primary', onClick }: FMButtonProps): ReactElement {
+export function FMButton({
+  label,
+  size = 'medium',
+  variant = 'primary',
+  onClick,
+  disabled,
+}: FMButtonProps): ReactElement {
   return (
-    <div className={`fm-button fm-button-${variant} fm-button-${size}`} onClick={onClick}>
+    <div
+      className={`fm-button fm-button-${variant} fm-button-${size} ${disabled ? ' fm-button-disabled' : ''}`}
+      onClick={disabled ? undefined : onClick}
+    >
       {label}
     </div>
   )

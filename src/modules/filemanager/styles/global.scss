@@ -1,6 +1,5 @@
-.fm-create-drive-modal-container {
+.fm-modal-container {
   position: absolute;
-
   top: 0;
   width: 100%;
   height: 100vh;
@@ -12,7 +11,7 @@
   align-items: center;
 }
 
-.fm-create-drive-modal {
+.fm-modal-window {
   width: 450px;
   padding: 24px;
   background-color: rgb(255, 255, 255);
@@ -24,7 +23,7 @@
   align-items: center;
 }
 
-.fm-create-drive-modal-header {
+.fm-modal-window-header {
   display: flex;
   width: 100%;
   justify-content: start;
@@ -33,7 +32,7 @@
   font-weight: 700;
 }
 
-.fm-create-drive-modal-body {
+.fm-modal-window-body {
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -43,7 +42,7 @@
   background-color: rgb(249, 250, 251);
 }
 
-.fm-create-drive-modal-input-container {
+.fm-modal-window-input-container {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -69,10 +68,18 @@
   }
 }
 
-.fm-create-drive-modal-footer {
+.fm-modal-window-footer {
   display: flex;
   width: 100%;
   justify-content: center;
   align-items: center;
   gap: 12px;
+}
+
+.fm-red-font {
+  color: rgb(220, 38, 38);
+}
+
+.fm-emphasized-text {
+  font-weight: 700;
 }
