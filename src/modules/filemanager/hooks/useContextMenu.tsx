@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
+import { useClickOutside } from './useClickOutside'
 
 export function useContextMenu<T extends Element = HTMLDivElement>() {
   const [showContext, setShowContext] = useState(false)
@@ -19,18 +20,7 @@ export function useContextMenu<T extends Element = HTMLDivElement>() {
     setShowContext(false)
   }
 
-  useEffect(() => {
-    if (!showContext) return
-
-    function handleDocumentClick(e: MouseEvent) {
-      if (contextRef.current && !contextRef.current.contains(e.target as Node)) {
-        setShowContext(false)
-      }
-    }
-    document.addEventListener('mousedown', handleDocumentClick)
-
-    return () => document.removeEventListener('mousedown', handleDocumentClick)
-  }, [showContext])
+  useClickOutside(contextRef, handleCloseContext, showContext)
 
   return {
     showContext,

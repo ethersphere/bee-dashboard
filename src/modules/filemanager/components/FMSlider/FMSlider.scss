@@ -1,0 +1,25 @@
+.fm-slider {
+  display: flex;
+  justify-content: center;
+
+  & .MuiSlider-markLabel {
+    margin-top: 14px;
+  }
+
+  & .MuiSlider-mark {
+    background-color: rgb(237, 129, 49);
+    height: 4px;
+  }
+
+  & .MuiSlider-markLabel {
+    top: 14px;
+    font-size: 12px;
+    margin-left: 3px;
+  }
+
+  & .MuiSlider-thumb:focus,
+  & .MuiSlider-thumb.Mui-focusVisible {
+    box-shadow: none !important;
+    outline: none !important;
+  }
+}

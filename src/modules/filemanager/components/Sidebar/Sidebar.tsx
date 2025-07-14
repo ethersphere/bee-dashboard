@@ -9,21 +9,24 @@ import ArrowDown from 'remixicon-react/ArrowDownSLineIcon'
 import Delete from 'remixicon-react/DeleteBin6LineIcon'
 import DeleteFill from 'remixicon-react/DeleteBin6FillIcon'
 import { DriveItem } from './DriveItem/DriveItem'
+import { CreateDriveModal } from '../CreateDriveModal/CreateDriveModal'
 
 export function Sidebar(): ReactElement {
   const [hovered, setHovered] = useState<string | null>(null)
   const [isMyDrivesOpen, setIsMyDriveOpen] = useState(false)
   const [isTrashOpen, setIsTrashOpen] = useState(false)
+  const [isCreateDriveOpen, setIsCreateDriveOpen] = useState(false)
 
   return (
     <div className="fm-sidebar">
       <div>
-        <div className="fm-sidebar-item">
+        <div className="fm-sidebar-item" onClick={() => setIsCreateDriveOpen(true)}>
           <div className="fm-sidebar-item-icon">
             <Add size="16px" />
           </div>
           <div>Create new drive</div>
         </div>
+        {isCreateDriveOpen && <CreateDriveModal onCancelClick={() => setIsCreateDriveOpen(false)} />}
         <div
           className="fm-sidebar-item"
           onMouseEnter={() => setHovered('my-drives')}

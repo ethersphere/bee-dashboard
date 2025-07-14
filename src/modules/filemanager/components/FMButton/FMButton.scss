@@ -1,0 +1,40 @@
+.fm-button {
+  border-radius: 0px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.fm-button-primary {
+  background-color: rgb(237, 129, 49);
+  color: white;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.fm-button-secondary {
+  background-color: rgb(255, 255, 255);
+  color: rgb(55, 65, 81);
+  border: 1px solid rgb(209, 213, 219);
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+}
+
+.fm-button-small {
+  font-size: 10px;
+  padding: 2px 3px;
+}
+
+.fm-button-medium {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

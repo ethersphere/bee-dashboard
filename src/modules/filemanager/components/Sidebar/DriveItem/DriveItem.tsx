@@ -5,9 +5,9 @@ import DriveFill from 'remixicon-react/HardDrive2FillIcon'
 import MoreFill from 'remixicon-react/MoreFillIcon'
 import './DriveItem.scss'
 import { ProgressBar } from '../../ProgressBar/ProgressBar'
-import { ActionButton } from '../../ActionButton/ActionButton'
 import { ContextMenu } from '../../ContextMenu/ContextMenu'
 import { useContextMenu } from '../../../hooks/useContextMenu'
+import { FMButton } from '../../FMButton/FMButton'
 
 export function DriveItem(): ReactElement {
   const [isHovered, setIsHovered] = useState(false)
@@ -61,7 +61,7 @@ export function DriveItem(): ReactElement {
             document.body,
           )}
 
-        <ActionButton label="Upgrade" fontSize="10px" />
+        <FMButton label="Upgrade" variant="primary" size="small" />
       </div>
     </div>
   )
