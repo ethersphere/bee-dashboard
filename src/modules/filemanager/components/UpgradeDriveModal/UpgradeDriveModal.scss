@@ -1,0 +1,54 @@
+.fm-upgrade-drive-modal {
+  width: 600px;
+}
+
+.fm-upgrade-drive-modal-wallet {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fm-upgrade-drive-modal-wallet-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fm-upgrade-drive-modal-wallet-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fm-upgrade-drive-modal-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgb(229, 231, 235);
+}
+
+.fm-upgrade-drive-modal-info-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: max-content;
+  text-decoration: none;
+}
+
+.fm-upgrade-drive-modal-input-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.fm-upgrade-drive-modal-estimated-cost {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  font-size: 14px;
+  background-color: white;
+  border: 1px solid rgb(229, 231, 235);
+}

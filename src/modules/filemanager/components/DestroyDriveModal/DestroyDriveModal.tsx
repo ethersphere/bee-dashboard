@@ -2,6 +2,7 @@ import { ReactElement, useState } from 'react'
 import '../../styles/global.scss'
 import './DestroyDriveModal.scss'
 import { FMButton } from '../FMButton/FMButton'
+import { createPortal } from 'react-dom'
 
 interface DestroyDriveModalProps {
   driveName: string
@@ -13,7 +14,9 @@ export function DestroyDriveModal({ driveName, onCancelClick }: DestroyDriveModa
 
   const destroyDriveText = `DESTROY DRIVE ${driveName}`
 
-  return (
+  const modalRoot = document.querySelector('.fm-main') || document.body
+
+  return createPortal(
     <div className="fm-modal-container">
       <div className="fm-modal-window">
         <div className="fm-modal-window-header fm-red-font">Destroy entire drive</div>
@@ -47,6 +50,7 @@ export function DestroyDriveModal({ driveName, onCancelClick }: DestroyDriveModa
           <FMButton label="Cancel" variant="secondary" onClick={onCancelClick} />
         </div>
       </div>
-    </div>
+    </div>,
+    modalRoot,
   )
 }

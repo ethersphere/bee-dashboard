@@ -9,10 +9,12 @@ import { ContextMenu } from '../../ContextMenu/ContextMenu'
 import { useContextMenu } from '../../../hooks/useContextMenu'
 import { FMButton } from '../../FMButton/FMButton'
 import { DestroyDriveModal } from '../../DestroyDriveModal/DestroyDriveModal'
+import { UpgradeDriveModal } from '../../UpgradeDriveModal/UpgradeDriveModal'
 
 export function DriveItem(): ReactElement {
   const [isHovered, setIsHovered] = useState(false)
   const [isDestroyDriveModalOpen, setIsDestroyDriveModalOpen] = useState(false)
+  const [isUpgradeDriveModalOpen, setIsUpgradeDriveModalOpen] = useState(false)
 
   const { showContext, pos, contextRef, setPos, handleCloseContext, setShowContext } = useContextMenu<HTMLDivElement>()
 
@@ -24,8 +26,6 @@ export function DriveItem(): ReactElement {
   function handleDestroyDriveClick() {
     setShowContext(false)
   }
-
-  const fmMainDiv = document.querySelector('.fm-main')
 
   return (
     <div className="fm-drive-item-container">
@@ -76,13 +76,14 @@ export function DriveItem(): ReactElement {
             document.body,
           )}
 
-        <FMButton label="Upgrade" variant="primary" size="small" />
+        <FMButton label="Upgrade" variant="primary" size="small" onClick={() => setIsUpgradeDriveModalOpen(true)} />
       </div>
-      {isDestroyDriveModalOpen &&
-        createPortal(
-          <DestroyDriveModal driveName="Drive A" onCancelClick={() => setIsDestroyDriveModalOpen(false)} />,
-          fmMainDiv || document.body,
-        )}
+      {isUpgradeDriveModalOpen && (
+        <UpgradeDriveModal driveName="Drive A" onCancelClick={() => setIsUpgradeDriveModalOpen(false)} />
+      )}
+      {isDestroyDriveModalOpen && (
+        <DestroyDriveModal driveName="Drive A" onCancelClick={() => setIsDestroyDriveModalOpen(false)} />
+      )}
     </div>
   )
 }

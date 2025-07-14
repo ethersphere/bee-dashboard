@@ -16,10 +16,20 @@ interface CustomDropdownProps {
   placeholder?: string
   id?: string
   label?: string
+  icon?: React.ReactNode
   infoText?: string
 }
 
-export function CustomDropdown({ options, value, onChange, placeholder, id, label, infoText }: CustomDropdownProps) {
+export function CustomDropdown({
+  options,
+  value,
+  onChange,
+  placeholder,
+  id,
+  label,
+  icon,
+  infoText,
+}: CustomDropdownProps) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -31,7 +41,7 @@ export function CustomDropdown({ options, value, onChange, placeholder, id, labe
     <div className="fm-custom-dropdown" ref={ref}>
       {label && (
         <label htmlFor={id} className="fm-dropdown-label">
-          {label} <Tooltip label={infoText ? infoText : ''} iconSize="14px" />
+          {icon} {label} {infoText && <Tooltip label={infoText ? infoText : ''} iconSize="14px" />}
         </label>
       )}
       <div
