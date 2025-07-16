@@ -1,4 +1,4 @@
-import { BZZ } from '@upcoming/bee-js'
+import { BZZ } from '@ethersphere/bee-js'
 import { ReactElement, useContext } from 'react'
 import Upload from 'remixicon-react/UploadLineIcon'
 import WithdrawDepositModal from '../components/WithdrawDepositModal'

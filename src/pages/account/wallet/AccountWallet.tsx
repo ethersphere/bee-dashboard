@@ -1,5 +1,5 @@
 import { Box, Grid, Typography } from '@material-ui/core'
-import { BeeModes } from '@upcoming/bee-js'
+import { BeeModes } from '@ethersphere/bee-js'
 import { ReactElement, useContext } from 'react'
 import { useNavigate } from 'react-router'
 import Download from 'remixicon-react/DownloadLineIcon'

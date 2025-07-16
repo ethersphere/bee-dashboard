@@ -1,4 +1,4 @@
-import { BZZ } from '@upcoming/bee-js'
+import { BZZ } from '@ethersphere/bee-js'
 import { useContext } from 'react'
 import { useNavigate } from 'react-router'
 import ExchangeFunds from 'remixicon-react/ExchangeFundsLineIcon'

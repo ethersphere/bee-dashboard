@@ -1,5 +1,5 @@
 import { Box, Grid, IconButton, Typography, createStyles, makeStyles } from '@material-ui/core'
-import { PostageBatchOptions, Utils } from '@upcoming/bee-js'
+import { PostageBatchOptions, Utils } from '@ethersphere/bee-js'
 import BigNumber from 'bignumber.js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'

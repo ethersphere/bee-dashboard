@@ -1,5 +1,5 @@
 import { Box } from '@material-ui/core'
-import { NULL_TOPIC } from '@upcoming/bee-js'
+import { NULL_TOPIC } from '@ethersphere/bee-js'
 import { ReactElement, useContext, useState } from 'react'
 import { useNavigate } from 'react-router'
 import PlusSquare from 'remixicon-react/AddBoxLineIcon'

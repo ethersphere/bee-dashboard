@@ -1,4 +1,4 @@
-import { Bee } from '@upcoming/bee-js'
+import { Bee } from '@ethersphere/bee-js'
 import { providers } from 'ethers'
 import { ReactElement, ReactNode, createContext, useEffect, useState } from 'react'
 import { DEFAULT_BEE_API_HOST, DEFAULT_RPC_URL } from '../constants'

@@ -1,5 +1,5 @@
 import { Box, Typography } from '@material-ui/core'
-import { BeeModes } from '@upcoming/bee-js'
+import { BeeModes } from '@ethersphere/bee-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'

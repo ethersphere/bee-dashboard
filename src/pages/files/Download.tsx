@@ -1,4 +1,4 @@
-import { BeeModes, MantarayNode, NULL_ADDRESS, Reference } from '@upcoming/bee-js'
+import { BeeModes, MantarayNode, NULL_ADDRESS, Reference } from '@ethersphere/bee-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
