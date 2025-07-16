@@ -1,6 +1,6 @@
-import { BeeModes } from '@ethersphere/bee-js'
 import { Box, Divider, Drawer, Grid, List, Link as MUILink, Typography } from '@material-ui/core'
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles'
+import { BeeModes } from '@ethersphere/bee-js'
 import { ReactElement, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import FilesIcon from 'remixicon-react/ArrowUpDownLineIcon'

@@ -1,4 +1,4 @@
-import { BatchId, Bee, Reference } from '@ethersphere/bee-js'
+import { BatchId, Bee, NULL_TOPIC, Reference } from '@ethersphere/bee-js'
 import { Wallet } from 'ethers'
 import { uuidV4, waitUntilStampUsable } from '.'
 import { Identity, IdentityType } from '../providers/Feeds'
@@ -80,18 +80,18 @@ async function getWallet(type: IdentityType, data: string, password?: string): P
 export async function updateFeed(
   beeApi: Bee,
   identity: Identity,
-  hash: string,
-  stamp: string,
+  hash: Reference | string,
+  stamp: BatchId | string,
   password?: string,
 ): Promise<void> {
   const wallet = await getWalletFromIdentity(identity, password)
 
   if (!identity.feedHash) {
-    identity.feedHash = (await beeApi.createFeedManifest(stamp, 'sequence', '00'.repeat(32), wallet.address)).reference
+    identity.feedHash = (await beeApi.createFeedManifest(stamp, NULL_TOPIC, wallet.address)).toHex()
   }
 
-  const writer = beeApi.makeFeedWriter('sequence', '00'.repeat(32), wallet.privateKey)
+  const writer = beeApi.makeFeedWriter(NULL_TOPIC, wallet.privateKey)
 
-  await waitUntilStampUsable(stamp as BatchId, beeApi)
-  await writer.upload(stamp, hash as Reference)
+  await waitUntilStampUsable(stamp, beeApi)
+  await writer.upload(stamp, hash)
 }

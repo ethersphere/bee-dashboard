@@ -4,7 +4,7 @@ import Dialog from '@material-ui/core/Dialog'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { Check, Clear } from '@material-ui/icons'
-import React, { ReactElement, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import { SwarmSelect } from '../../components/SwarmSelect'
 import { EnrichedPostageBatch } from '../../providers/Stamps'
@@ -39,7 +39,7 @@ export function SelectPostageStampModal({ stamps, onSelect, onClose }: Props): R
   const classes = useStyles()
 
   function onChange(stampId: string) {
-    const stamp = stamps.find(x => x.batchID === stampId)
+    const stamp = stamps.find(x => x.batchID.toHex() === stampId)
 
     if (stamp) {
       setSelectedStamp(stamp)
@@ -66,7 +66,7 @@ export function SelectPostageStampModal({ stamps, onSelect, onClose }: Props): R
       </DialogTitle>
       <DialogContent>
         <SwarmSelect
-          options={stamps.map(x => ({ label: x.batchID, value: x.batchID }))}
+          options={stamps.map(x => ({ label: x.batchID.toHex(), value: x.batchID.toHex() }))}
           onChange={event => onChange(event.target.value as string)}
         />
       </DialogContent>

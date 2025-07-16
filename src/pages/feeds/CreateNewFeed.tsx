@@ -1,4 +1,5 @@
 import { Box, Grid, Typography } from '@material-ui/core'
+import { NULL_TOPIC } from '@ethersphere/bee-js'
 import { Form, Formik } from 'formik'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
@@ -108,7 +109,7 @@ export default function CreateNewFeed(): ReactElement {
             </Box>
             {values.type === 'V3' && <SwarmTextInput name="password" label="Password" password formik />}
             <Box mt={2}>
-              <ExpandableListItemKey label="Topic" value={'00'.repeat(32)} />
+              <ExpandableListItemKey label="Topic" value={NULL_TOPIC.toHex()} />
             </Box>
             <Box mt={2} sx={{ bgcolor: '#fcf2e8' }} p={2}>
               <Grid container justifyContent="space-between">

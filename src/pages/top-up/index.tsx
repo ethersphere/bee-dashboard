@@ -1,5 +1,5 @@
-import { BeeModes } from '@ethersphere/bee-js'
 import { Box, createStyles, Grid, makeStyles, Typography } from '@material-ui/core'
+import { BeeModes, BZZ, DAI } from '@ethersphere/bee-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { useNavigate } from 'react-router'
@@ -15,7 +15,6 @@ import { SwarmButton } from '../../components/SwarmButton'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { Context as BeeContext, CheckState } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
-import { Context as BalanceProvider } from '../../providers/WalletBalance'
 import { ROUTES } from '../../routes'
 import { restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
 
@@ -33,15 +32,14 @@ const useStyles = makeStyles(() =>
   }),
 )
 
-const MINIMUM_XDAI = '0.05'
-const MINIMUM_XBZZ = '0.1'
+const MINIMUM_XDAI = DAI.fromDecimalString('0.05')
+const MINIMUM_XBZZ = BZZ.fromDecimalString('0.1')
 
 export default function TopUp(): ReactElement {
   const navigate = useNavigate()
   const styles = useStyles()
   const { isDesktop, desktopUrl } = useContext(SettingsContext)
-  const { nodeInfo, status } = useContext(BeeContext)
-  const { balance } = useContext(BalanceProvider)
+  const { nodeInfo, status, walletBalance } = useContext(BeeContext)
   const { rpcProviderUrl } = useContext(SettingsContext)
   const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
@@ -49,8 +47,8 @@ export default function TopUp(): ReactElement {
   const canUpgradeToLightNode =
     isDesktop &&
     nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT &&
-    balance?.dai.toDecimal.gte(MINIMUM_XDAI) &&
-    balance?.bzz.toDecimal.gte(MINIMUM_XBZZ)
+    walletBalance?.nativeTokenBalance.gte(MINIMUM_XDAI) &&
+    walletBalance?.bzzBalance.gte(MINIMUM_XBZZ)
 
   async function restart() {
     setLoading(true)
@@ -67,7 +65,7 @@ export default function TopUp(): ReactElement {
 
   if (status.all === CheckState.ERROR) return <TroubleshootConnectionCard />
 
-  if (!balance) {
+  if (!walletBalance) {
     return <Loading />
   }
 

@@ -1,30 +1,6 @@
+import { BZZ, DAI, EthAddress } from '@ethersphere/bee-js'
 import { providers, Wallet } from 'ethers'
-import { BzzToken } from '../models/BzzToken'
-import { DaiToken } from '../models/DaiToken'
 import { estimateNativeTransferTransactionCost, Rpc } from './rpc'
-
-export class WalletAddress {
-  private constructor(
-    public address: string,
-    public bzz: BzzToken,
-    public dai: DaiToken,
-    public provider: providers.JsonRpcProvider,
-  ) {}
-
-  static async make(address: string, provider: providers.JsonRpcProvider): Promise<WalletAddress> {
-    const bzz = new BzzToken(await Rpc._eth_getBalanceERC20(address, provider))
-    const dai = new DaiToken(await Rpc._eth_getBalance(address, provider))
-
-    return new WalletAddress(address, bzz, dai, provider)
-  }
-
-  public async refresh(): Promise<WalletAddress> {
-    this.bzz = new BzzToken(await Rpc._eth_getBalanceERC20(this.address, this.provider))
-    this.dai = new DaiToken(await Rpc._eth_getBalance(this.address, this.provider))
-
-    return this
-  }
-}
 
 export class ResolvedWallet {
   public address: string
@@ -32,8 +8,8 @@ export class ResolvedWallet {
 
   private constructor(
     public wallet: Wallet,
-    public bzz: BzzToken,
-    public dai: DaiToken,
+    public bzz: BZZ,
+    public dai: DAI,
     public provider: providers.JsonRpcProvider,
   ) {
     this.address = wallet.address
@@ -44,32 +20,32 @@ export class ResolvedWallet {
     const wallet =
       typeof privateKeyOrWallet === 'string' ? new Wallet(privateKeyOrWallet, provider) : privateKeyOrWallet
     const address = wallet.address
-    const bzz = new BzzToken(await Rpc._eth_getBalanceERC20(address, provider))
-    const dai = new DaiToken(await Rpc._eth_getBalance(address, provider))
+    const bzz = await Rpc._eth_getBalanceERC20(address, provider)
+    const dai = await Rpc._eth_getBalance(address, provider)
 
     return new ResolvedWallet(wallet, bzz, dai, provider)
   }
 
   public async refresh(): Promise<ResolvedWallet> {
-    this.bzz = new BzzToken(await Rpc._eth_getBalanceERC20(this.address, this.provider))
-    this.dai = new DaiToken(await Rpc._eth_getBalance(this.address, this.provider))
+    this.bzz = await Rpc._eth_getBalanceERC20(this.address, this.provider)
+    this.dai = await Rpc._eth_getBalance(this.address, this.provider)
 
     return this
   }
 
-  public async transfer(destination: string, jsonRpcProvider: string): Promise<void> {
-    if (this.bzz.toDecimal.gt(0.05)) {
-      await Rpc.sendBzzTransaction(this.privateKey, destination, this.bzz.toString, jsonRpcProvider)
+  public async transfer(destination: EthAddress | string, jsonRpcProvider: string): Promise<void> {
+    if (this.bzz.gt(BZZ.fromDecimalString('0.05'))) {
+      await Rpc.sendBzzTransaction(this.privateKey, destination, this.bzz, jsonRpcProvider)
       await this.refresh()
     }
 
     const { gasPrice, totalCost } = await estimateNativeTransferTransactionCost(this.privateKey, jsonRpcProvider)
 
-    if (this.dai.toBigNumber.gt(totalCost.toString())) {
+    if (this.dai.gt(totalCost)) {
       await Rpc.sendNativeTransaction(
         this.privateKey,
         destination,
-        this.dai.toBigNumber.minus(totalCost.toString()).toString(),
+        this.dai.minus(totalCost),
         jsonRpcProvider,
         gasPrice,
       )
