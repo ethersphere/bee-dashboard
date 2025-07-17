@@ -1,0 +1,24 @@
+.fm-get-info-modal-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fm-get-info-modal-group-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.fm-get-info-modal-group-properties {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fm-get-info-modal-property-row {
+  display: flex;
+  justify-content: space-between;
+}

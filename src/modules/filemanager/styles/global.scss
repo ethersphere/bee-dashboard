@@ -77,9 +77,13 @@
 .fm-modal-window-footer {
   display: flex;
   width: 100%;
-  justify-content: center;
+  justify-content: right;
   align-items: center;
   gap: 12px;
+}
+
+.fm-get-info-modal-footer-one-button {
+  width: 33%;
 }
 
 .fm-red-font {
@@ -104,4 +108,8 @@
 
 .fm-pointer {
   cursor: pointer;
+}
+
+.fm-main-font-color {
+  color: rgb(55, 65, 81);
 }
