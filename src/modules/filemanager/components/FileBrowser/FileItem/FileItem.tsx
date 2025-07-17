@@ -8,6 +8,7 @@ import GeneralIcon from 'remixicon-react/FileTextLineIcon'
 import CalendarIcon from 'remixicon-react/CalendarLineIcon'
 import AccessIcon from 'remixicon-react/ShieldKeyholeLineIcon'
 import HardDriveIcon from 'remixicon-react/HardDrive2LineIcon'
+import { DeleteFileModal } from '../../DeleteFileModal/DeleteFileModal'
 
 interface FileItemProps {
   icon: string
@@ -59,6 +60,7 @@ export const FILE_PROPERTIES_MOCK = [
 export function FileItem({ icon, name, size, dateMod }: FileItemProps): ReactElement {
   const { showContext, pos, contextRef, handleContextMenu, handleCloseContext } = useContextMenu<HTMLDivElement>()
   const [showGetInfoModal, setShowGetInfoModal] = useState(false)
+  const [showDeleteFileModal, setShowDeleteFileModal] = useState(false)
 
   return (
     <div className="fm-file-item-content" onContextMenu={handleContextMenu} onClick={handleCloseContext}>
@@ -86,7 +88,9 @@ export function FileItem({ icon, name, size, dateMod }: FileItemProps): ReactEle
             <div className="fm-context-item">Rename</div>
             <div className="fm-context-item-border"></div>
             <div className="fm-context-item">Version history</div>
-            <div className="fm-context-item red">Delete</div>
+            <div className="fm-context-item red" onClick={() => setShowDeleteFileModal(true)}>
+              Delete
+            </div>
             <div className="fm-context-item-border"></div>
             <div className="fm-context-item" onClick={() => setShowGetInfoModal(true)}>
               Get info
@@ -97,6 +101,7 @@ export function FileItem({ icon, name, size, dateMod }: FileItemProps): ReactEle
       {showGetInfoModal && (
         <GetInfoModal onCancelClick={() => setShowGetInfoModal(false)} name={name} properties={FILE_PROPERTIES_MOCK} />
       )}
+      {showDeleteFileModal && <DeleteFileModal name={name} onCancelClick={() => setShowDeleteFileModal(false)} />}
     </div>
   )
 }

@@ -113,3 +113,46 @@
 .fm-main-font-color {
   color: rgb(55, 65, 81);
 }
+
+.fm-line-height-fit {
+  line-height: 1;
+}
+
+.fm-alert-icon-inline {
+  position: relative;
+  top: 2px;
+  margin-right: 4px;
+}
+
+.fm-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.MuiRadio-root.fm-radio-button,
+.MuiRadio-root.Mui-checked.fm-radio-button {
+  padding: 0px;
+  color: rgb(237, 129, 49);
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.MuiFormControlLabel-root.fm-form-control-label {
+  display: flex;
+  align-items: start;
+  gap: 8px;
+}
+
+.fm-radio-label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fm-radio-label-header {
+  font-size: 15px;
+  font-weight: 700;
+}
