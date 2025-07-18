@@ -9,6 +9,7 @@ import CalendarIcon from 'remixicon-react/CalendarLineIcon'
 import AccessIcon from 'remixicon-react/ShieldKeyholeLineIcon'
 import HardDriveIcon from 'remixicon-react/HardDrive2LineIcon'
 import { DeleteFileModal } from '../../DeleteFileModal/DeleteFileModal'
+import { VersionHistoryModal } from '../../VersionHistoryModal/VersionHistoryModal'
 
 interface FileItemProps {
   icon: string
@@ -61,6 +62,7 @@ export function FileItem({ icon, name, size, dateMod }: FileItemProps): ReactEle
   const { showContext, pos, contextRef, handleContextMenu, handleCloseContext } = useContextMenu<HTMLDivElement>()
   const [showGetInfoModal, setShowGetInfoModal] = useState(false)
   const [showDeleteFileModal, setShowDeleteFileModal] = useState(false)
+  const [showVersionHistoryModal, setShowVersionHistoryModal] = useState(false)
 
   return (
     <div className="fm-file-item-content" onContextMenu={handleContextMenu} onClick={handleCloseContext}>
@@ -87,7 +89,9 @@ export function FileItem({ icon, name, size, dateMod }: FileItemProps): ReactEle
             <div className="fm-context-item">Download</div>
             <div className="fm-context-item">Rename</div>
             <div className="fm-context-item-border"></div>
-            <div className="fm-context-item">Version history</div>
+            <div className="fm-context-item" onClick={() => setShowVersionHistoryModal(true)}>
+              Version history
+            </div>
             <div className="fm-context-item red" onClick={() => setShowDeleteFileModal(true)}>
               Delete
             </div>
@@ -102,6 +106,9 @@ export function FileItem({ icon, name, size, dateMod }: FileItemProps): ReactEle
         <GetInfoModal onCancelClick={() => setShowGetInfoModal(false)} name={name} properties={FILE_PROPERTIES_MOCK} />
       )}
       {showDeleteFileModal && <DeleteFileModal name={name} onCancelClick={() => setShowDeleteFileModal(false)} />}
+      {showVersionHistoryModal && (
+        <VersionHistoryModal fileName={name} onCancelClick={() => setShowVersionHistoryModal(false)} />
+      )}
     </div>
   )
 }

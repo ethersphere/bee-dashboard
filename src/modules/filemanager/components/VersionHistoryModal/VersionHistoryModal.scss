@@ -1,0 +1,21 @@
+.fm-version-history-modal-section-left {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 8px;
+}
+
+.fm-version-history-modal-section-left-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.fm-version-history-modal-section-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 50%;
+}
