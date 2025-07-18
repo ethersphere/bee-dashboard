@@ -29,16 +29,17 @@ const desiredLifetimeOptions = [
 interface UpgradeDriveModalProps {
   driveName?: string
   onCancelClick: () => void
+  containerColor?: string
 }
 
-export function UpgradeDriveModal({ driveName, onCancelClick }: UpgradeDriveModalProps): ReactElement {
+export function UpgradeDriveModal({ driveName, onCancelClick, containerColor }: UpgradeDriveModalProps): ReactElement {
   const [capacity, setCapacity] = useState('personal')
   const [lifetime, setLifetime] = useState('personal')
 
   const modalRoot = document.querySelector('.fm-main') || document.body
 
   return createPortal(
-    <div className="fm-modal-container">
+    <div className={`fm-modal-container${containerColor === 'none' ? ' fm-modal-container-no-bg' : ''}`}>
       <div className="fm-modal-window fm-upgrade-drive-modal">
         <div className="fm-modal-window-header">
           <DriveIcon size="18px" /> Upgrade {driveName}
@@ -96,7 +97,7 @@ export function UpgradeDriveModal({ driveName, onCancelClick }: UpgradeDriveModa
             </div>
           </div>
 
-          <div className="fm-upgrade-drive-modal-estimated-cost">
+          <div className="fm-modal-white-section">
             <div className="fm-emphasized-text">Summary</div>
             <div>Drive: {driveName}</div>
             <div>Extension period: 1 month (5.00 BZZ)</div>

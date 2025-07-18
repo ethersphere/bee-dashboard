@@ -11,6 +11,11 @@
   align-items: center;
 }
 
+.fm-modal-container-no-bg {
+  background: none;
+  backdrop-filter: none;
+}
+
 .fm-modal-window {
   width: 450px;
   padding: 24px;
@@ -155,4 +160,21 @@
 .fm-radio-label-header {
   font-size: 15px;
   font-weight: 700;
+}
+
+.fm-modal-white-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  font-size: 14px;
+  background-color: white;
+  border: 1px solid rgb(229, 231, 235);
+}
+
+.fm-space-between {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }

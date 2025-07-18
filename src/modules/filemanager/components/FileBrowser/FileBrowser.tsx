@@ -6,6 +6,7 @@ import UpIcon from 'remixicon-react/ArrowUpSLineIcon'
 import { FileItem } from './FileItem/FileItem'
 import { ContextMenu } from '../ContextMenu/ContextMenu'
 import { useContextMenu } from '../../hooks/useContextMenu'
+import { NotificationBar } from '../NotificationBar/NotificationBar'
 
 export function FileBrowser(): ReactElement {
   const { showContext, pos, contextRef, handleContextMenu, handleCloseContext } = useContextMenu<HTMLDivElement>()
@@ -75,7 +76,7 @@ export function FileBrowser(): ReactElement {
         <div className="fm-file-browser-content-footer">
           <div className="fm-upload-download-indicator">Uploading file_x.zip (67%)...</div>
           <div className="fm-upload-download-indicator">Downloading Report.pdf (45%)...</div>
-          <div>2 Drives expiring soon</div>
+          <NotificationBar numberOfExpiration={2} />
         </div>
       </div>
     </div>

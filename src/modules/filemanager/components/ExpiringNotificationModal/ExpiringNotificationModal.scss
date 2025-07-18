@@ -1,0 +1,34 @@
+.fm-expiring-notification-modal-body {
+  overflow-y: scroll;
+  max-height: 474px;
+}
+
+.fm-expiring-notification-modal-section-left {
+  display: flex;
+  gap: 16px;
+}
+
+.fm-expiring-notification-modal-section-right {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+}
+
+.fm-expiring-notification-modal-section-left-header {
+  font-size: 15px;
+}
+
+.fm-expiring-notification-modal-section-right-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fm-expiring-notification-modal-section-right-button {
+  margin-top: 20px;
+  width: 100px;
+}
+
+.fm-expiring-notification-modal-footer-one-button {
+  width: 33%;
+}
