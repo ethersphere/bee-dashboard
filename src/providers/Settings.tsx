@@ -71,7 +71,12 @@ export function Provider({ children, ...propsSettings }: Props): ReactElement {
   const [beeApi, setBeeApi] = useState<Bee | null>(null)
   const [desktopApiKey, setDesktopApiKey] = useState<string>(initialValues.desktopApiKey)
   const [rpcProviderUrl, setRpcProviderUrl] = useState(propsProviderUrl)
-  const [rpcProvider, setRpcProvider] = useState(new providers.JsonRpcProvider(propsProviderUrl))
+  const [rpcProvider, setRpcProvider] = useState<providers.JsonRpcProvider | null>(null)
+
+  useEffect(() => {
+    setRpcProvider(new providers.JsonRpcProvider(rpcProviderUrl))
+  }, [rpcProviderUrl])
+
   const { config, isLoading, error } = useGetBeeConfig(desktopUrl)
 
   useEffect(() => {
