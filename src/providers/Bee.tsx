@@ -45,6 +45,7 @@ interface Status {
 interface ContextInterface {
   beeVersion: string | null
   status: Status
+  setStatus: (status: Status) => void
   error: Error | null
   apiHealth: boolean
   nodeAddresses: NodeAddresses | null
@@ -75,6 +76,7 @@ const initialValues: ContextInterface = {
     topology: { isEnabled: false, checkState: CheckState.ERROR },
     chequebook: { isEnabled: false, checkState: CheckState.ERROR },
   },
+  setStatus: () => {}, // eslint-disable-line
   error: null,
   apiHealth: false,
   nodeAddresses: null,
@@ -183,6 +185,9 @@ export function Provider({ children }: Props): ReactElement {
   const [chainState, setChainState] = useState<ChainState | null>(null)
   const [walletBalance, setWalletBalance] = useState<WalletBalance | null>(null)
   const [startedAt] = useState(Date.now())
+
+  // Make status stateful
+  const [status, setStatus] = useState<Status>(initialValues.status)
 
   const { latestBeeRelease } = useLatestBeeRelease()
 
@@ -333,7 +338,11 @@ export function Provider({ children }: Props): ReactElement {
   }
   const stop = () => setFrequency(null)
 
-  const status = getStatus(nodeInfo, apiHealth, topology, chequebookAddress, chequebookBalance, error, startedAt)
+  // Update status when dependent values change
+  useEffect(() => {
+    const newStatus = getStatus(nodeInfo, apiHealth, topology, chequebookAddress, chequebookBalance, error, startedAt)
+    setStatus(newStatus)
+  }, [nodeInfo, apiHealth, topology, chequebookAddress, chequebookBalance, error, startedAt])
 
   useEffect(() => {
     let newFrequency = REFRESH_WHEN_OK
@@ -358,6 +367,7 @@ export function Provider({ children }: Props): ReactElement {
       value={{
         beeVersion,
         status,
+        setStatus,
         error,
         apiHealth,
         nodeAddresses,
