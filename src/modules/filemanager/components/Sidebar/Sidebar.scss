@@ -9,6 +9,10 @@
   justify-content: space-between;
 }
 
+.fm-sidebar-content {
+  overflow: auto;
+}
+
 .fm-sidebar-item {
   padding: 12px;
   display: flex;

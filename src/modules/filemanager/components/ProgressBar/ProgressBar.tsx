@@ -4,13 +4,20 @@ import './ProgressBar.scss'
 
 interface ProgressBarProps {
   value: number
-  width?: number
+  width?: string
+  color?: string
+  backgroundColor?: string
 }
 
-export function ProgressBar({ value, width = 200 }: ProgressBarProps): ReactElement {
+export function ProgressBar({
+  value,
+  width = '200px',
+  color = '#ed8131',
+  backgroundColor = 'white',
+}: ProgressBarProps): ReactElement {
   return (
-    <div className="fm-progress-bar" style={{ width: `${width}px` }}>
-      <div className="fm-progress-bar-fill" style={{ width: `${value}%` }}></div>
+    <div className="fm-progress-bar" style={{ width: `${width}`, backgroundColor: `${backgroundColor}` }}>
+      <div className="fm-progress-bar-fill" style={{ width: `${value}%`, backgroundColor: `${color}` }}></div>
     </div>
   )
 }

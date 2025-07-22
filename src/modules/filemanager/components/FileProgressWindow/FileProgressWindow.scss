@@ -1,0 +1,61 @@
+.fm-file-progress-window {
+  position: absolute;
+  border: 1px solid rgb(209, 213, 219);
+  width: 275px;
+  bottom: 45px;
+  background-color: white;
+  z-index: 1400;
+}
+
+.fm-file-progress-window-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid rgb(209, 213, 219);
+}
+
+.fm-file-progress-window-header-close {
+  display: flex;
+  padding: 3px;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: rgb(243, 244, 246);
+    border-radius: 4px;
+  }
+}
+
+.fm-file-progress-window-file-item {
+  display: flex;
+  align-items: start;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid rgb(243, 244, 246);
+}
+
+.fm-file-progress-window-file-type-icon {
+  margin-top: 4px;
+}
+
+.fm-file-progress-window-file-datas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.fm-file-progress-window-file-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.fm-file-progress-window-file-item-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+}

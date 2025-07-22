@@ -19,7 +19,7 @@ export function Sidebar(): ReactElement {
 
   return (
     <div className="fm-sidebar">
-      <div>
+      <div className="fm-sidebar-content">
         <div className="fm-sidebar-item" onClick={() => setIsCreateDriveOpen(true)}>
           <div className="fm-sidebar-item-icon">
             <Add size="16px" />

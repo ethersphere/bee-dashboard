@@ -40,7 +40,7 @@ export function DriveItem(): ReactElement {
         </div>
         <div className="fm-drive-item-content">
           <div className="fm-drive-item-capacity">
-            Capacity <ProgressBar value={20} width={64} /> 8.7 GB/10 GB
+            Capacity <ProgressBar value={20} width="64px" /> 8.7 GB/10 GB
           </div>
           <div className="fm-drive-item-capacity">Expiry date 2025-08-20</div>
         </div>

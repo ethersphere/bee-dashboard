@@ -7,6 +7,7 @@
 }
 
 .fm-file-browser-content {
+  overflow: auto;
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
@@ -47,9 +48,10 @@
   color: rgb(237, 129, 49);
 }
 
-.fm-file-browser-content-footer {
+.fm-file-browser-footer {
   display: flex;
   justify-content: space-between;
+  max-height: 45px;
   padding: 12px;
   border-top: 1px solid #929292;
   background-color: #ededed;
