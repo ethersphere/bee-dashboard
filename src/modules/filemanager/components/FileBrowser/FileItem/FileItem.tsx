@@ -10,6 +10,8 @@ import AccessIcon from 'remixicon-react/ShieldKeyholeLineIcon'
 import HardDriveIcon from 'remixicon-react/HardDrive2LineIcon'
 import { DeleteFileModal } from '../../DeleteFileModal/DeleteFileModal'
 import { VersionHistoryModal } from '../../VersionHistoryModal/VersionHistoryModal'
+import { useView } from '../../../providers/FileViewContext'
+import { ViewType } from '../../../constants/constants'
 
 interface FileItemProps {
   icon: string
@@ -64,6 +66,8 @@ export function FileItem({ icon, name, size, dateMod }: FileItemProps): ReactEle
   const [showDeleteFileModal, setShowDeleteFileModal] = useState(false)
   const [showVersionHistoryModal, setShowVersionHistoryModal] = useState(false)
 
+  const { view } = useView()
+
   return (
     <div className="fm-file-item-content" onContextMenu={handleContextMenu} onClick={handleCloseContext}>
       <div className="fm-file-item-content-item fm-checkbox">
@@ -84,22 +88,40 @@ export function FileItem({ icon, name, size, dateMod }: FileItemProps): ReactEle
             left: pos.x,
           }}
         >
-          <ContextMenu>
-            <div className="fm-context-item">View / Open</div>
-            <div className="fm-context-item">Download</div>
-            <div className="fm-context-item">Rename</div>
-            <div className="fm-context-item-border"></div>
-            <div className="fm-context-item" onClick={() => setShowVersionHistoryModal(true)}>
-              Version history
-            </div>
-            <div className="fm-context-item red" onClick={() => setShowDeleteFileModal(true)}>
-              Delete
-            </div>
-            <div className="fm-context-item-border"></div>
-            <div className="fm-context-item" onClick={() => setShowGetInfoModal(true)}>
-              Get info
-            </div>
-          </ContextMenu>
+          {view === ViewType.File ? (
+            <ContextMenu>
+              <div className="fm-context-item">View / Open</div>
+              <div className="fm-context-item">Download</div>
+              <div className="fm-context-item">Rename</div>
+              <div className="fm-context-item-border"></div>
+              <div className="fm-context-item" onClick={() => setShowVersionHistoryModal(true)}>
+                Version history
+              </div>
+              <div className="fm-context-item red" onClick={() => setShowDeleteFileModal(true)}>
+                Delete
+              </div>
+              <div className="fm-context-item-border"></div>
+              <div className="fm-context-item" onClick={() => setShowGetInfoModal(true)}>
+                Get info
+              </div>
+            </ContextMenu>
+          ) : (
+            <ContextMenu>
+              <div className="fm-context-item">View / Open</div>
+              <div className="fm-context-item">Download</div>
+              <div className="fm-context-item-border"></div>
+              <div className="fm-context-item" onClick={() => setShowVersionHistoryModal(true)}>
+                Version history
+              </div>
+              <div className="fm-context-item">Restore</div>
+              <div className="fm-context-item red">Destroy</div>
+              <div className="fm-context-item red">Forget permanently</div>
+              <div className="fm-context-item-border"></div>
+              <div className="fm-context-item" onClick={() => setShowGetInfoModal(true)}>
+                Get info
+              </div>
+            </ContextMenu>
+          )}
         </div>
       )}
       {showGetInfoModal && (

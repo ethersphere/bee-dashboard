@@ -1,10 +1,9 @@
 import { ReactElement } from 'react'
 import './FileBrowserTopBar.scss'
+import { useView } from '../../../providers/FileViewContext'
 
-interface FileBrowserTopBarProps {
-  label: string
-}
+export function FileBrowserTopBar(): ReactElement {
+  const { actualItemView } = useView()
 
-export function FileBrowserTopBar({ label }: FileBrowserTopBarProps): ReactElement {
-  return <div className="fm-file-browser-top-bar">{label}</div>
+  return <div className="fm-file-browser-top-bar">{actualItemView}</div>
 }

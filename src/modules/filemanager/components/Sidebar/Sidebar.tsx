@@ -10,12 +10,16 @@ import Delete from 'remixicon-react/DeleteBin6LineIcon'
 import DeleteFill from 'remixicon-react/DeleteBin6FillIcon'
 import { DriveItem } from './DriveItem/DriveItem'
 import { CreateDriveModal } from '../CreateDriveModal/CreateDriveModal'
+import { useView } from '../../providers/FileViewContext'
+import { ViewType } from '../../constants/constants'
 
 export function Sidebar(): ReactElement {
   const [hovered, setHovered] = useState<string | null>(null)
   const [isMyDrivesOpen, setIsMyDriveOpen] = useState(false)
   const [isTrashOpen, setIsTrashOpen] = useState(false)
   const [isCreateDriveOpen, setIsCreateDriveOpen] = useState(false)
+
+  const { setActualItemView, setView } = useView()
 
   return (
     <div className="fm-sidebar">
@@ -43,8 +47,8 @@ export function Sidebar(): ReactElement {
         </div>
         {isMyDrivesOpen && (
           <div className={`fm-drive-items-container fm-drive-items-container-open`}>
-            <DriveItem />
-            <DriveItem />
+            <DriveItem name="Drive A" />
+            <DriveItem name="Drive B" />
           </div>
         )}
         <div
@@ -63,8 +67,24 @@ export function Sidebar(): ReactElement {
         </div>
         {isTrashOpen && (
           <div className={`fm-drive-items-container fm-drive-items-container-open`}>
-            <div className="fm-sidebar-item fm-trash-item">Drive A Trash</div>
-            <div className="fm-sidebar-item fm-trash-item">Drive B Trash</div>
+            <div
+              className="fm-sidebar-item fm-trash-item"
+              onClick={() => {
+                setView(ViewType.Trash)
+                setActualItemView?.('Drive A Trash')
+              }}
+            >
+              Drive A Trash
+            </div>
+            <div
+              className="fm-sidebar-item fm-trash-item"
+              onClick={() => {
+                setView(ViewType.Trash)
+                setActualItemView?.('Drive B Trash')
+              }}
+            >
+              Drive B Trash
+            </div>
           </div>
         )}
       </div>

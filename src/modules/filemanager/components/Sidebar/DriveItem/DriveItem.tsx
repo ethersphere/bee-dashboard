@@ -10,13 +10,21 @@ import { useContextMenu } from '../../../hooks/useContextMenu'
 import { FMButton } from '../../FMButton/FMButton'
 import { DestroyDriveModal } from '../../DestroyDriveModal/DestroyDriveModal'
 import { UpgradeDriveModal } from '../../UpgradeDriveModal/UpgradeDriveModal'
+import { useView } from '../../../providers/FileViewContext'
+import { ViewType } from '../../../constants/constants'
 
-export function DriveItem(): ReactElement {
+interface DriveItemProps {
+  name: string
+}
+
+export function DriveItem({ name }: DriveItemProps): ReactElement {
   const [isHovered, setIsHovered] = useState(false)
   const [isDestroyDriveModalOpen, setIsDestroyDriveModalOpen] = useState(false)
   const [isUpgradeDriveModalOpen, setIsUpgradeDriveModalOpen] = useState(false)
 
   const { showContext, pos, contextRef, setPos, handleCloseContext, setShowContext } = useContextMenu<HTMLDivElement>()
+
+  const { setView, setActualItemView } = useView()
 
   function handleMenuClick(e: React.MouseEvent) {
     setShowContext(true)
@@ -28,7 +36,13 @@ export function DriveItem(): ReactElement {
   }
 
   return (
-    <div className="fm-drive-item-container">
+    <div
+      className="fm-drive-item-container"
+      onClick={() => {
+        setView(ViewType.File)
+        setActualItemView?.(name)
+      }}
+    >
       <div
         className="fm-drive-item-info"
         onMouseEnter={() => setIsHovered(true)}
@@ -36,7 +50,7 @@ export function DriveItem(): ReactElement {
       >
         <div className="fm-drive-item-header">
           <div className="fm-drive-item-icon">{isHovered ? <DriveFill size="16px" /> : <Drive size="16px" />}</div>
-          <div>Drive A</div>
+          <div>{name}</div>
         </div>
         <div className="fm-drive-item-content">
           <div className="fm-drive-item-capacity">
