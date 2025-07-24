@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useContext, useEffect, useState } from 'react'
 
 import './Sidebar.scss'
 import Add from 'remixicon-react/AddLineIcon'
@@ -10,16 +10,30 @@ import Delete from 'remixicon-react/DeleteBin6LineIcon'
 import DeleteFill from 'remixicon-react/DeleteBin6FillIcon'
 import { DriveItem } from './DriveItem/DriveItem'
 import { CreateDriveModal } from '../CreateDriveModal/CreateDriveModal'
-import { useView } from '../../providers/FileViewContext'
 import { ViewType } from '../../constants/constants'
+import { PostageBatch } from '@ethersphere/bee-js'
+import { Context as SettingsContext } from '../../../../providers/Settings'
+import { getUsableStamps } from '../../utils/utils'
+import { useView } from '../../providers/FMFileViewContext'
 
 export function Sidebar(): ReactElement {
   const [hovered, setHovered] = useState<string | null>(null)
   const [isMyDrivesOpen, setIsMyDriveOpen] = useState(false)
   const [isTrashOpen, setIsTrashOpen] = useState(false)
   const [isCreateDriveOpen, setIsCreateDriveOpen] = useState(false)
+  const [usableStamps, setUsableStamps] = useState<PostageBatch[]>([])
+
+  const { beeApi } = useContext(SettingsContext)
 
   const { setActualItemView, setView } = useView()
+
+  useEffect(() => {
+    const getStamps = async () => {
+      const stamps = await getUsableStamps(beeApi)
+      setUsableStamps([...stamps])
+    }
+    getStamps()
+  }, [beeApi])
 
   return (
     <div className="fm-sidebar">
@@ -45,12 +59,12 @@ export function Sidebar(): ReactElement {
           </div>
           <div>My Drives</div>
         </div>
-        {isMyDrivesOpen && (
-          <div className={`fm-drive-items-container fm-drive-items-container-open`}>
-            <DriveItem name="Drive A" />
-            <DriveItem name="Drive B" />
-          </div>
-        )}
+        {isMyDrivesOpen &&
+          usableStamps?.map((stamp, index) => (
+            <div key={index} className="fm-drive-items-container fm-drive-items-container-open">
+              <DriveItem label={stamp.label} size={stamp.amount} />
+            </div>
+          ))}
         <div
           className="fm-sidebar-item"
           onMouseEnter={() => setHovered('trash')}

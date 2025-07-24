@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 import './FileBrowserTopBar.scss'
-import { useView } from '../../../providers/FileViewContext'
+import { useView } from '../../../providers/FMFileViewContext'
 
 export function FileBrowserTopBar(): ReactElement {
   const { actualItemView } = useView()

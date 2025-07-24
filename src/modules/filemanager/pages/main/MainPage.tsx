@@ -5,11 +5,11 @@ import { Header } from '../../components/Header/Header'
 import { Sidebar } from '../../components/Sidebar/Sidebar'
 import { OwnerStatusBar } from '../../components/OwnerStatusBar/OwnerStatusBar'
 import { FileBrowser } from '../../components/FileBrowser/FileBrowser'
-import { FileViewProvider } from '../../providers/FileViewContext'
+import { FMFileViewProvider } from '../../providers/FMFileViewContext'
 
 export function MainPage(): ReactElement {
   return (
-    <FileViewProvider>
+    <FMFileViewProvider>
       <div className="fm-main">
         <Header />
         <div className="fm-main-content">
@@ -19,6 +19,6 @@ export function MainPage(): ReactElement {
         </div>
         <OwnerStatusBar />
       </div>
-    </FileViewProvider>
+    </FMFileViewProvider>
   )
 }

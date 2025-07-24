@@ -10,8 +10,8 @@ import AccessIcon from 'remixicon-react/ShieldKeyholeLineIcon'
 import HardDriveIcon from 'remixicon-react/HardDrive2LineIcon'
 import { DeleteFileModal } from '../../DeleteFileModal/DeleteFileModal'
 import { VersionHistoryModal } from '../../VersionHistoryModal/VersionHistoryModal'
-import { useView } from '../../../providers/FileViewContext'
 import { ViewType } from '../../../constants/constants'
+import { useView } from '../../../providers/FMFileViewContext'
 
 interface FileItemProps {
   icon: string

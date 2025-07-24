@@ -10,14 +10,16 @@ import { useContextMenu } from '../../../hooks/useContextMenu'
 import { FMButton } from '../../FMButton/FMButton'
 import { DestroyDriveModal } from '../../DestroyDriveModal/DestroyDriveModal'
 import { UpgradeDriveModal } from '../../UpgradeDriveModal/UpgradeDriveModal'
-import { useView } from '../../../providers/FileViewContext'
 import { ViewType } from '../../../constants/constants'
+import { useView } from '../../../providers/FMFileViewContext'
 
 interface DriveItemProps {
-  name: string
+  label?: string
+  size?: string
+  validity?: number
 }
 
-export function DriveItem({ name }: DriveItemProps): ReactElement {
+export function DriveItem({ label }: DriveItemProps): ReactElement {
   const [isHovered, setIsHovered] = useState(false)
   const [isDestroyDriveModalOpen, setIsDestroyDriveModalOpen] = useState(false)
   const [isUpgradeDriveModalOpen, setIsUpgradeDriveModalOpen] = useState(false)
@@ -34,13 +36,14 @@ export function DriveItem({ name }: DriveItemProps): ReactElement {
   function handleDestroyDriveClick() {
     setShowContext(false)
   }
+  const driveName = label || 'Drive'
 
   return (
     <div
       className="fm-drive-item-container"
       onClick={() => {
         setView(ViewType.File)
-        setActualItemView?.(name)
+        setActualItemView?.(driveName)
       }}
     >
       <div
@@ -50,7 +53,7 @@ export function DriveItem({ name }: DriveItemProps): ReactElement {
       >
         <div className="fm-drive-item-header">
           <div className="fm-drive-item-icon">{isHovered ? <DriveFill size="16px" /> : <Drive size="16px" />}</div>
-          <div>{name}</div>
+          <div>{driveName}</div>
         </div>
         <div className="fm-drive-item-content">
           <div className="fm-drive-item-capacity">
@@ -93,10 +96,10 @@ export function DriveItem({ name }: DriveItemProps): ReactElement {
         <FMButton label="Upgrade" variant="primary" size="small" onClick={() => setIsUpgradeDriveModalOpen(true)} />
       </div>
       {isUpgradeDriveModalOpen && (
-        <UpgradeDriveModal driveName="Drive A" onCancelClick={() => setIsUpgradeDriveModalOpen(false)} />
+        <UpgradeDriveModal driveName={driveName} onCancelClick={() => setIsUpgradeDriveModalOpen(false)} />
       )}
       {isDestroyDriveModalOpen && (
-        <DestroyDriveModal driveName="Drive A" onCancelClick={() => setIsDestroyDriveModalOpen(false)} />
+        <DestroyDriveModal driveName={driveName} onCancelClick={() => setIsDestroyDriveModalOpen(false)} />
       )}
     </div>
   )

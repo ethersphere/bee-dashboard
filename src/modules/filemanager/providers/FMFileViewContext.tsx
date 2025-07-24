@@ -8,24 +8,24 @@ interface ViewContextProps {
   setActualItemView?: (view: string) => void
 }
 
-const FileViewContext = createContext<ViewContextProps | undefined>(undefined)
+const FMFileViewContext = createContext<ViewContextProps | undefined>(undefined)
 
-export function FileViewProvider({ children }: { children: ReactNode }) {
+export function FMFileViewProvider({ children }: { children: ReactNode }) {
   const [view, setView] = useState<ViewType>(ViewType.File)
   const [actualItemView, setActualItemView] = useState<string | undefined>(undefined)
 
   return (
-    <FileViewContext.Provider value={{ view, setView, actualItemView, setActualItemView }}>
+    <FMFileViewContext.Provider value={{ view, setView, actualItemView, setActualItemView }}>
       {children}
-    </FileViewContext.Provider>
+    </FMFileViewContext.Provider>
   )
 }
 
 export function useView() {
-  const context = useContext(FileViewContext)
+  const context = useContext(FMFileViewContext)
 
   if (!context) {
-    throw new Error('useView must be used within a FileViewProvider')
+    throw new Error('useView must be used within a FMFileViewProvider')
   }
 
   return context

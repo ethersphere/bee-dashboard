@@ -10,7 +10,7 @@ import { NotificationBar } from '../NotificationBar/NotificationBar'
 
 import { FileTransferType, ViewType } from '../../constants/constants'
 import { FileProgressNotification } from '../FileProgressNotification/FileProgressNotification'
-import { useView } from '../../providers/FileViewContext'
+import { useView } from '../../providers/FMFileViewContext'
 
 export function FileBrowser(): ReactElement {
   const { showContext, pos, contextRef, handleContextMenu, handleCloseContext } = useContextMenu<HTMLDivElement>()
