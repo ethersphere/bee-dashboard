@@ -19,7 +19,7 @@ export const getUsableStamps = async (bee: Bee | null): Promise<PostageBatch[]> 
   }
 
   try {
-    return (await bee.getAllPostageBatch())
+    return (await bee.getPostageBatches())
       .filter(s => s.usable)
       .sort((a, b) => (a.label || '').localeCompare(b.label || ''))
   } catch (error: unknown) {

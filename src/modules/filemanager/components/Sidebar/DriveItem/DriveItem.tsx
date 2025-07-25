@@ -12,14 +12,13 @@ import { DestroyDriveModal } from '../../DestroyDriveModal/DestroyDriveModal'
 import { UpgradeDriveModal } from '../../UpgradeDriveModal/UpgradeDriveModal'
 import { ViewType } from '../../../constants/constants'
 import { useView } from '../../../providers/FMFileViewContext'
+import { PostageBatch } from '@ethersphere/bee-js'
 
 interface DriveItemProps {
-  label?: string
-  size?: string
-  validity?: number
+  stamp: PostageBatch
 }
 
-export function DriveItem({ label }: DriveItemProps): ReactElement {
+export function DriveItem({ stamp }: DriveItemProps): ReactElement {
   const [isHovered, setIsHovered] = useState(false)
   const [isDestroyDriveModalOpen, setIsDestroyDriveModalOpen] = useState(false)
   const [isUpgradeDriveModalOpen, setIsUpgradeDriveModalOpen] = useState(false)
@@ -36,7 +35,10 @@ export function DriveItem({ label }: DriveItemProps): ReactElement {
   function handleDestroyDriveClick() {
     setShowContext(false)
   }
-  const driveName = label || 'Drive'
+
+  const batchIdStr = stamp.batchID.toString()
+  const shortBatchId = batchIdStr.length > 12 ? `${batchIdStr.slice(0, 4)}...${batchIdStr.slice(-4)}` : batchIdStr
+  const driveName = stamp.label || shortBatchId
 
   return (
     <div
@@ -57,9 +59,10 @@ export function DriveItem({ label }: DriveItemProps): ReactElement {
         </div>
         <div className="fm-drive-item-content">
           <div className="fm-drive-item-capacity">
-            Capacity <ProgressBar value={20} width="64px" /> 8.7 GB/10 GB
+            Capacity <ProgressBar value={stamp.usage * 100} width="64px" /> {stamp.remainingSize.toGigabytes()} dd
+            {stamp.size.toGigabytes() - stamp.remainingSize.toGigabytes()} GB / {stamp.size.toGigabytes()} GB
           </div>
-          <div className="fm-drive-item-capacity">Expiry date 2025-08-20</div>
+          <div className="fm-drive-item-capacity">Expiry date: {stamp.duration.toEndDate().toLocaleDateString()}</div>
         </div>
       </div>
       <div className="fm-drive-item-actions">

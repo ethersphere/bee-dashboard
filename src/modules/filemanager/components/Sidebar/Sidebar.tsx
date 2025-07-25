@@ -62,7 +62,7 @@ export function Sidebar(): ReactElement {
         {isMyDrivesOpen &&
           usableStamps?.map((stamp, index) => (
             <div key={index} className="fm-drive-items-container fm-drive-items-container-open">
-              <DriveItem label={stamp.label} size={stamp.amount} />
+              <DriveItem stamp={stamp} />
             </div>
           ))}
         <div
