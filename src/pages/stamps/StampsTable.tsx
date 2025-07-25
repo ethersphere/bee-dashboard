@@ -28,10 +28,10 @@ function StampsTable({ postageStamps }: Props): ReactElement | null {
     <ExpandableList label="Postage Stamps" defaultOpen>
       {postageStamps.map(stamp => (
         <ExpandableElement
-          key={stamp.batchID}
+          key={stamp.batchID.toHex()}
           expandable={
             <>
-              <ExpandableListItemKey label="Batch ID" value={stamp.batchID} />
+              <ExpandableListItemKey label="Batch ID" value={stamp.batchID.toHex()} />
               <ExpandableListItem label="Depth" value={String(stamp.depth)} />
               <ExpandableListItem
                 label="Capacity"
@@ -40,13 +40,9 @@ function StampsTable({ postageStamps }: Props): ReactElement | null {
                 )}`}
               />
               <ExpandableListItem label="Amount" value={parseInt(stamp.amount, 10).toLocaleString()} />
-              <ExpandableListItem
-                label="Expires in"
-                value={stamp.batchTTL === -1 ? 'does not expire' : `${secondsToTimeString(stamp.batchTTL)}`}
-              />
+              <ExpandableListItem label="Expires in" value={secondsToTimeString(stamp.duration.toSeconds())} />
               <ExpandableListItem label="Label" value={stamp.label} />
               <ExpandableListItem label="Usable" value={stamp.usable ? 'yes' : 'no'} />
-              <ExpandableListItem label="Exists" value={stamp.exists ? 'yes' : 'no'} />
               <ExpandableListItem label="Immutable" value={stamp.immutableFlag ? 'yes' : 'no'} />
               <ExpandableListItem label="Purchase Block Number" value={stamp.blockNumber} />
               <ExpandableListItemActions>

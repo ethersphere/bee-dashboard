@@ -1,6 +1,7 @@
 import { debounce } from '@material-ui/core'
-import { Contract, providers, Wallet, BigNumber as BN } from 'ethers'
-import { bzzABI, BZZ_TOKEN_ADDRESS } from './bzz-abi'
+import { BZZ, DAI, EthAddress, PrivateKey } from '@ethersphere/bee-js'
+import { BigNumber as BN, Contract, providers, Wallet } from 'ethers'
+import { BZZ_TOKEN_ADDRESS, bzzABI } from './bzz-abi'
 
 const NETWORK_ID = 100
 
@@ -12,13 +13,12 @@ async function getNetworkChainId(url: string): Promise<number> {
   return network.chainId
 }
 
-async function eth_getBalance(address: string, provider: providers.JsonRpcProvider): Promise<string> {
-  if (!address.startsWith('0x')) {
-    address = `0x${address}`
-  }
-  const balance = await provider.getBalance(address)
+async function eth_getBalance(address: EthAddress | string, provider: providers.JsonRpcProvider): Promise<DAI> {
+  address = new EthAddress(address)
 
-  return balance.toString()
+  const balance = await provider.getBalance(address.toHex())
+
+  return DAI.fromWei(balance.toString())
 }
 
 async function eth_getBlockByNumber(provider: providers.JsonRpcProvider): Promise<string> {
@@ -28,17 +28,16 @@ async function eth_getBlockByNumber(provider: providers.JsonRpcProvider): Promis
 }
 
 async function eth_getBalanceERC20(
-  address: string,
+  address: EthAddress | string,
   provider: providers.JsonRpcProvider,
   tokenAddress = BZZ_TOKEN_ADDRESS,
-): Promise<string> {
-  if (!address.startsWith('0x')) {
-    address = `0x${address}`
-  }
-  const contract = new Contract(tokenAddress, bzzABI, provider)
-  const balance = await contract.balanceOf(address)
+): Promise<BZZ> {
+  address = new EthAddress(address)
 
-  return balance.toString()
+  const contract = new Contract(tokenAddress, bzzABI, provider)
+  const balance = await contract.balanceOf(address.toHex())
+
+  return BZZ.fromPLUR(balance.toString())
 }
 
 interface TransferResponse {
@@ -47,29 +46,34 @@ interface TransferResponse {
 }
 
 export async function estimateNativeTransferTransactionCost(
-  privateKey: string,
+  privateKey: PrivateKey | string,
   jsonRpcProvider: string,
-): Promise<{ gasPrice: BN; totalCost: BN }> {
+): Promise<{ gasPrice: DAI; totalCost: DAI }> {
+  privateKey = new PrivateKey(privateKey)
+
   const signer = await makeReadySigner(privateKey, jsonRpcProvider)
   const gasLimit = '21000'
   const gasPrice = await signer.getGasPrice()
 
-  return { gasPrice, totalCost: gasPrice.mul(gasLimit) }
+  return { gasPrice: DAI.fromWei(gasPrice.toString()), totalCost: DAI.fromWei(gasPrice.mul(gasLimit).toString()) }
 }
 
 export async function sendNativeTransaction(
-  privateKey: string,
-  to: string,
-  value: string,
+  privateKey: PrivateKey | string,
+  to: EthAddress | string,
+  value: DAI,
   jsonRpcProvider: string,
-  externalGasPrice?: BN,
+  externalGasPrice?: DAI,
 ): Promise<TransferResponse> {
+  privateKey = new PrivateKey(privateKey)
+  to = new EthAddress(to)
+
   const signer = await makeReadySigner(privateKey, jsonRpcProvider)
-  const gasPrice = externalGasPrice ?? (await signer.getGasPrice())
+  const gasPrice = externalGasPrice ?? DAI.fromWei((await signer.getGasPrice()).toString())
   const transaction = await signer.sendTransaction({
-    to,
-    value: BN.from(value),
-    gasPrice,
+    to: to.toHex(),
+    value: BN.from(value.toWeiString()),
+    gasPrice: BN.from(gasPrice.toWeiString()),
     gasLimit: BN.from(21000),
     type: 0,
   })
@@ -79,11 +83,14 @@ export async function sendNativeTransaction(
 }
 
 export async function sendBzzTransaction(
-  privateKey: string,
-  to: string,
-  value: string,
+  privateKey: PrivateKey | string,
+  to: EthAddress | string,
+  value: BZZ,
   jsonRpcProvider: string,
 ): Promise<TransferResponse> {
+  privateKey = new PrivateKey(privateKey)
+  to = new EthAddress(to)
+
   const signer = await makeReadySigner(privateKey, jsonRpcProvider)
   const gasPrice = await signer.getGasPrice()
   const bzz = new Contract(BZZ_TOKEN_ADDRESS, bzzABI, signer)
@@ -93,10 +100,10 @@ export async function sendBzzTransaction(
   return { transaction, receipt }
 }
 
-async function makeReadySigner(privateKey: string, jsonRpcProvider: string) {
+async function makeReadySigner(privateKey: PrivateKey, jsonRpcProvider: string) {
   const provider = new providers.JsonRpcProvider(jsonRpcProvider, NETWORK_ID)
   await provider.ready
-  const signer = new Wallet(privateKey, provider)
+  const signer = new Wallet(privateKey.toUint8Array(), provider)
 
   return signer
 }

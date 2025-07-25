@@ -114,10 +114,10 @@ export function Upload(): ReactElement {
     beeApi
       .uploadFiles(stamp.batchID, fls, { indexDocument, deferred: true })
       .then(hash => {
-        putHistory(HISTORY_KEYS.UPLOAD_HISTORY, hash.reference, getAssetNameFromFiles(files))
+        putHistory(HISTORY_KEYS.UPLOAD_HISTORY, hash.reference.toHex(), getAssetNameFromFiles(files))
 
         if (uploadOrigin.origin === 'UPLOAD') {
-          navigate(ROUTES.HASH.replace(':hash', hash.reference), { replace: true })
+          navigate(ROUTES.HASH.replace(':hash', hash.reference.toHex()), { replace: true })
         } else {
           updateFeed(beeApi, identity as Identity, hash.reference, stamp.batchID, password as string).then(() => {
             persistIdentity(identities, identity as Identity)
@@ -164,7 +164,7 @@ export function Upload(): ReactElement {
         <>
           <Box mb={2}>
             {hasAnyStamps && stampMode === 'SELECT' ? (
-              <PostageStampSelector onSelect={stamp => setStamp(stamp)} defaultValue={stamp?.batchID} />
+              <PostageStampSelector onSelect={stamp => setStamp(stamp)} defaultValue={stamp?.batchID.toHex()} />
             ) : (
               <PostageStampAdvancedCreation onFinished={() => setStampMode('SELECT')} />
             )}

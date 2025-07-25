@@ -1,17 +1,16 @@
 import { Box, Typography } from '@material-ui/core'
+import { BZZ, DAI } from '@ethersphere/bee-js'
 import { Wallet } from 'ethers'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
-import ArrowRight from 'remixicon-react/ArrowRightLineIcon'
 import { useNavigate } from 'react-router'
-import { Context as SettingsContext } from '../../providers/Settings'
+import ArrowRight from 'remixicon-react/ArrowRightLineIcon'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { ProgressIndicator } from '../../components/ProgressIndicator'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmDivider } from '../../components/SwarmDivider'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
-import { BzzToken } from '../../models/BzzToken'
-import { DaiToken } from '../../models/DaiToken'
+import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
 import { Rpc } from '../../utils/rpc'
 
@@ -29,10 +28,10 @@ export function GiftCardTopUpIndex(): ReactElement {
     setLoading(true)
     try {
       const wallet = new Wallet(giftCode, rpcProvider)
-      const dai = new DaiToken(await Rpc._eth_getBalance(wallet.address, rpcProvider))
-      const bzz = new BzzToken(await Rpc._eth_getBalanceERC20(wallet.address, rpcProvider))
+      const dai = await Rpc._eth_getBalance(wallet.address, rpcProvider)
+      const bzz = await Rpc._eth_getBalanceERC20(wallet.address, rpcProvider)
 
-      if (dai.toDecimal.lt(0.001) || bzz.toDecimal.lt(0.001)) {
+      if (dai.lt(DAI.fromDecimalString('0.001')) || bzz.lt(BZZ.fromDecimalString('0.001'))) {
         throw Error('Gift wallet does not have enough funds')
       }
       enqueueSnackbar('Successfully verified gift wallet', { variant: 'success' })

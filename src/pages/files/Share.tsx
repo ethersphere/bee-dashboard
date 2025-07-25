@@ -1,4 +1,5 @@
 import { Box, Typography } from '@material-ui/core'
+import { MantarayNode, NULL_ADDRESS } from '@ethersphere/bee-js'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 import { useSnackbar } from 'notistack'
@@ -12,11 +13,10 @@ import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
 import { determineHistoryName, HISTORY_KEYS, putHistory } from '../../utils/local-storage'
-import { ManifestJs } from '../../utils/manifest'
 import { AssetPreview } from './AssetPreview'
 import { AssetSummary } from './AssetSummary'
-import { DownloadActionBar } from './DownloadActionBar'
 import { AssetSyncing } from './AssetSyncing'
+import { DownloadActionBar } from './DownloadActionBar'
 
 export function Share(): ReactElement {
   const { apiUrl, beeApi } = useContext(SettingsContext)
@@ -41,43 +41,56 @@ export function Share(): ReactElement {
       return
     }
 
-    const manifestJs = new ManifestJs(beeApi)
-    const isManifest = await manifestJs.isManifest(reference)
+    try {
+      let manifest = await MantarayNode.unmarshal(beeApi, reference)
+      await manifest.loadRecursively(beeApi)
 
-    if (!isManifest) {
+      // If the manifest is a feed, resolve it and overwrite the manifest
+      await manifest.resolveFeed(beeApi).then(
+        async feed =>
+          await feed.ifPresentAsync(async feedUpdate => {
+            manifest = MantarayNode.unmarshalFromData(feedUpdate.payload.toUint8Array(), NULL_ADDRESS)
+            await manifest.loadRecursively(beeApi)
+          }),
+      )
+
+      const entries = manifest.collectAndMap()
+      delete entries[META_FILE_NAME]
+      setSwarmEntries(entries)
+
+      const docsMetadata = manifest.getDocsMetadata()
+
+      // needed in catch block, shadows the outer variable
+      const indexDocument = docsMetadata.indexDocument
+      setIndexDocument(indexDocument)
+
+      try {
+        const remoteMetadata = await beeApi.downloadFile(reference, META_FILE_NAME)
+        const formattedMetadata = remoteMetadata.data.toJSON() as Metadata
+
+        if (formattedMetadata.isVideo || formattedMetadata.isImage) {
+          setPreview(`${apiUrl}/bzz/${reference}`)
+        }
+        setMetadata({ ...formattedMetadata, hash })
+      } catch (e) {
+        // if metadata is not available or invalid go with the default one
+        const count = Object.keys(entries).length
+        setMetadata({
+          hash,
+          type: count > 1 ? 'folder' : 'unknown',
+          name: reference,
+          count,
+          isWebsite: Boolean(indexDocument && /.*\.html?$/i.test(indexDocument)),
+          isVideo: Boolean(indexDocument && /.*\.(mp4|webm|ogg|mp3|ogg|wav)$/i.test(indexDocument)),
+          isImage: Boolean(indexDocument && /.*\.(jpg|jpeg|png|gif|webp|svg)$/i.test(indexDocument)),
+          // naive assumption based on indexDocument, we don't want to download the whole manifest
+        })
+      }
+    } catch {
       setNotFound(true)
       enqueueSnackbar('The specified hash does not contain valid content.', { variant: 'error' })
 
       return
-    }
-
-    const entries = await manifestJs.getHashes(reference, { exclude: [META_FILE_NAME] })
-    setSwarmEntries(entries)
-
-    const indexDocument = await manifestJs.getIndexDocumentPath(reference)
-    setIndexDocument(indexDocument)
-
-    try {
-      const remoteMetadata = await beeApi.downloadFile(reference, META_FILE_NAME)
-      const formattedMetadata = JSON.parse(remoteMetadata.data.text()) as Metadata
-
-      if (formattedMetadata.isVideo || formattedMetadata.isImage) {
-        setPreview(`${apiUrl}/bzz/${reference}`)
-      }
-      setMetadata({ ...formattedMetadata, hash })
-    } catch (e) {
-      // if metadata is not available or invalid go with the default one
-      const count = Object.keys(entries).length
-      setMetadata({
-        hash,
-        type: count > 1 ? 'folder' : 'unknown',
-        name: reference,
-        count,
-        isWebsite: Boolean(indexDocument && /.*\.html?$/i.test(indexDocument)),
-        isVideo: Boolean(indexDocument && /.*\.(mp4|webm|ogg|mp3|ogg|wav)$/i.test(indexDocument)),
-        isImage: Boolean(indexDocument && /.*\.(jpg|jpeg|png|gif|webp|svg)$/i.test(indexDocument)),
-        // naive assumption based on indexDocument, we don't want to donwload the whole manifest
-      })
     }
   }
 
@@ -119,7 +132,7 @@ export function Share(): ReactElement {
     } else {
       const zip = new JSZip()
       for (const [path, hash] of Object.entries(swarmEntries)) {
-        zip.file(path, await beeApi.downloadData(hash))
+        zip.file(path, (await beeApi.downloadData(hash)).toUint8Array())
       }
       const content = await zip.generateAsync({ type: 'blob' })
       saveAs(content, reference + '.zip')

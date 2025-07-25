@@ -1,6 +1,6 @@
-import { PostageBatchOptions, Utils } from '@ethersphere/bee-js'
 import { Box, Button, Grid, Slider, Typography } from '@material-ui/core'
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles'
+import { Duration, PostageBatchOptions, Size, Utils } from '@ethersphere/bee-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -10,7 +10,7 @@ import { SwarmTextInput } from '../../components/SwarmTextInput'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as StampsContext } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
-import { calculateStampPrice, convertAmountToSeconds, secondsToTimeString, waitUntilStampExists } from '../../utils'
+import { secondsToTimeString } from '../../utils'
 
 interface Props {
   onFinished: () => void
@@ -46,8 +46,8 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
   const { refresh } = useContext(StampsContext)
   const { beeApi } = useContext(SettingsContext)
 
-  const [depthInput, setDepthInput] = useState<number>(Utils.getDepthForCapacity(4))
-  const [amountInput, setAmountInput] = useState<string>(Utils.getAmountForTtl(30))
+  const [depthInput, setDepthInput] = useState<number>(Utils.getDepthForSize(Size.fromGigabytes(4)))
+  const [amountInput, setAmountInput] = useState<bigint>(Utils.getAmountForDuration(Duration.fromDays(30), 26500, 5))
   const [labelInput, setLabelInput] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [buttonValue, setButtonValue] = useState(4)
@@ -56,24 +56,24 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
     if (typeof newValue !== 'number') {
       return
     }
-    const amountValue = Utils.getAmountForTtl(newValue)
+    const amountValue = Utils.getAmountForDuration(Duration.fromDays(newValue), 26500, 5)
     setAmountInput(amountValue)
   }
 
   const { enqueueSnackbar } = useSnackbar()
 
-  function getTtl(amount: string): string {
+  function getTtl(amount: bigint): string {
     const pricePerBlock = 24000
 
     return `${secondsToTimeString(
-      convertAmountToSeconds(parseInt(amount, 10), pricePerBlock),
-    )} (with price of ${pricePerBlock.toFixed(0)} PLUR per block)`
+      Utils.getStampDuration(amount, pricePerBlock, 5).toSeconds(),
+    )} (with price of ${pricePerBlock} PLUR per block)`
   }
 
   function getPrice(depth: number, amount: bigint): string {
-    const price = calculateStampPrice(depth, amount)
+    const price = Utils.getStampCost(depth, amount)
 
-    return `${price.toSignificantDigits()} xBZZ`
+    return `${price.toSignificantDigits(4)} xBZZ`
   }
 
   async function submit() {
@@ -96,8 +96,7 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
         immutableFlag: true,
       }
 
-      const batchId = await beeApi.createPostageBatch(amount.toString(), depth, options)
-      await waitUntilStampExists(batchId, beeApi)
+      await beeApi.createPostageBatch(amount.toString(), depth, options)
       await refresh()
       onFinished()
     } catch (e) {
@@ -109,7 +108,7 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
 
   function handleBatchSize(gigabytes: number) {
     setButtonValue(gigabytes)
-    const capacity = Utils.getDepthForCapacity(gigabytes)
+    const capacity = Utils.getDepthForSize(Size.fromGigabytes(gigabytes))
     setDepthInput(capacity)
   }
 

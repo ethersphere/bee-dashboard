@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function PostageStamp({ stamp, shorten }: Props): ReactElement {
-  const batchId = shorten ? stamp.batchID.slice(0, 8) : stamp.batchID
+  const batchId = shorten ? stamp.batchID.toHex().slice(0, 8) : stamp.batchID
   const label = `${batchId}${stamp.label ? ` - ${stamp.label}` : ''}`
 
   return (

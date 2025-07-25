@@ -14,7 +14,7 @@ export function PostageStampSelector({ onSelect, defaultValue }: Props): ReactEl
     if (!stamps) {
       return
     }
-    const stamp = stamps.find(x => x.batchID === stampId)
+    const stamp = stamps.find(x => x.batchID.toHex() === stampId)
 
     if (stamp) {
       onSelect(stamp)
@@ -24,8 +24,8 @@ export function PostageStampSelector({ onSelect, defaultValue }: Props): ReactEl
   return (
     <SwarmSelect
       options={(stamps || []).map(x => ({
-        label: x.label ? x.batchID.slice(0, 8) + ' - ' + x.label : x.batchID.slice(0, 8),
-        value: x.batchID,
+        label: x.label ? x.batchID.toHex().slice(0, 8) + ' - ' + x.label : x.batchID.toHex().slice(0, 8),
+        value: x.batchID.toHex(),
       }))}
       onChange={event => onChange(event.target.value as string)}
       defaultValue={defaultValue}
