@@ -91,6 +91,16 @@
   width: 33%;
 }
 
+.fm-input-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  margin-bottom: 4px;
+  color: rgb(55, 65, 81);
+  font-weight: 700;
+}
+
 .fm-red-font {
   color: rgb(220, 38, 38);
 }

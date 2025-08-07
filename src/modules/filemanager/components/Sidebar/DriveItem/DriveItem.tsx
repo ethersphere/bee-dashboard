@@ -59,7 +59,7 @@ export function DriveItem({ stamp }: DriveItemProps): ReactElement {
         </div>
         <div className="fm-drive-item-content">
           <div className="fm-drive-item-capacity">
-            Capacity <ProgressBar value={stamp.usage * 100} width="64px" /> {stamp.remainingSize.toGigabytes()} dd
+            Capacity <ProgressBar value={stamp.usage * 100} width="64px" />{' '}
             {stamp.size.toGigabytes() - stamp.remainingSize.toGigabytes()} GB / {stamp.size.toGigabytes()} GB
           </div>
           <div className="fm-drive-item-capacity">Expiry date: {stamp.duration.toEndDate().toLocaleDateString()}</div>

@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles({
   root: {
-    width: '90%',
+    width: '98%',
     marginLeft: '-3px',
   },
   rail: {
@@ -29,6 +29,8 @@ const useStyles = makeStyles({
 })
 
 interface FMSliderProps {
+  id?: string
+  label?: string
   marks?: { value: number; label: string }[]
   defaultValue?: number
   onChange: (value: number) => void
@@ -37,12 +39,21 @@ interface FMSliderProps {
   step?: number
 }
 
-export function FMSlider({ marks, defaultValue, onChange, minValue, maxValue, step }: FMSliderProps): ReactElement {
+export function FMSlider({
+  id,
+  label,
+  marks,
+  defaultValue,
+  onChange,
+  minValue,
+  maxValue,
+  step,
+}: FMSliderProps): ReactElement {
   const [value, setValue] = useState(defaultValue || 0)
   const classes = useStyles()
 
   return (
-    <div className="fm-slider">
+    <>
       <style>
         {`
             .fm-slider .MuiSlider-markLabel[data-index="${value}"].MuiSlider-markLabelActive {
@@ -51,25 +62,34 @@ export function FMSlider({ marks, defaultValue, onChange, minValue, maxValue, st
               }
               `}
       </style>
-      <Slider
-        classes={{
-          root: classes.root,
-          rail: classes.rail,
-          track: classes.track,
-          thumb: classes.thumb,
-        }}
-        value={value || 0}
-        onChange={(_, val) => {
-          setValue(Number(val))
-          onChange(Number(val))
-        }}
-        defaultValue={defaultValue || 0}
-        min={minValue || 0}
-        max={maxValue || 100}
-        step={step || 1}
-        marks={marks}
-        valueLabelDisplay="off"
-      />
-    </div>
+      <div className="fm-input-label">
+        {label && (
+          <label htmlFor={id} className="fm-dropdown-label">
+            {label}
+          </label>
+        )}
+      </div>
+      <div className="fm-slider">
+        <Slider
+          classes={{
+            root: classes.root,
+            rail: classes.rail,
+            track: classes.track,
+            thumb: classes.thumb,
+          }}
+          value={value || 0}
+          onChange={(_, val) => {
+            setValue(Number(val))
+            onChange(Number(val))
+          }}
+          defaultValue={defaultValue || 0}
+          min={minValue || 0}
+          max={maxValue || 100}
+          step={step || 1}
+          marks={marks}
+          valueLabelDisplay="off"
+        />
+      </div>
+    </>
   )
 }

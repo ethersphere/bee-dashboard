@@ -29,3 +29,34 @@ export const getUsableStamps = async (bee: Bee | null): Promise<PostageBatch[]> 
     return []
   }
 }
+
+export const fromBytesConversion = (size: number, metric: string) => {
+  switch (metric) {
+    case 'GB':
+      return size / 1000 / 1000 / 1000
+    case 'MB':
+      return size / 1000 / 1000
+    default:
+      return 0
+  }
+}
+
+const lifetimeAdjustments = new Map<number, (date: Date) => void>([
+  [1, date => date.setDate(date.getDate() + 7)],
+  [2, date => date.setMonth(date.getMonth() + 1)],
+  [3, date => date.setMonth(date.getMonth() + 3)],
+  [4, date => date.setMonth(date.getMonth() + 6)],
+  [5, date => date.setFullYear(date.getFullYear() + 1)],
+])
+
+export function getExpiryDateByLifetime(lifetimeValue: number): Date {
+  const now = new Date()
+
+  const adjustDate = lifetimeAdjustments.get(lifetimeValue)
+
+  if (adjustDate) {
+    adjustDate(now)
+  }
+
+  return now
+}

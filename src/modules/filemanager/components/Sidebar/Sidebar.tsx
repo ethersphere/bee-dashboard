@@ -11,7 +11,7 @@ import DeleteFill from 'remixicon-react/DeleteBin6FillIcon'
 import { DriveItem } from './DriveItem/DriveItem'
 import { CreateDriveModal } from '../CreateDriveModal/CreateDriveModal'
 import { ViewType } from '../../constants/constants'
-import { PostageBatch } from '@ethersphere/bee-js'
+import { Duration, PostageBatch, RedundancyLevel, Size } from '@ethersphere/bee-js'
 import { Context as SettingsContext } from '../../../../providers/Settings'
 import { getUsableStamps } from '../../utils/utils'
 import { useView } from '../../providers/FMFileViewContext'
@@ -22,10 +22,31 @@ export function Sidebar(): ReactElement {
   const [isTrashOpen, setIsTrashOpen] = useState(false)
   const [isCreateDriveOpen, setIsCreateDriveOpen] = useState(false)
   const [usableStamps, setUsableStamps] = useState<PostageBatch[]>([])
+  const [isStampCreationInProgress, setIsStampCreationInProgress] = useState(false)
 
   const { beeApi } = useContext(SettingsContext)
 
   const { setActualItemView, setView } = useView()
+
+  async function handleCreateDrive(
+    size: Size,
+    duration: Duration,
+    label: string,
+    encryption: boolean,
+    erasureCodeLevel: RedundancyLevel,
+  ) {
+    try {
+      setIsStampCreationInProgress(true)
+
+      await beeApi?.buyStorage(size, duration, { label }, undefined, encryption, erasureCodeLevel)
+      setIsStampCreationInProgress(false)
+    } catch (e) {
+      //TODO It needs to be discussed what happens to the error
+      // eslint-disable-next-line no-console
+      console.error('Error creating drive:', e)
+      setIsStampCreationInProgress(false)
+    }
+  }
 
   useEffect(() => {
     const getStamps = async () => {
@@ -33,7 +54,7 @@ export function Sidebar(): ReactElement {
       setUsableStamps([...stamps])
     }
     getStamps()
-  }, [beeApi])
+  }, [beeApi, isStampCreationInProgress])
 
   return (
     <div className="fm-sidebar">
@@ -44,7 +65,18 @@ export function Sidebar(): ReactElement {
           </div>
           <div>Create new drive</div>
         </div>
-        {isCreateDriveOpen && <CreateDriveModal onCancelClick={() => setIsCreateDriveOpen(false)} />}
+        {isCreateDriveOpen && (
+          <CreateDriveModal
+            onCancelClick={() => setIsCreateDriveOpen(false)}
+            handleCreateDrive={(
+              size: Size,
+              duration: Duration,
+              label: string,
+              encryption: boolean,
+              erasureCodeLevel: RedundancyLevel,
+            ) => handleCreateDrive(size, duration, label, encryption, erasureCodeLevel)}
+          />
+        )}
         <div
           className="fm-sidebar-item"
           onMouseEnter={() => setHovered('my-drives')}
@@ -102,7 +134,7 @@ export function Sidebar(): ReactElement {
           </div>
         )}
       </div>
-      <div className="fm-sidebar-drive-creation">Creating drive A...</div>
+      {isStampCreationInProgress && <div className="fm-sidebar-drive-creation">Creating drive A...</div>}
     </div>
   )
 }

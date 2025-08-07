@@ -17,6 +17,10 @@
     margin-left: 3px;
   }
 
+  & .MuiSlider-markLabel[data-index='4'] {
+    left: 98% !important;
+  }
+
   & .MuiSlider-thumb:focus,
   & .MuiSlider-thumb.Mui-focusVisible {
     box-shadow: none !important;

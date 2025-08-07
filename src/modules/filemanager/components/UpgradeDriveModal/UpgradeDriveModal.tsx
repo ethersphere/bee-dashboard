@@ -10,20 +10,14 @@ import DatabaseIcon from 'remixicon-react/Database2LineIcon'
 import WalletIcon from 'remixicon-react/Wallet3LineIcon'
 import ExternalLinkIcon from 'remixicon-react/ExternalLinkLineIcon'
 import CalendarIcon from 'remixicon-react/CalendarLineIcon'
+import { desiredLifetimeOptions } from '../../constants/constants'
 
 const initialCapacityOptions = [
-  { value: '5', label: '5 GB' },
-  { value: '10', label: '10 GB' },
-  { value: '20', label: '20 GB' },
-  { value: '50', label: '50 GB' },
-  { value: '100', label: '100 GB' },
-]
-
-const desiredLifetimeOptions = [
-  { value: '1', label: '1 year' },
-  { value: '2', label: '2 year' },
-  { value: '3', label: '3 year' },
-  { value: '5', label: '5 year' },
+  { value: 5, label: '5 GB' },
+  { value: 10, label: '10 GB' },
+  { value: 20, label: '20 GB' },
+  { value: 50, label: '50 GB' },
+  { value: 100, label: '100 GB' },
 ]
 
 interface UpgradeDriveModalProps {
@@ -33,8 +27,8 @@ interface UpgradeDriveModalProps {
 }
 
 export function UpgradeDriveModal({ driveName, onCancelClick, containerColor }: UpgradeDriveModalProps): ReactElement {
-  const [capacity, setCapacity] = useState('personal')
-  const [lifetime, setLifetime] = useState('personal')
+  const [capacity, setCapacity] = useState(0)
+  const [lifetime, setLifetime] = useState(0)
 
   const modalRoot = document.querySelector('.fm-main') || document.body
 

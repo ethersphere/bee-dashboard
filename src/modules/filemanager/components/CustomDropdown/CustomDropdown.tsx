@@ -5,14 +5,14 @@ import { useClickOutside } from '../../hooks/useClickOutside'
 import { Tooltip } from '../Tooltip/Tooltip'
 
 interface Option {
-  value: string
+  value: number
   label: string
 }
 
 interface CustomDropdownProps {
   options: Option[]
-  value: string
-  onChange: (value: string) => void
+  value: number
+  onChange: (value: number, index: number) => void
   placeholder?: string
   id?: string
   label?: string
@@ -40,7 +40,7 @@ export function CustomDropdown({
   return (
     <div className="fm-custom-dropdown" ref={ref}>
       {label && (
-        <label htmlFor={id} className="fm-dropdown-label">
+        <label htmlFor={id} className="fm-input-label">
           {icon} {label} {infoText && <Tooltip label={infoText ? infoText : ''} iconSize="14px" />}
         </label>
       )}
@@ -55,12 +55,12 @@ export function CustomDropdown({
       </div>
       {open && (
         <ul className="fm-custom-dropdown-list">
-          {options.map(opt => (
+          {options.map((opt, index) => (
             <li
               key={opt.value}
               className={opt.value === value ? 'selected' : ''}
               onClick={() => {
-                onChange(opt.value)
+                onChange(opt.value, index)
                 setOpen(false)
               }}
             >

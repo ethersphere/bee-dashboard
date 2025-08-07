@@ -15,7 +15,14 @@ export function FMFileViewProvider({ children }: { children: ReactNode }) {
   const [actualItemView, setActualItemView] = useState<string | undefined>(undefined)
 
   return (
-    <FMFileViewContext.Provider value={{ view, setView, actualItemView, setActualItemView }}>
+    <FMFileViewContext.Provider
+      value={{
+        view,
+        setView,
+        actualItemView,
+        setActualItemView,
+      }}
+    >
       {children}
     </FMFileViewContext.Provider>
   )
