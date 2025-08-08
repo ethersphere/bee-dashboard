@@ -1,13 +1,18 @@
 import { ReactElement, useContext, useEffect, useRef, useState } from 'react'
 
 import { Duration, RedundancyLevel, Size, Utils } from '@ethersphere/bee-js'
-import './CreateDriveModal.scss'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import './FMInitialModal.scss'
 import { CustomDropdown } from '../CustomDropdown/CustomDropdown'
 import { FMButton } from '../FMButton/FMButton'
-import { fmFetchCost, fromBytesConversion, getExpiryDateByLifetime } from '../../utils/utils'
+import { fmFetchCost, getExpiryDateByLifetime } from '../../utils/utils'
 import { desiredLifetimeOptions } from '../../constants/constants'
 import { Context as SettingsContext } from '../../../../providers/Settings'
 import { FMSlider } from '../FMSlider/FMSlider'
+
+interface FMInitialModalProps {
+  handleVisibility: (isVisible: boolean) => void
+}
 
 const erasureCodeMarks = Object.entries(RedundancyLevel)
   .filter(([key, value]) => typeof value === 'number')
@@ -19,110 +24,77 @@ const erasureCodeMarks = Object.entries(RedundancyLevel)
 const minMarkValue = Math.min(...erasureCodeMarks.map(mark => mark.value))
 const maxMarkValue = Math.max(...erasureCodeMarks.map(mark => mark.value))
 
-interface CreateDriveModalProps {
-  onCancelClick: () => void
-  handleCreateDrive: (
+export function FMInitialModal({ handleVisibility }: FMInitialModalProps): ReactElement {
+  const [isCreateEnabled, setIsCreateEnabled] = useState(false)
+  const [capacity, setCapacity] = useState(0)
+  const [lifetimeIndex, setLifetimeIndex] = useState(0)
+  const [validityEndDate, setValidityEndDate] = useState(new Date())
+  const [isOwnerStampCreationInProgress, setIsOwnerStampCreationInProgress] = useState(false)
+  const [erasureCodeLevel, setErasureCodeLevel] = useState(RedundancyLevel.OFF)
+  const [cost, setCost] = useState('0')
+  const { beeApi } = useContext(SettingsContext)
+  const currentFetch = useRef<Promise<void> | null>(null)
+
+  const handleCreateDrive = async (
     size: Size,
     duration: Duration,
     label: string,
     encryption: boolean,
     erasureCodeLevel: RedundancyLevel,
-  ) => void
-}
-
-export function CreateDriveModal({ onCancelClick, handleCreateDrive }: CreateDriveModalProps): ReactElement {
-  const [isCreateEnabled, setIsCreateEnabled] = useState(false)
-  const [capacity, setCapacity] = useState(0)
-  const [lifetimeIndex, setLifetimeIndex] = useState(0)
-  const [validityEndDate, setValidityEndDate] = useState(new Date())
-  const [label, setLabel] = useState('')
-  const [capacityIndex, setCapacityIndex] = useState(-1)
-  const [encryptionEnabled, setEncryptionEnabled] = useState(false)
-  const [erasureCodeLevel, setErasureCodeLevel] = useState(RedundancyLevel.OFF)
-  const [cost, setCost] = useState('0')
-
-  const [sizeMarks, setSizeMarks] = useState<{ value: number; label: string }[]>([])
-  const { beeApi } = useContext(SettingsContext)
-  const currentFetch = useRef<Promise<void> | null>(null)
-
-  const handleCapacityChange = (value: number, index: number) => {
-    setCapacity(value)
-    setCapacityIndex(index)
-  }
-
-  const createPostageStamp = async () => {
+  ) => {
     try {
-      if (isCreateEnabled) {
-        onCancelClick()
-        await handleCreateDrive(
-          Size.fromBytes(capacity),
-          Duration.fromEndDate(validityEndDate),
-          label,
-          encryptionEnabled,
-          erasureCodeLevel,
-        )
-      }
+      setIsOwnerStampCreationInProgress(true)
+      await beeApi?.buyStorage(size, duration, { label }, undefined, encryption, erasureCodeLevel)
+      setIsOwnerStampCreationInProgress(false)
+      handleVisibility(false)
     } catch (e) {
+      setIsOwnerStampCreationInProgress(false)
+      handleVisibility(true)
       //TODO It needs to be discussed what happens to the error
+      // eslint-disable-next-line no-console
+      console.error('Error creating drive:', e)
     }
   }
 
   useEffect(() => {
-    const newSizes = Array.from(Utils.getStampEffectiveBytesBreakpoints(encryptionEnabled, erasureCodeLevel).values())
+    const newSizes = Array.from(Utils.getStampEffectiveBytesBreakpoints(false, erasureCodeLevel).values())
 
-    setSizeMarks(
-      newSizes.map(size => ({
-        value: size,
-        label: `${fromBytesConversion(size, 'GB').toFixed(2)} GB`,
-      })),
-    )
-
-    setCapacity(newSizes[capacityIndex])
-  }, [encryptionEnabled, erasureCodeLevel])
+    setCapacity(newSizes[2])
+  }, [erasureCodeLevel])
 
   useEffect(() => {
-    if (capacity > 0 && validityEndDate.getTime() > new Date().getTime()) {
+    if (validityEndDate.getTime() > new Date().getTime()) {
       fmFetchCost(capacity, validityEndDate, false, erasureCodeLevel, beeApi, setCost, currentFetch)
 
-      if (label) {
+      if (lifetimeIndex >= 0) {
         setIsCreateEnabled(true)
       }
     } else {
       setCost('0')
       setIsCreateEnabled(false)
     }
-  }, [capacity, validityEndDate, beeApi, label])
+  }, [validityEndDate, beeApi])
 
   useEffect(() => {
     setValidityEndDate(getExpiryDateByLifetime(lifetimeIndex))
   }, [lifetimeIndex])
 
-  return (
-    <div className="fm-modal-container">
+  return isOwnerStampCreationInProgress ? (
+    <div className="fm-initialization-modal-container">
       <div className="fm-modal-window">
-        <div className="fm-modal-window-header">Create new drive</div>
+        <div className="fm-initilization-progress-content">
+          <div>Your registration is being created...</div>
+
+          <CircularProgress size={18} />
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div className="fm-initialization-modal-container">
+      <div className="fm-modal-window">
+        <div className="fm-modal-window-header">Welcome to File Manager</div>
+        <div>You are now initializing the file manager and to do this you need to register.</div>
         <div className="fm-modal-window-body">
-          <div className="fm-modal-window-input-container">
-            <label htmlFor="drive-name">Drive name:</label>
-            <input
-              type="text"
-              id="drive-name"
-              placeholder="My important files"
-              value={label}
-              onChange={e => setLabel(e.target.value)}
-            />
-          </div>
-          <div className="fm-modal-window-input-container">
-            <CustomDropdown
-              id="drive-type"
-              label="Initial capacity:"
-              options={sizeMarks}
-              value={capacity}
-              onChange={handleCapacityChange}
-              placeholder="Select a value"
-              infoText="Amount of data you can store on the drive. Later you can upgrade it."
-            />
-          </div>
           <div className="fm-modal-window-input-container">
             <CustomDropdown
               id="drive-type"
@@ -152,8 +124,20 @@ export function CreateDriveModal({ onCancelClick, handleCreateDrive }: CreateDri
           </div>
         </div>
         <div className="fm-modal-window-footer">
-          <FMButton label="Create drive" variant="primary" disabled={!isCreateEnabled} onClick={createPostageStamp} />
-          <FMButton label="Cancel" variant="secondary" onClick={onCancelClick} />
+          <FMButton
+            label="Purchase"
+            variant="primary"
+            disabled={!isCreateEnabled}
+            onClick={() =>
+              handleCreateDrive(
+                Size.fromBytes(capacity),
+                Duration.fromEndDate(validityEndDate),
+                'owner',
+                false,
+                erasureCodeLevel,
+              )
+            }
+          />
         </div>
       </div>
     </div>

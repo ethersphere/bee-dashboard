@@ -1,4 +1,4 @@
-import { Bee, PostageBatch } from '@ethersphere/bee-js'
+import { Bee, Duration, PostageBatch, RedundancyLevel, Size } from '@ethersphere/bee-js'
 
 import { MouseEvent } from 'react'
 export function preventDefault(event: MouseEvent) {
@@ -59,4 +59,53 @@ export function getExpiryDateByLifetime(lifetimeValue: number): Date {
   }
 
   return now
+}
+
+export const fmGetStorageCost = async (
+  capacity: number,
+  validityEndDate: Date,
+  encryption: boolean,
+  erasureCodeLevel: RedundancyLevel,
+  beeApi: Bee | null,
+): Promise<string> => {
+  try {
+    if (Size.fromBytes(capacity).toGigabytes() >= 0 && validityEndDate.getTime() >= new Date().getTime()) {
+      const cost = await beeApi?.getStorageCost(
+        Size.fromBytes(capacity),
+        Duration.fromEndDate(validityEndDate),
+        undefined,
+        encryption,
+        erasureCodeLevel,
+      )
+
+      return cost ? cost.toSignificantDigits(2) : '0'
+    }
+
+    return '0'
+  } catch (e) {
+    //TODO It needs to be discussed what happens to the error
+    return '0'
+  }
+}
+
+export const fmFetchCost = async (
+  capacity: number,
+  validityEndDate: Date,
+  encryption: boolean,
+  erasureCodeLevel: RedundancyLevel,
+  beeApi: Bee | null,
+  setCost: (cost: string) => void,
+  currentFetch: React.MutableRefObject<Promise<void> | null>,
+) => {
+  if (currentFetch.current) {
+    await currentFetch.current
+  }
+  const fetchPromise = (async () => {
+    const cost = await fmGetStorageCost(capacity, validityEndDate, false, erasureCodeLevel, beeApi)
+    setCost(cost)
+  })()
+
+  currentFetch.current = fetchPromise
+  await fetchPromise
+  currentFetch.current = null
 }

@@ -92,11 +92,15 @@ export function Sidebar(): ReactElement {
           <div>My Drives</div>
         </div>
         {isMyDrivesOpen &&
-          usableStamps?.map((stamp, index) => (
-            <div key={index} className="fm-drive-items-container fm-drive-items-container-open">
-              <DriveItem stamp={stamp} />
-            </div>
-          ))}
+          usableStamps?.map((stamp, index) => {
+            if (stamp.label !== 'owner') {
+              return (
+                <div key={index} className="fm-drive-items-container fm-drive-items-container-open">
+                  <DriveItem stamp={stamp} />
+                </div>
+              )
+            }
+          })}
         <div
           className="fm-sidebar-item"
           onMouseEnter={() => setHovered('trash')}
