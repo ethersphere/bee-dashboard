@@ -6,6 +6,7 @@ import { useContextMenu } from '../../../hooks/useContextMenu'
 import { ViewType } from '../../../constants/constants'
 import { useView } from '../../../providers/FMFileViewContext'
 import type { FileInfo } from '@solarpunkltd/file-manager-lib'
+import { useFMDownloads } from '../../../hooks/useFMDownloads'
 
 interface FileItemProps {
   fileInfo: FileInfo
@@ -31,6 +32,7 @@ const formatBytes = (v?: string) => {
 export function FileItem({ fileInfo }: FileItemProps): ReactElement {
   const { showContext, pos, contextRef, handleContextMenu, handleCloseContext } = useContextMenu<HTMLDivElement>()
   const { view } = useView()
+  const { downloadFile, viewFile } = useFMDownloads()
 
   const name = fileInfo.name
   const size = formatBytes(fileInfo.customMetadata?.size)
@@ -90,10 +92,22 @@ export function FileItem({ fileInfo }: FileItemProps): ReactElement {
         >
           {view === ViewType.File ? (
             <ContextMenu>
-              <div className="fm-context-item" onClick={handleCloseContext}>
+              <div
+                className="fm-context-item"
+                onClick={() => {
+                  handleCloseContext()
+                  viewFile(fileInfo)
+                }}
+              >
                 View / Open
               </div>
-              <div className="fm-context-item" onClick={handleCloseContext}>
+              <div
+                className="fm-context-item"
+                onClick={() => {
+                  handleCloseContext()
+                  downloadFile(fileInfo)
+                }}
+              >
                 Download
               </div>
               <div className="fm-context-item" onClick={handleCloseContext}>
@@ -113,10 +127,22 @@ export function FileItem({ fileInfo }: FileItemProps): ReactElement {
             </ContextMenu>
           ) : (
             <ContextMenu>
-              <div className="fm-context-item" onClick={handleCloseContext}>
+              <div
+                className="fm-context-item"
+                onClick={() => {
+                  handleCloseContext()
+                  viewFile(fileInfo)
+                }}
+              >
                 View / Open
               </div>
-              <div className="fm-context-item" onClick={handleCloseContext}>
+              <div
+                className="fm-context-item"
+                onClick={() => {
+                  handleCloseContext()
+                  downloadFile(fileInfo)
+                }}
+              >
                 Download
               </div>
               <div className="fm-context-item-border" />

@@ -10,6 +10,7 @@ import { FileTransferType, ViewType } from '../../constants/constants'
 import { FileProgressNotification } from '../FileProgressNotification/FileProgressNotification'
 import { useView } from '../../providers/FMFileViewContext'
 import { useFMTransfers } from '../../hooks/useFMTransfers'
+import { useFMDownloads } from '../../hooks/useFMDownloads'
 import { useFM } from '../../providers/FMContext'
 import type { FileInfo } from '@solarpunkltd/file-manager-lib'
 
@@ -18,6 +19,7 @@ export function FileBrowser(): ReactElement {
   const { view } = useView()
   const { fm, files, currentBatch, refreshFiles } = useFM()
   const { uploadFiles, isUploading, uploadCount, uploadItems } = useFMTransfers()
+  const { isDownloading, downloadCount, downloadItems } = useFMDownloads()
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -284,7 +286,13 @@ export function FileBrowser(): ReactElement {
             count={uploadCount}
             items={uploadItems.map(i => ({ name: i.name, percent: i.percent, size: i.size }))}
           />
-          <FileProgressNotification label="Downloading files" type={FileTransferType.Download} />
+          <FileProgressNotification
+            label="Downloading files"
+            type={FileTransferType.Download}
+            open={isDownloading}
+            count={downloadCount}
+            items={downloadItems.map(i => ({ name: i.name, percent: i.percent, size: i.size }))}
+          />
           <NotificationBar numberOfExpiration={2} />
         </div>
       </div>
