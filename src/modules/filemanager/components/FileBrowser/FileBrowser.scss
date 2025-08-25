@@ -82,3 +82,28 @@
 .fm-upload-download-indicator {
   text-decoration: underline;
 }
+
+.fm-drag-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2000;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(4px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  pointer-events: auto;
+}
+
+.fm-drag-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding: .75rem 1rem;
+  background: rgba(255,255,255,0.85);
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.06);
+}

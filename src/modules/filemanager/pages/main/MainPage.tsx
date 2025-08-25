@@ -6,8 +6,9 @@ import { OwnerStatusBar } from '../../components/OwnerStatusBar/OwnerStatusBar'
 import { FileBrowser } from '../../components/FileBrowser/FileBrowser'
 import { FMFileViewProvider } from '../../providers/FMFileViewContext'
 import { FMInitialModal } from '../../components/FMInitialModal/FMInitialModal'
+import { FMProvider } from '../../providers/FMContext'
 import { getUsableStamps } from '../../utils/utils'
-import { Context as SettingsContext } from '../../../../providers/Settings'
+import { Context as SettingsContext, Provider as SettingsProvider } from '../../../../providers/Settings'
 import { PostageBatch } from '@ethersphere/bee-js'
 
 export function MainPage(): ReactElement {
@@ -36,19 +37,23 @@ export function MainPage(): ReactElement {
   }, [showInitialModal])
 
   return (
-    <FMFileViewProvider>
-      <div className="fm-main">
-        {showInitialModal && (
-          <FMInitialModal handleVisibility={(isVisible: boolean) => setShowInitialModal(isVisible)} />
-        )}
-        <Header />
-        <div className="fm-main-content">
-          <Sidebar />
+    <SettingsProvider>
+      <FMProvider>
+        <FMFileViewProvider>
+          <div className="fm-main">
+            {showInitialModal && (
+              <FMInitialModal handleVisibility={(isVisible: boolean) => setShowInitialModal(isVisible)} />
+            )}
+            <Header />
+            <div className="fm-main-content">
+              <Sidebar />
 
-          <FileBrowser />
-        </div>
-        <OwnerStatusBar ownerStamp={ownerStamp} />
-      </div>
-    </FMFileViewProvider>
+              <FileBrowser />
+            </div>
+            <OwnerStatusBar ownerStamp={ownerStamp} />
+          </div>
+        </FMFileViewProvider>
+      </FMProvider>
+    </SettingsProvider>
   )
 }

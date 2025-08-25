@@ -15,6 +15,7 @@ import { Duration, PostageBatch, RedundancyLevel, Size } from '@ethersphere/bee-
 import { Context as SettingsContext } from '../../../../providers/Settings'
 import { getUsableStamps } from '../../utils/utils'
 import { useView } from '../../providers/FMFileViewContext'
+import { useFM } from '../../providers/FMContext'
 
 export function Sidebar(): ReactElement {
   const [hovered, setHovered] = useState<string | null>(null)
@@ -25,8 +26,8 @@ export function Sidebar(): ReactElement {
   const [isStampCreationInProgress, setIsStampCreationInProgress] = useState(false)
 
   const { beeApi } = useContext(SettingsContext)
-
-  const { setActualItemView, setView } = useView()
+  const { setView } = useView()
+  const { currentBatch, setCurrentBatch } = useFM()
 
   async function handleCreateDrive(
     size: Size,
@@ -37,13 +38,8 @@ export function Sidebar(): ReactElement {
   ) {
     try {
       setIsStampCreationInProgress(true)
-
       await beeApi?.buyStorage(size, duration, { label }, undefined, encryption, erasureCodeLevel)
-      setIsStampCreationInProgress(false)
-    } catch (e) {
-      //TODO It needs to be discussed what happens to the error
-      // eslint-disable-next-line no-console
-      console.error('Error creating drive:', e)
+    } finally {
       setIsStampCreationInProgress(false)
     }
   }
@@ -56,6 +52,8 @@ export function Sidebar(): ReactElement {
     getStamps()
   }, [beeApi, isStampCreationInProgress])
 
+  const drives = usableStamps.filter(s => s.label !== 'owner' && s.label !== 'owner-stamp')
+
   return (
     <div className="fm-sidebar">
       <div className="fm-sidebar-content">
@@ -65,18 +63,16 @@ export function Sidebar(): ReactElement {
           </div>
           <div>Create new drive</div>
         </div>
+
         {isCreateDriveOpen && (
           <CreateDriveModal
             onCancelClick={() => setIsCreateDriveOpen(false)}
-            handleCreateDrive={(
-              size: Size,
-              duration: Duration,
-              label: string,
-              encryption: boolean,
-              erasureCodeLevel: RedundancyLevel,
-            ) => handleCreateDrive(size, duration, label, encryption, erasureCodeLevel)}
+            handleCreateDrive={(size, duration, label, encryption, erasureCodeLevel) =>
+              handleCreateDrive(size, duration, label, encryption, erasureCodeLevel)
+            }
           />
         )}
+
         <div
           className="fm-sidebar-item"
           onMouseEnter={() => setHovered('my-drives')}
@@ -91,16 +87,28 @@ export function Sidebar(): ReactElement {
           </div>
           <div>My Drives</div>
         </div>
-        {isMyDrivesOpen &&
-          usableStamps?.map((stamp, index) => {
-            if (stamp.label !== 'owner') {
+
+        {isMyDrivesOpen && (
+          <div className="fm-drive-items-container fm-drive-items-container-open">
+            {drives.map(stamp => {
+              const isSelected = currentBatch?.batchID.toString() === stamp.batchID.toString()
+
               return (
-                <div key={index} className="fm-drive-items-container fm-drive-items-container-open">
+                <div
+                  key={stamp.batchID.toString()}
+                  className={`fm-sidebar-item fm-drive-item${isSelected ? ' selected' : ''}`}
+                  onClick={() => {
+                    setCurrentBatch(stamp)
+                    setView(ViewType.File)
+                  }}
+                >
                   <DriveItem stamp={stamp} />
                 </div>
               )
-            }
-          })}
+            })}
+          </div>
+        )}
+
         <div
           className="fm-sidebar-item"
           onMouseEnter={() => setHovered('trash')}
@@ -108,37 +116,27 @@ export function Sidebar(): ReactElement {
           onClick={() => setIsTrashOpen(!isTrashOpen)}
         >
           <div className="fm-sidebar-item-icon">
-            <ArrowRight size="16px" />
+            {isTrashOpen ? <ArrowDown size="16px" /> : <ArrowRight size="16px" />}
           </div>
           <div className="fm-sidebar-item-icon">
             {hovered === 'trash' ? <DeleteFill size="16px" /> : <Delete size="16px" />}
           </div>
           <div>Trash</div>
         </div>
+
         {isTrashOpen && (
-          <div className={`fm-drive-items-container fm-drive-items-container-open`}>
-            <div
-              className="fm-sidebar-item fm-trash-item"
-              onClick={() => {
-                setView(ViewType.Trash)
-                setActualItemView?.('Drive A Trash')
-              }}
-            >
+          <div className="fm-drive-items-container fm-drive-items-container-open">
+            <div className="fm-sidebar-item fm-trash-item" onClick={() => setView(ViewType.Trash)}>
               Drive A Trash
             </div>
-            <div
-              className="fm-sidebar-item fm-trash-item"
-              onClick={() => {
-                setView(ViewType.Trash)
-                setActualItemView?.('Drive B Trash')
-              }}
-            >
+            <div className="fm-sidebar-item fm-trash-item" onClick={() => setView(ViewType.Trash)}>
               Drive B Trash
             </div>
           </div>
         )}
       </div>
-      {isStampCreationInProgress && <div className="fm-sidebar-drive-creation">Creating drive A...</div>}
+
+      {isStampCreationInProgress && <div className="fm-sidebar-drive-creation">Creating drive…</div>}
     </div>
   )
 }

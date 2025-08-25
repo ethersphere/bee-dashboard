@@ -1,18 +1,32 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import './FileProgressNotification.scss'
 import UpIcon from 'remixicon-react/ArrowUpSLineIcon'
 import DownIcon from 'remixicon-react/ArrowDownSLineIcon'
 import { FileProgressWindow } from '../FileProgressWindow/FileProgressWindow'
 import { FileTransferType } from '../../constants/constants'
 
+type ProgressItem = { name: string; percent?: number; size?: string }
+
 interface FileProgressNotificationProps {
   label?: string
-  percent?: string
   type: FileTransferType
+  open?: boolean
+  count?: number
+  items?: ProgressItem[]
 }
 
-export function FileProgressNotification({ label, percent, type }: FileProgressNotificationProps): ReactElement | null {
-  const [showFileProgressWindow, setShowFileProgressWindow] = useState(false)
+export function FileProgressNotification({
+  label,
+  type,
+  open,
+  count,
+  items,
+}: FileProgressNotificationProps): ReactElement | null {
+  const [showFileProgressWindow, setShowFileProgressWindow] = useState(Boolean(open))
+
+  useEffect(() => {
+    setShowFileProgressWindow(Boolean(open))
+  }, [open])
 
   return (
     <div style={{ position: 'relative' }}>
@@ -24,11 +38,10 @@ export function FileProgressNotification({ label, percent, type }: FileProgressN
 
       {showFileProgressWindow && (
         <FileProgressWindow
-          numberOfFiles={3}
+          numberOfFiles={items && items.length ? undefined : count}
+          items={items}
           type={type}
-          onCancelClick={() => {
-            setShowFileProgressWindow(false)
-          }}
+          onCancelClick={() => setShowFileProgressWindow(false)}
         />
       )}
     </div>

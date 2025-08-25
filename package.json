@@ -25,12 +25,16 @@
     "type": "git",
     "url": "https://github.com/ethersphere/bee-dashboard.git"
   },
+  "overrides": {
+    "@ethersphere/bee-js": "npm:@upcoming/bee-js@^9.7.0"
+  },
   "dependencies": {
     "@ethersphere/bee-js": "npm:@upcoming/bee-js@^9.7.0",
     "@fairdatasociety/fdp-storage": "^0.19.0",
     "@material-ui/core": "4.12.3",
     "@material-ui/icons": "4.11.2",
     "@material-ui/lab": "4.0.0-alpha.57",
+    "@solarpunkltd/file-manager-lib": "file:../file-manager-lib",
     "axios": "^0.28.1",
     "bignumber.js": "^9.1.2",
     "buffer": "^6.0.3",
