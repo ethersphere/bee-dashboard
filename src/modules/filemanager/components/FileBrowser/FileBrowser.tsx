@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import './FileBrowser.scss'
 import { FileBrowserTopBar } from './FileBrowserTopBar/FileBrowserTopBar'
 import DownIcon from 'remixicon-react/ArrowDownSLineIcon'
@@ -11,19 +11,20 @@ import { FileProgressNotification } from '../FileProgressNotification/FileProgre
 import { useView } from '../../providers/FMFileViewContext'
 import { useFMTransfers } from '../../hooks/useFMTransfers'
 import { useFM } from '../../providers/FMContext'
+import type { FileInfo } from '@solarpunkltd/file-manager-lib'
 
 export function FileBrowser(): ReactElement {
   const { showContext, pos, contextRef, handleContextMenu, handleCloseContext } = useContextMenu<HTMLDivElement>()
   const { view } = useView()
-  const { currentBatch } = useFM()
+  const { fm, files, currentBatch, refreshFiles } = useFM()
   const { uploadFiles, isUploading, uploadCount, uploadItems } = useFMTransfers()
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const onFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
+    const f = e.target.files
 
-    if (files && files.length) uploadFiles(files)
+    if (f && f.length) uploadFiles(f)
     e.target.value = ''
   }
 
@@ -64,42 +65,29 @@ export function FileBrowser(): ReactElement {
       if (!hasFiles(e)) return
       e.preventDefault()
       const { clientX, clientY } = e
-      const outOfWindow = clientX <= 0 || clientY <= 0 || clientX >= window.innerWidth || clientY >= window.innerHeight
+      const outWindow = clientX <= 0 || clientY <= 0 || clientX >= window.innerWidth || clientY >= window.innerHeight
 
-      if (outOfWindow) {
+      if (outWindow) {
         dragCounter.current = 0
         setIsDragging(false)
 
         return
       }
-
       dragCounter.current = Math.max(dragCounter.current - 1, 0)
 
       if (dragCounter.current === 0) setIsDragging(false)
     }
 
-    const onDrop = (e: DragEvent) => {
-      if (!hasFiles(e)) return
-      e.preventDefault()
-      const files = e.dataTransfer?.files
-      dragCounter.current = 0
-      setIsDragging(false)
-
-      if (files && files.length) uploadFiles(files)
-    }
-
     window.addEventListener('dragenter', onDragEnter)
     window.addEventListener('dragover', onDragOver)
     window.addEventListener('dragleave', onDragLeave)
-    window.addEventListener('drop', onDrop)
 
     return () => {
       window.removeEventListener('dragenter', onDragEnter)
       window.removeEventListener('dragover', onDragOver)
       window.removeEventListener('dragleave', onDragLeave)
-      window.removeEventListener('drop', onDrop)
     }
-  }, [uploadFiles])
+  }, [])
 
   const handleFileBrowserContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
     if ((e.target as HTMLElement).closest('.fm-file-item-content')) return
@@ -109,13 +97,94 @@ export function FileBrowser(): ReactElement {
   const onOverlayDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault()
+      e.stopPropagation()
       setIsDragging(false)
-      const files = e.dataTransfer?.files
+      dragCounter.current = 0
+      const dropped = e.dataTransfer?.files
 
-      if (files && files.length) uploadFiles(files)
+      if (dropped && dropped.length) uploadFiles(dropped)
     },
     [uploadFiles],
   )
+
+  const [safePos, setSafePos] = useState(pos)
+  const [dropDir, setDropDir] = useState<'down' | 'up'>('down')
+
+  useLayoutEffect(() => {
+    if (!showContext) return
+    requestAnimationFrame(() => {
+      const menu = contextRef.current
+      const container = document.querySelector('.fm-file-browser-container') as HTMLElement | null
+
+      if (!menu || !container) return
+
+      const rect = menu.getBoundingClientRect()
+      const vw = window.innerWidth
+      const vh = window.innerHeight
+      const margin = 8
+
+      const containerRect = container.getBoundingClientRect()
+      const containerMidY = containerRect.top + containerRect.height / 2
+
+      const left = Math.max(margin, Math.min(pos.x, vw - rect.width - margin))
+
+      let top = pos.y
+      let dir: 'down' | 'up' = 'down'
+
+      if (pos.y > containerMidY || pos.y + rect.height + margin > vh) {
+        top = Math.max(margin, pos.y - rect.height)
+        dir = 'up'
+      } else {
+        top = Math.max(margin, Math.min(pos.y, vh - rect.height - margin))
+      }
+
+      setSafePos({ x: left, y: top })
+      setDropDir(dir)
+    })
+  }, [showContext, pos, contextRef])
+
+  const isTrashed = (fi: FileInfo) => {
+    const s = (fi as any).status
+
+    if (s == null) return false
+
+    if (typeof s === 'string') return s.toLowerCase() === 'trashed'
+
+    if (typeof s === 'number') return s !== 0
+
+    return false
+  }
+
+  const currentDriveLabel = useMemo(
+    () => (currentBatch ? currentBatch.label || currentBatch.batchID.toString() : ''),
+    [currentBatch],
+  )
+
+  const rows = useMemo(() => {
+    if (!currentBatch) return []
+    const wanted = currentBatch.batchID.toString()
+    const sameDrive = files.filter(fi => String((fi as any).batchId) === wanted)
+
+    const map = new Map<string, FileInfo>()
+    sameDrive.forEach(fi => {
+      const key = fi.topic?.toString?.()
+
+      if (!key) return
+      const prev = map.get(key)
+      const vi = BigInt(fi.version ?? '0')
+      const pi = BigInt(prev?.version ?? '0')
+
+      if (!prev || vi > pi) map.set(key, fi)
+    })
+
+    const latest = Array.from(map.values())
+
+    return view === ViewType.Trash ? latest.filter(isTrashed) : latest.filter(fi => !isTrashed(fi))
+  }, [files, currentBatch, view])
+
+  useEffect(() => {
+    if (fm && currentBatch) refreshFiles()
+  }, [fm, currentBatch, refreshFiles])
 
   return (
     <>
@@ -126,6 +195,7 @@ export function FileBrowser(): ReactElement {
           className="fm-drag-overlay"
           onDragOver={e => {
             e.preventDefault()
+            e.stopPropagation()
             ;(e.dataTransfer as DataTransfer).dropEffect = 'copy'
           }}
           onDrop={onOverlayDrop}
@@ -167,11 +237,23 @@ export function FileBrowser(): ReactElement {
             onContextMenu={handleFileBrowserContextMenu}
             onClick={handleCloseContext}
           >
-            <FileItem icon="image" name="File1.jpg" size="1.2MB" dateMod="2025-05-19" />
-            <FileItem icon="doc" name="Report.pdf" size="0.5MB" dateMod="2025-05-25" />
+            {currentBatch ? (
+              rows.length === 0 ? (
+                <div className="fm-drop-hint">Drag &amp; drop files here into “{currentDriveLabel}”</div>
+              ) : (
+                rows.map(fi => <FileItem key={fi.topic.toString()} fileInfo={fi} />)
+              )
+            ) : (
+              <div className="fm-drop-hint">Select a drive to view its files</div>
+            )}
 
             {showContext && (
-              <div ref={contextRef} className="fm-file-browser-context-menu" style={{ top: pos.y, left: pos.x }}>
+              <div
+                ref={contextRef}
+                className="fm-file-browser-context-menu"
+                style={{ top: safePos.y, left: safePos.x }}
+                data-drop={dropDir}
+              >
                 {view === ViewType.Trash ? (
                   <ContextMenu>
                     <div className="fm-context-item">Empty trash</div>

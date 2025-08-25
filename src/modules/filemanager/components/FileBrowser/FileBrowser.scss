@@ -35,7 +35,7 @@
   font-weight: 700;
 
   & input {
-    margin: 0px;
+    margin: 0;
     width: 16px;
     height: 16px;
     accent-color: rgb(237, 129, 49);
@@ -61,6 +61,17 @@
   position: absolute;
   z-index: 1000;
 }
+
+.fm-file-browser-context-menu[data-drop='up'] {
+  transform-origin: bottom left;
+}
+
+.fm-file-browser-context-menu[data-drop='up'] .caret {
+  transform: rotate(180deg);
+  bottom: -6px;
+  top: auto;
+}
+
 .fm-context-item {
   margin: 4px;
   padding: 8px;
@@ -83,6 +94,7 @@
   text-decoration: underline;
 }
 
+/* Drag overlay */
 .fm-drag-overlay {
   position: fixed;
   inset: 0;
@@ -91,11 +103,9 @@
   z-index: 2000;
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(4px);
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   pointer-events: auto;
 }
 
@@ -103,7 +113,12 @@
   font-size: 1.25rem;
   font-weight: 600;
   padding: .75rem 1rem;
-  background: rgba(255,255,255,0.85);
+  background: rgba(255, 255, 255, 0.85);
   border-radius: 8px;
   border: 1px solid rgba(0,0,0,0.06);
+}
+
+.fm-drop-hint {
+  padding: 24px;
+  color: #6b7280;
 }

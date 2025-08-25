@@ -2,10 +2,10 @@
   position: relative;
   display: grid;
   grid-template-columns: 1fr 2fr 1fr 1fr;
-
   padding: 12px;
+
   & input {
-    margin: 0px;
+    margin: 0;
     width: 16px;
     height: 16px;
   }
@@ -20,6 +20,7 @@
   align-items: center;
   justify-content: start;
   gap: 6px;
+
   &.fm-checkbox {
     flex-grow: 1;
   }
@@ -46,4 +47,14 @@
 .fm-file-item-context-menu {
   position: absolute;
   z-index: 1000;
+}
+
+.fm-file-item-context-menu[data-drop='up'] {
+  transform-origin: bottom left;
+}
+
+.fm-file-item-context-menu[data-drop='up'] .caret {
+  transform: rotate(180deg);
+  bottom: -6px;
+  top: auto;
 }
