@@ -13,7 +13,7 @@ import NodeInfoCard from './NodeInfoCard'
 import { WalletInfoCard } from './WalletInfoCard'
 
 export default function Status(): ReactElement {
-  const { beeVersion, status, topology, nodeInfo, walletBalance } = useContext(BeeContext)
+  const { beeVersion, status, topology, nodeInfo, nodeStatus, walletBalance } = useContext(BeeContext)
   const { isDesktop, desktopUrl } = useContext(SettingsContext)
   const { beeDesktopVersion } = useBeeDesktop(isDesktop, desktopUrl)
   const { newBeeDesktopVersion } = useNewBeeDesktopVersion(isDesktop, desktopUrl, false)
@@ -38,7 +38,10 @@ export default function Status(): ReactElement {
       <div style={{ height: '2px' }} />
       <ExpandableListItem label="Connected peers" value={topology?.connected ?? '-'} />
       <ExpandableListItem label="Population" value={topology?.population ?? '-'} />
+      <ExpandableListItem label="Pullsync rate" value={nodeStatus?.pullsyncRate} />
       <ExpandableListItem label="Depth" value={topology?.depth ?? '-'} />
+      <ExpandableListItem label="Neighborhood size" value={nodeStatus?.neighborhoodSize} />
+      <ExpandableListItem label="Node is reachable" value={nodeStatus?.isReachable?.toString()} />
       <ChainSync />
 
       <div style={{ height: '16px' }} />

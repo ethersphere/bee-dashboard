@@ -5,11 +5,13 @@ import {
   ChainState,
   ChequebookAddressResponse,
   ChequebookBalanceResponse,
+  DebugStatus,
   LastChequesResponse,
   NodeAddresses,
   NodeInfo,
   Peer,
   PeerBalance,
+  RedistributionState,
   Topology,
   WalletBalance,
 } from '@ethersphere/bee-js'
@@ -49,6 +51,7 @@ interface ContextInterface {
   apiHealth: boolean
   nodeAddresses: NodeAddresses | null
   nodeInfo: NodeInfo | null
+  nodeStatus: DebugStatus | null
   topology: Topology | null
   chequebookAddress: ChequebookAddressResponse | null
   peers: Peer[] | null
@@ -59,6 +62,7 @@ interface ContextInterface {
   settlements: AllSettlements | null
   chainState: ChainState | null
   walletBalance: WalletBalance | null
+  redistributionState: RedistributionState | null
   latestBeeRelease: LatestBeeRelease | null
   isLoading: boolean
   lastUpdate: number | null
@@ -79,6 +83,7 @@ const initialValues: ContextInterface = {
   apiHealth: false,
   nodeAddresses: null,
   nodeInfo: null,
+  nodeStatus: null,
   topology: null,
   chequebookAddress: null,
   stake: null,
@@ -89,6 +94,7 @@ const initialValues: ContextInterface = {
   settlements: null,
   chainState: null,
   walletBalance: null,
+  redistributionState: null,
   latestBeeRelease: null,
   isLoading: true,
   lastUpdate: null,
@@ -172,6 +178,7 @@ export function Provider({ children }: Props): ReactElement {
   const [apiHealth, setApiHealth] = useState<boolean>(false)
   const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses | null>(null)
   const [nodeInfo, setNodeInfo] = useState<NodeInfo | null>(null)
+  const [nodeStatus, setNodeStatus] = useState<DebugStatus | null>(null)
   const [topology, setNodeTopology] = useState<Topology | null>(null)
   const [chequebookAddress, setChequebookAddress] = useState<ChequebookAddressResponse | null>(null)
   const [peers, setPeers] = useState<Peer[] | null>(null)
@@ -182,6 +189,7 @@ export function Provider({ children }: Props): ReactElement {
   const [settlements, setSettlements] = useState<AllSettlements | null>(null)
   const [chainState, setChainState] = useState<ChainState | null>(null)
   const [walletBalance, setWalletBalance] = useState<WalletBalance | null>(null)
+  const [redistributionState, setRedistributionState] = useState<RedistributionState | null>(null)
   const [startedAt] = useState(Date.now())
 
   const { latestBeeRelease } = useLatestBeeRelease()
@@ -257,6 +265,12 @@ export function Provider({ children }: Props): ReactElement {
           .then(setNodeInfo)
           .catch(() => setNodeInfo(null)),
 
+        // NodeDebugInfo
+        beeApi
+          .getStatus({ timeout: TIMEOUT })
+          .then(setNodeStatus)
+          .catch(() => setNodeInfo(null)),
+
         // Network Topology
         beeApi
           .getTopology({ timeout: TIMEOUT })
@@ -303,6 +317,12 @@ export function Provider({ children }: Props): ReactElement {
           .getStake({ timeout: TIMEOUT })
           .then(stake => setStake(stake))
           .catch(() => setStake(null)),
+
+        // Redistribution stats
+        beeApi
+          .getRedistributionState({ timeout: TIMEOUT })
+          .then(setRedistributionState)
+          .catch(() => setRedistributionState(null)),
 
         // Peer balances
         beeApi
@@ -362,6 +382,7 @@ export function Provider({ children }: Props): ReactElement {
         apiHealth,
         nodeAddresses,
         nodeInfo,
+        nodeStatus,
         topology,
         chequebookAddress,
         peers,
@@ -372,6 +393,7 @@ export function Provider({ children }: Props): ReactElement {
         settlements,
         chainState,
         walletBalance,
+        redistributionState,
         latestBeeRelease,
         isLoading,
         lastUpdate,

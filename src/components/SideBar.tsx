@@ -7,6 +7,7 @@ import FilesIcon from 'remixicon-react/ArrowUpDownLineIcon'
 import DocsIcon from 'remixicon-react/BookOpenLineIcon'
 import ExternalLinkIcon from 'remixicon-react/ExternalLinkLineIcon'
 import GithubIcon from 'remixicon-react/GithubFillIcon'
+import ExchangeDollarLineIcon from 'remixicon-react/ExchangeDollarLineIcon'
 import HomeIcon from 'remixicon-react/Home3LineIcon'
 import SettingsIcon from 'remixicon-react/Settings2LineIcon'
 import AccountIcon from 'remixicon-react/Wallet3LineIcon'
@@ -87,6 +88,11 @@ export default function SideBar(): ReactElement {
       path: ROUTES.ACCOUNT_WALLET,
       icon: AccountIcon,
       pathMatcherSubstring: '/account/',
+    },
+    {
+      label: 'Redistribution',
+      path: ROUTES.REDISTRIBUTION,
+      icon: ExchangeDollarLineIcon,
     },
     {
       label: 'Settings',
