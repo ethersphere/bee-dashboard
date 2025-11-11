@@ -1,0 +1,113 @@
+.fm-sidebar {
+  min-width: 370px;
+  box-sizing: border-box;
+  height: calc(100vh - 120px);
+  background-color: rgb(237, 237, 237);
+  border-right: 1px solid rgb(146, 146, 146);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.fm-sidebar-content {
+  overflow: auto;
+}
+
+.fm-sidebar-item {
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgb(31, 41, 55);
+  font-weight: 700;
+  transition: background-color 0.3s;
+
+  .fm-sidebar-item-icon {
+    display: flex;
+    align-items: center;
+    color: rgb(237, 129, 49);
+    font-weight: 700;
+  }
+
+  &:hover {
+    background-color: rgb(209, 209, 209);
+    cursor: pointer;
+  }
+
+  &.fm-trash-item {
+    padding: 8px;
+    padding-left: 36px;
+  }
+}
+
+.fm-sidebar-drive-creation {
+  padding: 12px;
+  border-top: 1px solid rgb(146, 146, 146);
+}
+
+.fm-drive-items-container {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.3s, max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity, max-height;
+
+  &.fm-drive-items-container-open {
+    opacity: 1;
+    max-height: 1000px;
+  }
+}
+
+.fm-trash-item {
+  color: rgb(31, 41, 55);
+  font-weight: 500;
+}
+
+.fm-drive-item-creating {
+  position: relative;
+}
+
+.fm-drive-item-creating .fm-drive-item-info,
+.fm-drive-item-creating .fm-drive-item-actions {
+  filter: blur(2px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.fm-drive-item-creating-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.55);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  font-weight: 600;
+  color: #111827;
+  border-radius: 0;
+}
+
+.fm-mini-spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-top-color: rgba(0, 0, 0, 0.7);
+  animation: fmSpin 0.8s linear infinite;
+}
+
+.fm-drive-item-container.fm-expired {
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.fm-drive-item-container.fm-expired .fm-drive-item-capacity {
+  color: #dc2626;
+}
+
+@keyframes fmSpin {
+  to { transform: rotate(360deg); }
+}

@@ -1,0 +1,318 @@
+.fm-file-browser-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: calc(100vh - 120px);
+  background-color: white;
+  position: relative;
+}
+
+.fm-file-browser-content {
+  position: relative;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
+.fm-file-browser-content-header {
+  display: grid;
+  padding: 12px;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgb(226, 232, 240);
+}
+
+.fm-file-browser-content[data-search-mode='false'] .fm-file-browser-content-header {
+  grid-template-columns: 32px 2fr 1fr 1fr;
+}
+
+.fm-file-browser-content[data-search-mode='true'] .fm-file-browser-content-header {
+  grid-template-columns: 32px 2fr 1.1fr 1fr 1fr;
+}
+
+.fm-file-browser-content-header-item {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 8px;
+  font-weight: 700;
+
+  & input {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+    accent-color: rgb(237, 129, 49);
+  }
+}
+
+.fm-file-browser-content-header-item.fm-checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fm-file-browser-content-header-item-icon {
+  width: 16px;
+  height: 16px;
+  color: rgb(237, 129, 49);
+}
+
+.fm-file-browser-content-body {
+  flex: 1 1 auto;
+  position: relative;
+}
+
+.fm-file-browser-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  max-height: 45px;
+  padding: 12px;
+  border-top: 1px solid #929292;
+  background-color: #ededed;
+}
+
+.fm-file-browser-footer > * {
+  flex: 0 0 auto;
+}
+.fm-file-browser-footer > :nth-child(1) {
+  margin-right: 8px;
+}
+.fm-file-browser-footer > :nth-child(3) {
+  margin-left: auto;
+}
+.fm-file-browser-footer {
+  column-gap: 12px;
+}
+
+.fm-file-browser-context-menu {
+  position: absolute;
+  z-index: 1000;
+}
+.fm-file-browser-context-menu[data-drop='up'] {
+  transform-origin: bottom left;
+}
+.fm-file-browser-context-menu[data-drop='up'] .caret {
+  transform: rotate(180deg);
+  bottom: -6px;
+  top: auto;
+}
+
+.fm-context-item {
+  margin: 4px;
+  padding: 8px;
+
+  &:hover {
+    background-color: #d1d1d1;
+    cursor: pointer;
+  }
+  &.red {
+    color: rgb(220, 38, 38);
+  }
+}
+
+.fm-context-item[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.fm-context-item-border {
+  border-bottom: 1px solid #d1d1d1;
+}
+
+.fm-upload-download-indicator {
+  text-decoration: underline;
+}
+
+.fm-drag-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1500;
+  background: rgba(255, 255, 255, 0.6);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.fm-drag-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.fm-drop-hint {
+  padding: 24px;
+  color: #6b7280;
+}
+
+.fm-context-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.fm-info {
+  font-weight: 600;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  font-size: 11px;
+  line-height: 1;
+  border: 1px solid currentColor;
+  opacity: .6;
+  cursor: help;
+}
+
+.fm-info--inline {
+  position: relative;
+}
+
+.fm-info--inline::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 280px;
+  white-space: normal;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(17, 24, 39, 0.98);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.25;
+  letter-spacing: 0.1px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .08s ease, visibility .08s ease;
+  z-index: 2000;
+}
+
+.fm-info--inline::before {
+  content: "";
+  position: absolute;
+  left: calc(100% + 2px);
+  top: 50%;
+  transform: translateY(-50%);
+  border: 6px solid transparent;
+  border-right-color: rgba(17, 24, 39, 0.98);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .08s ease, visibility .08s ease;
+  z-index: 2001;
+}
+
+.fm-info--inline:hover::after,
+.fm-info--inline:focus-visible::after,
+.fm-info--inline:hover::before,
+.fm-info--inline:focus-visible::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+.fm-file-browser-context-menu { 
+  overflow: visible; 
+}
+.fm-refresh-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fm-refresh-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.fm-refresh-text {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.fm-file-browser-content-header-item {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.fm-header-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px; /* space between sort button and the × bubble */
+}
+
+.fm-header-button {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.fm-header-button[data-dir='asc'] .fm-file-browser-content-header-item-icon {
+  transform: rotate(180deg);
+}
+
+.fm-file-browser-content-header-item-icon.is-inactive {
+  opacity: 0.4;
+}
+
+.fm-sort-clear {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  border: 1px solid currentColor;
+  font-size: 12px;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.fm-sort-clear:hover,
+.fm-sort-clear:focus-visible {
+  opacity: 1;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(237, 129, 49, 0.2);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: translateY(0); }
+}

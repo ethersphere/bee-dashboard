@@ -1,0 +1,72 @@
+.fm-upload-conflict-modal .fm-modal-window-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fm-conflict-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.fm-conflict-option {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fm-conflict-option-title {
+  font-weight: 600;
+}
+
+.fm-conflict-option-sub {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.fm-conflict-rename-row {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.fm-conflict-sep {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 8px 0;
+}
+
+.fm-input {
+  padding: 8px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  outline: none;
+}
+
+.fm-input:focus {
+  border-color: #cbd5e1;
+}
+
+.fm-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.fm-callout__icon {
+  margin-top: 2px;
+}
+
+.fm-callout--warning {
+  background: #fff7e6;
+  border: 1px solid #ffe3b3;
+  border-left: 4px solid #ff9900;
+  color: #5f4b00;
+}

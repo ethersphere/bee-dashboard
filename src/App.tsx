@@ -8,6 +8,7 @@ import Dashboard from './layout/Dashboard'
 import { Provider as BeeProvider } from './providers/Bee'
 import { Provider as FeedsProvider } from './providers/Feeds'
 import { Provider as FileProvider } from './providers/File'
+import { Provider as FileManagerProvider } from './providers/FileManager'
 import { Provider as PlatformProvider } from './providers/Platform'
 import { Provider as SettingsProvider } from './providers/Settings'
 import { Provider as StampsProvider } from './providers/Stamps'
@@ -46,20 +47,22 @@ const App = ({
             <BeeProvider>
               <StampsProvider>
                 <FileProvider>
-                  <FeedsProvider>
-                    <PlatformProvider>
-                      <SnackbarProvider preventDuplicate anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
-                        <Router>
-                          <>
-                            <CssBaseline />
-                            <Dashboard errorReporting={errorReporting}>
-                              <BaseRouter />
-                            </Dashboard>
-                          </>
-                        </Router>
-                      </SnackbarProvider>
-                    </PlatformProvider>
-                  </FeedsProvider>
+                  <FileManagerProvider>
+                    <FeedsProvider>
+                      <PlatformProvider>
+                        <SnackbarProvider preventDuplicate anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
+                          <Router>
+                            <>
+                              <CssBaseline />
+                              <Dashboard errorReporting={errorReporting}>
+                                <BaseRouter />
+                              </Dashboard>
+                            </>
+                          </Router>
+                        </SnackbarProvider>
+                      </PlatformProvider>
+                    </FeedsProvider>
+                  </FileManagerProvider>
                 </FileProvider>
               </StampsProvider>
             </BeeProvider>

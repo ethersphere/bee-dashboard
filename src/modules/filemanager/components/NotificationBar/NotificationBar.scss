@@ -1,0 +1,11 @@
+.fm-notification-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &:hover {
+    cursor: pointer;
+    opacity: 0.8;
+    text-decoration: underline;
+  }
+}

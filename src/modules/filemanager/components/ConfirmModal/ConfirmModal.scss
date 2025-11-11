@@ -1,0 +1,40 @@
+.fm-modal-container .fm-modal-window {
+  width: min(560px, 92vw);
+}
+
+.fm-modal-container .fm-modal-window-header {
+  font-weight: 600;
+}
+
+.fm-modal-container .fm-modal-window-body .fm-modal-white-section {
+  max-height: 50vh;
+  overflow: auto;
+  word-break: break-word;
+  padding: 12px 14px;
+  border-radius: 8px;
+}
+
+.fm-modal-container .fm-modal-window-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@media (max-width: 480px) {
+  .fm-modal-container .fm-modal-window {
+    width: 94vw;
+  }
+  .fm-modal-container .fm-modal-window-body .fm-modal-white-section {
+    max-height: 56vh;
+  }
+}
+
+.fm-modal-no-background {
+  background: transparent;
+}
+
+.fm-spinner-message {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}

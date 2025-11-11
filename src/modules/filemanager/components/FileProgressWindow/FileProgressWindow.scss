@@ -1,0 +1,79 @@
+.fm-file-progress-window {
+  position: absolute;
+  border: 1px solid rgb(209, 213, 219);
+  width: 275px;
+  bottom: 45px;
+  background-color: white;
+  z-index: 1200;
+}
+
+.fm-file-progress-window-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid rgb(209, 213, 219);
+}
+
+.fm-file-progress-window-header-actions { display: inline-flex; gap: 6px; }
+
+.fm-file-progress-window-header-btn {
+  width: 22px; height: 22px; display: inline-grid; place-items: center;
+  padding: 0; margin: 0; background: #f0f0f0; color: #4b5563;
+  border: none; border-radius: 4px; cursor: pointer;
+  &:hover { background: #e5e7eb; } &:active { background: #d1d5db; }
+  &:disabled { cursor: default; opacity: .6; filter: grayscale(.3); }
+}
+
+.fm-file-progress-window-file-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 12px; border-bottom: 1px solid rgb(243, 244, 246);
+}
+
+.fm-file-progress-window-file-type-icon { margin-top: 4px; }
+
+.fm-file-progress-window-file-datas {
+  display: flex; flex-direction: column; gap: 8px; width: 100%;
+}
+
+.fm-file-progress-window-file-item-header {
+  display: grid; grid-template-columns: 1fr auto auto;
+  align-items: center; gap: 8px; min-width: 0;
+}
+
+.fm-file-progress-window-name { min-width: 0; }
+.fm-file-progress-window-name-text {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.fm-drive-line { margin-top: 2px; }
+
+.fm-file-progress-window-percent { white-space: nowrap; }
+
+.fm-file-progress-window-file-item-footer {
+  display: grid; grid-template-columns: auto 1fr auto;
+  align-items: center; column-gap: 8px; font-size: 11px;
+}
+.fm-file-progress-window-size { white-space: nowrap; }
+.fm-file-progress-window-center { justify-self: center; white-space: nowrap; }
+.fm-file-progress-window-status { justify-self: end; white-space: nowrap; }
+
+.fm-file-progress-window-row-close {
+  width: 20px; height: 20px; display: inline-grid; place-items: center;
+  padding: 0; margin: 0; background: #f0f0f0; color: #4b5563;
+  border: none; border-radius: 4px; cursor: pointer;
+  &:hover { background: #e5e7eb; } &:active { background: #d1d5db; }
+  &:disabled { cursor: default; opacity: .6; filter: grayscale(.3); }
+}
+
+.fm-drive-chip {
+  display: inline-block; margin-left: 0; padding: 2px 6px;
+  border-radius: 999px; font-size: 11px; line-height: 1;
+  background: rgba(0,0,0,.06); color: #333; vertical-align: middle;
+}
+.fm-eta { font-size: 12px; opacity: .8; }
+.fm-file-subtext { line-height: 1.2; }
+
+.fm-file-progress-window-list {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}

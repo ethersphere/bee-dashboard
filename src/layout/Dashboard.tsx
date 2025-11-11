@@ -10,12 +10,17 @@ import { BEE_DESKTOP_LATEST_RELEASE_PAGE } from '../constants'
 import { useBeeDesktop, useNewBeeDesktopVersion } from '../hooks/apiHooks'
 import { Context as BeeContext } from '../providers/Bee'
 import { Context as SettingsContext } from '../providers/Settings'
+import { useLocation } from 'react-router-dom'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     content: {
       backgroundColor: theme.palette.background.default,
       minHeight: '100vh',
+    },
+
+    fileManagerOn: {
+      padding: '0px',
     },
   }),
 )
@@ -26,6 +31,9 @@ interface Props {
 }
 
 const Dashboard = (props: Props): ReactElement => {
+  const location = useLocation()
+
+  const isFileManagerOn = location.pathname.startsWith('/filemanager')
   const classes = useStyles()
 
   const { isLoading } = useContext(BeeContext)
@@ -84,7 +92,7 @@ const Dashboard = (props: Props): ReactElement => {
   return (
     <Flex>
       <SideBar />
-      <Container className={classes.content}>
+      <Container className={`${classes.content} ${isFileManagerOn ? classes.fileManagerOn : ''}`}>
         {' '}
         <ErrorBoundary errorReporting={props.errorReporting}>{content}</ErrorBoundary>
       </Container>

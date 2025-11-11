@@ -1,0 +1,90 @@
+.fm-private-key-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.fm-generate-btn {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.fm-generate-btn:hover {
+  background: #e5e7eb;
+}
+
+.fm-private-key-input-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.fm-private-key-input {
+  padding-right: 37px !important;
+  font-family: monospace;
+  font-size: 0.9em;
+  padding-right: 40px;
+  width: 100%;
+}
+
+.fm-confirm-key-label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.fm-confirm-key-input {
+  font-family: monospace;
+  font-size: 0.9em;
+  width: 100%;
+}
+
+.fm-confirm-key-hint {
+  margin-top: 6px;
+}
+.fm-input.has-error {
+  border-color: #ef4444;
+}
+.fm-input-hint-error {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 6px;
+  min-height: 24px;
+  display: block;
+}
+.fm-input-hint {
+  color: #6b7280;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.fm-copy-btn {
+  position: absolute;
+  right: 27px;
+  margin-left: 6px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 0;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.fm-copy-btn:hover {
+  background: #f5f5f5;
+}
+
+.fm-initialization-modal-container {
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.fm-initialization-modal-container .fm-modal-window {
+  width: 600px;
+}

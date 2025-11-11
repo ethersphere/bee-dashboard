@@ -1,0 +1,97 @@
+.fm-rename-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 10, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.fm-rename-modal .fm-modal-window {
+  .fm-modal-window-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    svg {
+      opacity: 0.9;
+    }
+  }
+
+  .fm-modal-window-body {
+    .fm-modal-white-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+
+  .fm-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--fm-border-color, rgba(255, 255, 255, 0.08));
+    background: var(--fm-input-bg, rgba(255, 255, 255, 0.04));
+    color: var(--fm-text-color, #fff);
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 120ms ease, background-color 120ms ease;
+
+    &:focus {
+      border-color: var(--fm-accent, #6aa7ff);
+      background: var(--fm-input-bg-focus, rgba(255, 255, 255, 0.06));
+    }
+
+    &::placeholder {
+      color: var(--fm-placeholder, rgba(255, 255, 255, 0.5));
+    }
+  }
+
+  .fm-rename-input {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #fff;
+
+    &:focus {
+      border-color: var(--fm-accent, #6aa7ff);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+  }
+
+  .fm-soft-text {
+    line-height: 1.3;
+  }
+
+  .fm-error-text {
+    color: var(--fm-error, #ff6b6b);
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  .fm-modal-window-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .fm-button + .fm-button {
+      margin-left: 8px;
+    }
+  }
+}
+
+.fm-rename-modal .fm-modal-white-section input#fm-rename-input.fm-input {
+  background: #fff !important;
+  border: 1px solid #e5e7eb !important;
+  color: #111 !important;
+  -webkit-text-fill-color: #111 !important;
+  caret-color: #111 !important;
+}
+
+.fm-rename-modal .fm-modal-white-section input#fm-rename-input.fm-input::placeholder {
+  color: rgba(0, 0, 0, 0.5) !important;
+}

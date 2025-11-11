@@ -55,7 +55,7 @@ const ChequebookDeployFund = (): ReactElement | null => {
       <ExpandableListItemNote>{text}</ExpandableListItemNote>
       {chequebookAddress && (
         <>
-          <ExpandableListItemKey label="Chequebook Address" value={chequebookAddress.chequebookAddress} />
+          <ExpandableListItemKey label="Chequebook Address" value={chequebookAddress.chequebookAddress.toString()} />
           <ExpandableListItemActions>
             <DepositModal />
           </ExpandableListItemActions>

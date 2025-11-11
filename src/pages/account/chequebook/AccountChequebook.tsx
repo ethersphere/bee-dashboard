@@ -63,7 +63,7 @@ export function AccountChequebook(): ReactElement {
           />
           <ExpandableListItemKey
             label="Chequebook contract address"
-            value={chequebookAddress?.chequebookAddress || ''}
+            value={chequebookAddress?.chequebookAddress.toString() || ''}
           />
         </ExpandableList>
         <PeerBalances accounting={accounting} isLoadingUncashed={isLoadingUncashed} totalUncashed={totalUncashed} />
