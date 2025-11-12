@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.33.0](https://github.com/ethersphere/bee-dashboard/compare/v0.32.0...v0.33.0) (2025-11-12)
+
+
+### Features
+
+* bee-js revamp ([#690](https://github.com/ethersphere/bee-dashboard/issues/690)) ([1249c0d](https://github.com/ethersphere/bee-dashboard/commit/1249c0df71baec331cb3f2661e0a08648d924406))
+* FileManager ([#98](https://github.com/ethersphere/bee-dashboard/issues/98)) ([#703](https://github.com/ethersphere/bee-dashboard/issues/703)) ([5bfe2a0](https://github.com/ethersphere/bee-dashboard/commit/5bfe2a033118dde43b4cd221830741a427882922))
+
 ## [0.32.0](https://github.com/ethersphere/bee-dashboard/compare/v0.31.0...v0.32.0) (2025-02-12)
 
 
