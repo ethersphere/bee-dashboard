@@ -1,0 +1,244 @@
+.fm-modal-container {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  background: #000c;
+  backdrop-filter: blur(5px);
+  z-index: 1300;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fm-modal-container-no-bg {
+  background: none;
+  backdrop-filter: none;
+}
+
+.fm-modal-window {
+  width: 450px;
+  padding: 24px;
+  background-color: rgb(255, 255, 255);
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  justify-content: center;
+}
+
+.fm-modal-window-header {
+  display: flex;
+  width: 100%;
+  justify-content: start;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  color: rgb(237, 129, 49);
+  font-weight: 700;
+}
+
+.fm-modal-window-body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  font-size: 14px;
+  width: 100%;
+  border: 1px solid rgb(229, 231, 235);
+  padding: 24px;
+  background-color: rgb(249, 250, 251);
+}
+
+.fm-modal-window-input-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: rgb(55, 65, 81);
+
+  & label {
+    font-weight: 700;
+  }
+
+  & input {
+    padding: 8px 12px;
+    font-size: 14px;
+    font-family: 'iAWriterQuattroV';
+    border: 1px solid rgb(209, 213, 219);
+
+    line-height: 21px;
+    outline: none;
+  }
+
+  & input::placeholder {
+    color: #aaa;
+  }
+
+  & input:focus {
+    border: 1px solid rgb(237, 129, 49) !important;
+  }
+}
+
+.fm-modal-window-footer {
+  display: flex;
+  width: 100%;
+  justify-content: right;
+  align-items: center;
+  gap: 12px;
+}
+
+.fm-get-info-modal-footer-one-button {
+  width: 33%;
+}
+
+.fm-input-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  margin-bottom: 4px;
+  color: rgb(55, 65, 81);
+  font-weight: 700;
+}
+
+.fm-red-font {
+  color: rgb(220, 38, 38);
+}
+
+.fm-emphasized-text {
+  font-weight: 700;
+}
+
+.fm-value-snippet {
+  position: relative;
+  padding: 4px;
+  background-color: white;
+  font-size: 12px;
+  border: 1px solid rgb(229, 231, 235);
+  border-radius: 4px;
+  right: -2px;
+}
+
+.fm-swarm-orange-font {
+  color: rgb(237, 129, 49);
+}
+
+.fm-pointer {
+  cursor: pointer;
+}
+
+.fm-main-font-color {
+  color: rgb(55, 65, 81);
+}
+
+.fm-line-height-fit {
+  line-height: 1;
+}
+
+.fm-alert-icon-inline {
+  position: relative;
+  top: 2px;
+  margin-right: 4px;
+}
+
+.fm-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.MuiRadio-root.fm-radio-button,
+.MuiRadio-root.Mui-checked.fm-radio-button {
+  padding: 0px;
+  color: rgb(237, 129, 49);
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.MuiFormControlLabel-root.fm-form-control-label {
+  display: flex;
+  align-items: start;
+  gap: 8px;
+}
+
+.fm-radio-label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fm-radio-label-header {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.fm-modal-white-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  font-size: 14px;
+  background-color: white;
+  border: 1px solid rgb(229, 231, 235);
+}
+
+.fm-space-between {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fm-current-tag {
+  padding: 3px 6px;
+  background-color: rgb(220, 252, 231);
+  color: rgb(22, 101, 52);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.fm-soft-text {
+  color: rgb(107, 114, 128);
+  font-size: 14px;
+}
+
+.fm-modal-estimated-cost-container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.fm-modal-info-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #7c5a0b; /* warm amber tone */
+  background: #fff8e1; /* light subtle yellow background */
+  border: 1px solid #f5deb3;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-top: 6px;
+  margin-bottom: 8px;
+  font-family: 'iAWriterQuattroV', sans-serif;
+
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.fm-modal-info-warning-text-header {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-row {
+  display: flex;
+  gap: 12px;
+}

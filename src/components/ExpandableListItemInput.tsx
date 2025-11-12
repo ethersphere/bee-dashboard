@@ -89,9 +89,9 @@ export default function ExpandableListItemKey({
       e.target.value = mapperFn(e.target.value)
     }
 
-    setInputValue(e.target.value)
+    setInputValue(e.target.value.trim())
 
-    if (onChange) onChange(e.target.value)
+    if (onChange) onChange(e.target.value.trim())
   }
 
   return (

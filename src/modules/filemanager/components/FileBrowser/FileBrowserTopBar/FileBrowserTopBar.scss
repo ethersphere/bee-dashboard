@@ -1,0 +1,52 @@
+.fm-file-browser-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background-color: rgb(237, 129, 49);
+  padding: 12px;
+  gap: 8px;
+  color: rgb(255, 255, 255);
+  font-weight: 700;
+}
+
+.fm-file-browser-container[data-search-mode="true"] .fm-file-browser-top-bar {
+  background-color: rgb(37, 99, 235);
+}
+
+.fm-file-browser-top-bar__title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.fm-topbar-kebab {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: rgb(255, 255, 255);
+  line-height: 1;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 4px;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background-color .12s ease, opacity .12s ease;
+}
+
+.fm-topbar-kebab:hover,
+.fm-topbar-kebab:focus-visible {
+  background: rgba(255,255,255,.12);
+  outline: none;
+}
+
+.fm-topbar-kebab:active {
+  background: rgba(255,255,255,.18);
+}
+
+.fm-topbar-kebab:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+  background: transparent;
+}

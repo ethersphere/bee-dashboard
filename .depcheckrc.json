@@ -14,6 +14,7 @@
     "stream*",
     "env-paths",
     "open",
-    "base64-inline-loader"
+    "base64-inline-loader",
+    "sass"
   ]
 }

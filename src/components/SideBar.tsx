@@ -4,6 +4,7 @@ import { BeeModes } from '@ethersphere/bee-js'
 import { ReactElement, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import FilesIcon from 'remixicon-react/ArrowUpDownLineIcon'
+import FileManagerIcon from 'remixicon-react/FolderOpenLineIcon'
 import DocsIcon from 'remixicon-react/BookOpenLineIcon'
 import ExternalLinkIcon from 'remixicon-react/ExternalLinkLineIcon'
 import GithubIcon from 'remixicon-react/GithubFillIcon'
@@ -81,6 +82,12 @@ export default function SideBar(): ReactElement {
       path: nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT ? ROUTES.DOWNLOAD : ROUTES.UPLOAD,
       icon: FilesIcon,
       pathMatcherSubstring: '/files/',
+    },
+    {
+      label: 'File Manager',
+      path: ROUTES.FILEMANAGER,
+      icon: FileManagerIcon,
+      pathMatcherSubstring: '/filemanager/',
     },
     {
       label: 'Account',

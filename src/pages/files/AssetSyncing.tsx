@@ -12,7 +12,7 @@ interface Props {
 export function AssetSyncing({ reference }: Props): ReactElement {
   const { beeApi } = useContext(SettingsContext)
 
-  const syncTimer = useRef<NodeJS.Timer>()
+  const syncTimer = useRef<ReturnType<typeof setInterval> | null>(null)
   const [isRetrieveChecking, setIsRetrieveChecking] = useState<boolean>(false)
   const [syncProgress, setSyncProgress] = useState<number>(0)
 
@@ -22,7 +22,7 @@ export function AssetSyncing({ reference }: Props): ReactElement {
     let allTags: Tag[] = []
     let offset = 0
     const limit = 1000
-    let tagsBatch
+    let tagsBatch: Tag[]
 
     do {
       tagsBatch = await beeApi.getAllTags({ limit, offset })
@@ -32,7 +32,7 @@ export function AssetSyncing({ reference }: Props): ReactElement {
 
     const tag = allTags.find(t => t.address === reference)
 
-    if (tag) {
+    if (tag && tag.split > 0) {
       const progress = ((tag.seen + tag.synced) / tag.split) * 100
       setSyncProgress(progress)
     }
@@ -44,6 +44,7 @@ export function AssetSyncing({ reference }: Props): ReactElement {
     return () => {
       if (syncTimer.current) {
         clearInterval(syncTimer.current)
+        syncTimer.current = null
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -52,6 +53,7 @@ export function AssetSyncing({ reference }: Props): ReactElement {
   useEffect(() => {
     if (syncProgress === 100 && syncTimer.current) {
       clearInterval(syncTimer.current)
+      syncTimer.current = null
     }
   }, [syncProgress])
 
