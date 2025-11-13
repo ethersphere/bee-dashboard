@@ -25,6 +25,7 @@ import { BankCardTopUpIndex } from './pages/top-up/BankCardTopUpIndex'
 import { CryptoTopUpIndex } from './pages/top-up/CryptoTopUpIndex'
 import { GiftCardFund } from './pages/top-up/GiftCardFund'
 import { GiftCardTopUpIndex } from './pages/top-up/GiftCardTopUpIndex'
+import RedistributionPage from './pages/redistribution'
 import { Swap } from './pages/top-up/Swap'
 import { Context as SettingsContext } from './providers/Settings'
 import { FileManagerPage } from './pages/filemanager'
@@ -37,6 +38,7 @@ export enum ROUTES {
   UPLOAD_IN_PROGRESS = '/files/upload/workflow',
   DOWNLOAD = '/files/download',
   HASH = '/files/hash/:hash',
+  REDISTRIBUTION = '/redistribution',
   SETTINGS = '/settings',
   STATUS = '/status',
   TOP_UP = '/account/wallet/top-up',
@@ -82,6 +84,7 @@ const BaseRouter = (): ReactElement => {
       <Route path={ROUTES.SETTINGS} element={<Settings />} />
       <Route path={ROUTES.STATUS} element={<Status />} />
       <Route path={ROUTES.INFO} element={<Info />} />
+      <Route path={ROUTES.REDISTRIBUTION} element={<RedistributionPage />} />
       <Route path={ROUTES.TOP_UP} element={<TopUp />} />
       <Route path={ROUTES.TOP_UP_CRYPTO} element={<CryptoTopUpIndex />} />
       <Route path={ROUTES.TOP_UP_CRYPTO_SWAP} element={<Swap header="Top-up with cryptocurrencies" />} />
