@@ -2,6 +2,29 @@ import { BZZ, DAI, EthAddress } from '@ethersphere/bee-js'
 import { providers, Wallet } from 'ethers'
 import { estimateNativeTransferTransactionCost, Rpc } from './rpc'
 
+export class WalletAddress {
+  private constructor(
+    public address: string,
+    public bzz: BZZ,
+    public dai: DAI,
+    public provider: providers.JsonRpcProvider,
+  ) {}
+
+  static async make(address: string, provider: providers.JsonRpcProvider): Promise<WalletAddress> {
+    const bzz = await Rpc._eth_getBalanceERC20(address, provider)
+    const dai = await Rpc._eth_getBalance(address, provider)
+
+    return new WalletAddress(address, bzz, dai, provider)
+  }
+
+  public async refresh(): Promise<WalletAddress> {
+    this.bzz = await Rpc._eth_getBalanceERC20(this.address, this.provider)
+    this.dai = await Rpc._eth_getBalance(this.address, this.provider)
+
+    return this
+  }
+}
+
 export class ResolvedWallet {
   public address: string
   public privateKey: string

@@ -1,5 +1,5 @@
-import { Box, Typography } from '@material-ui/core'
 import { BeeModes, BZZ, DAI } from '@ethersphere/bee-js'
+import { Box, Typography } from '@material-ui/core'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
@@ -15,6 +15,7 @@ import { SwarmDivider } from '../../components/SwarmDivider'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
+import { Context as BalanceProvider } from '../../providers/WalletBalance'
 import { ROUTES } from '../../routes'
 import { sleepMs } from '../../utils'
 import { isSwapError, SwapError, wrapWithSwapError } from '../../utils/SwapError'
@@ -48,7 +49,8 @@ export function Swap({ header }: Props): ReactElement {
   const [daiAfterSwap, setDaiAfterSwap] = useState<DAI | null>(null)
 
   const { rpcProviderUrl, isDesktop, desktopUrl } = useContext(SettingsContext)
-  const { nodeAddresses, nodeInfo, walletBalance } = useContext(BeeContext)
+  const { nodeAddresses, nodeInfo } = useContext(BeeContext)
+  const { balance } = useContext(BalanceProvider)
 
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
@@ -61,20 +63,20 @@ export function Swap({ header }: Props): ReactElement {
 
   // Set the initial xDAI to swap
   useEffect(() => {
-    if (!walletBalance || userInputSwap) {
+    if (!balance || userInputSwap) {
       return
     }
 
     const minimumOptimalValue = DAI.fromDecimalString('1').plus(MINIMUM_XDAI)
 
-    if (walletBalance.nativeTokenBalance.gte(minimumOptimalValue)) {
+    if (balance.dai.gte(minimumOptimalValue)) {
       // Balance has at least 1 + MINIMUM_XDAI xDai
-      setDaiToSwap(walletBalance.nativeTokenBalance.minus(DAI.fromDecimalString('1')))
+      setDaiToSwap(balance.dai.minus(DAI.fromDecimalString('1')))
     } else {
       // Balance is low, halve the amount
-      setDaiToSwap(walletBalance.nativeTokenBalance.divide(BigInt(2)))
+      setDaiToSwap(balance.dai.divide(BigInt(2)))
     }
-  }, [walletBalance, userInputSwap])
+  }, [balance, userInputSwap])
 
   // Set the xDAI to swap based on user input
   useEffect(() => {
@@ -95,13 +97,13 @@ export function Swap({ header }: Props): ReactElement {
 
   // Calculate the amount of tokens after swap
   useEffect(() => {
-    if (!walletBalance || !daiToSwap || error) {
+    if (!balance || !daiToSwap || error) {
       return
     }
-    const daiAfterSwap = walletBalance.nativeTokenBalance.minus(daiToSwap)
+    const daiAfterSwap = balance.dai.minus(daiToSwap)
     setDaiAfterSwap(daiAfterSwap)
     const tokensConverted = daiToSwap.exchangeToBZZ(price)
-    const bzzAfterSwap = tokensConverted.plus(walletBalance.bzzBalance)
+    const bzzAfterSwap = tokensConverted.plus(balance.bzz)
     setBzzAfterSwap(bzzAfterSwap)
 
     if (daiAfterSwap.lt(MINIMUM_XDAI)) {
@@ -109,9 +111,9 @@ export function Swap({ header }: Props): ReactElement {
     } else if (bzzAfterSwap.lt(MINIMUM_XBZZ)) {
       setError(`Must have at least ${MINIMUM_XBZZ.toSignificantDigits(4)} xBZZ after swap!`)
     }
-  }, [error, walletBalance, daiToSwap, price])
+  }, [error, balance, daiToSwap, price])
 
-  if (!walletBalance || !nodeAddresses || !daiToSwap || !bzzAfterSwap || !daiAfterSwap) {
+  if (!balance || !nodeAddresses || !daiToSwap || !bzzAfterSwap || !daiAfterSwap) {
     return <Loading />
   }
 
@@ -219,8 +221,8 @@ export function Swap({ header }: Props): ReactElement {
       <SwarmDivider mb={4} />
       <Box mb={4}>
         <Typography>
-          Your current balance is {walletBalance.nativeTokenBalance.toSignificantDigits(4)} xDAI and{' '}
-          {walletBalance.bzzBalance.toSignificantDigits(4)} xBZZ.
+          Your current balance is {balance.dai.toSignificantDigits(4)} xDAI and {balance.bzz.toSignificantDigits(4)}{' '}
+          xBZZ.
         </Typography>
       </Box>
       <Box mb={4}>
