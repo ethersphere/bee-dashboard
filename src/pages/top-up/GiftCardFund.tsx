@@ -1,5 +1,5 @@
-import { Box, Typography } from '@material-ui/core'
 import { BeeModes } from '@ethersphere/bee-js'
+import { Box, Typography } from '@material-ui/core'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
@@ -14,14 +14,16 @@ import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmDivider } from '../../components/SwarmDivider'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
+import { Context as BalanceProvider } from '../../providers/WalletBalance'
 import { ROUTES } from '../../routes'
 import { sleepMs } from '../../utils'
 import { restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
 import { ResolvedWallet } from '../../utils/wallet'
 
 export function GiftCardFund(): ReactElement {
-  const { nodeAddresses, nodeInfo, walletBalance } = useContext(BeeContext)
+  const { nodeAddresses, nodeInfo } = useContext(BeeContext)
   const { isDesktop, desktopUrl, rpcProvider, rpcProviderUrl } = useContext(SettingsContext)
+  const { balance } = useContext(BalanceProvider)
 
   const [loading, setLoading] = useState(false)
   const [wallet, setWallet] = useState<ResolvedWallet | null>(null)
@@ -39,7 +41,7 @@ export function GiftCardFund(): ReactElement {
     ResolvedWallet.make(privateKeyString, rpcProvider).then(setWallet)
   }, [privateKeyString, rpcProvider])
 
-  if (!wallet || !walletBalance) {
+  if (!wallet || !balance) {
     return <Loading />
   }
 
@@ -94,7 +96,7 @@ export function GiftCardFund(): ReactElement {
       </Box>
       <SwarmDivider mb={4} />
       <Box mb={0.25}>
-        <ExpandableListItemKey label="Gift wallet address" value={wallet.address || 'N/A'} />
+        <ExpandableListItemKey label="Gift wallet address" value={balance.address || 'N/A'} />
       </Box>
       <Box mb={0.25}>
         <ExpandableListItem label="xDAI balance" value={`${wallet.dai.toSignificantDigits(4)} xDAI`} />
@@ -113,13 +115,10 @@ export function GiftCardFund(): ReactElement {
         />
       </Box>
       <Box mb={0.25}>
-        <ExpandableListItem
-          label="xDAI balance"
-          value={`${walletBalance.nativeTokenBalance.toSignificantDigits(4)} xDAI`}
-        />
+        <ExpandableListItem label="xDAI balance" value={`${balance.dai.toSignificantDigits(4)} xDAI`} />
       </Box>
       <Box mb={2}>
-        <ExpandableListItem label="xBZZ balance" value={`${walletBalance.bzzBalance.toSignificantDigits(4)} xBZZ`} />
+        <ExpandableListItem label="xBZZ balance" value={`${balance.bzz.toSignificantDigits(4)} xBZZ`} />
       </Box>
       <SwarmButton iconType={Check} onClick={onFund} disabled={loading} loading={loading}>
         {canUpgradeToLightNode ? 'Send all funds to your node and Upgrade' : 'Send all funds to your node'}
