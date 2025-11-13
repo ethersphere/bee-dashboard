@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.33.1](https://github.com/ethersphere/bee-dashboard/compare/v0.33.0...v0.33.1) (2025-11-13)
+
+
+### Bug Fixes
+
+* put back external wallet balance context ([#704](https://github.com/ethersphere/bee-dashboard/issues/704)) ([096522a](https://github.com/ethersphere/bee-dashboard/commit/096522aa8a2f11afb0061a6fedbae241967408ef))
+
 ## [0.33.0](https://github.com/ethersphere/bee-dashboard/compare/v0.32.0...v0.33.0) (2025-11-12)
 
 
