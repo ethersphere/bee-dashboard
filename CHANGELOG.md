@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.33.2](https://github.com/ethersphere/bee-dashboard/compare/v0.33.1...v0.33.2) (2025-11-14)
+
+
+### Bug Fixes
+
+* clarify installation instructions in README ([#707](https://github.com/ethersphere/bee-dashboard/issues/707)) ([82e7c78](https://github.com/ethersphere/bee-dashboard/commit/82e7c78a818b46031b040f92e9a9491003c9bd92))
+
 ## [0.33.1](https://github.com/ethersphere/bee-dashboard/compare/v0.33.0...v0.33.1) (2025-11-13)
 
 
