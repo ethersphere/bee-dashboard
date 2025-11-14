@@ -41,6 +41,8 @@ Install globally with npm. We require Node.js's version of at least 12.x and npm
 npm install -g @ethersphere/bee-dashboard
 ```
 
+For the latest stable version, always use the official npm registry.
+
 ## Usage
 
 :warning: To successfully connect to the Bee node, you will need to enable CORS. You can do so by setting
