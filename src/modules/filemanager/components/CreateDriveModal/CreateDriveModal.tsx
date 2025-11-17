@@ -22,7 +22,7 @@ const maxMarkValue = Math.max(...erasureCodeMarks.map(mark => mark.value))
 interface CreateDriveModalProps {
   onCancelClick: () => void
   onDriveCreated: () => void
-  onCreationStarted: () => void
+  onCreationStarted: (driveName: string) => void
   onCreationError: (name: string) => void
 }
 // TODO: select existing batch id or create a new one - just like in InitialModal
@@ -188,7 +188,7 @@ export function CreateDriveModal({
             disabled={!isCreateEnabled || !isBalanceSufficient}
             onClick={async () => {
               if (isCreateEnabled && fm && beeApi && walletBalance) {
-                onCreationStarted()
+                onCreationStarted(driveName)
                 onCancelClick()
 
                 await handleCreateDrive(
