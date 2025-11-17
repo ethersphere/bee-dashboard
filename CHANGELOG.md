@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.33.3](https://github.com/ethersphere/bee-dashboard/compare/v0.33.2...v0.33.3) (2025-11-17)
+
+
+### Bug Fixes
+
+* add formbricks environment variables to workflow files ([#709](https://github.com/ethersphere/bee-dashboard/issues/709)) ([6d28653](https://github.com/ethersphere/bee-dashboard/commit/6d28653bb0b731a16d8adabbb9a8c9074387f769))
+
 ## [0.33.2](https://github.com/ethersphere/bee-dashboard/compare/v0.33.1...v0.33.2) (2025-11-14)
 
 
