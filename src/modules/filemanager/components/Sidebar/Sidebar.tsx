@@ -34,6 +34,7 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
   const [isCreateDriveOpen, setIsCreateDriveOpen] = useState(false)
   const [usableStamps, setUsableStamps] = useState<PostageBatch[]>([])
   const [isDriveCreationInProgress, setIsDriveCreationInProgress] = useState(false)
+  const [creatingDriveName, setCreatingDriveName] = useState<string | null>(null)
   const [isExpiredOpen, setIsExpiredOpen] = useState(false)
 
   const { beeApi } = useContext(SettingsContext)
@@ -89,33 +90,37 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
       }
     }
   }, [fm, drives, currentDrive, currentStamp, usableStamps, setCurrentDrive, setCurrentStamp, setView])
-  
+
   const handleCreateNewDrive = () => {
     if (isDriveCreationInProgress) {
-      return;
+      return
     }
-    
-    setIsCreateDriveOpen(true);
-  };
+
+    setIsCreateDriveOpen(true)
+  }
 
   const isCurrent = (di: DriveInfo) => currentDrive?.id.toString() === di.id.toString()
 
   return (
     <div className="fm-sidebar">
       <div className="fm-sidebar-content">
-        {!loading && (<>
-          <div className={`fm-sidebar-item ${isDriveCreationInProgress ? "disabled" : ""}`} onClick={() => handleCreateNewDrive()}>
-            <div className="fm-sidebar-item-icon">
-              <Add size="16px" />
+        {!loading && (
+          <>
+            <div
+              className={`fm-sidebar-item ${isDriveCreationInProgress ? 'disabled' : ''}`}
+              onClick={() => handleCreateNewDrive()}
+            >
+              <div className="fm-sidebar-item-icon">
+                <Add size="16px" />
+              </div>
+              <div>Create new drive</div>
             </div>
-            <div>Create new drive</div>
-          </div>
-          {
-            isDriveCreationInProgress && <div className="fm-sidebar-item-description">
-              wait while drive creation for 'xyz' is in progress
-            </div>
-          }
-        </>
+            {isDriveCreationInProgress && (
+              <div className="fm-sidebar-item-description">
+                wait while drive creation for {creatingDriveName} is in progress
+              </div>
+            )}
+          </>
         )}
 
         {isCreateDriveOpen && (
@@ -124,12 +129,17 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
             onDriveCreated={() => {
               setIsCreateDriveOpen(false)
               setIsDriveCreationInProgress(false)
+              setCreatingDriveName(null)
             }}
-            onCreationStarted={() => setIsDriveCreationInProgress(true)}
+            onCreationStarted={(driveName: string) => {
+              setIsDriveCreationInProgress(true)
+              setCreatingDriveName(driveName)
+            }}
             onCreationError={(name: string) => {
               setIsDriveCreationInProgress(false)
               setErrorMessage?.(`Error creating drive: ${name}`)
               setShowError(true)
+              setCreatingDriveName(null)
 
               return
             }}
