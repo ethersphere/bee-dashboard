@@ -12,6 +12,10 @@ jobs:
   tests:
     runs-on: ubuntu-latest
 
+    env:
+      REACT_APP_FORMBRICKS_ENV_ID: ${{ secrets.REACT_APP_FORMBRICKS_ENV_ID }}
+      REACT_APP_FORMBRICKS_APP_URL: ${{ secrets.REACT_APP_FORMBRICKS_APP_URL }}
+
     strategy:
       matrix:
         node-version: [18.x]
