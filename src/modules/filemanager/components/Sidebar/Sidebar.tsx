@@ -89,19 +89,33 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
       }
     }
   }, [fm, drives, currentDrive, currentStamp, usableStamps, setCurrentDrive, setCurrentStamp, setView])
+  
+  const handleCreateNewDrive = () => {
+    if (isDriveCreationInProgress) {
+      return;
+    }
+    
+    setIsCreateDriveOpen(true);
+  };
 
   const isCurrent = (di: DriveInfo) => currentDrive?.id.toString() === di.id.toString()
 
   return (
     <div className="fm-sidebar">
       <div className="fm-sidebar-content">
-        {!loading && (
-          <div className="fm-sidebar-item" onClick={() => setIsCreateDriveOpen(true)}>
+        {!loading && (<>
+          <div className={`fm-sidebar-item ${isDriveCreationInProgress ? "disabled" : ""}`} onClick={() => handleCreateNewDrive()}>
             <div className="fm-sidebar-item-icon">
               <Add size="16px" />
             </div>
             <div>Create new drive</div>
           </div>
+          {
+            isDriveCreationInProgress && <div className="fm-sidebar-item-description">
+              wait while drive creation for 'xyz' is in progress
+            </div>
+          }
+        </>
         )}
 
         {isCreateDriveOpen && (
