@@ -181,7 +181,7 @@ export function CreateDriveModal({
             <div className="fm-modal-estimated-cost-container">
               <div className="fm-emphasized-text">Estimated Cost:</div>
               <div>
-                {cost} BZZ {isBalanceSufficient ? '' : '(Insufficient balance)!'}
+                {cost} BZZ {isBalanceSufficient ? '' : '(Insufficient balance)'}
                 {isxDaiBalanceSufficient ? '' : ' (Insufficient xDAI balance)'}
               </div>
               <Tooltip label={TOOLTIPS.DRIVE_ESTIMATED_COST} bottomTooltip={true} />
