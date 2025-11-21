@@ -1,6 +1,6 @@
 import { ReactElement, useContext, useEffect, useRef, useState } from 'react'
 
-import { BZZ, Duration, RedundancyLevel, Size, Utils } from '@ethersphere/bee-js'
+import { BZZ, DAI, Duration, RedundancyLevel, Size, Utils } from '@ethersphere/bee-js'
 import './CreateDriveModal.scss'
 import { CustomDropdown } from '../CustomDropdown/CustomDropdown'
 import { Button } from '../Button/Button'
@@ -34,6 +34,7 @@ export function CreateDriveModal({
 }: CreateDriveModalProps): ReactElement {
   const [isCreateEnabled, setIsCreateEnabled] = useState(false)
   const [isBalanceSufficient, setIsBalanceSufficient] = useState(true)
+  const [isxDaiBalanceSufficient, setIsxDaiBalanceSufficient] = useState(true)
   const [capacity, setCapacity] = useState(0)
   const [lifetimeIndex, setLifetimeIndex] = useState(-1)
   const [validityEndDate, setValidityEndDate] = useState(new Date())
@@ -85,11 +86,18 @@ export function CreateDriveModal({
           if (!isMountedRef.current) return
 
           setIsBalanceSufficient(true)
+          setIsxDaiBalanceSufficient(true)
 
           if ((walletBalance && cost.gte(walletBalance.bzzBalance)) || !walletBalance) {
             setIsBalanceSufficient(false)
           }
           setCost(cost.toSignificantDigits(2))
+
+          const zeroDAI = DAI.fromDecimalString('0')
+
+          if ((walletBalance && zeroDAI.eq(walletBalance.nativeTokenBalance)) || !walletBalance) {
+            setIsxDaiBalanceSufficient(false)
+          }
         },
         currentFetch,
       )
@@ -173,9 +181,9 @@ export function CreateDriveModal({
             <div className="fm-modal-estimated-cost-container">
               <div className="fm-emphasized-text">Estimated Cost:</div>
               <div>
-                {cost} BZZ {isBalanceSufficient ? '' : '(Insufficient balance)'}
+                {cost} BZZ {isBalanceSufficient ? '' : '(Insufficient balance)!'}
+                {isxDaiBalanceSufficient ? '' : ' (Insufficient xDAI balance)'}
               </div>
-
               <Tooltip label={TOOLTIPS.DRIVE_ESTIMATED_COST} bottomTooltip={true} />
             </div>
             <div>(Based on current network conditions)</div>
@@ -185,7 +193,7 @@ export function CreateDriveModal({
           <Button
             label="Create drive"
             variant="primary"
-            disabled={!isCreateEnabled || !isBalanceSufficient}
+            disabled={!isCreateEnabled || !isBalanceSufficient || !isxDaiBalanceSufficient}
             onClick={async () => {
               if (isCreateEnabled && fm && beeApi && walletBalance) {
                 onCreationStarted()
