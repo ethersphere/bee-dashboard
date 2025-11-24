@@ -114,7 +114,9 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
             onCreationStarted={() => setIsDriveCreationInProgress(true)}
             onCreationError={(name: string) => {
               setIsDriveCreationInProgress(false)
-              setErrorMessage?.(`Error creating drive: ${name}`)
+              setErrorMessage?.(
+                `Error creating drive: ${name}. The reasons can be: insufficient xDAI balance, communication lost with RPC.`,
+              )
               setShowError(true)
 
               return
