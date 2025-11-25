@@ -1,6 +1,6 @@
 import { ReactElement, useContext, useEffect, useRef, useState } from 'react'
 
-import { BZZ, Duration, RedundancyLevel, Size, Utils } from '@ethersphere/bee-js'
+import { BeeModes, BZZ, Duration, RedundancyLevel, Size, Utils } from '@ethersphere/bee-js'
 import './CreateDriveModal.scss'
 import { CustomDropdown } from '../CustomDropdown/CustomDropdown'
 import { Button } from '../Button/Button'
@@ -44,7 +44,7 @@ export function CreateDriveModal({
   const [cost, setCost] = useState('0')
 
   const [sizeMarks, setSizeMarks] = useState<{ value: number; label: string }[]>([])
-  const { walletBalance } = useContext(BeeContext)
+  const { walletBalance, nodeInfo } = useContext(BeeContext)
   const { beeApi } = useContext(SettingsContext)
   const { fm } = useContext(FMContext)
   const currentFetch = useRef<Promise<void> | null>(null)
@@ -109,6 +109,9 @@ export function CreateDriveModal({
   useEffect(() => {
     setValidityEndDate(getExpiryDateByLifetime(lifetimeIndex))
   }, [lifetimeIndex])
+
+  const isUltraLightNode = nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT
+  const isCreateDriveDisabled = isUltraLightNode || !isCreateEnabled || !isBalanceSufficient
 
   return (
     <div className="fm-modal-container">
@@ -179,13 +182,26 @@ export function CreateDriveModal({
               <Tooltip label={TOOLTIPS.DRIVE_ESTIMATED_COST} bottomTooltip={true} />
             </div>
             <div>(Based on current network conditions)</div>
+            {isUltraLightNode && (
+              <div>
+                Create drive is not supported by Ultra Light Bee node, please{' '}
+                <a
+                  href="https://docs.ethswarm.org/docs/bee/working-with-bee/node-types/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  upgrade
+                </a>{' '}
+                for this functionality.
+              </div>
+            )}
           </div>
         </div>
         <div className="fm-modal-window-footer">
           <Button
             label="Create drive"
             variant="primary"
-            disabled={!isCreateEnabled || !isBalanceSufficient}
+            disabled={isCreateDriveDisabled}
             onClick={async () => {
               if (isCreateEnabled && fm && beeApi && walletBalance) {
                 onCreationStarted()
