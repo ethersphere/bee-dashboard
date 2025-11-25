@@ -1,6 +1,6 @@
 import { ReactElement, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 
-import { BZZ, DAI, Duration, PostageBatch, RedundancyLevel, Size, Utils } from '@ethersphere/bee-js'
+import { BeeModes, BZZ, DAI, Duration, PostageBatch, RedundancyLevel, Size, Utils } from '@ethersphere/bee-js'
 import './InitialModal.scss'
 import { CustomDropdown } from '../CustomDropdown/CustomDropdown'
 import { Button } from '../Button/Button'
@@ -61,7 +61,7 @@ export function InitialModal({
   const [selectedBatch, setSelectedBatch] = useState<PostageBatch | null>(null)
   const [selectedBatchIndex, setSelectedBatchIndex] = useState<number>(-1)
 
-  const { walletBalance } = useContext(BeeContext)
+  const { walletBalance, nodeInfo } = useContext(BeeContext)
   const { beeApi } = useContext(SettingsContext)
   const { fm } = useContext(FMContext)
 
@@ -190,6 +190,11 @@ export function InitialModal({
   const initText = resetState ? 'Resetting' : 'Initializing'
   const createText = resetState ? 'Reset' : 'Create'
 
+  const isUltraLightNode = nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT
+
+  const isCreateDriveDisabled =
+    isUltraLightNode || (selectedBatch ? false : !isCreateEnabled || !isBalanceSufficient || !isxDaiBalanceSufficient)
+
   return (
     <div className="fm-initialization-modal-container">
       <div className="fm-modal-window">
@@ -267,6 +272,19 @@ export function InitialModal({
                 <Tooltip label={TOOLTIPS.ADMIN_ESTIMATED_COST} />
               </div>
               <div>(Based on current network conditions)</div>
+              {isUltraLightNode && (
+                <div>
+                  Stamp purchase is not supported by Ultra Light Bee node, please{' '}
+                  <a
+                    href="https://docs.ethswarm.org/docs/bee/working-with-bee/node-types/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    upgrade
+                  </a>{' '}
+                  for this functionality.
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -274,7 +292,7 @@ export function InitialModal({
           <Button
             label={selectedBatch ? `${createText} Drive` : `Purchase Stamp & ${createText} Drive`}
             variant="primary"
-            disabled={selectedBatch ? false : !isCreateEnabled || !isBalanceSufficient || !isxDaiBalanceSufficient}
+            disabled={isCreateDriveDisabled}
             onClick={createAdminDrive}
           />
           <Tooltip

@@ -9,8 +9,10 @@ import { useNavigate } from 'react-router-dom'
 import { DocumentationText } from '../../components/DocumentationText'
 import { SwarmButton } from '../../components/SwarmButton'
 import { Context, UploadOrigin } from '../../providers/File'
+import { Context as BeeContext } from '../../providers/Bee'
 import { ROUTES } from '../../routes'
 import { detectIndexHtml } from '../../utils/file'
+import { BeeModes } from '@ethersphere/bee-js'
 
 interface Props {
   uploadOrigin: UploadOrigin
@@ -51,6 +53,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
   const { setFiles, setUploadOrigin } = useContext(Context)
+  const { nodeInfo } = useContext(BeeContext)
   const classes = useStyles()
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
@@ -121,33 +124,46 @@ export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
     }
   }
 
+  const isUploadEnabled = nodeInfo?.beeMode !== BeeModes.ULTRA_LIGHT
+
   return (
     <>
-      <div className={classes.areaWrapper}>
-        <DropzoneArea
-          key={version}
-          dropzoneClass={classes.dropzone}
-          onChange={handleChange}
-          filesLimit={1e9}
-          maxFileSize={MAX_FILE_SIZE}
-          showPreviews={false}
-        />
-        <div className={classes.buttonWrapper}>
-          <SwarmButton className={classes.button} onClick={onUploadFileClick} iconType={FilePlus}>
-            Add File
-          </SwarmButton>
-          <SwarmButton className={classes.button} onClick={onUploadFolderClick} iconType={FolderPlus}>
-            Add Folder
-          </SwarmButton>
-          <SwarmButton className={classes.button} onClick={onUploadWebsiteClick} iconType={PlusCircle}>
-            Add Website
-          </SwarmButton>
+      {isUploadEnabled && (
+        <div className={classes.areaWrapper}>
+          <DropzoneArea
+            key={version}
+            dropzoneClass={classes.dropzone}
+            onChange={handleChange}
+            filesLimit={1e9}
+            maxFileSize={MAX_FILE_SIZE}
+            showPreviews={false}
+          />
+          <div className={classes.buttonWrapper}>
+            <SwarmButton className={classes.button} onClick={onUploadFileClick} iconType={FilePlus}>
+              Add File
+            </SwarmButton>
+            <SwarmButton className={classes.button} onClick={onUploadFolderClick} iconType={FolderPlus}>
+              Add Folder
+            </SwarmButton>
+            <SwarmButton className={classes.button} onClick={onUploadWebsiteClick} iconType={PlusCircle}>
+              Add Website
+            </SwarmButton>
+          </div>
         </div>
-      </div>
-      {showHelp && (
+      )}
+      {isUploadEnabled && showHelp && (
         <DocumentationText>
           You can click the buttons above or simply drag and drop to add a file or folder. To upload a website to Swarm,
           make sure that your folder contains an “index.html” file.
+        </DocumentationText>
+      )}
+      {!isUploadEnabled && (
+        <DocumentationText>
+          Upload is not supported by Ultra Light Bee node, please{' '}
+          <a href="https://docs.ethswarm.org/docs/bee/working-with-bee/node-types/" target="_blank" rel="noreferrer">
+            upgrade
+          </a>{' '}
+          for this functionality.
         </DocumentationText>
       )}
     </>
