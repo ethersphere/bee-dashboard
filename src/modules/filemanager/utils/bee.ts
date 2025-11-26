@@ -1,5 +1,5 @@
 import { BatchId, Bee, BZZ, Duration, PostageBatch, RedundancyLevel, Size } from '@ethersphere/bee-js'
-import { FileManagerBase, DriveInfo } from '@solarpunkltd/file-manager-lib'
+import { FileManagerBase, DriveInfo, FileInfo } from '@solarpunkltd/file-manager-lib'
 import { getHumanReadableFileSize } from '../../../utils/file'
 
 export const getUsableStamps = async (bee: Bee | null): Promise<PostageBatch[]> => {
@@ -119,6 +119,7 @@ interface StampCapacityMetrics {
 export const calculateStampCapacityMetrics = (
   stamp: PostageBatch | null,
   drive?: DriveInfo | null,
+  files?: FileInfo[],
 ): StampCapacityMetrics => {
   if (!stamp) {
     return {
@@ -136,10 +137,21 @@ export const calculateStampCapacityMetrics = (
   let capacityPct = 0
   let remainingBytes = 0
 
+  // debugger
   if (drive) {
     totalBytes = stamp.calculateSize(false, drive.redundancyLevel).toBytes()
-    remainingBytes = stamp.calculateRemainingSize(false, drive.redundancyLevel).toBytes()
-    usedBytes = totalBytes - remainingBytes
+
+    if (files) {
+      usedBytes = files
+        ?.filter(file => file.driveId === drive?.id)
+        .map(file => Number(file.customMetadata?.size || 0))
+        .reduce((acc, current) => acc + current, 0)
+
+      remainingBytes = totalBytes - usedBytes
+    } else {
+      remainingBytes = stamp.calculateRemainingSize(false, drive.redundancyLevel).toBytes()
+      usedBytes = totalBytes - remainingBytes
+    }
     capacityPct = ((totalBytes - remainingBytes) / totalBytes) * 100
   } else {
     capacityPct = stamp.usage * 100
