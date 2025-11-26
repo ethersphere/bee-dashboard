@@ -48,11 +48,11 @@ export function detectIndexHtml(files: FilePath[]): DetectedIndex | false {
 }
 
 export function getHumanReadableFileSize(bytes: number): string {
-  const KB = 1024
-  const MB = KB * 1024
-  const GB = MB * 1024
-  const TB = GB * 1024
-  const PB = TB * 1024
+  const KB = 1000
+  const MB = KB * 1000
+  const GB = MB * 1000
+  const TB = GB * 1000
+  const PB = TB * 1000
 
   if (bytes >= PB) {
     return (bytes / PB).toFixed(2) + ' PB'
