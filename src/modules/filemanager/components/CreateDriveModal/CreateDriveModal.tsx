@@ -184,15 +184,15 @@ export function CreateDriveModal({
             <div>(Based on current network conditions)</div>
             {isUltraLightNode && (
               <div>
-                Create drive is not supported by Ultra Light Bee node, please{' '}
+                Creating a drive requires running a light node. Please{' '}
                 <a
-                  href="https://docs.ethswarm.org/docs/bee/working-with-bee/node-types/"
+                  href="https://docs.ethswarm.org/docs/desktop/configuration/#upgrading-from-an-ultra-light-to-a-light-node"
                   target="_blank"
                   rel="noreferrer"
                 >
                   upgrade
                 </a>{' '}
-                for this functionality.
+                to continue.
               </div>
             )}
           </div>

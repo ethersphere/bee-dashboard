@@ -272,17 +272,30 @@ export function InitialModal({
                 <Tooltip label={TOOLTIPS.ADMIN_ESTIMATED_COST} />
               </div>
               <div>(Based on current network conditions)</div>
-              {isUltraLightNode && (
+              {isUltraLightNode && selectedBatch &&(
                 <div>
-                  Stamp purchase is not supported by Ultra Light Bee node, please{' '}
+                  {resetState ? "Resetting" : "Creating"} a drive requires running a light node. Please {' '}
                   <a
-                    href="https://docs.ethswarm.org/docs/bee/working-with-bee/node-types/"
+                    href="https://docs.ethswarm.org/docs/desktop/configuration/#upgrading-from-an-ultra-light-to-a-light-node"
                     target="_blank"
                     rel="noreferrer"
                   >
                     upgrade
                   </a>{' '}
-                  for this functionality.
+                  to continue.
+                </div>
+              )}
+              {isUltraLightNode && !selectedBatch &&(
+                <div>
+                  Purchasing a stamp and {resetState ? "resetting" : "creating"} a drive requires running a light node. Please {' '}
+                  <a
+                    href="https://docs.ethswarm.org/docs/desktop/configuration/#upgrading-from-an-ultra-light-to-a-light-node"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    upgrade
+                  </a>{' '}
+                  to continue.
                 </div>
               )}
             </div>

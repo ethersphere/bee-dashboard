@@ -159,11 +159,11 @@ export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
       )}
       {!isUploadEnabled && (
         <DocumentationText>
-          Upload is not supported by Ultra Light Bee node, please{' '}
-          <a href="https://docs.ethswarm.org/docs/bee/working-with-bee/node-types/" target="_blank" rel="noreferrer">
+          Uploading files requires running a light node. Please{' '}
+          <a href="https://docs.ethswarm.org/docs/desktop/configuration/#upgrading-from-an-ultra-light-to-a-light-node" target="_blank" rel="noreferrer">
             upgrade
           </a>{' '}
-          for this functionality.
+          to continue.
         </DocumentationText>
       )}
     </>
