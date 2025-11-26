@@ -137,7 +137,6 @@ export const calculateStampCapacityMetrics = (
   let capacityPct = 0
   let remainingBytes = 0
 
-  // debugger
   if (drive) {
     totalBytes = stamp.calculateSize(false, drive.redundancyLevel).toBytes()
 
