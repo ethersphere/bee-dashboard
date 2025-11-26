@@ -272,9 +272,9 @@ export function InitialModal({
                 <Tooltip label={TOOLTIPS.ADMIN_ESTIMATED_COST} />
               </div>
               <div>(Based on current network conditions)</div>
-              {isUltraLightNode && selectedBatch &&(
+              {isUltraLightNode && selectedBatch && (
                 <div>
-                  {resetState ? "Resetting" : "Creating"} a drive requires running a light node. Please {' '}
+                  {resetState ? 'Resetting' : 'Creating'} a drive requires running a light node. Please{' '}
                   <a
                     href="https://docs.ethswarm.org/docs/desktop/configuration/#upgrading-from-an-ultra-light-to-a-light-node"
                     target="_blank"
@@ -285,9 +285,10 @@ export function InitialModal({
                   to continue.
                 </div>
               )}
-              {isUltraLightNode && !selectedBatch &&(
+              {isUltraLightNode && !selectedBatch && (
                 <div>
-                  Purchasing a stamp and {resetState ? "resetting" : "creating"} a drive requires running a light node. Please {' '}
+                  Purchasing a stamp and {resetState ? 'resetting' : 'creating'} a drive requires running a light node.
+                  Please{' '}
                   <a
                     href="https://docs.ethswarm.org/docs/desktop/configuration/#upgrading-from-an-ultra-light-to-a-light-node"
                     target="_blank"

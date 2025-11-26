@@ -160,7 +160,11 @@ export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
       {!isUploadEnabled && (
         <DocumentationText>
           Uploading files requires running a light node. Please{' '}
-          <a href="https://docs.ethswarm.org/docs/desktop/configuration/#upgrading-from-an-ultra-light-to-a-light-node" target="_blank" rel="noreferrer">
+          <a
+            href="https://docs.ethswarm.org/docs/desktop/configuration/#upgrading-from-an-ultra-light-to-a-light-node"
+            target="_blank"
+            rel="noreferrer"
+          >
             upgrade
           </a>{' '}
           to continue.
