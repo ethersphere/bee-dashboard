@@ -1,6 +1,7 @@
 import { BatchId, Bee, BZZ, Duration, PostageBatch, RedundancyLevel, Size } from '@ethersphere/bee-js'
 import { FileManagerBase, DriveInfo, FileInfo } from '@solarpunkltd/file-manager-lib'
 import { getHumanReadableFileSize } from '../../../utils/file'
+import { indexStrToBigint } from './common'
 
 export const getUsableStamps = async (bee: Bee | null): Promise<PostageBatch[]> => {
   if (!bee) {
@@ -140,16 +141,31 @@ export const calculateStampCapacityMetrics = (
   if (drive) {
     totalBytes = stamp.calculateSize(false, drive.redundancyLevel).toBytes()
 
+    const swarmRemainingBytes = stamp.calculateRemainingSize(false, drive.redundancyLevel).toBytes()
+    const swarmUsedBytes = totalBytes - swarmRemainingBytes
+    const swarmUtilizationPct = (swarmUsedBytes / totalBytes) * 100
+
     if (files) {
-      usedBytes = files
+      const solarPunkUsedBytes = files
         ?.filter(file => file.driveId === drive?.id)
-        .map(file => Number(file.customMetadata?.size || 0))
+        .map(file => {
+          const fileSize = Number(file.customMetadata?.size || 0)
+          const versionCount = Number((indexStrToBigint(file.version) ?? BigInt(0)) + BigInt(1))
+
+          return fileSize * versionCount
+        })
         .reduce((acc, current) => acc + current, 0)
 
-      remainingBytes = totalBytes - usedBytes
+      if (swarmUtilizationPct < 50) {
+        usedBytes = solarPunkUsedBytes
+        remainingBytes = totalBytes - usedBytes
+      } else {
+        usedBytes = Math.max(swarmUsedBytes, solarPunkUsedBytes)
+        remainingBytes = totalBytes - usedBytes
+      }
     } else {
-      remainingBytes = stamp.calculateRemainingSize(false, drive.redundancyLevel).toBytes()
-      usedBytes = totalBytes - remainingBytes
+      remainingBytes = swarmRemainingBytes
+      usedBytes = swarmUsedBytes
     }
     capacityPct = ((totalBytes - remainingBytes) / totalBytes) * 100
   } else {
