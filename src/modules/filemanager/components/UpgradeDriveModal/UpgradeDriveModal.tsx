@@ -159,12 +159,15 @@ export function UpgradeDriveModal({
     const fetchExtensionCost = () => {
       const isCapacitySet = capacityIndex > 0
       const isDurationSet = true
-      const duration = Duration.fromEndDate(validityEndDate)
+      const extendDuration =
+        durationExtensionCost === '0'
+          ? Duration.ZERO
+          : Duration.fromEndDate(validityEndDate, stamp.duration.toEndDate())
 
       handleCostCalculation(
         stamp.batchID,
         capacity,
-        duration,
+        extendDuration,
         undefined,
         false,
         defaultErasureCodeLevel,
@@ -174,7 +177,16 @@ export function UpgradeDriveModal({
     }
 
     fetchExtensionCost()
-  }, [capacity, validityEndDate, capacityIndex, handleCostCalculation, lifetimeIndex, stamp.batchID])
+  }, [
+    capacity,
+    validityEndDate,
+    capacityIndex,
+    handleCostCalculation,
+    lifetimeIndex,
+    stamp.batchID,
+    durationExtensionCost,
+    stamp.duration,
+  ])
 
   useEffect(() => {
     setValidityEndDate(getExpiryDateByLifetime(lifetimeIndex, stamp.duration.toEndDate()))
