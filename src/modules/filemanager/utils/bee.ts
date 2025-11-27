@@ -1,6 +1,7 @@
 import { BatchId, Bee, BZZ, Duration, PostageBatch, RedundancyLevel, Size } from '@ethersphere/bee-js'
-import { FileManagerBase, DriveInfo } from '@solarpunkltd/file-manager-lib'
+import { FileManagerBase, DriveInfo, FileInfo } from '@solarpunkltd/file-manager-lib'
 import { getHumanReadableFileSize } from '../../../utils/file'
+import { indexStrToBigint } from './common'
 
 export const getUsableStamps = async (bee: Bee | null): Promise<PostageBatch[]> => {
   if (!bee) {
@@ -119,6 +120,7 @@ interface StampCapacityMetrics {
 export const calculateStampCapacityMetrics = (
   stamp: PostageBatch | null,
   drive?: DriveInfo | null,
+  files?: FileInfo[],
 ): StampCapacityMetrics => {
   if (!stamp) {
     return {
@@ -138,8 +140,33 @@ export const calculateStampCapacityMetrics = (
 
   if (drive) {
     totalBytes = stamp.calculateSize(false, drive.redundancyLevel).toBytes()
-    remainingBytes = stamp.calculateRemainingSize(false, drive.redundancyLevel).toBytes()
-    usedBytes = totalBytes - remainingBytes
+
+    const swarmRemainingBytes = stamp.calculateRemainingSize(false, drive.redundancyLevel).toBytes()
+    const swarmUsedBytes = totalBytes - swarmRemainingBytes
+    const swarmUtilizationPct = (swarmUsedBytes / totalBytes) * 100
+
+    if (files) {
+      const solarPunkUsedBytes = files
+        ?.filter(file => file.driveId === drive?.id)
+        .map(file => {
+          const fileSize = Number(file.customMetadata?.size || 0)
+          const versionCount = Number((indexStrToBigint(file.version) ?? BigInt(0)) + BigInt(1))
+
+          return fileSize * versionCount
+        })
+        .reduce((acc, current) => acc + current, 0)
+
+      if (swarmUtilizationPct < 50) {
+        usedBytes = solarPunkUsedBytes
+        remainingBytes = totalBytes - usedBytes
+      } else {
+        usedBytes = Math.max(swarmUsedBytes, solarPunkUsedBytes)
+        remainingBytes = totalBytes - usedBytes
+      }
+    } else {
+      remainingBytes = swarmRemainingBytes
+      usedBytes = swarmUsedBytes
+    }
     capacityPct = ((totalBytes - remainingBytes) / totalBytes) * 100
   } else {
     capacityPct = stamp.usage * 100
