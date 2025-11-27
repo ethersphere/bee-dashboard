@@ -65,13 +65,13 @@ export const formatBytes = (v?: string | number): string | undefined => {
 
   if (!Number.isFinite(n) || n < 0) return undefined
 
-  if (n < 1024) return `${n} B`
+  if (n < 1000) return `${n} B`
 
   const units = ['KB', 'MB', 'GB', 'TB'] as const
-  let val = n / 1024
+  let val = n / 1000
   let i = 0
-  while (val >= 1024 && i < units.length - 1) {
-    val /= 1024
+  while (val >= 1000 && i < units.length - 1) {
+    val /= 1000
     i++
   }
 
