@@ -196,7 +196,9 @@ export function FileManagerPage(): ReactElement {
   if (showErrorModal) {
     return (
       <ErrorModal
-        label={'Error during admin state creation, try again'}
+        label={
+          'Error during admin state creation, try again. The reasons can be: insufficient xDAI balance, communication lost with RPC.'
+        }
         onClick={() => {
           setShowErrorModal(false)
           setShowInitialModal(true)
