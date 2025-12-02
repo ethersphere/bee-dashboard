@@ -51,6 +51,7 @@ export const fmFetchCost = async (
   beeApi: Bee | null,
   setCost: (cost: BZZ) => void,
   currentFetch: React.MutableRefObject<Promise<void> | null>,
+  onError?: (error: unknown) => void,
 ) => {
   if (currentFetch.current) {
     await currentFetch.current
@@ -59,10 +60,22 @@ export const fmFetchCost = async (
   let isCurrentFetch = true
 
   const fetchPromise = (async () => {
-    const cost = await fmGetStorageCost(capacity, validityEndDate, encryption, erasureCodeLevel, beeApi)
+    try {
+      const cost = await fmGetStorageCost(capacity, validityEndDate, encryption, erasureCodeLevel, beeApi)
 
-    if (isCurrentFetch) {
-      setCost(cost ?? BZZ.fromDecimalString('0'))
+      if (isCurrentFetch) {
+        if (cost) {
+          setCost(cost)
+        } else {
+          setCost(BZZ.fromDecimalString('0'))
+          onError?.(new Error('Storage cost unavailable - node may be syncing'))
+        }
+      }
+    } catch (error) {
+      if (isCurrentFetch) {
+        setCost(BZZ.fromDecimalString('0'))
+        onError?.(error)
+      }
     }
   })()
 

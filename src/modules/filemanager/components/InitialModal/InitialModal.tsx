@@ -60,6 +60,7 @@ export function InitialModal({
   const [usableStamps, setUsableStamps] = useState<PostageBatch[]>([])
   const [selectedBatch, setSelectedBatch] = useState<PostageBatch | null>(null)
   const [selectedBatchIndex, setSelectedBatchIndex] = useState<number>(-1)
+  const [isNodeSyncing, setIsNodeSyncing] = useState(true)
 
   const { walletBalance, nodeInfo } = useContext(BeeContext)
   const { beeApi } = useContext(SettingsContext)
@@ -113,13 +114,18 @@ export function InitialModal({
 
   useEffect(() => {
     const getStamps = async () => {
-      const stamps = (await getUsableStamps(beeApi)).filter(s => {
-        const { capacityPct } = calculateStampCapacityMetrics(s)
+      try {
+        const stamps = (await getUsableStamps(beeApi)).filter(s => {
+          const { capacityPct } = calculateStampCapacityMetrics(s)
 
-        return capacityPct < 100
-      })
+          return capacityPct < 100
+        })
 
-      safeSetState(isMountedRef, setUsableStamps)([...stamps])
+        safeSetState(isMountedRef, setUsableStamps)([...stamps])
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.warn('Failed to fetch stamps, node may still be syncing:', error)
+      }
     }
 
     if (beeApi) {
@@ -142,6 +148,7 @@ export function InitialModal({
         erasureCodeLevel,
         beeApi,
         (cost: BZZ) => {
+          safeSetState(isMountedRef, setIsNodeSyncing)(false)
           setIsBalanceSufficient(true)
           setIsxDaiBalanceSufficient(true)
 
@@ -158,17 +165,22 @@ export function InitialModal({
           safeSetState(isMountedRef, setCost)(cost.toSignificantDigits(2))
         },
         currentFetch,
+        () => {
+          safeSetState(isMountedRef, setIsNodeSyncing)(true)
+          safeSetState(isMountedRef, setCost)('0')
+        },
       )
 
-      if (lifetimeIndex >= 0) {
+      if (lifetimeIndex >= 0 && !isNodeSyncing) {
         setIsCreateEnabled(true)
+      } else {
+        setIsCreateEnabled(false)
       }
     } else {
       setCost('0')
       setIsCreateEnabled(false)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [validityEndDate, beeApi, capacity, lifetimeIndex, walletBalance])
+  }, [validityEndDate, erasureCodeLevel, beeApi, capacity, lifetimeIndex, walletBalance, isNodeSyncing])
 
   useEffect(() => {
     setValidityEndDate(getExpiryDateByLifetime(lifetimeIndex))
@@ -193,7 +205,9 @@ export function InitialModal({
   const isUltraLightNode = nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT
 
   const isCreateDriveDisabled =
-    isUltraLightNode || (selectedBatch ? false : !isCreateEnabled || !isBalanceSufficient || !isxDaiBalanceSufficient)
+    isUltraLightNode ||
+    isNodeSyncing ||
+    (selectedBatch ? false : !isCreateEnabled || !isBalanceSufficient || !isxDaiBalanceSufficient)
 
   return (
     <div className="fm-initialization-modal-container">
@@ -297,6 +311,11 @@ export function InitialModal({
                     upgrade
                   </a>{' '}
                   to continue.
+                </div>
+              )}
+              {isNodeSyncing && !selectedBatch && (
+                <div className="fm-modal-info-warning" style={{ marginBottom: '16px' }}>
+                  Node is syncing. Please wait until sync completes before purchasing a stamp.
                 </div>
               )}
             </div>
