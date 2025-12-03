@@ -531,7 +531,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
 
       if (totalAfterAdd > MAX_UPLOAD_FILES) {
         setErrorMessage?.(
-          `You’re trying to upload ${newFilesCount} files, but the limit is ${MAX_UPLOAD_FILES}. Please upload fewer files.`,
+          `You’re trying to upload ${totalAfterAdd} files, but the limit is ${MAX_UPLOAD_FILES}. Please upload fewer files.`,
         )
         setShowError(true)
 
