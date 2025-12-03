@@ -69,7 +69,13 @@ export function useBulkActions(opts: {
     async (list: FileInfo[]) => {
       if (!fm || !list?.length) return
 
-      await Promise.allSettled(list.map(f => fm.trashFile(f)))
+      for (const file of list) {
+        try {
+          await fm.trashFile(file)
+        } catch {
+          // no-op
+        }
+      }
 
       clearAll()
     },
@@ -80,7 +86,14 @@ export function useBulkActions(opts: {
     async (list: FileInfo[]) => {
       if (!fm || !list?.length) return
 
-      await Promise.allSettled(list.map(f => fm.recoverFile(f)))
+      for (const file of list) {
+        try {
+          await fm.recoverFile(file)
+        } catch {
+          // no-op
+        }
+      }
+
       clearAll()
     },
     [fm, clearAll],
@@ -90,7 +103,13 @@ export function useBulkActions(opts: {
     async (list: FileInfo[]) => {
       if (!fm || !list?.length) return
 
-      await Promise.allSettled(list.map(f => fm.forgetFile(f)))
+      for (const file of list) {
+        try {
+          await fm.forgetFile(file)
+        } catch {
+          // no-op
+        }
+      }
 
       clearAll()
     },

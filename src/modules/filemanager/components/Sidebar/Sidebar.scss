@@ -38,23 +38,6 @@
     padding: 8px;
     padding-left: 36px;
   }
-  
-  &.disabled {
-    opacity: 0.5;
-    
-    &:hover {
-      background-color: inherit;
-      cursor: inherit;
-    }
-  }
-}
-
-.fm-sidebar-item-description {
-  font-size: 11px;
-  padding: 0px 20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .fm-sidebar-drive-creation {

@@ -16,7 +16,7 @@ export function computeContextMenuPosition(args: {
 
   const spaceBelow = vh - pos.y
 
-  if (spaceBelow < rect.height * 1.4) {
+  if (spaceBelow < rect.height * 1.8) {
     top = Math.max(margin, pos.y - rect.height - margin)
     dir = Dir.Up
   } else {
