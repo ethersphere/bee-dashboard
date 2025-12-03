@@ -531,10 +531,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
 
       if (totalAfterAdd > MAX_UPLOAD_FILES) {
         setErrorMessage?.(
-          `Cannot upload ${newFilesCount} file${newFilesCount !== 1 ? 's' : ''}. ` +
-            `Currently ${currentlyQueued} file${currentlyQueued !== 1 ? 's are' : ' is'} in queue. ` +
-            `Total after upload will be ${totalAfterAdd} files, but maximum is ${MAX_UPLOAD_FILES}. ` +
-            `Please wait for uploads to complete or reduce the number of files.`,
+          `You’re trying to upload ${newFilesCount} files, but the limit is ${MAX_UPLOAD_FILES}. Please upload fewer files.`,
         )
         setShowError(true)
 
