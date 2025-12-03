@@ -75,6 +75,38 @@ export function InitialModal({
     }
   }, [])
 
+  const checkBalances = useCallback(
+    (cost: BZZ) => {
+      setIsBalanceSufficient(true)
+      setIsxDaiBalanceSufficient(true)
+
+      if ((walletBalance && cost.gte(walletBalance.bzzBalance)) || !walletBalance) {
+        safeSetState(isMountedRef, setIsBalanceSufficient)(false)
+      }
+
+      const zeroDAI = DAI.fromDecimalString('0')
+
+      if ((walletBalance && zeroDAI.eq(walletBalance.nativeTokenBalance)) || !walletBalance) {
+        safeSetState(isMountedRef, setIsxDaiBalanceSufficient)(false)
+      }
+    },
+    [walletBalance],
+  )
+
+  const handleCostFetch = useCallback(
+    (cost: BZZ) => {
+      safeSetState(isMountedRef, setIsNodeSyncing)(false)
+      checkBalances(cost)
+      safeSetState(isMountedRef, setCost)(cost.toSignificantDigits(2))
+    },
+    [checkBalances],
+  )
+
+  const handleCostFetchError = useCallback(() => {
+    safeSetState(isMountedRef, setIsNodeSyncing)(true)
+    safeSetState(isMountedRef, setCost)('0')
+  }, [])
+
   const createAdminDrive = useCallback(async () => {
     setIsCreationInProgress?.(true)
     handleVisibility(false)
@@ -147,28 +179,9 @@ export function InitialModal({
         false,
         erasureCodeLevel,
         beeApi,
-        (cost: BZZ) => {
-          safeSetState(isMountedRef, setIsNodeSyncing)(false)
-          setIsBalanceSufficient(true)
-          setIsxDaiBalanceSufficient(true)
-
-          if ((walletBalance && cost.gte(walletBalance.bzzBalance)) || !walletBalance) {
-            safeSetState(isMountedRef, setIsBalanceSufficient)(false)
-          }
-
-          const zeroDAI = DAI.fromDecimalString('0')
-
-          if ((walletBalance && zeroDAI.eq(walletBalance.nativeTokenBalance)) || !walletBalance) {
-            safeSetState(isMountedRef, setIsxDaiBalanceSufficient)(false)
-          }
-
-          safeSetState(isMountedRef, setCost)(cost.toSignificantDigits(2))
-        },
+        handleCostFetch,
         currentFetch,
-        () => {
-          safeSetState(isMountedRef, setIsNodeSyncing)(true)
-          safeSetState(isMountedRef, setCost)('0')
-        },
+        handleCostFetchError,
       )
 
       if (lifetimeIndex >= 0 && !isNodeSyncing) {
@@ -180,7 +193,16 @@ export function InitialModal({
       setCost('0')
       setIsCreateEnabled(false)
     }
-  }, [validityEndDate, erasureCodeLevel, beeApi, capacity, lifetimeIndex, walletBalance, isNodeSyncing])
+  }, [
+    validityEndDate,
+    erasureCodeLevel,
+    beeApi,
+    capacity,
+    lifetimeIndex,
+    isNodeSyncing,
+    handleCostFetch,
+    handleCostFetchError,
+  ])
 
   useEffect(() => {
     setValidityEndDate(getExpiryDateByLifetime(lifetimeIndex))
@@ -208,6 +230,36 @@ export function InitialModal({
     isUltraLightNode ||
     isNodeSyncing ||
     (selectedBatch ? false : !isCreateEnabled || !isBalanceSufficient || !isxDaiBalanceSufficient)
+
+  const renderUltraLightNodeWarning = () => {
+    if (!isUltraLightNode) return null
+
+    const upgradeLink = (
+      <a
+        href="https://docs.ethswarm.org/docs/desktop/configuration/#upgrading-from-an-ultra-light-to-a-light-node"
+        target="_blank"
+        rel="noreferrer"
+      >
+        upgrade
+      </a>
+    )
+
+    if (selectedBatch) {
+      return (
+        <div>
+          {resetState ? 'Resetting' : 'Creating'} a drive requires running a light node. Please {upgradeLink} to
+          continue.
+        </div>
+      )
+    }
+
+    return (
+      <div>
+        Purchasing a stamp and {resetState ? 'resetting' : 'creating'} a drive requires running a light node. Please{' '}
+        {upgradeLink} to continue.
+      </div>
+    )
+  }
 
   return (
     <div className="fm-initialization-modal-container">
@@ -286,33 +338,7 @@ export function InitialModal({
                 <Tooltip label={TOOLTIPS.ADMIN_ESTIMATED_COST} />
               </div>
               <div>(Based on current network conditions)</div>
-              {isUltraLightNode && selectedBatch && (
-                <div>
-                  {resetState ? 'Resetting' : 'Creating'} a drive requires running a light node. Please{' '}
-                  <a
-                    href="https://docs.ethswarm.org/docs/desktop/configuration/#upgrading-from-an-ultra-light-to-a-light-node"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    upgrade
-                  </a>{' '}
-                  to continue.
-                </div>
-              )}
-              {isUltraLightNode && !selectedBatch && (
-                <div>
-                  Purchasing a stamp and {resetState ? 'resetting' : 'creating'} a drive requires running a light node.
-                  Please{' '}
-                  <a
-                    href="https://docs.ethswarm.org/docs/desktop/configuration/#upgrading-from-an-ultra-light-to-a-light-node"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    upgrade
-                  </a>{' '}
-                  to continue.
-                </div>
-              )}
+              {renderUltraLightNodeWarning()}
               {isNodeSyncing && !selectedBatch && (
                 <div className="fm-modal-info-warning" style={{ marginBottom: '16px' }}>
                   Node is syncing. Please wait until sync completes before purchasing a stamp.
