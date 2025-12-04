@@ -163,7 +163,7 @@ export function CreateDriveModal({
             />
           </div>
           <div className="fm-modal-info-warning">
-            Drive sizes shown above are system-calculated based on your current stamp configuration
+            Drive sizes are calculated automatically from your current stamp configuration.
           </div>
           <div className="fm-modal-window-input-container">
             <label htmlFor="drive-desired-lifetime" className="fm-input-label">

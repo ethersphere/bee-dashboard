@@ -197,7 +197,7 @@ export function FileManagerPage(): ReactElement {
     return (
       <ErrorModal
         label={
-          'Error during admin state creation, try again. The reasons can be: insufficient xDAI balance, communication lost with RPC.'
+          'Error creating Admin Drive. Please try again. Possible causes include insufficient xDAI balance or a lost connection to the RPC.'
         }
         onClick={() => {
           setShowErrorModal(false)
