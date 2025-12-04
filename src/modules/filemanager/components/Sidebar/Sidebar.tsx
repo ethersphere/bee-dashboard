@@ -116,9 +116,7 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
               <div>Create new drive</div>
             </div>
             {isDriveCreationInProgress && (
-              <div className="fm-sidebar-item-description">
-                wait while drive creation for {creatingDriveName} is in progress
-              </div>
+              <div className="fm-sidebar-item-description">{creatingDriveName} is currently being created.</div>
             )}
           </>
         )}
@@ -138,7 +136,7 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
             onCreationError={(name: string) => {
               setIsDriveCreationInProgress(false)
               setErrorMessage?.(
-                `Error creating drive: ${name}. The reasons can be: insufficient xDAI balance, communication lost with RPC.`,
+                `Error creating drive ${name}. Please try again. Possible causes include insufficient xDAI balance or a lost connection to the RPC.`,
               )
               setShowError(true)
               setCreatingDriveName(null)
