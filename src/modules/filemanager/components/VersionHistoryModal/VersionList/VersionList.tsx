@@ -15,6 +15,7 @@ import { startDownloadingQueue } from '../../../utils/download'
 import { ActionTag, DownloadProgress, TrackDownloadProps } from '../../../constants/transfers'
 import { Context as SettingsContext } from '../../../../../providers/Settings'
 import { useContextMenu } from '../../../hooks/useContextMenu'
+import { uuidV4 } from '../../../../../utils'
 
 interface VersionListProps {
   versions: FileInfo[]
@@ -428,7 +429,7 @@ export function VersionsList({ versions, headFi, restoreVersion, onDownload }: V
       await startDownloadingQueue(
         fm,
         [fileInfo],
-        [onDownload({ name: fileInfo.name, size: formatBytes(rawSize), expectedSize, driveName })],
+        [onDownload({ uuid: uuidV4(), name: fileInfo.name, size: formatBytes(rawSize), expectedSize, driveName })],
       )
     },
     [handleCloseContext, fm, beeApi, onDownload, drives, currentDrive],

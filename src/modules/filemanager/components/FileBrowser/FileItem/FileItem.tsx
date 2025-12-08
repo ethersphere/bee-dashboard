@@ -25,6 +25,7 @@ import { computeContextMenuPosition } from '../../../utils/ui'
 import { getUsableStamps, handleDestroyAndForgetDrive, verifyDriveSpace } from '../../../utils/bee'
 import { guessMime } from '../../../utils/view'
 import { performFileOperation, FileOperation } from '../../../utils/fileOperations'
+import { uuidV4 } from '../../../../../utils'
 
 interface FileItemProps {
   fileInfo: FileInfo
@@ -143,7 +144,7 @@ export function FileItem({
       await startDownloadingQueue(
         fm,
         [fileInfo],
-        [onDownload({ name: fileInfo.name, size: formatBytes(rawSize), expectedSize, driveName })],
+        [onDownload({ uuid: uuidV4(), name: fileInfo.name, size: formatBytes(rawSize), expectedSize, driveName })],
         isNewWindow,
       )
     },

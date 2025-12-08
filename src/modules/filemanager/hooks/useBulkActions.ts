@@ -1,13 +1,14 @@
 import { useCallback, useMemo, useRef, useState, useContext, useEffect } from 'react'
 import type { FileInfo } from '@solarpunkltd/file-manager-lib'
+import { PostageBatch } from '@ethersphere/bee-js'
 import { Context as FMContext } from '../../../providers/FileManager'
 import { Context as SettingsContext } from '../../../providers/Settings'
 import { startDownloadingQueue } from '../utils/download'
 import { formatBytes, getFileId, safeSetState } from '../utils/common'
 import { DownloadProgress, TrackDownloadProps } from '../constants/transfers'
 import { getUsableStamps } from '../utils/bee'
-import { PostageBatch } from '@ethersphere/bee-js'
 import { performBulkFileOperation, FileOperation } from '../utils/fileOperations'
+import { uuidV4 } from '../../../utils'
 
 interface BulkOptions {
   listToRender: FileInfo[]
@@ -81,7 +82,13 @@ export function useBulkActions({ listToRender, setErrorMessage, trackDownload }:
         const prettySize = formatBytes(rawSize)
         const expected = rawSize ? Number(rawSize) : undefined
         const driveName = drives.find(d => d.id.toString() === fi.driveId.toString())?.name
-        const tracker = trackDownload({ name: fi.name, size: prettySize, expectedSize: expected, driveName })
+        const tracker = trackDownload({
+          uuid: uuidV4(),
+          name: fi.name,
+          size: prettySize,
+          expectedSize: expected,
+          driveName,
+        })
         trackers.push(tracker)
       }
 

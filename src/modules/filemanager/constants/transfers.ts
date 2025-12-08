@@ -45,6 +45,7 @@ export enum DownloadState {
 }
 
 export type TrackDownloadProps = {
+  uuid: string
   name: string
   size?: string
   expectedSize?: number
