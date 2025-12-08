@@ -7,13 +7,14 @@ import { createPortal } from 'react-dom'
 import HistoryIcon from 'remixicon-react/HistoryLineIcon'
 
 import { Context as FMContext } from '../../../../providers/FileManager'
-import type { FileInfo } from '@solarpunkltd/file-manager-lib'
+import { FileInfo } from '@solarpunkltd/file-manager-lib'
 import { FeedIndex } from '@ethersphere/bee-js'
 import { ConflictAction, useUploadConflictDialog } from '../../hooks/useUploadConflictDialog'
 import { ConfirmModal } from '../ConfirmModal/ConfirmModal'
 
-import { indexStrToBigint } from '../../utils/common'
-import { VersionsList, truncateNameMiddle } from './VersionList/VersionList'
+import { verifyDriveSpace } from '../../utils/bee'
+import { indexStrToBigint, truncateNameMiddle } from '../../utils/common'
+import { VersionsList } from './VersionList/VersionList'
 import { ActionTag, DownloadProgress, TrackDownloadProps } from '../../constants/transfers'
 import { useTransfers } from '../../hooks/useTransfers'
 
@@ -32,7 +33,7 @@ interface VersionHistoryModalProps {
 }
 
 export function VersionHistoryModal({ fileInfo, onCancelClick, onDownload }: VersionHistoryModalProps): ReactElement {
-  const { fm, files, currentDrive } = useContext(FMContext)
+  const { fm, files, currentDrive, currentStamp, refreshStamp } = useContext(FMContext)
 
   const localTransfers = useTransfers({})
   const trackDownload = onDownload ?? localTransfers.trackDownload
@@ -180,7 +181,7 @@ export function VersionHistoryModal({ fileInfo, onCancelClick, onDownload }: Ver
 
   const doRestore = useCallback(
     async (versionFi: FileInfo): Promise<void> => {
-      if (!fm || !currentDrive) return
+      if (!fm || !currentDrive || !currentStamp) return
 
       try {
         const restoredFrom = indexStrToBigint(versionFi.version)
@@ -207,14 +208,27 @@ export function VersionHistoryModal({ fileInfo, onCancelClick, onDownload }: Ver
           },
         }
 
+        verifyDriveSpace({
+          fm,
+          redundancyLevel: currentDrive.redundancyLevel,
+          stamp: currentStamp,
+          useInfoSize: true,
+          driveId: versionFi.driveId,
+          cb: err => {
+            throw new Error(err)
+          },
+        })
+
         await fm.restoreVersion(withMeta)
+
+        refreshStamp(versionFi.batchId.toString())
         onCancelClick()
       } catch (e) {
         const msg = (e as Error)?.message || JSON.stringify(e)
         setError(msg)
       }
     },
-    [fm, onCancelClick, currentDrive],
+    [fm, currentStamp, currentDrive, refreshStamp, onCancelClick],
   )
 
   const restoreVersion = useCallback(
@@ -263,7 +277,7 @@ export function VersionHistoryModal({ fileInfo, onCancelClick, onDownload }: Ver
             <>
               Version history –{' '}
               <span className="vh-title" title={fileInfo.name}>
-                {truncateNameMiddle(fileInfo.name, 56)}
+                {truncateNameMiddle(fileInfo.name)}
               </span>
               {fileInfo && (
                 <span
@@ -301,11 +315,11 @@ export function VersionHistoryModal({ fileInfo, onCancelClick, onDownload }: Ver
                 <>
                   Restoring will rename:&nbsp;
                   <b className="vh-name" title={renameConfirm.headName}>
-                    {truncateNameMiddle(renameConfirm.headName, 44)}
+                    {truncateNameMiddle(renameConfirm.headName)}
                   </b>{' '}
                   →{' '}
                   <b className="vh-name" title={renameConfirm.targetName}>
-                    {truncateNameMiddle(renameConfirm.targetName, 44)}
+                    {truncateNameMiddle(renameConfirm.targetName)}
                   </b>
                   .
                 </>

@@ -1,10 +1,13 @@
 import { ReactElement, useContext, useLayoutEffect, useMemo, useState, useRef, useEffect, useCallback } from 'react'
+import { PostageBatch } from '@ethersphere/bee-js'
+import { DriveInfo, FileInfo } from '@solarpunkltd/file-manager-lib'
+
 import './FileItem.scss'
 import { GetIconElement } from '../../../utils/GetIconElement'
 import { ContextMenu } from '../../ContextMenu/ContextMenu'
 import { useContextMenu } from '../../../hooks/useContextMenu'
 import { Context as SettingsContext } from '../../../../../providers/Settings'
-import { ActionTag, DownloadProgress, TrackDownloadProps, ViewType } from '../../../constants/transfers'
+import { DownloadProgress, TrackDownloadProps, ViewType } from '../../../constants/transfers'
 import { GetInfoModal } from '../../GetInfoModal/GetInfoModal'
 import { VersionHistoryModal } from '../../VersionHistoryModal/VersionHistoryModal'
 import { DeleteFileModal } from '../../DeleteFileModal/DeleteFileModal'
@@ -12,17 +15,16 @@ import { RenameFileModal } from '../../RenameFileModal/RenameFileModal'
 import { buildGetInfoGroups } from '../../../utils/infoGroups'
 import type { FilePropertyGroup } from '../../../utils/infoGroups'
 import { useView } from '../../../../../pages/filemanager/ViewContext'
-import type { DriveInfo, FileInfo } from '@solarpunkltd/file-manager-lib'
 import { Context as FMContext } from '../../../../../providers/FileManager'
 import { DestroyDriveModal } from '../../DestroyDriveModal/DestroyDriveModal'
 import { ConfirmModal } from '../../ConfirmModal/ConfirmModal'
-
-import { capitalizeFirstLetter, Dir, formatBytes, isTrashed, safeSetState } from '../../../utils/common'
+import { Dir, formatBytes, isTrashed, safeSetState, truncateNameMiddle } from '../../../utils/common'
 import { FileAction } from '../../../constants/transfers'
 import { startDownloadingQueue, createDownloadAbort } from '../../../utils/download'
 import { computeContextMenuPosition } from '../../../utils/ui'
-import { getUsableStamps, handleDestroyDrive } from '../../../utils/bee'
-import { PostageBatch } from '@ethersphere/bee-js'
+import { getUsableStamps, handleDestroyAndForgetDrive, verifyDriveSpace } from '../../../utils/bee'
+import { guessMime } from '../../../utils/view'
+import { performFileOperation, FileOperation } from '../../../utils/fileOperations'
 
 interface FileItemProps {
   fileInfo: FileInfo
@@ -54,7 +56,7 @@ export function FileItem({
   setErrorMessage,
 }: FileItemProps): ReactElement {
   const { showContext, pos, contextRef, handleContextMenu, handleCloseContext } = useContextMenu<HTMLDivElement>()
-  const { fm, currentDrive, files, drives, setShowError } = useContext(FMContext)
+  const { fm, currentDrive, files, drives, setShowError, refreshStamp } = useContext(FMContext)
   const { beeApi } = useContext(SettingsContext)
   const { view } = useView()
 
@@ -141,47 +143,40 @@ export function FileItem({
       await startDownloadingQueue(
         fm,
         [fileInfo],
-        [onDownload({ name: fileInfo.name, size: formatBytes(rawSize), expectedSize })],
+        [onDownload({ name: fileInfo.name, size: formatBytes(rawSize), expectedSize, driveName })],
         isNewWindow,
       )
     },
-    [handleCloseContext, fm, beeApi, fileInfo, onDownload],
+    [handleCloseContext, fm, beeApi, fileInfo, onDownload, driveName],
   )
-  // TODO: refactor doTrash, doRecover, doForget to a single function with action param and remove switch case mybe
-  const doTrash = useCallback(async () => {
-    if (!fm) return
 
-    const withMeta: FileInfo = {
-      ...fileInfo,
-      customMetadata: {
-        ...(fileInfo.customMetadata ?? {}),
-        lifecycle: capitalizeFirstLetter(ActionTag.Trashed),
-        lifecycleAt: new Date().toISOString(),
-      },
-    }
+  const handleFileAction = useCallback(
+    async (operation: FileOperation) => {
+      if (!fm || !driveStamp || !currentDrive) return
 
-    await fm.trashFile(withMeta)
-  }, [fm, fileInfo])
+      await performFileOperation({
+        fm,
+        file: fileInfo,
+        redundancyLevel: currentDrive.redundancyLevel,
+        driveId: currentDrive.id.toString(),
+        stamp: driveStamp,
+        adminStamp: fm.adminStamp,
+        operation,
+        onError: err => {
+          setErrorMessage?.(err)
+          setShowError(true)
+        },
+        onSuccess: () => {
+          const stampToRefresh = operation === FileOperation.Forget ? fm.adminStamp : driveStamp
 
-  const doRecover = useCallback(async () => {
-    if (!fm) return
-
-    const withMeta: FileInfo = {
-      ...fileInfo,
-      customMetadata: {
-        ...(fileInfo.customMetadata ?? {}),
-        lifecycle: capitalizeFirstLetter(ActionTag.Recovered),
-        lifecycleAt: new Date().toISOString(),
-      },
-    }
-    await fm.recoverFile(withMeta)
-  }, [fm, fileInfo])
-
-  const doForget = useCallback(async () => {
-    if (!fm) return
-
-    await fm.forgetFile(fileInfo)
-  }, [fm, fileInfo])
+          if (stampToRefresh) {
+            refreshStamp(stampToRefresh.batchID.toString())
+          }
+        },
+      })
+    },
+    [fm, driveStamp, currentDrive, fileInfo, refreshStamp, setErrorMessage, setShowError],
+  )
 
   const showDestroyDrive = useCallback(() => {
     setDestroyDrive(currentDrive || null)
@@ -190,11 +185,28 @@ export function FileItem({
 
   const doRename = useCallback(
     async (newName: string) => {
-      if (!fm || !currentDrive) return
+      if (!fm || !driveStamp || !currentDrive) {
+        setErrorMessage?.('Invalid FM or Current Drive')
+        setShowError(true)
+
+        return
+      }
 
       if (takenNames.has(newName)) throw new Error('name-taken')
 
       try {
+        verifyDriveSpace({
+          fm,
+          redundancyLevel: currentDrive.redundancyLevel,
+          stamp: driveStamp,
+          useInfoSize: true,
+          useDlSize: true,
+          driveId: currentDrive.id.toString(),
+          cb: err => {
+            throw new Error(err)
+          },
+        })
+
         await fm.upload(
           currentDrive,
           {
@@ -211,13 +223,15 @@ export function FileItem({
             actHistoryAddress: fileInfo.file.historyRef,
           },
         )
+
+        refreshStamp(driveStamp.batchID.toString())
       } catch (e: unknown) {
         setErrorMessage?.(`Error renaming file ${fileInfo.name}`)
         setShowError(true)
       }
     },
 
-    [fm, currentDrive, fileInfo, takenNames, setErrorMessage, setShowError],
+    [fm, driveStamp, currentDrive, fileInfo, takenNames, refreshStamp, setErrorMessage, setShowError],
   )
 
   const MenuItem = ({
@@ -332,7 +346,7 @@ export function FileItem({
               danger
               onClick={() => {
                 handleCloseContext()
-                doRecover()
+                handleFileAction(FileOperation.Recover)
               }}
             >
               Restore
@@ -341,7 +355,7 @@ export function FileItem({
               danger
               onClick={() => {
                 handleCloseContext()
-
+                // TODO: isn't parentDrive === currentDrive?
                 const parentDrive = drives.find(d => d.id.toString() === fileInfo.driveId.toString())
 
                 if (parentDrive) {
@@ -380,7 +394,7 @@ export function FileItem({
     handleDownload,
     handleCloseContext,
     openGetInfo,
-    doRecover,
+    handleFileAction,
     onBulk,
     currentDrive,
     drives,
@@ -434,6 +448,8 @@ export function FileItem({
     return <div className="fm-file-item-content">Error</div>
   }
 
+  const mimeType = guessMime(fileInfo.name, fileInfo.customMetadata).split('/')[0]?.toLowerCase() || 'file'
+
   return (
     <div className="fm-file-item-content" onContextMenu={handleItemContextMenu} onClick={handleCloseContext}>
       <div className="fm-file-item-content-item fm-checkbox">
@@ -446,8 +462,8 @@ export function FileItem({
       </div>
 
       <div className="fm-file-item-content-item fm-name" onDoubleClick={() => handleDownload(true)}>
-        <GetIconElement icon={fileInfo.name} />
-        {fileInfo.name}
+        <GetIconElement icon={mimeType} />
+        {truncateNameMiddle(fileInfo.name)}
       </div>
 
       {showDriveColumn && (
@@ -504,9 +520,10 @@ export function FileItem({
           }}
           onProceed={action => {
             setShowDeleteModal(false)
+
             switch (action) {
               case FileAction.Trash:
-                doTrash()
+                handleFileAction(FileOperation.Trash)
                 break
               case FileAction.Forget:
                 setConfirmForget(true)
@@ -557,7 +574,7 @@ export function FileItem({
           confirmLabel="Forget"
           cancelLabel="Cancel"
           onConfirm={async () => {
-            await doForget()
+            await handleFileAction(FileOperation.Forget)
 
             safeSetState(isMountedRef, setConfirmForget)(false)
           }}
@@ -577,20 +594,21 @@ export function FileItem({
           doDestroy={async () => {
             setShowDestroyDriveModal(false)
 
-            await handleDestroyDrive(
+            await handleDestroyAndForgetDrive({
               beeApi,
               fm,
-              destroyDrive,
-              () => {
+              drive: destroyDrive,
+              isDestroy: true,
+              onSuccess: () => {
                 setShowDestroyDriveModal(false)
                 setDestroyDrive(null)
               },
-              e => {
+              onError: e => {
                 setShowDestroyDriveModal(false)
                 setErrorMessage?.(`Error destroying drive: ${destroyDrive.name}: ${e}`)
                 setShowError(true)
               },
-            )
+            })
           }}
         />
       )}

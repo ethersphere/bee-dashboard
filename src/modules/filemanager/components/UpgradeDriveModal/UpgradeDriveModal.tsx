@@ -11,7 +11,7 @@ import ExternalLinkIcon from 'remixicon-react/ExternalLinkLineIcon'
 import CalendarIcon from 'remixicon-react/CalendarLineIcon'
 import { desiredLifetimeOptions } from '../../constants/stamps'
 import { Context as BeeContext } from '../../../../providers/Bee'
-import { fromBytesConversion, getExpiryDateByLifetime } from '../../utils/common'
+import { fromBytesConversion, getExpiryDateByLifetime, truncateNameMiddle } from '../../utils/common'
 import { Context as SettingsContext } from '../../../../providers/Settings'
 import { Context as FMContext } from '../../../../providers/FileManager'
 
@@ -199,7 +199,7 @@ export function UpgradeDriveModal({
     <div className={`fm-modal-container${containerColor === 'none' ? ' fm-modal-container-no-bg' : ''}`}>
       <div className="fm-modal-window fm-upgrade-drive-modal">
         <div className="fm-modal-window-header">
-          <DriveIcon size="18px" /> Upgrade {drive.name || stamp.label || shortBatchId}
+          <DriveIcon size="18px" /> Upgrade {truncateNameMiddle(drive.name || stamp.label || shortBatchId, 35)}
         </div>
         <div>Choose extension period and additional storage for your drive.</div>
         <div className="fm-modal-window-body">
@@ -266,10 +266,10 @@ export function UpgradeDriveModal({
           <div className="fm-modal-white-section">
             <div className="fm-emphasized-text">Summary</div>
             <div>
-              Drive: {drive.name} {drive.isAdmin && <Warning style={{ fontSize: '16px' }} />}
+              Drive: {truncateNameMiddle(drive.name)} {drive.isAdmin && <Warning style={{ fontSize: '16px' }} />}
             </div>
             <div>
-              BatchId: {stamp.label} ({shortBatchId})
+              BatchId: {truncateNameMiddle(stamp.label, 25)} ({shortBatchId})
             </div>
             <div>Expiry: {stamp.duration.toEndDate().toLocaleDateString()}</div>
             <div>

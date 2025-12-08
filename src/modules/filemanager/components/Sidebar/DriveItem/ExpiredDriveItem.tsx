@@ -7,9 +7,10 @@ import { ContextMenu } from '../../ContextMenu/ContextMenu'
 import { useContextMenu } from '../../../hooks/useContextMenu'
 import { DriveInfo } from '@solarpunkltd/file-manager-lib'
 import { Context as FMContext } from '../../../../../providers/FileManager'
-import { handleForgetDrive } from '../../../utils/bee'
+import { handleDestroyAndForgetDrive } from '../../../utils/bee'
 import { ConfirmModal } from '../../ConfirmModal/ConfirmModal'
 import './DriveItem.scss'
+import { truncateNameMiddle } from '../../../utils/common'
 
 interface Props {
   drive: DriveInfo
@@ -37,7 +38,7 @@ export function ExpiredDriveItem({ drive, onForgot, setErrorMessage }: Props): R
       <div className="fm-drive-item-info">
         <div className="fm-drive-item-header">
           <div className="fm-drive-item-icon">{isHovered ? <DriveFill size="16px" /> : <Drive size="16px" />}</div>
-          <div>{drive.name}</div>
+          <div>{truncateNameMiddle(drive.name, 35, 8, 8)}</div>
         </div>
         <div className="fm-drive-item-content">
           <div className="fm-drive-item-capacity">Stamp expired — files unavailable</div>
@@ -91,19 +92,20 @@ export function ExpiredDriveItem({ drive, onForgot, setErrorMessage }: Props): R
           onConfirm={async () => {
             if (!fm) return
 
-            await handleForgetDrive(
+            await handleDestroyAndForgetDrive({
               fm,
               drive,
-              async () => {
+              isDestroy: false,
+              onSuccess: async () => {
                 setShowForgetConfirm(false)
                 await onForgot?.()
               },
-              () => {
+              onError: () => {
                 setShowForgetConfirm(false)
                 setErrorMessage?.(`Failed to forget drive ${drive.name}`)
                 setShowError(true)
               },
-            )
+            })
           }}
         />
       )}

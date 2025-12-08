@@ -95,7 +95,7 @@ export function AdminStatusBar({
   }, [adminDrive, adminStamp?.batchID, setErrorMessage, setShowError, refreshStamp, setIsUpgrading])
 
   const { capacityPct, usedSize, totalSize } = useMemo(
-    () => calculateStampCapacityMetrics(actualStamp, adminDrive),
+    () => calculateStampCapacityMetrics(actualStamp, adminDrive?.redundancyLevel),
     [actualStamp, adminDrive],
   )
 

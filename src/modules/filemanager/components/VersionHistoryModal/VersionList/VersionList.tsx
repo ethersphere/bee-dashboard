@@ -10,20 +10,11 @@ import DownloadIcon from 'remixicon-react/Download2LineIcon'
 import { FileInfo } from '@solarpunkltd/file-manager-lib'
 
 import { Context as FMContext } from '../../../../../providers/FileManager'
-import { capitalizeFirstLetter, formatBytes, indexStrToBigint } from '../../../utils/common'
+import { capitalizeFirstLetter, formatBytes, indexStrToBigint, truncateNameMiddle } from '../../../utils/common'
 import { startDownloadingQueue } from '../../../utils/download'
 import { ActionTag, DownloadProgress, TrackDownloadProps } from '../../../constants/transfers'
 import { Context as SettingsContext } from '../../../../../providers/Settings'
 import { useContextMenu } from '../../../hooks/useContextMenu'
-
-export const truncateNameMiddle = (s: string, max = 42): string => {
-  const str = String(s)
-
-  if (str.length <= max) return str
-  const half = Math.floor((max - 1) / 2)
-
-  return `${str.slice(0, half)}…${str.slice(-half)}`
-}
 
 interface VersionListProps {
   versions: FileInfo[]
@@ -322,11 +313,11 @@ const RowFull = memo(
             <div className="vh-rename" title={`Restoring will rename: “${headFi.name}” → “${item.name}”`}>
               Restoring will rename{' '}
               <b className="vh-name" title={headFi.name}>
-                {truncateNameMiddle(headFi.name, 44)}
+                {truncateNameMiddle(headFi.name)}
               </b>{' '}
               →{' '}
               <b className="vh-name" title={item.name}>
-                {truncateNameMiddle(item.name, 44)}
+                {truncateNameMiddle(item.name)}
               </b>
             </div>
           )}
@@ -401,7 +392,7 @@ VersionRow.displayName = 'VersionRow'
 export function VersionsList({ versions, headFi, restoreVersion, onDownload }: VersionListProps) {
   const { handleCloseContext } = useContextMenu<HTMLDivElement>()
 
-  const { fm } = useContext(FMContext)
+  const { fm, drives, currentDrive } = useContext(FMContext)
   const { beeApi } = useContext(SettingsContext)
   const [expanded, setExpanded] = useState<Record<string, boolean>>({})
 
@@ -433,13 +424,14 @@ export function VersionsList({ versions, headFi, restoreVersion, onDownload }: V
       if (!fm || !beeApi) return
       const rawSize = fileInfo.customMetadata?.size
       const expectedSize = rawSize ? Number(rawSize) : undefined
+      const driveName = drives.find(d => d.id.toString() === fileInfo.driveId.toString())?.name ?? currentDrive?.name
       await startDownloadingQueue(
         fm,
         [fileInfo],
-        [onDownload({ name: fileInfo.name, size: formatBytes(rawSize), expectedSize })],
+        [onDownload({ name: fileInfo.name, size: formatBytes(rawSize), expectedSize, driveName })],
       )
     },
-    [handleCloseContext, fm, beeApi, onDownload],
+    [handleCloseContext, fm, beeApi, onDownload, drives, currentDrive],
   )
 
   if (!versions.length || !fm) return null

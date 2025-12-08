@@ -8,6 +8,7 @@ import { AdminStatusBar } from '../../modules/filemanager/components/AdminStatus
 import { FileBrowser } from '../../modules/filemanager/components/FileBrowser/FileBrowser'
 import { InitialModal } from '../../modules/filemanager/components/InitialModal/InitialModal'
 import { Context as FMContext } from '../../providers/FileManager'
+import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as BeeContext, CheckState } from '../../providers/Bee'
 import { PrivateKeyModal } from '../../modules/filemanager/components/PrivateKeyModal/PrivateKeyModal'
 import { getSignerPk, removeSignerPk } from '../../../src/modules/filemanager/utils/common'
@@ -28,6 +29,7 @@ export function FileManagerPage(): ReactElement {
   const [isCreationInProgress, setIsCreationInProgress] = useState<boolean>(false)
 
   const { status } = useContext(BeeContext)
+  const { beeApi } = useContext(SettingsContext)
   const { fm, shallReset, adminDrive, initializationError, init } = useContext(FMContext)
 
   useEffect(() => {
@@ -39,6 +41,10 @@ export function FileManagerPage(): ReactElement {
   }, [])
 
   useEffect(() => {
+    if (!beeApi) {
+      return
+    }
+
     if (!hasPk) {
       setIsLoading(false)
 
@@ -71,7 +77,7 @@ export function FileManagerPage(): ReactElement {
     }
 
     setIsLoading(true)
-  }, [fm, hasPk, initializationError, adminDrive, shallReset])
+  }, [fm, beeApi, hasPk, initializationError, adminDrive, shallReset])
 
   const handlePrivateKeySaved = useCallback(async () => {
     if (!isMountedRef.current) return
@@ -174,7 +180,13 @@ export function FileManagerPage(): ReactElement {
         <InitialModal
           resetState={shallReset}
           handleVisibility={(isVisible: boolean) => setShowInitialModal(isVisible)}
-          handleShowError={(flag: boolean) => setShowErrorModal(flag)}
+          handleShowError={(flag: boolean, error?: string) => {
+            setShowErrorModal(flag)
+
+            if (error) {
+              setErrorMessage(error)
+            }
+          }}
           setIsCreationInProgress={(isCreating: boolean) => setIsCreationInProgress(isCreating)}
         />
       </div>
@@ -202,6 +214,7 @@ export function FileManagerPage(): ReactElement {
         onClick={() => {
           setShowErrorModal(false)
           setShowInitialModal(true)
+          setErrorMessage('')
         }}
       />
     )

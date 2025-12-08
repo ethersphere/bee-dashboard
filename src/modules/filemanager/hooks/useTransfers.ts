@@ -1,8 +1,9 @@
 import { useCallback, useState, useContext, useRef, useEffect } from 'react'
 import { Context as FMContext } from '../../../providers/FileManager'
+import { Context as SettingsContext } from '../../../providers/Settings'
 import type { FileInfo, FileInfoOptions, UploadProgress } from '@solarpunkltd/file-manager-lib'
 import { ConflictAction, useUploadConflictDialog } from './useUploadConflictDialog'
-import { formatBytes, safeSetState } from '../utils/common'
+import { formatBytes, safeSetState, truncateNameMiddle } from '../utils/common'
 import {
   DownloadProgress,
   DownloadState,
@@ -10,13 +11,14 @@ import {
   TrackDownloadProps,
   TransferStatus,
 } from '../constants/transfers'
-import { calculateStampCapacityMetrics } from '../utils/bee'
+import { validateStampStillExists, verifyDriveSpace } from '../utils/bee'
 import { isTrashed } from '../utils/common'
 import { abortDownload } from '../utils/download'
 import { AbortManager } from '../utils/abortManager'
 
 const SAMPLE_WINDOW_MS = 500
 const ETA_SMOOTHING = 0.3
+const MAX_UPLOAD_FILES = 10
 
 type ResolveResult = {
   cancelled: boolean
@@ -159,6 +161,7 @@ interface TransferProps {
 
 export function useTransfers({ setErrorMessage }: TransferProps) {
   const { fm, currentDrive, currentStamp, files, setShowError, refreshStamp } = useContext(FMContext)
+  const { beeApi } = useContext(SettingsContext)
   const [openConflict, conflictPortal] = useUploadConflictDialog()
   const isMountedRef = useRef(true)
   const uploadAbortsRef = useRef<AbortManager>(new AbortManager())
@@ -292,7 +295,9 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
       })
 
       const onProgress = (progress: UploadProgress) => {
-        if (cancelledUploadingRef.current.has(name) || !isMountedRef.current) return
+        const signal = uploadAbortsRef.current.getSignal(name)
+
+        if (cancelledUploadingRef.current.has(name) || !isMountedRef.current || signal?.aborted) return
 
         if (progress.total > 0) {
           const now = Date.now()
@@ -383,19 +388,28 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
       )
 
       uploadAbortsRef.current.create(task.finalName)
+      const signal = uploadAbortsRef.current.getSignal(task.finalName)
 
       try {
+        if (signal?.aborted) {
+          throw new Error('Upload cancelled')
+        }
+
         await fm.upload(
           taskDrive,
           { ...info, onUploadProgress: progressCb },
           { actHistoryAddress: task.isReplace ? task.replaceHistory : undefined },
         )
 
+        if (signal?.aborted) {
+          throw new Error('Upload cancelled')
+        }
+
         if (currentStamp) {
           await refreshStamp(currentStamp.batchID.toString())
         }
       } catch {
-        const wasCancelled = cancelledUploadingRef.current.has(task.finalName)
+        const wasCancelled = cancelledUploadingRef.current.has(task.finalName) || signal?.aborted
 
         safeSetState(
           isMountedRef,
@@ -427,7 +441,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
         }
       }
 
-      const driveName = currentDrive?.name
+      const driveName = props.driveName ?? currentDrive?.name
 
       let startedAt: number | undefined
       let etaState: ETAState = {
@@ -444,7 +458,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
           driveName,
           TransferStatus.Downloading,
         )
-        row.startedAt = undefined // Downloads start timing when first progress is received
+        row.startedAt = undefined
         const idx = prev.findIndex(p => p.name === props.name)
 
         if (idx === -1) return [...prev, row]
@@ -515,16 +529,17 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
 
       return onProgress
     },
-    [currentDrive?.name],
+    // currentDrive casues rerenders and flickering during the progress tracking
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
   )
 
   const uploadFiles = useCallback(
     (picked: FileList | File[]): void => {
       const filesArr = Array.from(picked)
 
-      if (filesArr.length === 0 || !fm || !currentDrive) return
+      if (filesArr.length === 0 || !fm || !currentDrive || !currentStamp) return
 
-      const MAX_UPLOAD_FILES = 10
       const currentlyQueued = queueRef.current.length
       const newFilesCount = filesArr.length
       const totalAfterAdd = currentlyQueued + newFilesCount
@@ -537,7 +552,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
 
         return
       }
-
+      // TODO: move out this function from the cb and use as a util for better readaility
       const preflight = async (): Promise<UploadTask[]> => {
         const progressNames = new Set<string>(
           uploadItems.filter(u => u.driveName === currentDrive.name).map(u => u.name),
@@ -547,38 +562,36 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
         const reserved = new Set<string>()
         const tasks: UploadTask[] = []
 
-        let remainingBytes = calculateStampCapacityMetrics(currentStamp || null, currentDrive).remainingBytes
+        const allTaken = new Set<string>([
+          ...Array.from(onDiskNames),
+          ...Array.from(reserved),
+          ...Array.from(progressNames),
+        ])
+
+        // Track cumulative file sizes for capacity verification
+        let fileSizeSum = 0
 
         const processFile = async (file: File): Promise<UploadTask | null> => {
-          if (!currentStamp || !currentStamp.usable) {
-            setErrorMessage?.('Stamp is not usable.')
-            setShowError(true)
-
-            return null
-          }
-
           const meta = buildUploadMeta([file])
           const prettySize = formatBytes(meta.size)
 
-          const allTaken = new Set<string>([
-            ...Array.from(onDiskNames),
-            ...Array.from(reserved),
-            ...Array.from(progressNames),
-          ])
+          fileSizeSum += file.size
 
-          if (file.size > remainingBytes) {
-            // eslint-disable-next-line no-console
-            console.log(
-              'Skipping upload - insufficient space:',
-              file.name,
-              'size:',
-              file.size,
-              'remaining:',
-              remainingBytes,
-            )
-            setErrorMessage?.('There is not enough space to upload: ' + file.name)
-            setShowError(true)
+          const { ok } = verifyDriveSpace({
+            fm,
+            redundancyLevel: currentDrive.redundancyLevel,
+            stamp: currentStamp,
+            useInfoSize: true,
+            useDlSize: true,
+            driveId: currentDrive.id.toString(),
+            fileSize: fileSizeSum,
+            cb: err => {
+              setErrorMessage?.(err + ' (' + truncateNameMiddle(file.name) + ')')
+              setShowError(true)
+            },
+          })
 
+          if (!ok) {
             return null
           }
 
@@ -607,7 +620,6 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
 
             if (!retryInvalidCombo && !retryInvalidName) {
               reserved.add(finalName)
-              remainingBytes -= file.size
 
               ensureQueuedRow(
                 finalName,
@@ -637,7 +649,8 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
 
           if (task) {
             tasks.push(task)
-          } else if (file.size > remainingBytes) {
+          } else {
+            // Stop processing remaining files if capacity check failed
             break
           }
         }
@@ -673,12 +686,32 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
           runningRef.current = false
 
           if (queueRef.current.length > 0) {
-            void runQueue()
+            runQueue()
           }
         }
       }
 
       void (async () => {
+        if (!currentStamp || !currentStamp.usable) {
+          setErrorMessage?.('Stamp is not usable.')
+          setShowError(true)
+
+          return
+        }
+
+        if (beeApi) {
+          const stampValid = await validateStampStillExists(beeApi, currentStamp.batchID)
+
+          if (!stampValid) {
+            setErrorMessage?.(
+              'The selected stamp is no longer valid or has been deleted. Please select a different stamp.',
+            )
+            setShowError(true)
+
+            return
+          }
+        }
+
         const tasks = await preflight()
         queueRef.current = queueRef.current.concat(tasks)
         runQueue()
@@ -695,6 +728,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
       uploadItems,
       setShowError,
       setErrorMessage,
+      beeApi,
     ],
   )
 
@@ -755,9 +789,11 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
   }, [])
 
   const dismissAllUploads = useCallback(() => {
-    setUploadItems([])
+    uploadAbortsRef.current.clear()
+    queueRef.current = []
     cancelledNamesRef.current.clear()
     cancelledUploadingRef.current.clear()
+    setUploadItems([])
   }, [])
 
   const dismissAllDownloads = useCallback(() => {

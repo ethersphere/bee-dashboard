@@ -21,7 +21,7 @@ import { TOOLTIPS } from '../../constants/tooltips'
 interface InitialModalProps {
   resetState: boolean
   handleVisibility: (isVisible: boolean) => void
-  handleShowError: (flag: boolean) => void
+  handleShowError: (flag: boolean, errorMessage?: string) => void
   setIsCreationInProgress: (isCreating: boolean) => void
 }
 
@@ -42,6 +42,25 @@ const createBatchIdOptions = (stamps: PostageBatch[]) => [
     }
   }),
 ]
+
+const setSecurityLevel = (setter: (value: RedundancyLevel) => void) => {
+  return (
+    <div className="fm-modal-window-input-container">
+      <label htmlFor="admin-security-level" className="fm-input-label">
+        Security Level <Tooltip label={TOOLTIPS.ADMIN_SECURITY_LEVEL} />
+      </label>
+      <FMSlider
+        id="admin-security-level"
+        defaultValue={0}
+        marks={erasureCodeMarks}
+        onChange={v => setter(v)}
+        minValue={minMarkValue}
+        maxValue={maxMarkValue}
+        step={1}
+      />
+    </div>
+  )
+}
 
 export function InitialModal({
   resetState,
@@ -111,26 +130,27 @@ export function InitialModal({
     setIsCreationInProgress?.(true)
     handleVisibility(false)
 
-    await handleCreateDrive(
+    await handleCreateDrive({
       beeApi,
       fm,
-      Size.fromBytes(capacity),
-      Duration.fromEndDate(validityEndDate),
-      ADMIN_STAMP_LABEL,
-      false,
-      erasureCodeLevel,
-      true,
+      size: Size.fromBytes(capacity),
+      duration: Duration.fromEndDate(validityEndDate),
+      label: ADMIN_STAMP_LABEL,
+      encryption: false,
+      redundancyLevel: erasureCodeLevel,
+      isAdmin: true,
       resetState,
-      selectedBatch,
-      () => {
+      existingBatch: selectedBatch,
+      onSuccess: () => {
         handleVisibility(false)
         setIsCreationInProgress(false)
-      }, // onSuccess
-      () => {
-        handleShowError(true)
+      },
+      onError: err => {
+        const errorMessage = err instanceof Error ? err.message : String(err)
+        handleShowError(true, errorMessage)
         setIsCreationInProgress(false)
-      }, // onError
-    )
+      },
+    })
   }, [
     beeApi,
     fm,
@@ -146,18 +166,9 @@ export function InitialModal({
 
   useEffect(() => {
     const getStamps = async () => {
-      try {
-        const stamps = (await getUsableStamps(beeApi)).filter(s => {
-          const { capacityPct } = calculateStampCapacityMetrics(s)
+      const stamps = await getUsableStamps(beeApi)
 
-          return capacityPct < 100
-        })
-
-        safeSetState(isMountedRef, setUsableStamps)([...stamps])
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.warn('Failed to fetch stamps, node may still be syncing:', error)
-      }
+      safeSetState(isMountedRef, setUsableStamps)([...stamps])
     }
 
     if (beeApi) {
@@ -208,17 +219,25 @@ export function InitialModal({
     setValidityEndDate(getExpiryDateByLifetime(lifetimeIndex))
   }, [lifetimeIndex])
 
+  const nonFullStamps = useMemo(() => {
+    return usableStamps.filter(s => {
+      const { capacityPct } = calculateStampCapacityMetrics(s, erasureCodeLevel)
+
+      return capacityPct < 100
+    })
+  }, [usableStamps, erasureCodeLevel])
+
   useEffect(() => {
-    if (selectedBatchIndex >= 0 && selectedBatchIndex < usableStamps.length) {
-      setSelectedBatch(usableStamps[selectedBatchIndex])
+    if (selectedBatchIndex >= 0 && selectedBatchIndex < nonFullStamps.length) {
+      setSelectedBatch(nonFullStamps[selectedBatchIndex])
     } else {
       setSelectedBatch(null)
     }
-  }, [usableStamps, selectedBatchIndex])
+  }, [nonFullStamps, selectedBatchIndex])
 
   const { capacityPct, usedSize, totalSize } = useMemo(
-    () => calculateStampCapacityMetrics(selectedBatch),
-    [selectedBatch],
+    () => calculateStampCapacityMetrics(selectedBatch, erasureCodeLevel),
+    [selectedBatch, erasureCodeLevel],
   )
 
   const initText = resetState ? 'Resetting' : 'Initializing'
@@ -266,16 +285,12 @@ export function InitialModal({
       <div className="fm-modal-window">
         <div className="fm-modal-window-header">Welcome to your Swarm File Manager</div>
         <div>{initText} the File Manager</div>
-        {usableStamps.length > 0 && (
+        {nonFullStamps.length > 0 && (
           <div className="fm-modal-window-body">
             <div className="fm-modal-window-input-container">
-              {/* <label htmlFor="admin-desired-lifetime" className="fm-input-label">
-                Link an existing Admin Drive (optional)
-              </label>
-              <br /> */}
               <CustomDropdown
                 id="batch-id-selector"
-                options={createBatchIdOptions(usableStamps)}
+                options={createBatchIdOptions(nonFullStamps)}
                 value={selectedBatchIndex}
                 label="Link an existing Admin Drive (optional)"
                 onChange={(index: number) => {
@@ -297,6 +312,7 @@ export function InitialModal({
                   </div>
                 </div>
               )}
+              {selectedBatch && setSecurityLevel(setErasureCodeLevel)}
             </div>
           </div>
         )}
@@ -314,20 +330,7 @@ export function InitialModal({
                 placeholder="Select a value"
               />
             </div>
-            <div className="fm-modal-window-input-container">
-              <label htmlFor="admin-security-level" className="fm-input-label">
-                Security Level <Tooltip label={TOOLTIPS.ADMIN_SECURITY_LEVEL} />
-              </label>
-              <FMSlider
-                id="admin-security-level"
-                defaultValue={0}
-                marks={erasureCodeMarks}
-                onChange={value => setErasureCodeLevel(value)}
-                minValue={minMarkValue}
-                maxValue={maxMarkValue}
-                step={1}
-              />
-            </div>
+            {setSecurityLevel(setErasureCodeLevel)}
             <div className="fm-modal-window-input-container">
               <div className="fm-modal-estimated-cost-container">
                 <div className="fm-emphasized-text">Estimated Cost:</div>

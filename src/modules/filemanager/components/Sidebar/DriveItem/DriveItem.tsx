@@ -8,15 +8,16 @@ import { ProgressBar } from '../../ProgressBar/ProgressBar'
 import { ContextMenu } from '../../ContextMenu/ContextMenu'
 import { useContextMenu } from '../../../hooks/useContextMenu'
 import { Button } from '../../Button/Button'
-import { DestroyDriveModal } from '../../DestroyDriveModal/DestroyDriveModal'
+import { DestroyDriveModal, ProgressDestroyModal } from '../../DestroyDriveModal/DestroyDriveModal'
 import { UpgradeDriveModal } from '../../UpgradeDriveModal/UpgradeDriveModal'
 import { ViewType } from '../../../constants/transfers'
 import { useView } from '../../../../../pages/filemanager/ViewContext'
 import { Context as FMContext } from '../../../../../providers/FileManager'
 import { PostageBatch } from '@ethersphere/bee-js'
 import { DriveInfo } from '@solarpunkltd/file-manager-lib'
-import { calculateStampCapacityMetrics, handleDestroyDrive } from '../../../utils/bee'
+import { calculateStampCapacityMetrics, handleDestroyAndForgetDrive } from '../../../utils/bee'
 import { Context as SettingsContext } from '../../../../../providers/Settings'
+import { truncateNameMiddle } from '../../../utils/common'
 
 interface DriveItemProps {
   drive: DriveInfo
@@ -26,14 +27,16 @@ interface DriveItemProps {
 }
 
 export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveItemProps): ReactElement {
-  const { fm, setShowError, refreshStamp, files } = useContext(FMContext)
+  const { fm, setShowError, refreshStamp } = useContext(FMContext)
   const { beeApi } = useContext(SettingsContext)
 
   const [isHovered, setIsHovered] = useState(false)
   const [isDestroyDriveModalOpen, setIsDestroyDriveModalOpen] = useState(false)
+  const [isProgressModalOpen, setIsProgressModalOpen] = useState(false)
   const [isUpgradeDriveModalOpen, setIsUpgradeDriveModalOpen] = useState(false)
   const isMountedRef = useRef(true)
   const [isUpgrading, setIsUpgrading] = useState(false)
+  const [isDestroying, setIsDestroying] = useState(false)
   const [actualStamp, setActualStamp] = useState<PostageBatch>(stamp)
 
   const { showContext, pos, contextRef, setPos, setShowContext } = useContextMenu<HTMLDivElement>()
@@ -105,8 +108,8 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
   }, [drive.id, setShowError, setErrorMessage, stamp.batchID, refreshStamp])
 
   const { capacityPct, usedSize, totalSize } = useMemo(
-    () => calculateStampCapacityMetrics(actualStamp, drive, files),
-    [actualStamp, drive, files],
+    () => calculateStampCapacityMetrics(actualStamp, drive.redundancyLevel),
+    [actualStamp, drive],
   )
 
   return (
@@ -124,7 +127,7 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
       >
         <div className="fm-drive-item-header">
           <div className="fm-drive-item-icon">{isHovered ? <DriveFill size="16px" /> : <Drive size="16px" />}</div>
-          <div>{drive.name}</div>
+          <div>{truncateNameMiddle(drive.name, 35, 8, 8)}</div>
         </div>
         <div className="fm-drive-item-content">
           <div className="fm-drive-item-capacity">
@@ -138,9 +141,9 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
       <div className="fm-drive-item-actions">
         <MoreFill
           size="13"
-          className={`fm-pointer${isUpgrading ? ' fm-disabled' : ''}`}
-          onClick={!isUpgrading ? handleMenuClick : undefined}
-          aria-disabled={isUpgrading ? 'true' : 'false'}
+          className={`fm-pointer${isUpgrading || isDestroying ? ' fm-disabled' : ''}`}
+          onClick={!isUpgrading && !isDestroying ? handleMenuClick : undefined}
+          aria-disabled={isUpgrading || isDestroying ? 'true' : 'false'}
         />
         {showContext &&
           createPortal(
@@ -171,7 +174,7 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
           label="Upgrade"
           variant="primary"
           size="small"
-          disabled={isUpgrading}
+          disabled={isUpgrading || isDestroying}
           onClick={() => setIsUpgradeDriveModalOpen(true)}
         />
       </div>
@@ -190,26 +193,48 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
           <span>Upgrading drive…</span>
         </div>
       )}
+      {isDestroying && (
+        <div
+          className="fm-drive-item-creating-overlay"
+          aria-live="polite"
+          onClick={() => setIsProgressModalOpen(true)}
+          style={{ cursor: 'pointer' }}
+          title="Click to show progress modal"
+        >
+          <div className="fm-mini-spinner" />
+          <span>Destroying drive…</span>
+        </div>
+      )}
+      {isProgressModalOpen && isDestroying && (
+        <ProgressDestroyModal drive={drive} onMinimize={() => setIsProgressModalOpen(false)} />
+      )}
       {isDestroyDriveModalOpen && (
         <DestroyDriveModal
           drive={drive}
           onCancelClick={() => setIsDestroyDriveModalOpen(false)}
           doDestroy={async () => {
             setIsDestroyDriveModalOpen(false)
+            setIsProgressModalOpen(true)
+            setIsDestroying(true)
 
-            await handleDestroyDrive(
+            await handleDestroyAndForgetDrive({
               beeApi,
               fm,
               drive,
-              () => {
+              isDestroy: true,
+              onSuccess: () => {
                 setIsDestroyDriveModalOpen(false)
+                setIsDestroying(false)
+                setIsProgressModalOpen(false)
               },
-              e => {
+              onError: e => {
                 setIsDestroyDriveModalOpen(false)
+                setIsDestroying(false)
+                setIsProgressModalOpen(false)
                 setErrorMessage?.(`Error destroying drive: ${drive.name}: ${e}`)
                 setShowError(true)
               },
-            )
+            })
           }}
         />
       )}

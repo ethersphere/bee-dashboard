@@ -15,7 +15,7 @@ interface UseDragAndDropReturn {
   handleOverlayDrop: (e: React.DragEvent<HTMLDivElement>) => void
 }
 
-export function useDragAndDrop({ onFilesDropped, currentDrive }: UseDragAndDropProps): UseDragAndDropReturn {
+export function useDragAndDrop({ onFilesDropped }: UseDragAndDropProps): UseDragAndDropReturn {
   const [isDragging, setIsDragging] = useState(false)
   const dragCounter = useRef(0)
 

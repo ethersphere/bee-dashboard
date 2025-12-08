@@ -5,7 +5,8 @@ import './FileProgressWindow.scss'
 import { GetIconElement } from '../../utils/GetIconElement'
 import { ProgressBar } from '../ProgressBar/ProgressBar'
 import { FileTransferType, TransferBarColor, TransferStatus } from '../../constants/transfers'
-import { capitalizeFirstLetter } from '../../utils/common'
+import { capitalizeFirstLetter, truncateNameMiddle } from '../../utils/common'
+import { guessMime } from '../../utils/view'
 
 type ProgressItem = {
   name: string
@@ -92,6 +93,7 @@ export function FileProgressWindow({
     const listEl = listRef.current
 
     if (!rowEl || !listEl) return
+
     const rowH = rowEl.getBoundingClientRect().height
     const safeRowH = rowH > 0 ? rowH : 72
     listEl.style.maxHeight = `${safeRowH * 5}px`
@@ -152,6 +154,8 @@ export function FileProgressWindow({
 
           const centerDisplay = getCenterText() || '\u00A0'
 
+          const mimeType = guessMime(item.name).split('/')[0].toLowerCase() || 'file'
+
           return (
             <div
               className="fm-file-progress-window-file-item"
@@ -159,17 +163,17 @@ export function FileProgressWindow({
               ref={idx === 0 ? firstRowRef : undefined}
             >
               <div className="fm-file-progress-window-file-type-icon">
-                <GetIconElement size="14" icon={item.name} color="black" />
+                <GetIconElement size="14" icon={mimeType} color="black" />
               </div>
 
               <div className="fm-file-progress-window-file-datas">
                 <div className="fm-file-progress-window-file-item-header">
                   <div className="fm-file-progress-window-name" title={item.name}>
-                    <div className="fm-file-progress-window-name-text">{item.name}</div>
+                    <div className="fm-file-progress-window-name-text">{truncateNameMiddle(item.name, 25, 8, 8)}</div>
                     {item.driveName && (
                       <div className="fm-drive-line">
                         <span className="fm-drive-chip" title={`Drive: ${item.driveName}`}>
-                          {item.driveName}
+                          {truncateNameMiddle(item.driveName, 25, 8, 8)}
                         </span>
                       </div>
                     )}

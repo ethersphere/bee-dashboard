@@ -6,7 +6,7 @@ import GeneralIcon from 'remixicon-react/FileTextLineIcon'
 import CalendarIcon from 'remixicon-react/CalendarLineIcon'
 import AccessIcon from 'remixicon-react/ShieldKeyholeLineIcon'
 import HardDriveIcon from 'remixicon-react/HardDrive2LineIcon'
-import { indexStrToBigint } from './common'
+import { indexStrToBigint, truncateNameMiddle } from './common'
 import { FEED_INDEX_ZERO, erasureCodeMarks } from '../constants/common'
 
 export type FileProperty = { key: string; label: string; value: string; raw?: string }
@@ -100,7 +100,7 @@ function buildGeneralGroup(
       { key: 'type', label: 'Type', value: mime ?? dash },
       { key: 'size', label: 'Size', value: size != null ? formatBytes(size) : dash },
       { key: 'count', label: 'Items', value: fileCount ?? '1' },
-      { key: 'path', label: 'Location', value: path || dash },
+      { key: 'path', label: 'Location', value: truncateNameMiddle(path || dash, 35, 10, 10) },
       {
         key: 'hash',
         label: 'Swarm hash',
@@ -162,7 +162,7 @@ function buildAccessGroup(fi: FileInfo, granteeCount?: number): FilePropertyGrou
 
 function buildStorageGroup(fi: FileInfo, driveName: string, stamp?: PostageBatch): FilePropertyGroup {
   const stampValue = stamp
-    ? stamp.label + ' (' + truncateMiddle(fi.batchId.toString(), 4, 4) + ')'
+    ? truncateNameMiddle(stamp.label, 35, 10, 10) + ' (' + truncateMiddle(fi.batchId.toString(), 4, 4) + ')'
     : truncateMiddle(fi.batchId.toString())
 
   const redundancyLabel =
@@ -180,7 +180,7 @@ function buildStorageGroup(fi: FileInfo, driveName: string, stamp?: PostageBatch
         value: stampValue,
         raw: fi.batchId.toString(),
       },
-      { key: 'drive', label: 'Drive', value: driveName },
+      { key: 'drive', label: 'Drive', value: truncateNameMiddle(driveName, 35, 10, 10) },
       { key: 'redundancy', label: 'Redundancy', value: redundancyLabel },
     ],
   }

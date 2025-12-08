@@ -80,13 +80,13 @@
 }
 
 .fm-initialization-modal-container {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100vh;
-  background: #000c;
-  backdrop-filter: blur(5px);
+  background: transparent;
+  backdrop-filter: none;
   z-index: 1300;
   display: flex;
   justify-content: center;
@@ -95,6 +95,7 @@
   box-sizing: border-box;
   overflow-x: hidden;
   overflow-y: auto;
+  pointer-events: none;
 }
 
 .fm-initialization-modal-container .fm-modal-window {
@@ -103,6 +104,8 @@
   display: flex;
   flex-direction: column;
   overflow: visible;
+  pointer-events: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
 .fm-initialization-modal-container .fm-modal-window-header {
@@ -121,4 +124,8 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+.fm-main:has(.fm-initialization-modal-container) {
+  border-left: none;
 }
