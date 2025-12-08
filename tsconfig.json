@@ -1,9 +1,6 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-     "paths": {
-       "@ethersphere/bee-js": ["node_modules/@ethersphere/bee-js"]
-     },
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,

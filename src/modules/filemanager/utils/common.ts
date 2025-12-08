@@ -135,3 +135,15 @@ export const safeSetState =
   (value: React.SetStateAction<T>) => {
     if (ref.current) setter(value)
   }
+
+export const truncateNameMiddle = (s: string, max = 40, start?: number, end?: number): string => {
+  if (s.length <= max) return s
+
+  if (start && end && start + end < s.length) {
+    return `${s.slice(0, start)}…${s.slice(-end)}`
+  }
+
+  const half = Math.floor((max - 1) / 2)
+
+  return `${s.slice(0, half)}…${s.slice(-half)}`
+}

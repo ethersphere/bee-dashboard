@@ -20,6 +20,7 @@ import { useView } from '../../../../pages/filemanager/ViewContext'
 import { Context as FMContext } from '../../../../providers/FileManager'
 import { getUsableStamps } from '../../utils/bee'
 import { DriveInfo } from '@solarpunkltd/file-manager-lib'
+import { truncateNameMiddle } from '../../utils/common'
 
 interface SidebarProps {
   loading: boolean
@@ -89,7 +90,7 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
         setCurrentStamp(correspondingStamp)
       }
     }
-  }, [fm, drives, currentDrive, currentStamp, usableStamps, setCurrentDrive, setCurrentStamp, setView])
+  }, [fm, drives, currentDrive, currentStamp, usableStamps, setCurrentDrive, setCurrentStamp, setView, beeApi])
 
   const handleCreateNewDrive = () => {
     if (isDriveCreationInProgress) {
@@ -116,7 +117,9 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
               <div>Create new drive</div>
             </div>
             {isDriveCreationInProgress && (
-              <div className="fm-sidebar-item-description">{creatingDriveName} is currently being created.</div>
+              <div className="fm-sidebar-item-description">
+                {truncateNameMiddle(creatingDriveName || 'Your Drive', 35, 8, 8)} is currently being created.
+              </div>
             )}
           </>
         )}
@@ -277,7 +280,7 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
                   }}
                   title={`${d.name} Trash`}
                 >
-                  {d.name} Trash
+                  {truncateNameMiddle(d.name, 35, 8, 8)} Trash
                 </div>
               )
             })}

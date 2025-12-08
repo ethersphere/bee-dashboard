@@ -18,6 +18,7 @@ import { TOOLTIPS } from '../../constants/tooltips'
 
 const minMarkValue = Math.min(...erasureCodeMarks.map(mark => mark.value))
 const maxMarkValue = Math.max(...erasureCodeMarks.map(mark => mark.value))
+const maxDriveNameLength = 40
 
 interface CreateDriveModalProps {
   onCancelClick: () => void
@@ -147,6 +148,7 @@ export function CreateDriveModal({
               value={driveName}
               onChange={e => setDriveName(e.target.value)}
               onBlur={() => setDuplicate(true)}
+              maxLength={maxDriveNameLength}
             />
             {validationError && <div className="fm-error-text">{validationError}</div>}
           </div>
@@ -229,24 +231,24 @@ export function CreateDriveModal({
                 return
               }
 
-              if (isCreateEnabled && fm && beeApi && walletBalance) {
+              if (isCreateEnabled && walletBalance) {
                 onCreationStarted(driveName)
                 onCancelClick()
 
-                await handleCreateDrive(
+                await handleCreateDrive({
                   beeApi,
                   fm,
-                  Size.fromBytes(capacity),
-                  Duration.fromEndDate(validityEndDate),
-                  trimmedName,
-                  encryptionEnabled,
-                  erasureCodeLevel,
-                  false,
-                  false,
-                  null,
-                  () => onDriveCreated(), // onSuccess
-                  () => onCreationError(trimmedName), // onError
-                )
+                  size: Size.fromBytes(capacity),
+                  duration: Duration.fromEndDate(validityEndDate),
+                  label: trimmedName,
+                  encryption: encryptionEnabled,
+                  redundancyLevel: erasureCodeLevel,
+                  isAdmin: false,
+                  resetState: false,
+                  existingBatch: null,
+                  onSuccess: () => onDriveCreated(),
+                  onError: () => onCreationError(trimmedName),
+                })
               }
             }}
           />

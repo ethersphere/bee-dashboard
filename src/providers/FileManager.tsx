@@ -5,7 +5,7 @@ import { FileManagerBase, FileManagerEvents } from '@solarpunkltd/file-manager-l
 import { Context as SettingsContext } from './Settings'
 import { DriveInfo } from '@solarpunkltd/file-manager-lib'
 import { getSignerPk } from '../modules/filemanager/utils/common'
-import { getUsableStamps } from '../../src/modules/filemanager/utils/bee'
+import { getUsableStamps, validateStampStillExists } from '../../src/modules/filemanager/utils/bee'
 
 interface ContextInterface {
   fm: FileManagerBase | null
@@ -192,19 +192,17 @@ export function Provider({ children }: Props) {
     }
   }, [fm, syncDrives])
 
-  const refreshStamp = useCallback(
-    async (batchId: string): Promise<PostageBatch | undefined> => {
-      const usableStamps = await getUsableStamps(beeApi)
-      const refreshedStamp = usableStamps.find(s => s.batchID.toString() === batchId)
+  // no useCallback is needed because it caches the stamp
+  const refreshStamp = async (batchId: string): Promise<PostageBatch | undefined> => {
+    const usableStamps = await getUsableStamps(beeApi)
+    const refreshedStamp = usableStamps.find(s => s.batchID.toString() === batchId)
 
-      if (currentStamp && currentStamp.batchID.toString() === batchId && refreshedStamp) {
-        setCurrentStamp(refreshedStamp)
-      }
+    if (currentStamp && currentStamp.batchID.toString() === batchId && refreshedStamp) {
+      setCurrentStamp(refreshedStamp)
+    }
 
-      return refreshedStamp
-    },
-    [beeApi, currentStamp],
-  )
+    return refreshedStamp
+  }
 
   const init = useCallback(async (): Promise<FileManagerBase | null> => {
     const pk = getSignerPk()
@@ -222,10 +220,22 @@ export function Provider({ children }: Props) {
     const bee = new Bee(apiUrl, { signer: pk })
     const manager = new FileManagerBase(bee)
 
-    const handleInitialized = (success: boolean) => {
+    const handleInitialized = async (success: boolean) => {
       setInitializationError(!success)
 
       if (success) {
+        // need to wait for beeApi to init cause it can set invalid state incorrectly
+        if (manager.adminStamp && beeApi) {
+          const isAdminStampValid = await validateStampStillExists(beeApi, manager.adminStamp.batchID)
+
+          if (!isAdminStampValid) {
+            setShallReset(true)
+            setInitializationError(true)
+
+            return
+          }
+        }
+
         setFm(manager)
         syncDrives(manager)
         syncFiles(manager)
@@ -278,7 +288,7 @@ export function Provider({ children }: Props) {
     } catch (error) {
       return null
     }
-  }, [apiUrl, syncDrives, syncFiles])
+  }, [apiUrl, beeApi, syncDrives, syncFiles])
 
   const resync = useCallback(async (): Promise<void> => {
     const prevDriveId = currentDrive?.id.toString()
