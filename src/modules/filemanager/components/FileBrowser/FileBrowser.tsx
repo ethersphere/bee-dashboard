@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useLayoutEffect, useRef, useState, useContext, useMemo } from 'react'
+import { ReactElement, useEffect, useLayoutEffect, useRef, useState, useContext, useMemo, useCallback } from 'react'
 import './FileBrowser.scss'
 import { FileBrowserHeader } from './FileBrowserHeader/FileBrowserHeader'
 import { FileBrowserContent } from './FileBrowserContent/FileBrowserContent'
@@ -82,7 +82,7 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
   const { showContext, pos, contextRef, handleContextMenu, handleCloseContext } = useContextMenu<HTMLDivElement>()
   const { view, setActualItemView } = useView()
   const { beeApi } = useContext(SettingsContext)
-  const { files, currentDrive, resync, drives, fm, showError, setShowError } = useContext(FMContext)
+  const { files, adminDrive, currentDrive, resync, drives, fm, showError, setShowError } = useContext(FMContext)
   const {
     uploadFiles,
     isUploading,
@@ -238,8 +238,7 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
     }
   }
 
-  // TODO: useCallback
-  const handleDestroyDriveConfirm = async () => {
+  const handleDestroyDriveConfirm = useCallback(async () => {
     if (!currentDrive) return
 
     setShowDestroyDriveModal(false)
@@ -251,6 +250,7 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
       fm,
       drive: currentDrive,
       isDestroy: true,
+      adminDrive,
       onSuccess: () => {
         setIsDestroying(false)
         setIsProgressModalOpen(false)
@@ -264,7 +264,16 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
         setShowError(true)
       },
     })
-  }
+  }, [
+    beeApi,
+    fm,
+    currentDrive,
+    adminDrive,
+    setErrorMessage,
+    setIsProgressModalOpen,
+    setShowDestroyDriveModal,
+    setShowError,
+  ])
 
   const handleUploadClose = (name: string) => {
     const row = uploadItems.find(i => i.name === name)

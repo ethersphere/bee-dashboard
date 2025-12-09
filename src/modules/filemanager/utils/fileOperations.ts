@@ -1,4 +1,4 @@
-import type { FileInfo } from '@solarpunkltd/file-manager-lib'
+import type { DriveInfo, FileInfo } from '@solarpunkltd/file-manager-lib'
 import type { FileManagerBase } from '@solarpunkltd/file-manager-lib'
 import type { PostageBatch, RedundancyLevel } from '@ethersphere/bee-js'
 import { verifyDriveSpace } from './bee'
@@ -18,6 +18,7 @@ interface FileOperationOptions {
   driveId: string
   stamp: PostageBatch
   adminStamp?: PostageBatch
+  adminRedundancy?: RedundancyLevel
   operation: FileOperation
   onError?: (error: string) => void
   onSuccess?: () => void
@@ -30,6 +31,7 @@ export async function performFileOperation({
   driveId,
   stamp,
   adminStamp,
+  adminRedundancy,
   operation,
   onError,
   onSuccess,
@@ -43,7 +45,7 @@ export async function performFileOperation({
       redundancyLevel,
       stamp: verifyStamp,
       useInfoSize: !isForget,
-      useDlSize: isForget,
+      adminRedundancy: isForget ? adminRedundancy : undefined,
       driveId,
       cb: err => {
         onError?.(err || `Could not ${operation} file due to insufficient space: ${file.name}`)
@@ -92,6 +94,7 @@ export async function performBulkFileOperation({
   operation,
   stamps,
   adminStamp,
+  adminDrive,
   onError,
   onFileComplete,
 }: {
@@ -100,6 +103,7 @@ export async function performBulkFileOperation({
   operation: FileOperation
   stamps: PostageBatch[]
   adminStamp?: PostageBatch
+  adminDrive?: DriveInfo
   onError?: (error: string) => void
   onFileComplete?: (file: FileInfo, index: number) => void
 }): Promise<void> {
@@ -127,6 +131,7 @@ export async function performBulkFileOperation({
         stamp: currentStamp,
         adminStamp,
         operation,
+        adminRedundancy: adminDrive?.redundancyLevel,
         onError,
       })
 

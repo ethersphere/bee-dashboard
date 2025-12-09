@@ -3,11 +3,12 @@ import './AdminStatusBar.scss'
 import { ProgressBar } from '../ProgressBar/ProgressBar'
 import { Tooltip } from '../Tooltip/Tooltip'
 import { PostageBatch } from '@ethersphere/bee-js'
-import { DriveInfo } from '@solarpunkltd/file-manager-lib'
+import { DriveInfo, estimateDriveListMetadataSize } from '@solarpunkltd/file-manager-lib'
 import { UpgradeDriveModal } from '../UpgradeDriveModal/UpgradeDriveModal'
 import { calculateStampCapacityMetrics } from '../../utils/bee'
 import { Context as FMContext } from '../../../../providers/FileManager'
 import { ConfirmModal } from '../ConfirmModal/ConfirmModal'
+import { getHumanReadableFileSize } from '../../../../utils/file'
 
 interface AdminStatusBarProps {
   adminStamp: PostageBatch | null
@@ -24,7 +25,7 @@ export function AdminStatusBar({
   isCreationInProgress,
   setErrorMessage,
 }: AdminStatusBarProps): ReactElement {
-  const { setShowError, refreshStamp } = useContext(FMContext)
+  const { drives, setShowError, refreshStamp } = useContext(FMContext)
 
   const [isUpgradeDriveModalOpen, setIsUpgradeDriveModalOpen] = useState(false)
   const [isUpgrading, setIsUpgrading] = useState(false)
@@ -93,10 +94,35 @@ export function AdminStatusBar({
       window.removeEventListener('fm:drive-upgrade-end', onEnd as EventListener)
     }
   }, [adminDrive, adminStamp?.batchID, setErrorMessage, setShowError, refreshStamp, setIsUpgrading])
-  // TODO: use estimate for drivelist size
+
   const { capacityPct, usedSize, totalSize } = useMemo(() => {
-    return calculateStampCapacityMetrics(actualStamp, [], adminDrive?.redundancyLevel)
-  }, [actualStamp, adminDrive])
+    if (!actualStamp) {
+      return {
+        capacityPct: 0,
+        usedSize: '—',
+        stampSize: '—',
+        usedBytes: 0,
+        stampSizeBytes: 0,
+        remainingBytes: 0,
+      }
+    }
+
+    // upper limit estimate on the drivelist metadata state size based on the number of drives and files
+    const estimatedDlSizeBytes = estimateDriveListMetadataSize(drives) * drives.length
+    const {
+      capacityPct: reportedPct,
+      usedBytes: reportedUsedBytes,
+      stampSizeBytes,
+    } = calculateStampCapacityMetrics(actualStamp, [], adminDrive?.redundancyLevel)
+    const actualUsedSizeBytes = Math.max(reportedUsedBytes, estimatedDlSizeBytes)
+    const actualPct = Math.max(reportedPct, (actualUsedSizeBytes / stampSizeBytes) * 100)
+
+    return {
+      capacityPct: actualPct,
+      usedSize: getHumanReadableFileSize(actualUsedSizeBytes),
+      totalSize: getHumanReadableFileSize(stampSizeBytes),
+    }
+  }, [actualStamp, adminDrive, drives])
 
   const expiresAt = useMemo(
     () => (actualStamp ? actualStamp.duration.toEndDate().toLocaleDateString() : '—'),

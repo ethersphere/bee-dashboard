@@ -138,6 +138,7 @@ export function InitialModal({
       label: ADMIN_STAMP_LABEL,
       encryption: false,
       redundancyLevel: erasureCodeLevel,
+      adminRedundancy: erasureCodeLevel,
       isAdmin: true,
       resetState,
       existingBatch: selectedBatch,
@@ -235,10 +236,20 @@ export function InitialModal({
     }
   }, [nonFullStamps, selectedBatchIndex])
 
-  const { capacityPct, usedSize, totalSize } = useMemo(
-    () => calculateStampCapacityMetrics(selectedBatch, [], erasureCodeLevel),
-    [selectedBatch, erasureCodeLevel],
-  )
+  const { capacityPct, usedSize, stampSize } = useMemo(() => {
+    if (!selectedBatch) {
+      return {
+        capacityPct: 0,
+        usedSize: '—',
+        stampSize: '—',
+        usedBytes: 0,
+        stampSizeBytes: 0,
+        remainingBytes: 0,
+      }
+    }
+
+    return calculateStampCapacityMetrics(selectedBatch, [], erasureCodeLevel)
+  }, [selectedBatch, erasureCodeLevel])
 
   const initText = resetState ? 'Resetting' : 'Initializing'
   const createText = resetState ? 'Reset' : 'Create'
@@ -305,7 +316,7 @@ export function InitialModal({
               {selectedBatch && (
                 <div className="fm-drive-item-content">
                   <div className="fm-drive-item-capacity">
-                    Capacity <ProgressBar value={capacityPct} width="64px" /> {usedSize} / {totalSize}
+                    Capacity <ProgressBar value={capacityPct} width="64px" /> {usedSize} / {stampSize}
                   </div>
                   <div className="fm-drive-item-capacity">
                     Expiry date: {selectedBatch.duration.toEndDate().toLocaleDateString()}

@@ -153,6 +153,7 @@ export function useBulkActions({ listToRender, setErrorMessage, trackDownload }:
         operation: FileOperation.Forget,
         stamps: driveStamps || [],
         adminStamp: fm.adminStamp,
+        adminDrive: adminDrive || undefined,
         onError: error => {
           setErrorMessage?.(error)
           setShowError(true)

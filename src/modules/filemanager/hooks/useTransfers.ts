@@ -160,7 +160,7 @@ interface TransferProps {
 }
 
 export function useTransfers({ setErrorMessage }: TransferProps) {
-  const { fm, currentDrive, currentStamp, files, setShowError, refreshStamp } = useContext(FMContext)
+  const { fm, adminDrive, currentDrive, currentStamp, files, setShowError, refreshStamp } = useContext(FMContext)
   const { beeApi } = useContext(SettingsContext)
   const [openConflict, conflictPortal] = useUploadConflictDialog()
   const isMountedRef = useRef(true)
@@ -339,7 +339,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
     async (task: UploadTask) => {
       if (!fm) return
 
-      const taskDrive = fm.getDrives().find(d => d.id.toString() === task.driveId)
+      const taskDrive = fm.driveList.find(d => d.id.toString() === task.driveId)
 
       if (!taskDrive) {
         return
@@ -571,8 +571,8 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
             redundancyLevel: currentDrive.redundancyLevel,
             stamp: currentStamp,
             useInfoSize: true,
-            useDlSize: true,
             driveId: currentDrive.id.toString(),
+            adminRedundancy: adminDrive?.redundancyLevel,
             fileSize: fileSizeSum,
             cb: err => {
               setErrorMessage?.(err + ' (' + truncateNameMiddle(file.name) + ')')
@@ -717,6 +717,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
       ensureQueuedRow,
       processUploadTask,
       uploadItems,
+      adminDrive,
       setShowError,
       setErrorMessage,
       beeApi,

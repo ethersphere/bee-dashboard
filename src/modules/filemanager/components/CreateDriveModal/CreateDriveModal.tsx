@@ -231,7 +231,7 @@ export function CreateDriveModal({
                 return
               }
 
-              if (isCreateEnabled && walletBalance) {
+              if (isCreateEnabled && walletBalance && adminDrive) {
                 onCreationStarted(driveName)
                 onCancelClick()
 
@@ -243,6 +243,7 @@ export function CreateDriveModal({
                   label: trimmedName,
                   encryption: encryptionEnabled,
                   redundancyLevel: erasureCodeLevel,
+                  adminRedundancy: adminDrive?.redundancyLevel,
                   isAdmin: false,
                   resetState: false,
                   existingBatch: null,

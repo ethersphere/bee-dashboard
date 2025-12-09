@@ -57,7 +57,7 @@ export function FileItem({
   setErrorMessage,
 }: FileItemProps): ReactElement {
   const { showContext, pos, contextRef, handleContextMenu, handleCloseContext } = useContextMenu<HTMLDivElement>()
-  const { fm, currentDrive, files, drives, setShowError, refreshStamp } = useContext(FMContext)
+  const { fm, adminDrive, currentDrive, files, drives, setShowError, refreshStamp } = useContext(FMContext)
   const { beeApi } = useContext(SettingsContext)
   const { view } = useView()
 
@@ -162,6 +162,7 @@ export function FileItem({
         driveId: currentDrive.id.toString(),
         stamp: driveStamp,
         adminStamp: fm.adminStamp,
+        adminRedundancy: adminDrive?.redundancyLevel,
         operation,
         onError: err => {
           setErrorMessage?.(err)
@@ -176,7 +177,7 @@ export function FileItem({
         },
       })
     },
-    [fm, driveStamp, currentDrive, fileInfo, refreshStamp, setErrorMessage, setShowError],
+    [fm, driveStamp, adminDrive, currentDrive, fileInfo, refreshStamp, setErrorMessage, setShowError],
   )
 
   const showDestroyDrive = useCallback(() => {
@@ -201,7 +202,6 @@ export function FileItem({
           redundancyLevel: currentDrive.redundancyLevel,
           stamp: driveStamp,
           useInfoSize: true,
-          useDlSize: true,
           driveId: currentDrive.id.toString(),
           cb: err => {
             throw new Error(err)
@@ -599,6 +599,7 @@ export function FileItem({
               beeApi,
               fm,
               drive: destroyDrive,
+              adminDrive,
               isDestroy: true,
               onSuccess: () => {
                 setShowDestroyDriveModal(false)

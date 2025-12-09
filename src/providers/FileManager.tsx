@@ -178,7 +178,7 @@ export function Provider({ children }: Props) {
         return
       }
 
-      const { adminDrive: tmpAdminDrive, userDrives, expiredDrives } = findDrives(manager.getDrives(), usableStamps)
+      const { adminDrive: tmpAdminDrive, userDrives, expiredDrives } = findDrives(manager.driveList, usableStamps)
       setAdminDrive(tmpAdminDrive)
       setDrives(userDrives)
       setExpiredDrives(expiredDrives)
@@ -297,7 +297,7 @@ export function Provider({ children }: Props) {
     const manager = await init()
 
     if (prevDriveId && manager) {
-      const refreshedDrive = manager.getDrives().find(d => d.id.toString() === prevDriveId)
+      const refreshedDrive = manager.driveList.find(d => d.id.toString() === prevDriveId)
       setCurrentDrive(refreshedDrive)
 
       const isValidCurrentStamp = (await getUsableStamps(beeApi)).find(
