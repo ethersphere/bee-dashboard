@@ -27,8 +27,8 @@ The File Manager module is a decentralized file storage interface built on top o
 File Manager allows users to:
 - Create and manage multiple isolated storage containers (drives)
 - Upload, download, and organize files with folder support
-- Configure security levels using erasure coding
-- Manage postage stamps for blockchain-based storage payment
+- Configure security levels (redundancy levels) using erasure coding
+- Purchase and manage postage stamp batches to pay for storage
 - Track file versions and restore previous states
 - Handle file conflicts and perform bulk operations
 
@@ -50,8 +50,8 @@ File Manager is built around several key principles:
 
 **Drives** are isolated storage containers that hold files and folders. Each drive:
 - Has a unique ID derived from its creation topic on Swarm
-- Is associated with a specific postage stamp
-- Has configurable capacity and lifetime (inherited from stamp)
+- Is associated with a specific postage batch
+- Has configurable initial capacity and desired lifetime (inherited from batch)
 - Can be either an **admin drive** (manages system state) or **user drive** (stores user files)
 - Maintains its own file list and metadata
 
@@ -66,22 +66,22 @@ File Manager is built around several key principles:
 - Store user files and folders
 - Can be created, upgraded, or destroyed
 - Appear in the sidebar for navigation
-- Move to "Expired Drives" when their stamp expires
+- Move to "Expired Drives" when their postage batch expires
 
 ### Postage Stamps
 
 **Postage Stamps** (or batches) are blockchain-based payment mechanisms for Swarm storage:
 - Purchased with BZZ tokens (Swarm's native token)
-- Have a **batch ID** (unique identifier)
-- Define **capacity** (storage space) and **TTL** (time-to-live)
+- Have a **batchID** (unique identifier)
+- Define **initial capacity** (storage space) and **desired lifetime** (time-to-live)
 - Must be **usable** (not expired, not diluted beyond capacity)
 - Can have optional labels for identification
 
-**Stamp Validation** is critical:
+**Postage Batch Validation** is critical:
 - Before creating drives
 - Before uploading files
 - During admin drive initialization
-- Invalid stamps cause operations to fail
+- Invalid or unusable batches cause operations to fail
 
 ### File Info
 
@@ -98,7 +98,7 @@ File Manager is built around several key principles:
 - **OFF**: No redundancy (1x storage)
 - **MEDIUM**: Moderate redundancy (~2x storage)
 - **STRONG**: High redundancy (~3x storage)
-- **INSANE**: High redundancy (~4x storage)
+- **INSANE**: Very high redundancy (~4x storage)
 - **PARANOID**: Maximum redundancy (~5x storage)
 
 Higher levels cost more but protect against data loss if Swarm nodes go offline.
@@ -155,7 +155,7 @@ The File Manager module is organized into logical sections:
 
 **Utils Directory** - Pure utility functions. Includes Bee API wrappers for stamp validation and drive operations, common helpers for formatting, download logic, and UI utilities.
 
-**Constants Directory** - Configuration constants for erasure code levels, stamp lifetimes, tooltips, and transfer statuses.
+**Constants Directory** - Configuration constants for erasure code levels, postage batch desired lifetimes, tooltips, and transfer statuses.
 
 ---
 
@@ -165,7 +165,7 @@ The File Manager module is organized into logical sections:
 
 1. **Bee Node**: Running Bee node (dev mode or mainnet). Can be local or remote connection via Settings.
 
-2. **Wallet Balance**: BZZ tokens to purchase postage stamps, and xDAI for gas fees on blockchain transactions.
+2. **Wallet Balance**: BZZ tokens to purchase postage batches, and xDAI for gas fees on blockchain transactions.
 
 3. **CORS Configuration**: Bee node must allow CORS from the dashboard origin.
 
@@ -177,15 +177,15 @@ When a user first visits File Manager, they must provide or generate a private k
 
 **One-Time Admin Drive Creation**
 
-After the private key is set, the system checks for an admin drive. If none exists, the InitialModal appears automatically. The user selects storage capacity and lifetime, then purchases a stamp with BZZ tokens. The system creates the admin drive which stores all user drive metadata.
+After the private key is set, the system checks for an admin drive. If none exists, the InitialModal appears automatically. The user selects initial capacity and desired lifetime, then purchases a postage batch with BZZ tokens. The system creates the admin drive which stores all user drive metadata.
 
 **Creating User Drives**
 
-Once the admin drive exists, users can create user drives from the sidebar. They enter a drive name (max 40 characters), select capacity, lifetime, and security level (erasure coding). The system displays the BZZ cost and creates the drive upon confirmation.
+Once the admin drive exists, users can create user drives from the sidebar. They enter a drive name (max 40 characters), select initial capacity, desired lifetime, and security level (erasure coding). The system displays the BZZ cost and creates the drive upon confirmation.
 
 **Uploading Files**
 
-Users select a drive from the sidebar, then drag-and-drop files or click "Upload Files". They choose an active stamp, and the system monitors progress with ETA calculations. Files are uploaded with automatic conflict resolution if names already exist.
+Users select a drive from the sidebar, then drag-and-drop files or click "Upload File(s)". They choose an active postage batch, and the system monitors progress with ETA calculations. Files are uploaded with automatic conflict resolution if names already exist.
 
 ---
 
@@ -195,9 +195,9 @@ Users select a drive from the sidebar, then drag-and-drop files or click "Upload
 
 The FileManager Provider is the core state management solution. It manages:
 
-**Core State**: The FileManagerBase instance, all files across drives, user drives with valid stamps, expired drives, admin drive, currently selected drive, and currently selected stamp.
+**Core State**: The FileManagerBase instance, all files across drives, user drives with valid postage batches, expired drives, admin drive, currently selected drive, and currently selected postage batch.
 
-**Error States**: Initialization errors, error modal visibility, and reset requirements when admin stamp is invalid.
+**Error States**: Initialization errors, error modal visibility, and reset requirements when admin postage batch is invalid.
 
 **Synchronization**: Real-time updates through event listeners that respond to drive and file changes from the FileManagerBase library.
 
@@ -211,29 +211,29 @@ The provider handles a complex initialization:
 
 3. **Event Listener Registration** - Registers handlers for all file manager events (drive created, file uploaded, file trashed, etc.).
 
-4. **Admin Stamp Validation** - If admin stamp exists, validates it's still usable. Invalid stamps trigger reset flow.
+4. **Admin Postage Batch Validation** - If admin postage batch exists, validates it's still usable. Invalid batches trigger reset flow.
 
-5. **State Synchronization** - Categorizes drives into admin, user, and expired based on stamp validity. Populates file list.
+5. **State Synchronization** - Categorizes drives into admin, user, and expired based on postage batch validity. Populates file list.
 
 ### Drive Categorization
 
-The system continuously categorizes drives based on stamp validity:
+The system continuously categorizes drives based on postage batch validity:
 
-**Admin Drive** - Must have valid stamp. If invalid, entire FM enters reset state.
+**Admin Drive** - Must have valid postage batch. If invalid, entire FM enters reset state.
 
-**User Drives** - Drives with valid, usable stamps appear in main drive list for normal operations.
+**User Drives** - Drives with valid, usable postage batches appear in main drive list for normal operations.
 
-**Expired Drives** - Drives whose stamps expired but data still exists on Swarm. Appear in collapsed section, cannot be modified but can be viewed.
+**Expired Drives** - Drives whose postage batches expired but data still exists on Swarm. Appear in collapsed section, cannot be modified but can be viewed.
 
 ### State Synchronization Methods
 
 **Sync Files** - Updates the files array when files are uploaded, trashed, restored, or forgotten. Can update entire list or individual files incrementally.
 
-**Sync Drives** - Updates drive arrays (user, expired, admin) when drives are created, upgraded, or destroyed. Fetches current stamp validity and recategorizes.
+**Sync Drives** - Updates drive arrays (user, expired, admin) when drives are created, upgraded, or destroyed. Fetches current postage batch validity and recategorizes.
 
 **Resync** - Full state refresh that re-initializes FM instance and restores previous selections if still valid. Used after major operations or manual refresh.
 
-**Refresh Stamp** - Updates a specific stamp's information without full resync. Used after uploads to update capacity.
+**Refresh Postage Batch** - Updates a specific postage batch's information without full resync. Used after uploads to update capacity.
 
 ### Event Flow
 
@@ -262,7 +262,7 @@ The upload system handles complex scenarios:
 
 **Progress Tracking** - Each upload shows percentage complete, data transferred, elapsed time, and ETA. ETA uses smoothing algorithm to prevent wild fluctuations from network speed variations.
 
-**Stamp Validation** - Before each upload, validates the selected stamp is still usable. Verifies sufficient capacity remains for the file size considering erasure coding overhead.
+**Postage Batch Validation** - Before each upload, validates the selected postage batch is still usable. Verifies sufficient capacity remains for the file size considering erasure coding overhead.
 
 **Cancellation** - Users can cancel in-progress uploads. The system uses abort controllers to cleanly terminate HTTP requests and update transfer status.
 
@@ -320,7 +320,7 @@ Files support full version history:
 
 **Restore Version** - Roll back to any previous version, which becomes the new current version.
 
-**Storage Impact** - Each version consumes stamp capacity, old versions can be forgotten to reclaim space.
+**Storage Impact** - Each version consumes postage batch capacity, old versions can be forgotten but space continues to be occupied.
 
 ### Drag and Drop
 
@@ -350,31 +350,31 @@ Full drag-and-drop support for file uploads:
 - Reads admin state from Swarm
 
 **Admin Drive Validation**
-- If admin stamp exists and valid: Loads drives and files, shows FileBrowser
-- If admin stamp exists but invalid: Sets reset flag, shows InitialModal in reset mode
-- If no admin stamp (first time): Shows InitialModal for first-time setup
+- If admin postage batch exists and valid: Loads drives and files, shows FileBrowser
+- If admin postage batch exists but invalid: Sets reset flag, shows InitialModal in reset mode
+- If no admin postage batch (first time): Shows InitialModal for first-time setup
 
 **Creating Admin Drive**
-- User selects storage capacity and lifetime
+- User selects desired lifetime and security level (erasure coding)
 - System calculates cost in BZZ tokens
-- User confirms and purchases stamp (blockchain transaction)
-- System creates admin drive with purchased stamp
+- User confirms and purchases postage batch (blockchain transaction)
+- System creates admin drive with purchased postage batch
 - Success: Shows Sidebar and FileBrowser
 
 ### Creating User Drive
 
 **User Initiates Creation**
-- Clicks "Create Drive" button in Sidebar
+- Clicks "Create New Drive" button in Sidebar
 - CreateDriveModal appears
 
 **Drive Configuration**
 - User enters drive name (validated: max 40 chars)
 - Selects initial capacity from dropdown
 - Selects desired lifetime from dropdown
-- Chooses security level (erasure coding: OFF, MEDIUM, STRONG, PARANOID)
+- Chooses security level (erasure coding: OFF, MEDIUM, STRONG, INSANE, PARANOID)
 
 **Cost Calculation**
-- System fetches current BZZ cost based on capacity, lifetime, and redundancy
+- System fetches current BZZ cost based on capacity, desired lifetime, and redundancy level
 - Displays total cost to user
 - Validates user has sufficient BZZ balance
 - If insufficient: Shows error, disables Create button
@@ -383,10 +383,10 @@ Full drag-and-drop support for file uploads:
 **Drive Creation**
 - User clicks Create
 - System shows creation progress indicator
-- Purchases new postage stamp (blockchain transaction, waits for confirmation)
+- Purchases new postage batch (blockchain transaction, waits for confirmation)
 - Creates drive metadata on Swarm
 - FM emits DRIVE_CREATED event
-- Provider categorizes drive (has usable stamp)
+- Provider categorizes drive (has usable postage batch)
 - Drive appears in Sidebar
 - Success: User can now select and use the drive
 
@@ -408,12 +408,12 @@ Full drag-and-drop support for file uploads:
 - All files added to upload queue with resolved names
 - Queue processes maximum 10 files concurrently
 - For each file in batch:
-  - Validates stamp still exists and is usable
+  - Validates postage batch still exists and is usable
   - Verifies sufficient drive space remains
   - Creates transfer tracking item (shows in UI)
-  - Executes upload with progress callbacks
+  - Executes upload with progress callbacks to Swarm
   - Updates progress (percentage, ETA, elapsed time)
-  - On completion: Marks transfer Done, refreshes stamp capacity
+  - On completion: Marks transfer Done, refreshes postage batch capacity 
   - On error: Marks transfer Error, shows error message
 - Next batch starts when previous completes
 
@@ -425,7 +425,7 @@ Full drag-and-drop support for file uploads:
 ### Destroying Drive
 
 **User Initiates Destruction**
-- Right-clicks drive in Sidebar OR clicks menu button
+- Clicks menu button on Drive Item in Sidebar
 - Selects "Destroy Drive" from context menu
 - DestroyDriveModal appears with confirmation prompt
 
@@ -449,7 +449,7 @@ Full drag-and-drop support for file uploads:
 ### Downloading Files
 
 **User Initiates Download**
-- User clicks file context menu OR right-clicks file
+- User right-clicks file
 - Selects "Download" from menu
 
 **Download Tracking**
@@ -461,7 +461,7 @@ Full drag-and-drop support for file uploads:
 - System retrieves file from Swarm using file's topic
 - Uses browser's native download API to save file
 - Progress callbacks update UI in real-time:
-  - Bytes downloaded / total bytes
+  - Bytes downloaded / total bytes (from Swarm chunks)
   - Download speed
   - Estimated time remaining (ETA with smoothing)
   - Elapsed time
@@ -506,7 +506,6 @@ Full drag-and-drop support for file uploads:
 
 **Display**
 - FileBrowserContent renders sorted list
-- Shows file count in header
 - If searching all drives: Shows drive name column
 - If no results: Shows "No files found" message
 
@@ -558,9 +557,9 @@ Each component has a single, clear responsibility:
 
 **Status**: Not fully handled (TODO in code).
 
-**Current Behavior**: When admin drive stamp expires, entire FM enters invalid state. User must reset and create new admin drive. Previous user drives remain accessible if their stamps are valid.
+**Current Behavior**: When admin drive postage batch expires, entire FM enters invalid state. User must reset and create new admin drive. Previous user drives remain accessible if their postage batches are valid.
 
-**Desired Behavior**: System detects admin stamp expiration before it happens, shows warning with "Extend Stamp" button, seamlessly extends admin stamp without requiring reset.
+**Desired Behavior**: System detects admin postage batch expiration before it happens, shows warning with "Extend Batch" button, seamlessly extends admin postage batch without requiring reset.
 
 ### Drive Name Length
 
@@ -570,29 +569,29 @@ Each component has a single, clear responsibility:
 
 **Workaround**: Use shorter, descriptive names. Consider abbreviations or codes for long project names.
 
-### Batch Selection in CreateDriveModal
+### Postage Batch Selection in CreateDriveModal
 
 **Status**: TODO comment in code.
 
-**Current Behavior**: CreateDriveModal always purchases new stamp for each drive.
+**Current Behavior**: CreateDriveModal always purchases new postage batch for each drive.
 
-**Desired Behavior**: Dropdown to select from existing usable stamps (like InitialModal has), allowing users to reuse stamps with remaining capacity.
+**Desired Behavior**: Dropdown to select from existing usable postage batches (like InitialModal has), allowing users to reuse batches with remaining capacity.
 
-**Impact**: Users must purchase separate stamp for each drive, even if existing stamps have sufficient capacity for multiple drives.
+**Impact**: Users must purchase separate postage batch for each drive, even if existing batches have sufficient capacity for multiple drives.
 
-### Stamp Capacity Calculation
+### Postage Batch Capacity Calculation
 
 **Issue**: Capacity calculation depends on erasure coding level.
 
-**Problem**: Frontend calculates approximate capacity based on redundancy multiplier. Actual capacity depends on how backend distributes chunks across network.
+**Problem**: Frontend calculates approximate capacity based on redundancy multiplier. Actual capacity depends on how Bee node distributes chunks across Swarm network.
 
 **Current**: Approximate calculation usually close enough for practical use.
 
-**Ideal**: Backend provides exact remaining capacity calculation accounting for actual chunk distribution and erasure coding overhead.
+**Ideal**: Bee node provides exact remaining capacity calculation accounting for actual chunk distribution and erasure coding overhead.
 
 ### Ultra-Light Nodes
 
-**Limitation**: Ultra-light Bee nodes cannot create drives or purchase stamps.
+**Limitation**: Ultra-light Bee nodes cannot create drives or purchase postage batches.
 
 **Requirement**: Users must upgrade to light node to use File Manager.
 
