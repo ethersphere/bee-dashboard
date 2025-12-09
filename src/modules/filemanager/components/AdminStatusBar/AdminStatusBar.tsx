@@ -93,11 +93,10 @@ export function AdminStatusBar({
       window.removeEventListener('fm:drive-upgrade-end', onEnd as EventListener)
     }
   }, [adminDrive, adminStamp?.batchID, setErrorMessage, setShowError, refreshStamp, setIsUpgrading])
-
-  const { capacityPct, usedSize, totalSize } = useMemo(
-    () => calculateStampCapacityMetrics(actualStamp, adminDrive?.redundancyLevel),
-    [actualStamp, adminDrive],
-  )
+  // TODO: use estimate for drivelist size
+  const { capacityPct, usedSize, totalSize } = useMemo(() => {
+    return calculateStampCapacityMetrics(actualStamp, [], adminDrive?.redundancyLevel)
+  }, [actualStamp, adminDrive])
 
   const expiresAt = useMemo(
     () => (actualStamp ? actualStamp.duration.toEndDate().toLocaleDateString() : '—'),

@@ -4,8 +4,10 @@ import {
   DriveInfo,
   estimateDriveListMetadataSize,
   estimateFileInfoMetadataSize,
+  FileInfo,
 } from '@solarpunkltd/file-manager-lib'
 import { getHumanReadableFileSize } from '../../../utils/file'
+import { indexStrToBigint } from './common'
 
 export const getUsableStamps = async (bee: Bee | null): Promise<PostageBatch[]> => {
   if (!bee) {
@@ -177,58 +179,6 @@ export const handleCreateDrive = async (options: CreateDriveOptions): Promise<vo
   }
 }
 
-interface StampCapacityMetrics {
-  capacityPct: number
-  usedSize: string
-  totalSize: string
-  usedBytes: number
-  totalBytes: number
-  remainingBytes: number
-}
-
-export const calculateStampCapacityMetrics = (
-  stamp: PostageBatch | null,
-  redundancyLevel?: RedundancyLevel,
-): StampCapacityMetrics => {
-  if (!stamp) {
-    return {
-      capacityPct: 0,
-      usedSize: '—',
-      totalSize: '—',
-      usedBytes: 0,
-      totalBytes: 0,
-      remainingBytes: 0,
-    }
-  }
-
-  let totalBytes = 0
-  let remainingBytes = 0
-
-  if (redundancyLevel !== undefined) {
-    totalBytes = stamp.calculateSize(false, redundancyLevel).toBytes()
-    remainingBytes = stamp.calculateRemainingSize(false, redundancyLevel).toBytes()
-  } else {
-    totalBytes = stamp.size.toBytes()
-    remainingBytes = stamp.remainingSize.toBytes()
-  }
-
-  const usedBytes = totalBytes - remainingBytes
-  const pctFromStampUsage = stamp.usage * 100
-  const pctFromDriveUsage = totalBytes > 0 ? (usedBytes / totalBytes) * 100 : 0
-  const capacityPct = Math.max(pctFromDriveUsage, pctFromStampUsage)
-  const usedSize = getHumanReadableFileSize(usedBytes)
-  const totalSize = getHumanReadableFileSize(totalBytes)
-
-  return {
-    capacityPct,
-    usedSize,
-    totalSize,
-    usedBytes,
-    totalBytes,
-    remainingBytes,
-  }
-}
-
 export interface DestroyDriveOptions {
   beeApi?: Bee | null
   fm: FileManagerBase | null
@@ -286,6 +236,70 @@ export const handleDestroyAndForgetDrive = async (options: DestroyDriveOptions):
   }
 }
 
+export interface StampCapacityMetrics {
+  capacityPct: number
+  usedSize: string
+  totalSize: string
+  usedBytes: number
+  totalBytes: number
+  remainingBytes: number
+}
+
+export const calculateStampCapacityMetrics = (
+  stamp: PostageBatch | null,
+  files: FileInfo[],
+  redundancyLevel?: RedundancyLevel,
+): StampCapacityMetrics => {
+  if (!stamp) {
+    return {
+      capacityPct: 0,
+      usedSize: '—',
+      totalSize: '—',
+      usedBytes: 0,
+      totalBytes: 0,
+      remainingBytes: 0,
+    }
+  }
+
+  let totalBytes = 0
+  let remainingBytes = 0
+
+  if (redundancyLevel !== undefined) {
+    totalBytes = stamp.calculateSize(false, redundancyLevel).toBytes()
+    remainingBytes = stamp.calculateRemainingSize(false, redundancyLevel).toBytes()
+  } else {
+    totalBytes = stamp.size.toBytes()
+    remainingBytes = stamp.remainingSize.toBytes()
+  }
+
+  const usedBytesFromFiles = files
+    .map(f => {
+      const fileSize = Number(f.customMetadata?.size || 0)
+      const versionCount = Number((indexStrToBigint(f.version) ?? BigInt(0)) + BigInt(1))
+
+      return fileSize * versionCount
+    })
+    .reduce((acc, current) => acc + current, 0)
+
+  const usedBytesReported = totalBytes - remainingBytes
+  const pctFromStampUsage = stamp.usage * 100
+
+  const usedSizeMaxBytes = Math.max(usedBytesFromFiles, usedBytesReported)
+  const usedSizeMax = getHumanReadableFileSize(usedSizeMaxBytes)
+  const pctFromDriveUsage = totalBytes > 0 ? (usedSizeMaxBytes / totalBytes) * 100 : 0
+  const capacityPct = Math.max(pctFromDriveUsage, pctFromStampUsage)
+  const totalSize = getHumanReadableFileSize(totalBytes)
+
+  return {
+    capacityPct,
+    usedSize: usedSizeMax,
+    totalSize,
+    usedBytes: usedSizeMaxBytes,
+    totalBytes,
+    remainingBytes,
+  }
+}
+
 export interface DriveSpaceOptions {
   fm: FileManagerBase
   driveId?: string
@@ -297,29 +311,29 @@ export interface DriveSpaceOptions {
   fileSize?: number
   cb?: (msg: string) => void
 }
-
+// TODO: refine verifyDriveSpace together with calculateStampCapacityMetrics
 export const verifyDriveSpace = (
   options: DriveSpaceOptions,
 ): { remainingBytes: number; totalSize: number; ok: boolean } => {
   const { fm, driveId, redundancyLevel, stamp, useDlSize, useInfoSize, isRemove, fileSize, cb } = { ...options }
 
   let drivesLen = fm.getDrives().length
-  let filesPerDrivesLen = 0
+  let filesPerDrives: FileInfo[] = []
 
   if (isRemove) {
     drivesLen -= 1
-    filesPerDrivesLen = fm.fileInfoList.filter(fi => fi.driveId !== driveId).length
+    filesPerDrives = fm.fileInfoList.filter(fi => fi.driveId !== driveId)
   } else {
-    filesPerDrivesLen = driveId ? fm.fileInfoList.filter(fi => fi.driveId === driveId).length : 0
+    filesPerDrives = driveId ? fm.fileInfoList.filter(fi => fi.driveId === driveId) : []
   }
 
   const estimatedFiSize = estimateFileInfoMetadataSize()
-  const estimatedDlSize = estimateDriveListMetadataSize(drivesLen, filesPerDrivesLen)
+  const estimatedDlSize = estimateDriveListMetadataSize(drivesLen, filesPerDrives.length)
   const totalSize =
     Number(Boolean(useDlSize)) * estimatedDlSize +
     Number(Boolean(useInfoSize)) * estimatedFiSize +
     (fileSize ? fileSize : 0)
-  const { remainingBytes } = calculateStampCapacityMetrics(stamp, redundancyLevel)
+  const { remainingBytes } = calculateStampCapacityMetrics(stamp, filesPerDrives, redundancyLevel)
   const ok = remainingBytes >= totalSize
 
   if (!ok) {

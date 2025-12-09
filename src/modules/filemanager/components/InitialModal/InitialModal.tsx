@@ -221,7 +221,7 @@ export function InitialModal({
 
   const nonFullStamps = useMemo(() => {
     return usableStamps.filter(s => {
-      const { capacityPct } = calculateStampCapacityMetrics(s, erasureCodeLevel)
+      const { capacityPct } = calculateStampCapacityMetrics(s, [], erasureCodeLevel)
 
       return capacityPct < 100
     })
@@ -236,7 +236,7 @@ export function InitialModal({
   }, [nonFullStamps, selectedBatchIndex])
 
   const { capacityPct, usedSize, totalSize } = useMemo(
-    () => calculateStampCapacityMetrics(selectedBatch, erasureCodeLevel),
+    () => calculateStampCapacityMetrics(selectedBatch, [], erasureCodeLevel),
     [selectedBatch, erasureCodeLevel],
   )
 
