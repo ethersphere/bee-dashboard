@@ -2,6 +2,7 @@ import { PrivateKey } from '@ethersphere/bee-js'
 import { FileInfo, FileStatus } from '@solarpunkltd/file-manager-lib'
 import { keccak256 } from '@ethersproject/keccak256'
 import { toUtf8Bytes } from '@ethersproject/strings'
+import { lifetimeAdjustments } from '../constants/stamps'
 
 export function getDaysLeft(expiryDate: Date): number {
   const now = new Date()
@@ -21,14 +22,6 @@ export const fromBytesConversion = (size: number, metric: string) => {
       return 0
   }
 }
-
-const lifetimeAdjustments = new Map<number, (date: Date) => void>([
-  [0, date => date.setDate(date.getDate() + 7)],
-  [1, date => date.setMonth(date.getMonth() + 1)],
-  [2, date => date.setMonth(date.getMonth() + 3)],
-  [3, date => date.setMonth(date.getMonth() + 6)],
-  [4, date => date.setFullYear(date.getFullYear() + 1)],
-])
 
 export function getExpiryDateByLifetime(lifetimeValue: number, actualValidity?: Date): Date {
   const now = actualValidity || new Date()

@@ -69,15 +69,21 @@ const normalizeCustomMetadata = (meta: UploadMeta): Record<string, string> => {
   return out
 }
 
-const buildUploadMeta = (files: File[] | FileList, path?: string): UploadMeta => {
+const buildUploadMeta = (files: File[] | FileList, path?: string, existingFile?: FileInfo): UploadMeta => {
   const arr = Array.from(files as File[])
   const totalSize = arr.reduce((acc, f) => acc + (f.size || 0), 0)
   const primary = arr[0]
+
+  const previousAccumulated = existingFile
+    ? Number(existingFile.customMetadata?.accumulatedSize || existingFile.customMetadata?.size || 0)
+    : 0
+  const accumulatedSize = previousAccumulated + totalSize
 
   const meta: UploadMeta = {
     size: String(totalSize),
     fileCount: String(arr.length),
     mime: primary?.type || 'application/octet-stream',
+    accumulatedSize: String(accumulatedSize),
   }
 
   if (path) meta.path = path
@@ -345,10 +351,12 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
         return
       }
 
+      const existingFile = task.isReplace ? files.find(f => f.topic.toString() === task.replaceTopic) : undefined
+
       const info: FileInfoOptions = {
         name: task.finalName,
         files: [task.file],
-        customMetadata: normalizeCustomMetadata(buildUploadMeta([task.file])),
+        customMetadata: normalizeCustomMetadata(buildUploadMeta([task.file], undefined, existingFile)),
         topic: task.isReplace ? task.replaceTopic : undefined,
       }
 
@@ -392,8 +400,14 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
         if (currentStamp) {
           await refreshStamp(currentStamp.batchID.toString())
         }
-      } catch {
+      } catch (error) {
         const wasCancelled = cancelledUploadingRef.current.has(task.finalName) || signal?.aborted
+
+        if (!wasCancelled) {
+          const errorMsg = error instanceof Error ? error.message : String(error)
+          setErrorMessage?.(`Upload failed: ${errorMsg}`)
+          setShowError(true)
+        }
 
         safeSetState(
           isMountedRef,
@@ -409,7 +423,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
         cancelledNamesRef.current.delete(task.finalName)
       }
     },
-    [fm, currentStamp, trackUpload, refreshStamp],
+    [fm, files, currentStamp, trackUpload, refreshStamp, setShowError, setErrorMessage],
   )
 
   const trackDownload = useCallback(
@@ -550,6 +564,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
 
         // Track cumulative file sizes for capacity verification
         let fileSizeSum = 0
+        let fileCount = 0
 
         const processFile = async (file: File): Promise<UploadTask | null> => {
           if (!currentStamp || !currentStamp.usable) {
@@ -565,6 +580,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
           const prettySize = formatBytes(meta.size)
 
           fileSizeSum += file.size
+          fileCount += 1
 
           const { ok } = verifyDriveSpace({
             fm,
@@ -574,6 +590,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
             driveId: currentDrive.id.toString(),
             adminRedundancy: adminDrive?.redundancyLevel,
             fileSize: fileSizeSum,
+            fileCount,
             cb: err => {
               setErrorMessage?.(err + ' (' + truncateNameMiddle(file.name) + ')')
               setShowError(true)

@@ -4,20 +4,9 @@ import ArrowDownIcon from 'remixicon-react/ArrowDownSLineIcon'
 import './FileProgressWindow.scss'
 import { GetIconElement } from '../../utils/GetIconElement'
 import { ProgressBar } from '../ProgressBar/ProgressBar'
-import { FileTransferType, TransferBarColor, TransferStatus } from '../../constants/transfers'
+import { FileTransferType, TransferBarColor, TransferStatus, ProgressItem } from '../../constants/transfers'
 import { capitalizeFirstLetter, truncateNameMiddle } from '../../utils/common'
 import { guessMime } from '../../utils/view'
-
-type ProgressItem = {
-  name: string
-  percent?: number
-  size?: string
-  kind?: FileTransferType
-  status?: TransferStatus
-  driveName?: string
-  etaSec?: number
-  elapsedSec?: number
-}
 
 interface FileProgressWindowProps {
   numberOfFiles?: number
@@ -159,7 +148,7 @@ export function FileProgressWindow({
           return (
             <div
               className="fm-file-progress-window-file-item"
-              key={`${item.name}`}
+              key={item.uuid || `${item.name}-${idx}`}
               ref={idx === 0 ? firstRowRef : undefined}
             >
               <div className="fm-file-progress-window-file-type-icon">

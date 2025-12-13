@@ -11,14 +11,16 @@ import AlertIcon from 'remixicon-react/AlertLineIcon'
 import { UpgradeDriveModal } from '../UpgradeDriveModal/UpgradeDriveModal'
 import { getDaysLeft } from '../../utils/common'
 
-import { PostageBatch, Size } from '@ethersphere/bee-js'
-import { DriveInfo } from '@solarpunkltd/file-manager-lib'
+import { PostageBatch } from '@ethersphere/bee-js'
+import { DriveInfo, FileInfo } from '@solarpunkltd/file-manager-lib'
+import { calculateStampCapacityMetrics } from '../../utils/bee'
 
 const EXPIRING_ITEMS_PAGE_SIZE = 3
 
 interface ExpiringNotificationModalProps {
   stamps: PostageBatch[]
   drives: DriveInfo[]
+  files: FileInfo[]
   onCancelClick: () => void
   setErrorMessage?: (error: string) => void
 }
@@ -26,6 +28,7 @@ interface ExpiringNotificationModalProps {
 export function ExpiringNotificationModal({
   stamps,
   drives,
+  files,
   onCancelClick,
   setErrorMessage,
 }: ExpiringNotificationModalProps): ReactElement {
@@ -71,6 +74,10 @@ export function ExpiringNotificationModal({
 
             if (!drive) return null
 
+            const filesPerDrive = files.filter(fi => fi.driveId === drive.id.toString())
+
+            const { usedSize, stampSize } = calculateStampCapacityMetrics(stamp, filesPerDrive, drive.redundancyLevel)
+
             if (daysLeft < 10) {
               daysClass = 'fm-red-font'
             } else if (daysLeft < 30) {
@@ -89,8 +96,7 @@ export function ExpiringNotificationModal({
                       {stamp.label} {drive.isAdmin && <Warning style={{ fontSize: '16px' }} />}
                     </div>
                     <div className="fm-expiring-notification-modal-section-left-value">
-                      {Size.fromBytes(stamp.size.toBytes() * stamp.usage).toFormattedString()} /{' '}
-                      {stamp.size.toFormattedString()}
+                      {usedSize} / {stampSize}
                     </div>
                   </div>
                 </div>

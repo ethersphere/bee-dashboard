@@ -47,6 +47,7 @@ export async function performFileOperation({
       useInfoSize: !isForget,
       adminRedundancy: isForget ? adminRedundancy : undefined,
       driveId,
+      fileSize: 0,
       cb: err => {
         onError?.(err || `Could not ${operation} file due to insufficient space: ${file.name}`)
       },
@@ -111,6 +112,7 @@ export async function performBulkFileOperation({
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i]
+    const defaultErrorMsg = `Could not ${operation} file due to insufficient space: ${file.name}`
 
     try {
       const currentStamp = stamps.find(s => s.batchID.toString() === file.batchId.toString())
@@ -135,11 +137,16 @@ export async function performBulkFileOperation({
         onError,
       })
 
-      if (!success) break
+      if (!success) {
+        throw new Error(defaultErrorMsg)
+      }
 
       onFileComplete?.(file, i)
-    } catch {
-      // no-op
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : String(err)
+      onError?.(errorMsg || defaultErrorMsg)
+
+      return
     }
   }
 }

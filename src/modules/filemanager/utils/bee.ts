@@ -7,7 +7,7 @@ import {
   FileInfo,
 } from '@solarpunkltd/file-manager-lib'
 import { getHumanReadableFileSize } from '../../../utils/file'
-import { indexStrToBigint } from './common'
+import { ActionTag } from '../constants/transfers'
 
 export const getUsableStamps = async (bee: Bee | null): Promise<PostageBatch[]> => {
   if (!bee) {
@@ -138,7 +138,7 @@ export const handleCreateDrive = async (options: CreateDriveOptions): Promise<vo
     onError,
   } = { ...options }
 
-  if (!beeApi || !fm) {
+  if (!beeApi || !fm || !fm.adminStamp) {
     onError?.('Error creating drive: Bee API or FM is invalid!')
 
     return
@@ -146,6 +146,16 @@ export const handleCreateDrive = async (options: CreateDriveOptions): Promise<vo
 
   try {
     let batchId: BatchId
+
+    verifyDriveSpace({
+      fm,
+      redundancyLevel,
+      stamp: existingBatch ? existingBatch : fm.adminStamp,
+      adminRedundancy,
+      cb: err => {
+        throw new Error(err)
+      },
+    })
 
     if (!existingBatch) {
       batchId = await beeApi.buyStorage(size, duration, { label }, undefined, encryption, redundancyLevel)
@@ -157,17 +167,6 @@ export const handleCreateDrive = async (options: CreateDriveOptions): Promise<vo
           'The stamp is no longer valid or has been deleted. Please select a different stamp from the list.',
         )
       }
-
-      // verify if there is enough space on the admin stamp first
-      verifyDriveSpace({
-        fm,
-        redundancyLevel,
-        stamp: existingBatch,
-        adminRedundancy,
-        cb: err => {
-          throw new Error(err)
-        },
-      })
 
       batchId = existingBatch.batchID
     }
@@ -212,7 +211,7 @@ export const handleDestroyAndForgetDrive = async (options: DestroyDriveOptions):
       fm,
       driveId: drive.id.toString(),
       redundancyLevel: drive.redundancyLevel,
-      stamp,
+      stamp: fm.adminStamp,
       isRemove: true,
       adminRedundancy: adminDrive.redundancyLevel,
       cb: err => {
@@ -268,10 +267,21 @@ export const calculateStampCapacityMetrics = (
 
   const usedBytesFromFiles = files
     .map(f => {
-      const fileSize = Number(f.customMetadata?.size || 0)
-      const versionCount = Number((indexStrToBigint(f.version) ?? BigInt(0)) + BigInt(1))
+      let rawSize = 0
 
-      return fileSize * versionCount
+      const lifecycle = (f.customMetadata?.lifecycle || '').toString().toLowerCase()
+      const isLifecycleOperation =
+        lifecycle === ActionTag.Trashed || lifecycle === ActionTag.Recovered || lifecycle === ActionTag.Restored
+
+      if (
+        (f.customMetadata?.size && !isLifecycleOperation) ||
+        (f.customMetadata?.size && !f.customMetadata?.accumulatedSize)
+      ) {
+        rawSize = Number(f.customMetadata.size)
+      }
+      const accumulatedSize = Number(f.customMetadata?.accumulatedSize || rawSize || 0)
+
+      return accumulatedSize
     })
     .reduce((acc, current) => acc + current, 0)
 
@@ -279,12 +289,12 @@ export const calculateStampCapacityMetrics = (
   const remainingBytes = Math.min(remainingReportedBytes, remainingBytesFromFiles)
 
   const usedBytesReported = stampSizeBytes - remainingReportedBytes
-  const pctFromStampUsage = stamp.usage * 100
+  const pctReportedStampUsage = stamp.usage * 100
 
   const usedSizeMaxBytes = Math.max(usedBytesFromFiles, usedBytesReported)
   const usedSizeMax = getHumanReadableFileSize(usedSizeMaxBytes)
   const pctFromDriveUsage = stampSizeBytes > 0 ? (usedSizeMaxBytes / stampSizeBytes) * 100 : 0
-  const capacityPct = Math.max(pctFromDriveUsage, pctFromStampUsage)
+  const capacityPct = Math.max(pctFromDriveUsage, pctReportedStampUsage)
   const stampSize = getHumanReadableFileSize(stampSizeBytes)
 
   return {
@@ -306,13 +316,14 @@ export interface DriveSpaceOptions {
   useInfoSize?: boolean
   isRemove?: boolean
   fileSize?: number
+  fileCount?: number
   cb?: (msg: string) => void
 }
 
 export const verifyDriveSpace = (
   options: DriveSpaceOptions,
 ): { remainingBytes: number; totalSizeBytes: number; ok: boolean } => {
-  const { fm, driveId, redundancyLevel, stamp, adminRedundancy, useInfoSize, isRemove, fileSize, cb } = {
+  const { fm, driveId, redundancyLevel, stamp, adminRedundancy, useInfoSize, isRemove, fileSize, fileCount, cb } = {
     ...options,
   }
 
@@ -358,7 +369,8 @@ export const verifyDriveSpace = (
 
   // other fileinfo metadata size calc.
   const estimatedFiSize = estimateFileInfoMetadataSize()
-  const estimateReqSizeBytes = Number(Boolean(useInfoSize)) * estimatedFiSize + (fileSize ? fileSize : 0)
+  const count = fileCount ?? 1
+  const estimateReqSizeBytes = Number(Boolean(useInfoSize)) * estimatedFiSize * count + (fileSize ? fileSize : 0)
   const { remainingBytes } = calculateStampCapacityMetrics(stamp, filesPerDrives, redundancyLevel)
 
   const ok = remainingBytes >= estimateReqSizeBytes

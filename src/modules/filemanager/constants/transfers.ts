@@ -57,3 +57,15 @@ export interface DownloadProgress {
   isDownloading: boolean
   state?: DownloadState
 }
+
+export type ProgressItem = {
+  uuid?: string
+  name: string
+  size?: string
+  percent?: number
+  kind?: FileTransferType
+  status?: TransferStatus
+  driveName?: string
+  etaSec?: number
+  elapsedSec?: number
+}

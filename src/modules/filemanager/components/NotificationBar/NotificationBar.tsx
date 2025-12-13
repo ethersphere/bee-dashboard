@@ -20,7 +20,7 @@ export function NotificationBar({ setErrorMessage }: NotificationBarProps): Reac
   const [stampsToExpire, setStampsToExpire] = useState<PostageBatch[]>([])
   const [drivesToExpire, setDrivesToExpire] = useState<DriveInfo[]>([])
   const { beeApi } = useContext(SettingsContext)
-  const { drives, adminDrive } = useContext(FMContext)
+  const { drives, files, adminDrive } = useContext(FMContext)
 
   const showExpiration = stampsToExpire.length > 0
 
@@ -74,6 +74,7 @@ export function NotificationBar({ setErrorMessage }: NotificationBarProps): Reac
         <ExpiringNotificationModal
           stamps={stampsToExpire}
           drives={drivesToExpire}
+          files={files}
           onCancelClick={() => {
             setShowExpiringModal(false)
           }}
