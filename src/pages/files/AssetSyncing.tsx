@@ -83,7 +83,8 @@ export function AssetSyncing({ reference }: Props): ReactElement {
         <DocumentationText>
           Files are not immediately accessible on the Swarm network. Please wait until your upload is synced to the
           network.{' '}
-          <a href="https://docs.ethswarm.org/docs/develop/access-the-swarm/syncing">Learn more about syncing</a>.
+          {/* TODO: syncing article was removed, now the only available doc. is at https://docs.ethswarm.org/api/#tag/Tag */}
+          {/* <a href="https://docs.ethswarm.org/docs/develop/access-the-swarm/syncing">Learn more about syncing</a>. */}
         </DocumentationText>
       </Box>
       <Box mb={4}>
