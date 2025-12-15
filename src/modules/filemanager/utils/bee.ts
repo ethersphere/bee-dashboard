@@ -139,6 +139,9 @@ export const handleCreateDrive = async (options: CreateDriveOptions): Promise<vo
   } = { ...options }
 
   if (!beeApi || !fm) {
+    // eslint-disable-next-line no-console
+    console.error('Error creating drive: Bee API or FM is invalid!')
+
     onError?.('Error creating drive: Bee API or FM is invalid!')
 
     return
@@ -147,25 +150,26 @@ export const handleCreateDrive = async (options: CreateDriveOptions): Promise<vo
   try {
     let batchId: BatchId
 
-    const stamp = existingBatch ? existingBatch : fm.adminStamp
-
-    if ((!fm.adminStamp && !isAdmin) || !stamp) {
-      onError?.('Error creating drive: No valid postage stamp available')
-
-      return
-    }
-
-    verifyDriveSpace({
-      fm,
-      redundancyLevel,
-      stamp,
-      adminRedundancy,
-      cb: err => {
-        throw new Error(err)
-      },
-    })
-
     if (!existingBatch) {
+      if (!isAdmin) {
+        if (!fm.adminStamp) {
+          // eslint-disable-next-line no-console
+          console.error('Error creating drive: admin stamp is not available')
+
+          throw new Error('Error creating drive: admin stamp is not available')
+        }
+
+        verifyDriveSpace({
+          fm,
+          redundancyLevel,
+          stamp: fm.adminStamp,
+          adminRedundancy,
+          cb: err => {
+            throw new Error(err)
+          },
+        })
+      }
+
       batchId = await beeApi.buyStorage(size, duration, { label }, undefined, encryption, redundancyLevel)
     } else {
       const isValid = await validateStampStillExists(beeApi, existingBatch.batchID)
@@ -175,6 +179,16 @@ export const handleCreateDrive = async (options: CreateDriveOptions): Promise<vo
           'The stamp is no longer valid or has been deleted. Please select a different stamp from the list.',
         )
       }
+
+      verifyDriveSpace({
+        fm,
+        redundancyLevel,
+        stamp: existingBatch,
+        adminRedundancy,
+        cb: err => {
+          throw new Error(err)
+        },
+      })
 
       batchId = existingBatch.batchID
     }
