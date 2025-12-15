@@ -138,7 +138,7 @@ export const handleCreateDrive = async (options: CreateDriveOptions): Promise<vo
     onError,
   } = { ...options }
 
-  if (!beeApi || !fm || !fm.adminStamp) {
+  if (!beeApi || !fm) {
     onError?.('Error creating drive: Bee API or FM is invalid!')
 
     return
@@ -147,10 +147,18 @@ export const handleCreateDrive = async (options: CreateDriveOptions): Promise<vo
   try {
     let batchId: BatchId
 
+    const stamp = existingBatch ? existingBatch : fm.adminStamp
+
+    if ((!fm.adminStamp && !isAdmin) || !stamp) {
+      onError?.('Error creating drive: No valid postage stamp available')
+
+      return
+    }
+
     verifyDriveSpace({
       fm,
       redundancyLevel,
-      stamp: existingBatch ? existingBatch : fm.adminStamp,
+      stamp,
       adminRedundancy,
       cb: err => {
         throw new Error(err)
