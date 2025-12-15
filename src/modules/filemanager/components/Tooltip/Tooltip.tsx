@@ -34,6 +34,15 @@ export function Tooltip({
     if (!container) return
 
     const wrapperRect = wrapper.getBoundingClientRect()
+
+    const modalContainer = wrapper.closest('.fm-modal-container') as HTMLElement | null
+    let containerOffset = 0
+
+    if (modalContainer) {
+      const containerRect = modalContainer.getBoundingClientRect()
+      containerOffset = containerRect.left
+    }
+
     const tooltipWidth = container.offsetWidth || 0
     const projectedRight = wrapperRect.right + gapPx + tooltipWidth + edgeOffsetPx
     const viewportWidth = window.innerWidth
@@ -42,10 +51,10 @@ export function Tooltip({
 
     if (projectedRight > viewportWidth) {
       setAlignLeft(true)
-      setPosition({ top, right: viewportWidth - wrapperRect.left + gapPx })
+      setPosition({ top, right: viewportWidth - wrapperRect.left + gapPx - containerOffset })
     } else {
       setAlignLeft(false)
-      setPosition({ top, left: wrapperRect.right + gapPx })
+      setPosition({ top, left: wrapperRect.right + gapPx - containerOffset })
     }
   }, [edgeOffsetPx, gapPx])
 
