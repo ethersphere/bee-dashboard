@@ -45,8 +45,27 @@ export function AdminStatusBar({
   }, [isCreationInProgress, loading, setShowProgressModal])
 
   useEffect(() => {
-    setActualStamp(adminStamp)
-  }, [adminStamp, setActualStamp])
+    if (!adminStamp || !actualStamp) {
+      setActualStamp(adminStamp)
+
+      return
+    }
+
+    if (actualStamp.batchID.toString() !== adminStamp.batchID.toString()) {
+      setActualStamp(adminStamp)
+
+      return
+    }
+
+    const incomingSize = adminStamp.size.toBytes()
+    const currentSize = actualStamp.size.toBytes()
+    const incomingExpiry = adminStamp.duration.toEndDate().getTime()
+    const currentExpiry = actualStamp.duration.toEndDate().getTime()
+
+    if (incomingSize > currentSize || incomingExpiry > currentExpiry) {
+      setActualStamp(adminStamp)
+    }
+  }, [adminStamp, actualStamp])
 
   useEffect(() => {
     if (!adminDrive) return
@@ -158,12 +177,7 @@ export function AdminStatusBar({
       <div className={`fm-admin-status-bar-container${blurCls}`} aria-busy={isBusy ? 'true' : 'false'}>
         <div className="fm-admin-status-bar-left">
           <div
-            className="fm-drive-item-capacity"
-            style={{
-              filter: isCapacityUpdating ? 'blur(2px)' : 'none',
-              opacity: isCapacityUpdating ? 0.6 : 1,
-              transition: 'all 0.3s ease',
-            }}
+            className={`fm-drive-item-capacity ${isCapacityUpdating ? 'fm-drive-item-capacity-updating' : ''}`}
             title={isCapacityUpdating ? 'Capacity is updating... This may take a few moments.' : ''}
           >
             Capacity <ProgressBar value={capacityPct} width="150px" /> {usedSize} / {totalSize}
