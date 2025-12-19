@@ -1,4 +1,4 @@
-import { ReactElement, useState, useContext, useEffect, useRef, useMemo } from 'react'
+import { ReactElement, useState, useContext, useEffect, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import Drive from 'remixicon-react/HardDrive2LineIcon'
 import DriveFill from 'remixicon-react/HardDrive2FillIcon'
@@ -18,6 +18,7 @@ import { DriveInfo } from '@solarpunkltd/file-manager-lib'
 import { calculateStampCapacityMetrics, handleDestroyAndForgetDrive } from '../../../utils/bee'
 import { Context as SettingsContext } from '../../../../../providers/Settings'
 import { truncateNameMiddle } from '../../../utils/common'
+import { useStampPollingWithState } from '../../../hooks/useStampPollingWithState'
 
 interface DriveItemProps {
   drive: DriveInfo
@@ -34,20 +35,20 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
   const [isDestroyDriveModalOpen, setIsDestroyDriveModalOpen] = useState(false)
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false)
   const [isUpgradeDriveModalOpen, setIsUpgradeDriveModalOpen] = useState(false)
-  const isMountedRef = useRef(true)
   const [isUpgrading, setIsUpgrading] = useState(false)
   const [isDestroying, setIsDestroying] = useState(false)
   const [actualStamp, setActualStamp] = useState<PostageBatch>(stamp)
+  const [isCapacityUpdating, setIsCapacityUpdating] = useState(false)
 
   const { showContext, pos, contextRef, setPos, setShowContext } = useContextMenu<HTMLDivElement>()
 
   const { setView, setActualItemView } = useView()
 
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false
-    }
-  }, [])
+  const { startPolling, isMountedRef } = useStampPollingWithState({
+    refreshStamp,
+    setActualStamp,
+    setIsCapacityUpdating,
+  })
 
   useEffect(() => {
     setActualStamp(stamp)
@@ -75,7 +76,7 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
     }
 
     const onEnd = async (e: Event) => {
-      const { driveId, success, error } = (e as CustomEvent).detail || {}
+      const { driveId, success, error, updatedStamp, isStillUpdating } = (e as CustomEvent).detail || {}
 
       if (!success) {
         if (error) {
@@ -88,12 +89,21 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
       if (driveId === id) {
         setIsUpgrading(false)
 
-        const upgradedStamp = await refreshStamp(batchId)
+        if (updatedStamp) {
+          if (!isMountedRef.current) return
+          setActualStamp(updatedStamp)
 
-        if (!isMountedRef.current) return
+          if (isStillUpdating) {
+            startPolling(batchId, stamp)
+          }
+        } else {
+          const upgradedStamp = await refreshStamp(batchId)
 
-        if (upgradedStamp) {
-          setActualStamp(upgradedStamp)
+          if (!isMountedRef.current) return
+
+          if (upgradedStamp) {
+            setActualStamp(upgradedStamp)
+          }
         }
       }
     }
@@ -105,7 +115,20 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
       window.removeEventListener('fm:drive-upgrade-start', onStart as EventListener)
       window.removeEventListener('fm:drive-upgrade-end', onEnd as EventListener)
     }
-  }, [drive.id, setShowError, setErrorMessage, stamp.batchID, refreshStamp])
+  }, [
+    drive.id,
+    stamp,
+    startPolling,
+    actualStamp.size,
+    drive.name,
+    stamp.duration,
+    stamp.size,
+    setShowError,
+    setErrorMessage,
+    stamp.batchID,
+    refreshStamp,
+    isMountedRef,
+  ])
 
   const { capacityPct, usedSize, stampSize } = useMemo(() => {
     const filesPerDrive = files.filter(fi => fi.driveId === drive.id.toString())
@@ -131,7 +154,15 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
           <div>{truncateNameMiddle(drive.name, 35, 8, 8)}</div>
         </div>
         <div className="fm-drive-item-content">
-          <div className="fm-drive-item-capacity">
+          <div
+            className="fm-drive-item-capacity"
+            style={{
+              filter: isCapacityUpdating ? 'blur(2px)' : 'none',
+              opacity: isCapacityUpdating ? 0.6 : 1,
+              transition: 'all 0.3s ease',
+            }}
+            title={isCapacityUpdating ? 'Capacity is updating... This may take a few moments.' : ''}
+          >
             Capacity <ProgressBar value={capacityPct} width="64px" /> {usedSize} / {stampSize}
           </div>
           <div className="fm-drive-item-capacity">

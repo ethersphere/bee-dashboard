@@ -1,4 +1,4 @@
-import { ReactElement, useState, useMemo, useEffect, useRef, useContext } from 'react'
+import { ReactElement, useState, useMemo, useEffect, useContext } from 'react'
 import './AdminStatusBar.scss'
 import { ProgressBar } from '../ProgressBar/ProgressBar'
 import { Tooltip } from '../Tooltip/Tooltip'
@@ -9,6 +9,7 @@ import { calculateStampCapacityMetrics } from '../../utils/bee'
 import { Context as FMContext } from '../../../../providers/FileManager'
 import { ConfirmModal } from '../ConfirmModal/ConfirmModal'
 import { getHumanReadableFileSize } from '../../../../utils/file'
+import { useStampPollingWithState } from '../../hooks/useStampPollingWithState'
 
 interface AdminStatusBarProps {
   adminStamp: PostageBatch | null
@@ -31,14 +32,13 @@ export function AdminStatusBar({
   const [isUpgrading, setIsUpgrading] = useState(false)
   const [actualStamp, setActualStamp] = useState<PostageBatch | null>(adminStamp)
   const [showProgressModal, setShowProgressModal] = useState(true)
+  const [isCapacityUpdating, setIsCapacityUpdating] = useState(false)
 
-  const isMountedRef = useRef(true)
-
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false
-    }
-  }, [])
+  const { startPolling, isMountedRef } = useStampPollingWithState({
+    refreshStamp,
+    setActualStamp,
+    setIsCapacityUpdating,
+  })
 
   useEffect(() => {
     setShowProgressModal(isCreationInProgress || loading)
@@ -63,7 +63,7 @@ export function AdminStatusBar({
     }
 
     const onEnd = async (e: Event) => {
-      const { driveId, success, error } = (e as CustomEvent).detail || {}
+      const { driveId, success, error, updatedStamp, isStillUpdating } = (e as CustomEvent).detail || {}
 
       if (!success) {
         if (error) {
@@ -76,12 +76,21 @@ export function AdminStatusBar({
       if (driveId === id && batchId) {
         setIsUpgrading(false)
 
-        const upgradedStamp = await refreshStamp(batchId)
+        if (updatedStamp) {
+          if (!isMountedRef.current) return
+          setActualStamp(updatedStamp)
 
-        if (!isMountedRef.current) return
+          if (isStillUpdating && adminStamp) {
+            startPolling(batchId, adminStamp)
+          }
+        } else {
+          const upgradedStamp = await refreshStamp(batchId)
 
-        if (upgradedStamp) {
-          setActualStamp(upgradedStamp)
+          if (!isMountedRef.current) return
+
+          if (upgradedStamp) {
+            setActualStamp(upgradedStamp)
+          }
         }
       }
     }
@@ -93,7 +102,17 @@ export function AdminStatusBar({
       window.removeEventListener('fm:drive-upgrade-start', onStart as EventListener)
       window.removeEventListener('fm:drive-upgrade-end', onEnd as EventListener)
     }
-  }, [adminDrive, adminStamp?.batchID, setErrorMessage, setShowError, refreshStamp, setIsUpgrading])
+  }, [
+    adminDrive,
+    startPolling,
+    adminStamp,
+    adminStamp?.batchID,
+    setErrorMessage,
+    setShowError,
+    refreshStamp,
+    setIsUpgrading,
+    isMountedRef,
+  ])
 
   const { capacityPct, usedSize, totalSize } = useMemo(() => {
     if (!actualStamp) {
@@ -138,7 +157,15 @@ export function AdminStatusBar({
     <div>
       <div className={`fm-admin-status-bar-container${blurCls}`} aria-busy={isBusy ? 'true' : 'false'}>
         <div className="fm-admin-status-bar-left">
-          <div className="fm-drive-item-capacity">
+          <div
+            className="fm-drive-item-capacity"
+            style={{
+              filter: isCapacityUpdating ? 'blur(2px)' : 'none',
+              opacity: isCapacityUpdating ? 0.6 : 1,
+              transition: 'all 0.3s ease',
+            }}
+            title={isCapacityUpdating ? 'Capacity is updating... This may take a few moments.' : ''}
+          >
             Capacity <ProgressBar value={capacityPct} width="150px" /> {usedSize} / {totalSize}
           </div>
 

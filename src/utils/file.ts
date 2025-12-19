@@ -16,6 +16,10 @@ export function detectIndexHtml(files: FilePath[]): DetectedIndex | false {
     return false
   }
 
+  if (files.length === 1) {
+    return false
+  }
+
   const exactMatch = paths.find(x => indexHtmls.includes(x))
 
   if (exactMatch) {

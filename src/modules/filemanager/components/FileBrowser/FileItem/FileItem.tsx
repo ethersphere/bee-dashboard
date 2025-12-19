@@ -18,8 +18,10 @@ import { useView } from '../../../../../pages/filemanager/ViewContext'
 import { Context as FMContext } from '../../../../../providers/FileManager'
 import { DestroyDriveModal } from '../../DestroyDriveModal/DestroyDriveModal'
 import { ConfirmModal } from '../../ConfirmModal/ConfirmModal'
+import { Tooltip } from '../../Tooltip/Tooltip'
 import { Dir, formatBytes, isTrashed, safeSetState, truncateNameMiddle } from '../../../utils/common'
 import { FileAction } from '../../../constants/transfers'
+import { TOOLTIPS } from '../../../constants/tooltips'
 import { startDownloadingQueue, createDownloadAbort } from '../../../utils/download'
 import { computeContextMenuPosition } from '../../../utils/ui'
 import { getUsableStamps, handleDestroyAndForgetDrive, verifyDriveSpace } from '../../../utils/bee'
@@ -72,6 +74,7 @@ export function FileItem({
   const [showDestroyDriveModal, setShowDestroyDriveModal] = useState(false)
   const [destroyDrive, setDestroyDrive] = useState<DriveInfo | null>(null)
   const [confirmForget, setConfirmForget] = useState(false)
+  const [confirmRestore, setConfirmRestore] = useState(false)
 
   const isMountedRef = useRef(true)
   const rafIdRef = useRef<number | null>(null)
@@ -347,7 +350,7 @@ export function FileItem({
               danger
               onClick={() => {
                 handleCloseContext()
-                handleFileAction(FileOperation.Recover)
+                setConfirmRestore(true)
               }}
             >
               Restore
@@ -395,7 +398,6 @@ export function FileItem({
     handleDownload,
     handleCloseContext,
     openGetInfo,
-    handleFileAction,
     onBulk,
     currentDrive,
     drives,
@@ -564,7 +566,12 @@ export function FileItem({
 
       {confirmForget && (
         <ConfirmModal
-          title="Forget permanently?"
+          title={
+            <>
+              Forget permanently?
+              <Tooltip label={TOOLTIPS.FILE_OPERATION_FORGET} />
+            </>
+          }
           message={
             <>
               This removes <b title={fileInfo.name}>{fileInfo.name}</b> from your view.
@@ -581,6 +588,32 @@ export function FileItem({
           }}
           onCancel={() => {
             setConfirmForget(false)
+          }}
+        />
+      )}
+
+      {confirmRestore && (
+        <ConfirmModal
+          title={
+            <>
+              Restore from trash?
+              <Tooltip label={TOOLTIPS.FILE_OPERATION_RESTORE_FROM_TRASH} />
+            </>
+          }
+          message={
+            <>
+              This will restore <b title={fileInfo.name}>{fileInfo.name}</b> from trash.
+            </>
+          }
+          confirmLabel="Restore"
+          cancelLabel="Cancel"
+          onConfirm={async () => {
+            await handleFileAction(FileOperation.Recover)
+
+            safeSetState(isMountedRef, setConfirmRestore)(false)
+          }}
+          onCancel={() => {
+            setConfirmRestore(false)
           }}
         />
       )}

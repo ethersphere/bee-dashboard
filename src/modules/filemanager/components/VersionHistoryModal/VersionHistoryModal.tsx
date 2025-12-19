@@ -11,6 +11,8 @@ import { FileInfo } from '@solarpunkltd/file-manager-lib'
 import { FeedIndex } from '@ethersphere/bee-js'
 import { ConflictAction, useUploadConflictDialog } from '../../hooks/useUploadConflictDialog'
 import { ConfirmModal } from '../ConfirmModal/ConfirmModal'
+import { Tooltip } from '../Tooltip/Tooltip'
+import { TOOLTIPS } from '../../constants/tooltips'
 
 import { verifyDriveSpace } from '../../utils/bee'
 import { indexStrToBigint, truncateNameMiddle } from '../../utils/common'
@@ -310,7 +312,12 @@ export function VersionHistoryModal({ fileInfo, onCancelClick, onDownload }: Ver
 
           {renameConfirm && (
             <ConfirmModal
-              title="Restore this version?"
+              title={
+                <>
+                  Restore this version?
+                  <Tooltip label={TOOLTIPS.FILE_OPERATION_RESTORE_VERSION} />
+                </>
+              }
               message={
                 <>
                   Restoring will rename:&nbsp;

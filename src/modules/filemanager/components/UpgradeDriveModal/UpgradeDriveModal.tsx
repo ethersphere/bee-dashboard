@@ -326,10 +326,55 @@ export function UpgradeDriveModal({
                   defaultErasureCodeLevel,
                 )
 
+                let updatedStamp: PostageBatch | undefined
+                const maxRetries = 10
+                const retryDelay = 3000
+
+                for (let i = 0; i < maxRetries; i++) {
+                  try {
+                    if (i > 0) {
+                      await new Promise(resolve => setTimeout(resolve, retryDelay))
+                    }
+
+                    const fetchedStamp = await beeApi.getPostageBatch(stamp.batchID.toString())
+
+                    const oldSize = stamp.size.toBytes()
+                    const newSize = fetchedStamp.size.toBytes()
+                    const oldExpiry = stamp.duration.toEndDate().getTime()
+                    const newExpiry = fetchedStamp.duration.toEndDate().getTime()
+
+                    const capacityIncreased = newSize > oldSize
+                    const durationIncreased = newExpiry > oldExpiry
+
+                    if (capacityIncreased || durationIncreased) {
+                      updatedStamp = fetchedStamp
+                      break
+                    }
+
+                    if (i === maxRetries - 1) {
+                      updatedStamp = fetchedStamp
+                    }
+                  } catch (error) {
+                    if (i === maxRetries - 1) {
+                      break
+                    }
+                  }
+                }
+
+                const capacityUpdated = updatedStamp && updatedStamp.size.toBytes() > stamp.size.toBytes()
+                const durationUpdated =
+                  updatedStamp && updatedStamp.duration.toEndDate().getTime() > stamp.duration.toEndDate().getTime()
+                const isStillUpdating = !updatedStamp || (!capacityUpdated && !durationUpdated)
+
                 // TODO: replace eventlisteners with a better maintainable solution
                 window.dispatchEvent(
                   new CustomEvent('fm:drive-upgrade-end', {
-                    detail: { driveId: drive.id.toString(), success: true },
+                    detail: {
+                      driveId: drive.id.toString(),
+                      success: true,
+                      updatedStamp,
+                      isStillUpdating,
+                    },
                   }),
                 )
               } catch (e) {

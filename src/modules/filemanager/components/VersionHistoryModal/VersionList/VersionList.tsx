@@ -16,6 +16,9 @@ import { ActionTag, DownloadProgress, TrackDownloadProps } from '../../../consta
 import { Context as SettingsContext } from '../../../../../providers/Settings'
 import { useContextMenu } from '../../../hooks/useContextMenu'
 import { uuidV4 } from '../../../../../utils'
+import { ConfirmModal } from '../../ConfirmModal/ConfirmModal'
+import { Tooltip } from '../../Tooltip/Tooltip'
+import { TOOLTIPS } from '../../../constants/tooltips'
 
 interface VersionListProps {
   versions: FileInfo[]
@@ -396,6 +399,7 @@ export function VersionsList({ versions, headFi, restoreVersion, onDownload }: V
   const { fm, drives, currentDrive } = useContext(FMContext)
   const { beeApi } = useContext(SettingsContext)
   const [expanded, setExpanded] = useState<Record<string, boolean>>({})
+  const [confirmRestore, setConfirmRestore] = useState<FileInfo | null>(null)
 
   const toggle = useCallback(
     (key: string, fi: FileInfo) => {
@@ -435,6 +439,10 @@ export function VersionsList({ versions, headFi, restoreVersion, onDownload }: V
     [handleCloseContext, fm, beeApi, onDownload, drives, currentDrive],
   )
 
+  const handleRestoreClick = useCallback((fileInfo: FileInfo) => {
+    setConfirmRestore(fileInfo)
+  }, [])
+
   if (!versions.length || !fm) return null
 
   return (
@@ -459,12 +467,38 @@ export function VersionsList({ versions, headFi, restoreVersion, onDownload }: V
             headFi={headFi}
             isCurrent={Boolean(isCurrent)}
             fmDownload={() => handleDownload(item)}
-            onRestore={restoreVersion}
+            onRestore={handleRestoreClick}
             collapsed={collapsed}
             onToggle={() => toggle(key, item)}
           />
         )
       })}
+
+      {confirmRestore && (
+        <ConfirmModal
+          title={
+            <>
+              Restore this version?
+              <Tooltip label={TOOLTIPS.FILE_OPERATION_RESTORE_VERSION} />
+            </>
+          }
+          message={
+            <>
+              This will restore <b title={confirmRestore.name}>{truncateNameMiddle(confirmRestore.name)}</b> to version{' '}
+              {indexStrToBigint(confirmRestore.version)?.toString()}.
+            </>
+          }
+          confirmLabel="Restore"
+          cancelLabel="Cancel"
+          onConfirm={async () => {
+            await restoreVersion(confirmRestore)
+            setConfirmRestore(null)
+          }}
+          onCancel={() => {
+            setConfirmRestore(null)
+          }}
+        />
+      )}
     </div>
   )
 }

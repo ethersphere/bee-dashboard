@@ -113,6 +113,7 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
   const [isDestroying, setIsDestroying] = useState(false)
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false)
   const [confirmBulkForget, setConfirmBulkForget] = useState(false)
+  const [confirmBulkRestore, setConfirmBulkRestore] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [pendingCancelUpload, setPendingCancelUpload] = useState<string | null>(null)
 
@@ -382,7 +383,7 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
   const onBulk = useMemo(
     () => ({
       download: () => bulk.bulkDownload(bulk.selectedFiles),
-      restore: () => bulk.bulkRestore(bulk.selectedFiles),
+      restore: () => setConfirmBulkRestore(true),
       forget: () => bulk.bulkForget(bulk.selectedFiles),
       destroy: () => setShowDestroyDriveModal(true),
       delete: () => setShowBulkDeleteModal(true),
@@ -473,7 +474,7 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
                   enableRefresh={Boolean(fm?.adminStamp)}
                   onUploadFile={onContextUploadFile}
                   onBulkDownload={() => bulk.bulkDownload(bulk.selectedFiles)}
-                  onBulkRestore={() => bulk.bulkRestore(bulk.selectedFiles)}
+                  onBulkRestore={() => setConfirmBulkRestore(true)}
                   onBulkDelete={() => setShowBulkDeleteModal(true)}
                   onBulkDestroy={() => setShowDestroyDriveModal(true)}
                   onBulkForget={() => bulk.bulkForget(bulk.selectedFiles)}
@@ -501,6 +502,7 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
             fileCountText={fileCountText}
             currentDrive={currentDrive || null}
             confirmBulkForget={confirmBulkForget}
+            confirmBulkRestore={confirmBulkRestore}
             showDestroyDriveModal={showDestroyDriveModal}
             pendingCancelUpload={pendingCancelUpload}
             onDeleteCancel={() => setShowBulkDeleteModal(false)}
@@ -510,6 +512,11 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
               setConfirmBulkForget(false)
             }}
             onForgetCancel={() => setConfirmBulkForget(false)}
+            onRestoreConfirm={async () => {
+              await bulk.bulkRestore(bulk.selectedFiles)
+              setConfirmBulkRestore(false)
+            }}
+            onRestoreCancel={() => setConfirmBulkRestore(false)}
             onDestroyCancel={() => setShowDestroyDriveModal(false)}
             onDestroyConfirm={handleDestroyDriveConfirm}
             onCancelUploadConfirm={() => {

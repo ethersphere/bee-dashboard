@@ -110,4 +110,12 @@ Advanced users can delete this and input a custom key.`,
 This is a final safety check to ensure a copy of the key has been saved before proceeding.`,
   PRIVATE_KEY_MODAL_KEY_INFO: `<div style="font-weight: bold; margin-bottom: 12px; font-size: 14px;">On This Device Only</div>
 For convenience, an encrypted copy of this key is saved in this browser's local storage. This avoids needing to enter it on every visit.`,
+
+  FILE_OPERATION_TRASH: `Note: Moving items to Trash can modify file metadata and history which may cause the node to report a different (sometimes higher) used capacity. This does not upload new data but the displayed usage may change post operation.`,
+
+  FILE_OPERATION_FORGET: `Note: Forgetting hides files from your view but does not delete underlying data on Swarm. Metadata/history changes can affect the reported used capacity. In some cases the UI may show freed visible drive space.`,
+
+  FILE_OPERATION_RESTORE_VERSION: `Note: Restoring versions can alter file metadata and history which may affect the node-reported used capacity. The operation does not upload new data but displayed usage may change post operation.`,
+
+  FILE_OPERATION_RESTORE_FROM_TRASH: `Note: Restoring from Trash can modify file metadata and history which may cause the node to report a different (sometimes higher) used capacity. This does not upload new data but the displayed usage may change post operation.`,
 }
