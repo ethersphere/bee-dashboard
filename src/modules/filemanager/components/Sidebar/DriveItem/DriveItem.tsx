@@ -65,7 +65,8 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
     if (incomingSize > currentSize || incomingExpiry > currentExpiry) {
       setActualStamp(stamp)
     }
-  }, [stamp, actualStamp])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stamp])
 
   function handleMenuClick(e: React.MouseEvent) {
     setShowContext(true)
@@ -104,7 +105,7 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
           setActualStamp(updatedStamp)
 
           if (isStillUpdating) {
-            startPolling(batchId, stamp)
+            startPolling(batchId, updatedStamp)
           }
         } else {
           const upgradedStamp = await refreshStamp(batchId)
@@ -117,7 +118,7 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
         }
       }
     },
-    [setErrorMessage, setShowError, isMountedRef, setActualStamp, startPolling, stamp, refreshStamp],
+    [setErrorMessage, setShowError, isMountedRef, setActualStamp, startPolling, refreshStamp],
   )
 
   const doDestroy = useCallback(async () => {

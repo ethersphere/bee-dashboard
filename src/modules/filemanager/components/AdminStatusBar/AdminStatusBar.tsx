@@ -65,7 +65,8 @@ export function AdminStatusBar({
     if (incomingSize > currentSize || incomingExpiry > currentExpiry) {
       setActualStamp(adminStamp)
     }
-  }, [adminStamp, actualStamp])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [adminStamp])
 
   useEffect(() => {
     if (!adminDrive) return
@@ -99,8 +100,8 @@ export function AdminStatusBar({
           if (!isMountedRef.current) return
           setActualStamp(updatedStamp)
 
-          if (isStillUpdating && adminStamp) {
-            startPolling(batchId, adminStamp)
+          if (isStillUpdating) {
+            startPolling(batchId, updatedStamp)
           }
         } else {
           const upgradedStamp = await refreshStamp(batchId)
