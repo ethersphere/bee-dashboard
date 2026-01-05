@@ -1,25 +1,26 @@
-# After new release is published on github, publish it to npmjs
-name: Publish on npmjs
-
+name: Publish on npm
 on:
   release:
     types: [published]
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   publish:
     runs-on: ubuntu-latest
-
     env:
       REACT_APP_FORMBRICKS_ENV_ID: ${{ secrets.REACT_APP_FORMBRICKS_ENV_ID }}
       REACT_APP_FORMBRICKS_APP_URL: ${{ secrets.REACT_APP_FORMBRICKS_APP_URL }}
-
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 24
           registry-url: 'https://registry.npmjs.org'
+          
       - run: npm ci
-      - run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+
+      - run: npm publish --provenance --access public
