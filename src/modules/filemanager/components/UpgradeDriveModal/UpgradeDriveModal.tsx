@@ -53,7 +53,7 @@ export function UpgradeDriveModal({
   const { setShowError } = useContext(FMContext)
 
   const [isBalanceSufficient, setIsBalanceSufficient] = useState(true)
-  const [capacity, setCapacity] = useState(Size.fromBytes(0))
+  const [capacity, setCapacity] = useState(stamp.size)
   const [capacityExtensionCost, setCapacityExtensionCost] = useState('')
   const [capacityIndex, setCapacityIndex] = useState(0)
   const [durationExtensionCost, setDurationExtensionCost] = useState('')
@@ -73,7 +73,7 @@ export function UpgradeDriveModal({
   }, [])
 
   const handleCapacityChange = (value: number, index: number) => {
-    setCapacity(Size.fromBytes(value === -1 ? 0 : value))
+    setCapacity(value === -1 ? stamp.size : Size.fromBytes(value))
     setCapacityIndex(index)
   }
 
@@ -88,8 +88,6 @@ export function UpgradeDriveModal({
       isCapacityExtensionSet: boolean,
       isDurationExtensionSet: boolean,
     ) => {
-      setIsBalanceSufficient(true)
-
       let cost: BZZ | undefined
 
       try {
@@ -107,6 +105,8 @@ export function UpgradeDriveModal({
 
       if ((walletBalance && cost && cost.gte(walletBalance.bzzBalance)) || !walletBalance) {
         setIsBalanceSufficient(false)
+      } else {
+        setIsBalanceSufficient(true)
       }
 
       const bothExtensions = isCapacityExtensionSet && isDurationExtensionSet
@@ -158,9 +158,9 @@ export function UpgradeDriveModal({
   useEffect(() => {
     const fetchExtensionCost = () => {
       const isCapacitySet = capacityIndex > 0
-      const isDurationSet = lifetimeIndex > 0
+      const isDurationSet = lifetimeIndex >= 0
       const extendDuration =
-        lifetimeIndex > 0 ? Duration.fromEndDate(validityEndDate, stamp.duration.toEndDate()) : Duration.ZERO
+        lifetimeIndex >= 0 ? Duration.fromEndDate(validityEndDate, stamp.duration.toEndDate()) : Duration.ZERO
 
       handleCostCalculation(
         stamp.batchID,
@@ -307,7 +307,9 @@ export function UpgradeDriveModal({
                 await beeApi.extendStorage(
                   stamp.batchID,
                   capacity,
-                  lifetimeIndex > 0 ? Duration.fromEndDate(validityEndDate, stamp.duration.toEndDate()) : Duration.ZERO,
+                  lifetimeIndex >= 0
+                    ? Duration.fromEndDate(validityEndDate, stamp.duration.toEndDate())
+                    : Duration.ZERO,
                   undefined,
                   false,
                   defaultErasureCodeLevel,

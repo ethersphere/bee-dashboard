@@ -114,11 +114,17 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
 
           if (upgradedStamp) {
             setActualStamp(upgradedStamp)
+
+            if (isStillUpdating) {
+              startPolling(batchId, upgradedStamp)
+            }
+          } else if (isStillUpdating) {
+            startPolling(batchId, actualStamp)
           }
         }
       }
     },
-    [setErrorMessage, setShowError, isMountedRef, setActualStamp, startPolling, refreshStamp],
+    [setErrorMessage, setShowError, isMountedRef, setActualStamp, startPolling, refreshStamp, actualStamp],
   )
 
   const doDestroy = useCallback(async () => {
