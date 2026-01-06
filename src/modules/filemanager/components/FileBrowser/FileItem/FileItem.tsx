@@ -84,6 +84,10 @@ export function FileItem({
   const isTrashedFile = isTrashed(fileInfo)
   const statusLabel = isTrashedFile ? 'Trash' : 'Active'
 
+  const latestFileInfo = useMemo(() => {
+    return files.find(f => f.topic.toString() === fileInfo.topic.toString()) ?? fileInfo
+  }, [files, fileInfo])
+
   useEffect(() => {
     isMountedRef.current = true
 
@@ -139,19 +143,27 @@ export function FileItem({
 
       handleCloseContext()
 
-      const rawSize = fileInfo.customMetadata?.size
+      const rawSize = latestFileInfo.customMetadata?.size
       const expectedSize = rawSize ? Number(rawSize) : undefined
 
-      createDownloadAbort(fileInfo.name)
+      createDownloadAbort(latestFileInfo.name)
 
       await startDownloadingQueue(
         fm,
-        [fileInfo],
-        [onDownload({ uuid: uuidV4(), name: fileInfo.name, size: formatBytes(rawSize), expectedSize, driveName })],
+        [latestFileInfo],
+        [
+          onDownload({
+            uuid: uuidV4(),
+            name: latestFileInfo.name,
+            size: formatBytes(rawSize),
+            expectedSize,
+            driveName,
+          }),
+        ],
         isNewWindow,
       )
     },
-    [handleCloseContext, fm, beeApi, fileInfo, onDownload, driveName],
+    [handleCloseContext, fm, beeApi, latestFileInfo, onDownload, driveName],
   )
 
   const handleFileAction = useCallback(
@@ -160,7 +172,7 @@ export function FileItem({
 
       await performFileOperation({
         fm,
-        file: fileInfo,
+        file: latestFileInfo,
         redundancyLevel: currentDrive.redundancyLevel,
         driveId: currentDrive.id.toString(),
         stamp: driveStamp,
@@ -180,7 +192,7 @@ export function FileItem({
         },
       })
     },
-    [fm, driveStamp, adminDrive, currentDrive, fileInfo, refreshStamp, setErrorMessage, setShowError],
+    [fm, driveStamp, adminDrive, currentDrive, latestFileInfo, refreshStamp, setErrorMessage, setShowError],
   )
 
   const showDestroyDrive = useCallback(() => {
@@ -215,27 +227,27 @@ export function FileItem({
           currentDrive,
           {
             name: newName,
-            topic: fileInfo.topic,
+            topic: latestFileInfo.topic,
             file: {
-              reference: fileInfo.file.reference,
-              historyRef: fileInfo.file.historyRef,
+              reference: latestFileInfo.file.reference,
+              historyRef: latestFileInfo.file.historyRef,
             },
-            customMetadata: fileInfo.customMetadata,
+            customMetadata: latestFileInfo.customMetadata,
             files: [],
           },
           {
-            actHistoryAddress: fileInfo.file.historyRef,
+            actHistoryAddress: latestFileInfo.file.historyRef,
           },
         )
 
         refreshStamp(driveStamp.batchID.toString())
       } catch (e: unknown) {
-        setErrorMessage?.(`Error renaming file ${fileInfo.name}`)
+        setErrorMessage?.(`Error renaming file ${latestFileInfo.name}`)
         setShowError(true)
       }
     },
 
-    [fm, driveStamp, currentDrive, fileInfo, takenNames, refreshStamp, setErrorMessage, setShowError],
+    [fm, driveStamp, currentDrive, latestFileInfo, takenNames, refreshStamp, setErrorMessage, setShowError],
   )
 
   const MenuItem = ({
@@ -506,7 +518,7 @@ export function FileItem({
 
       {showVersionHistory && (
         <VersionHistoryModal
-          fileInfo={fileInfo}
+          fileInfo={latestFileInfo}
           onCancelClick={() => {
             setShowVersionHistory(false)
           }}
