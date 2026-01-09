@@ -97,31 +97,39 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
         setShowError(true)
       }
 
-      if (driveId === id) {
-        setIsUpgrading(false)
+      if (driveId !== id) {
+        return
+      }
 
-        if (updatedStamp) {
-          if (!isMountedRef.current) return
-          setActualStamp(updatedStamp)
+      setIsUpgrading(false)
 
-          if (isStillUpdating) {
-            startPolling(batchId, updatedStamp)
-          }
-        } else {
-          const upgradedStamp = await refreshStamp(batchId)
+      if (updatedStamp) {
+        if (!isMountedRef.current) return
+        setActualStamp(updatedStamp)
 
-          if (!isMountedRef.current) return
-
-          if (upgradedStamp) {
-            setActualStamp(upgradedStamp)
-
-            if (isStillUpdating) {
-              startPolling(batchId, upgradedStamp)
-            }
-          } else if (isStillUpdating) {
-            startPolling(batchId, actualStamp)
-          }
+        if (isStillUpdating) {
+          startPolling(batchId, updatedStamp)
         }
+
+        return
+      }
+
+      const upgradedStamp = await refreshStamp(batchId)
+
+      if (!isMountedRef.current) return
+
+      if (upgradedStamp) {
+        setActualStamp(upgradedStamp)
+
+        if (isStillUpdating) {
+          startPolling(batchId, upgradedStamp)
+        }
+
+        return
+      }
+
+      if (isStillUpdating) {
+        startPolling(batchId, actualStamp)
       }
     },
     [setErrorMessage, setShowError, isMountedRef, setActualStamp, startPolling, refreshStamp, actualStamp],

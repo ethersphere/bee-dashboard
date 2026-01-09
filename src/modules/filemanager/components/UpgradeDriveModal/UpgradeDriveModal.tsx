@@ -1,20 +1,13 @@
 import { ReactElement, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import './UpgradeDriveModal.scss'
 import '../../styles/global.scss'
-import { CustomDropdown } from '../CustomDropdown/CustomDropdown'
-import { Button } from '../Button/Button'
+import { Warning } from '@material-ui/icons'
 import { createPortal } from 'react-dom'
 import DriveIcon from 'remixicon-react/HardDrive2LineIcon'
 import DatabaseIcon from 'remixicon-react/Database2LineIcon'
 import WalletIcon from 'remixicon-react/Wallet3LineIcon'
 import ExternalLinkIcon from 'remixicon-react/ExternalLinkLineIcon'
 import CalendarIcon from 'remixicon-react/CalendarLineIcon'
-import { desiredLifetimeOptions } from '../../constants/stamps'
-import { Context as BeeContext } from '../../../../providers/Bee'
-import { fromBytesConversion, getExpiryDateByLifetime, truncateNameMiddle } from '../../utils/common'
-import { Context as SettingsContext } from '../../../../providers/Settings'
-import { Context as FMContext } from '../../../../providers/FileManager'
-
 import {
   BatchId,
   BeeRequestOptions,
@@ -27,8 +20,17 @@ import {
   Utils,
 } from '@ethersphere/bee-js'
 import { DriveInfo } from '@solarpunkltd/file-manager-lib'
+
+import { CustomDropdown } from '../CustomDropdown/CustomDropdown'
+import { Button } from '../Button/Button'
+import { desiredLifetimeOptions } from '../../constants/stamps'
+import { Context as BeeContext } from '../../../../providers/Bee'
+import { fromBytesConversion, getExpiryDateByLifetime, truncateNameMiddle } from '../../utils/common'
+import { Context as SettingsContext } from '../../../../providers/Settings'
+import { Context as FMContext } from '../../../../providers/FileManager'
 import { getHumanReadableFileSize } from '../../../../utils/file'
-import { Warning } from '@material-ui/icons'
+import { Tooltip } from '../Tooltip/Tooltip'
+import { TOOLTIPS } from '../../constants/tooltips'
 
 interface UpgradeDriveModalProps {
   stamp: PostageBatch
@@ -189,6 +191,7 @@ export function UpgradeDriveModal({
       <div className="fm-modal-window fm-upgrade-drive-modal">
         <div className="fm-modal-window-header">
           <DriveIcon size="18px" /> Upgrade {truncateNameMiddle(drive.name || stamp.label || shortBatchId, 35)}
+          <Tooltip label={TOOLTIPS.UPGRADE_CAPACITY_AND_DURATION} />
         </div>
         <div>Choose extension period and additional storage for your drive.</div>
         <div className="fm-modal-window-body">
@@ -315,10 +318,10 @@ export function UpgradeDriveModal({
                   defaultErasureCodeLevel,
                 )
 
+                // TODO: replace with usestamppolling here:
                 let updatedStamp: PostageBatch | undefined
                 const maxRetries = 10
                 const retryDelay = 3000
-
                 for (let i = 0; i < maxRetries; i++) {
                   try {
                     if (i > 0) {
@@ -355,7 +358,6 @@ export function UpgradeDriveModal({
                   updatedStamp && updatedStamp.duration.toEndDate().getTime() > stamp.duration.toEndDate().getTime()
                 const isStillUpdating = !updatedStamp || (!capacityUpdated && !durationUpdated)
 
-                // TODO: replace eventlisteners with a better maintainable solution
                 window.dispatchEvent(
                   new CustomEvent('fm:drive-upgrade-end', {
                     detail: {
