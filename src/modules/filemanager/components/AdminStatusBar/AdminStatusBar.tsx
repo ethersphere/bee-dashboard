@@ -9,7 +9,6 @@ import { calculateStampCapacityMetrics } from '../../utils/bee'
 import { Context as FMContext } from '../../../../providers/FileManager'
 import { ConfirmModal } from '../ConfirmModal/ConfirmModal'
 import { getHumanReadableFileSize } from '../../../../utils/file'
-import { useStampPollingWithState } from '../../hooks/useStampPollingWithState'
 
 interface AdminStatusBarProps {
   adminStamp: PostageBatch | null
@@ -26,19 +25,12 @@ export function AdminStatusBar({
   isCreationInProgress,
   setErrorMessage,
 }: AdminStatusBarProps): ReactElement {
-  const { drives, setShowError, refreshStamp } = useContext(FMContext)
+  const { drives, setShowError } = useContext(FMContext)
 
   const [isUpgradeDriveModalOpen, setIsUpgradeDriveModalOpen] = useState(false)
   const [isUpgrading, setIsUpgrading] = useState(false)
   const [actualStamp, setActualStamp] = useState<PostageBatch | null>(adminStamp)
   const [showProgressModal, setShowProgressModal] = useState(true)
-  const [isCapacityUpdating, setIsCapacityUpdating] = useState(false)
-
-  const { startPolling, isMountedRef } = useStampPollingWithState({
-    refreshStamp,
-    setActualStamp,
-    setIsCapacityUpdating,
-  })
 
   useEffect(() => {
     setShowProgressModal(isCreationInProgress || loading)
@@ -69,10 +61,9 @@ export function AdminStatusBar({
   }, [adminStamp])
 
   useEffect(() => {
-    if (!adminDrive) return
+    if (!adminDrive || !adminStamp) return
 
     const id = adminDrive.id.toString()
-    const batchId = adminStamp?.batchID.toString() || ''
 
     const onStart = (e: Event) => {
       const { driveId } = (e as CustomEvent).detail || {}
@@ -82,36 +73,26 @@ export function AdminStatusBar({
       }
     }
 
-    const onEnd = async (e: Event) => {
-      const { driveId, success, error, updatedStamp, isStillUpdating } = (e as CustomEvent).detail || {}
+    const onEnd = (e: Event) => {
+      const { driveId, success, error, updatedStamp } = (e as CustomEvent).detail || {}
+
+      if (driveId !== id) {
+        return
+      }
+
+      setIsUpgrading(() => false)
 
       if (!success) {
         if (error) {
           setErrorMessage?.(error)
         }
-
         setShowError(true)
+
+        return
       }
 
-      if (driveId === id && batchId) {
-        setIsUpgrading(false)
-
-        if (updatedStamp) {
-          if (!isMountedRef.current) return
-          setActualStamp(updatedStamp)
-
-          if (isStillUpdating) {
-            startPolling(batchId, updatedStamp)
-          }
-        } else {
-          const upgradedStamp = await refreshStamp(batchId)
-
-          if (!isMountedRef.current) return
-
-          if (upgradedStamp) {
-            setActualStamp(upgradedStamp)
-          }
-        }
+      if (updatedStamp) {
+        setActualStamp(() => updatedStamp)
       }
     }
 
@@ -122,17 +103,7 @@ export function AdminStatusBar({
       window.removeEventListener('fm:drive-upgrade-start', onStart as EventListener)
       window.removeEventListener('fm:drive-upgrade-end', onEnd as EventListener)
     }
-  }, [
-    adminDrive,
-    startPolling,
-    adminStamp,
-    adminStamp?.batchID,
-    setErrorMessage,
-    setShowError,
-    refreshStamp,
-    setIsUpgrading,
-    isMountedRef,
-  ])
+  }, [adminDrive, adminStamp, setErrorMessage, setShowError])
 
   const { capacityPct, usedSize, totalSize } = useMemo(() => {
     if (!actualStamp) {
@@ -178,8 +149,8 @@ export function AdminStatusBar({
       <div className={`fm-admin-status-bar-container${blurCls}`} aria-busy={isBusy ? 'true' : 'false'}>
         <div className="fm-admin-status-bar-left">
           <div
-            className={`fm-drive-item-capacity ${isCapacityUpdating ? 'fm-drive-item-capacity-updating' : ''}`}
-            title={isCapacityUpdating ? 'Capacity is updating... This may take a few moments.' : ''}
+            className={`fm-drive-item-capacity ${isUpgrading ? 'fm-drive-item-capacity-updating' : ''}`}
+            title={isUpgrading ? 'Capacity is updating... This may take a few moments.' : ''}
           >
             Capacity <ProgressBar value={capacityPct} width="150px" /> {usedSize} / {totalSize}
           </div>

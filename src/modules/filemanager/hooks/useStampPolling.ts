@@ -29,7 +29,7 @@ export function useStampPolling({ onStampUpdated, onPollingStateChange, refreshS
   }, [onPollingStateChange])
 
   const startPolling = useCallback(
-    (batchId: string, originalStamp: PostageBatch) => {
+    (originalStamp: PostageBatch) => {
       stopPolling()
 
       onPollingStateChange(true)
@@ -42,7 +42,7 @@ export function useStampPolling({ onStampUpdated, onPollingStateChange, refreshS
       }, POLLING_TIMEOUT_MS)
 
       pollingIntervalRef.current = setInterval(async () => {
-        const freshStamp = await refreshStamp(batchId)
+        const freshStamp = await refreshStamp(originalStamp.batchID.toString())
 
         if (freshStamp) {
           const capacityUpdated = freshStamp.size.toBytes() > oldSize

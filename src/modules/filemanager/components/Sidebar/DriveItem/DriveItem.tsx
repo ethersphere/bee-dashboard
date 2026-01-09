@@ -18,7 +18,6 @@ import { DriveInfo } from '@solarpunkltd/file-manager-lib'
 import { calculateStampCapacityMetrics, handleDestroyAndForgetDrive } from '../../../utils/bee'
 import { Context as SettingsContext } from '../../../../../providers/Settings'
 import { truncateNameMiddle } from '../../../utils/common'
-import { useStampPollingWithState } from '../../../hooks/useStampPollingWithState'
 
 interface DriveItemProps {
   drive: DriveInfo
@@ -28,7 +27,7 @@ interface DriveItemProps {
 }
 
 export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveItemProps): ReactElement {
-  const { fm, adminDrive, files, setShowError, refreshStamp } = useContext(FMContext)
+  const { fm, adminDrive, files, setShowError } = useContext(FMContext)
   const { beeApi } = useContext(SettingsContext)
 
   const [isHovered, setIsHovered] = useState(false)
@@ -38,17 +37,10 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
   const [isUpgrading, setIsUpgrading] = useState(false)
   const [isDestroying, setIsDestroying] = useState(false)
   const [actualStamp, setActualStamp] = useState<PostageBatch>(stamp)
-  const [isCapacityUpdating, setIsCapacityUpdating] = useState(false)
 
   const { showContext, pos, contextRef, setPos, setShowContext } = useContextMenu<HTMLDivElement>()
 
   const { setView, setActualItemView } = useView()
-
-  const { startPolling, isMountedRef } = useStampPollingWithState({
-    refreshStamp,
-    setActualStamp,
-    setIsCapacityUpdating,
-  })
 
   useEffect(() => {
     if (actualStamp.batchID.toString() !== stamp.batchID.toString()) {
@@ -76,63 +68,32 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
   const handleUpgradeStart = useCallback(
     (driveId: string, id: string) => {
       if (driveId === id) {
-        setIsUpgrading(true)
+        setIsUpgrading(() => true)
       }
     },
     [setIsUpgrading],
   )
 
   const handleUpgradeEnd = useCallback(
-    async (
-      driveId: string,
-      id: string,
-      batchId: string,
-      success: boolean,
-      error: string | undefined,
-      updatedStamp: PostageBatch | undefined,
-      isStillUpdating: boolean,
-    ) => {
-      if (!success && error) {
-        setErrorMessage?.(error)
-        setShowError(true)
-      }
-
+    (driveId: string, id: string, success: boolean, error: string | undefined, updatedStamp?: PostageBatch) => {
       if (driveId !== id) {
         return
       }
 
-      setIsUpgrading(false)
+      setIsUpgrading(() => false)
+
+      if (!success && error) {
+        setErrorMessage?.(error)
+        setShowError(true)
+
+        return
+      }
 
       if (updatedStamp) {
-        if (!isMountedRef.current) return
         setActualStamp(updatedStamp)
-
-        if (isStillUpdating) {
-          startPolling(batchId, updatedStamp)
-        }
-
-        return
-      }
-
-      const upgradedStamp = await refreshStamp(batchId)
-
-      if (!isMountedRef.current) return
-
-      if (upgradedStamp) {
-        setActualStamp(upgradedStamp)
-
-        if (isStillUpdating) {
-          startPolling(batchId, upgradedStamp)
-        }
-
-        return
-      }
-
-      if (isStillUpdating) {
-        startPolling(batchId, actualStamp)
       }
     },
-    [setErrorMessage, setShowError, isMountedRef, setActualStamp, startPolling, refreshStamp, actualStamp],
+    [setErrorMessage, setShowError],
   )
 
   const doDestroy = useCallback(async () => {
@@ -163,7 +124,6 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
 
   useEffect(() => {
     const id = drive.id.toString()
-    const batchId = stamp.batchID.toString()
 
     const onStart = (e: Event) => {
       const { driveId } = (e as CustomEvent).detail || {}
@@ -171,8 +131,8 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
     }
 
     const onEnd = (e: Event) => {
-      const { driveId, success, error, updatedStamp, isStillUpdating } = (e as CustomEvent).detail || {}
-      handleUpgradeEnd(driveId, id, batchId, success, error, updatedStamp, isStillUpdating)
+      const { driveId, success, error, updatedStamp } = (e as CustomEvent).detail || {}
+      handleUpgradeEnd(driveId, id, success, error, updatedStamp)
     }
 
     window.addEventListener('fm:drive-upgrade-start', onStart as EventListener)
@@ -182,7 +142,7 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
       window.removeEventListener('fm:drive-upgrade-start', onStart as EventListener)
       window.removeEventListener('fm:drive-upgrade-end', onEnd as EventListener)
     }
-  }, [drive.id, stamp.batchID, handleUpgradeStart, handleUpgradeEnd])
+  }, [drive.id, handleUpgradeStart, handleUpgradeEnd])
 
   const { capacityPct, usedSize, stampSize } = useMemo(() => {
     const filesPerDrive = files.filter(fi => fi.driveId === drive.id.toString())
@@ -201,9 +161,9 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
   }, [setShowContext, setIsDestroyDriveModalOpen])
 
   const containerClassName = `fm-drive-item-container${isSelected ? ' fm-drive-item-container-selected' : ''}`
-  const capacityClassName = `fm-drive-item-capacity ${isCapacityUpdating ? 'fm-drive-item-capacity-updating' : ''}`
-  const updatingTitle = isCapacityUpdating ? 'Capacity is updating... This may take a few moments.' : ''
-  const expiryUpdatingTitle = isCapacityUpdating ? 'Expiry is updating... This may take a few moments.' : ''
+  const capacityClassName = `fm-drive-item-capacity ${isUpgrading ? 'fm-drive-item-capacity-updating' : ''}`
+  const updatingTitle = isUpgrading ? 'Capacity is updating... This may take a few moments.' : ''
+  const expiryUpdatingTitle = isUpgrading ? 'Expiry is updating... This may take a few moments.' : ''
   const driveIcon = isHovered ? <DriveFill size="16px" /> : <Drive size="16px" />
 
   return (
