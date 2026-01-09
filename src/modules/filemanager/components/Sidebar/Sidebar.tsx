@@ -67,8 +67,17 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
       getStamps()
     }
 
+    const handleUpgradeEnd = async () => {
+      if (isMounted && beeApi) {
+        await getStamps()
+      }
+    }
+
+    window.addEventListener('fm:drive-upgrade-end', handleUpgradeEnd as EventListener)
+
     return () => {
       isMounted = false
+      window.removeEventListener('fm:drive-upgrade-end', handleUpgradeEnd as EventListener)
     }
   }, [beeApi, drives])
 
@@ -83,14 +92,14 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
       setView(ViewType.File)
     }
 
-    if (currentDrive && !currentStamp && usableStamps.length > 0) {
+    if (currentDrive && usableStamps.length > 0) {
       const correspondingStamp = usableStamps.find(s => s.batchID.toString() === currentDrive.batchId.toString())
 
       if (correspondingStamp) {
         setCurrentStamp(correspondingStamp)
       }
     }
-  }, [fm, drives, currentDrive, currentStamp, usableStamps, setCurrentDrive, setCurrentStamp, setView, beeApi])
+  }, [fm, drives, currentDrive, usableStamps, setCurrentDrive, setCurrentStamp, setView, beeApi])
 
   const handleCreateNewDrive = () => {
     if (isDriveCreationInProgress) {
