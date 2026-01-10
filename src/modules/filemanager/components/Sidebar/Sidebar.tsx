@@ -21,6 +21,7 @@ import { Context as FMContext } from '../../../../providers/FileManager'
 import { getUsableStamps } from '../../utils/bee'
 import { DriveInfo } from '@solarpunkltd/file-manager-lib'
 import { truncateNameMiddle } from '../../utils/common'
+import { FILE_MANAGER_EVENTS } from '../../constants/common'
 
 interface SidebarProps {
   loading: boolean
@@ -73,11 +74,11 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
       }
     }
 
-    window.addEventListener('fm:drive-upgrade-end', handleUpgradeEnd as EventListener)
+    window.addEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, handleUpgradeEnd as EventListener)
 
     return () => {
       isMounted = false
-      window.removeEventListener('fm:drive-upgrade-end', handleUpgradeEnd as EventListener)
+      window.removeEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, handleUpgradeEnd as EventListener)
     }
   }, [beeApi, drives])
 

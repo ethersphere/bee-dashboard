@@ -121,6 +121,20 @@ For convenience, an encrypted copy of this key is saved in this browser's local 
 
   FILE_OPERATION_RESTORE_FROM_TRASH: `Note: Restoring from Trash can modify file metadata and history which may cause the node to report a different (sometimes higher) used capacity. This does not upload new data but the displayed usage may change post operation.`,
 
+  DRIVE_CAPACITY_UPDATING: `${getTitleWithStyle('Capacity Update in Progress')}
+The drive's capacity is being refreshed after an upgrade or file operation.
+<br/>
+<br/>
+The system is checking the network for the updated stamp information. This process may take a moment depending on network conditions.
+<br/>
+<br/>
+If no update is detected after the polling period, the display will revert to showing the last known values.`,
+
+  DRIVE_CAPACITY_INFO: `${getTitleWithStyle('Drive Capacity')}
+Shows the storage used versus total capacity available for this drive.
+<br/>
+<br/>
+<b>Note:</b> The reported capacity may not always match actual file sizes due to network storage overhead, and metadata. Capacity updates after file operations as the bee-dashboard syncs with network.`,
   UPGRADE_CAPACITY_AND_DURATION: `${getTitleWithStyle('About Used Capacity')}
 After upgrading, the displayed used capacity percentage will decrease logarithmically (e.g., 50% → 25% → 12.5%) due to stamp dilution when storage increases. This is normal behavior and does not affect your actual data.`,
 }

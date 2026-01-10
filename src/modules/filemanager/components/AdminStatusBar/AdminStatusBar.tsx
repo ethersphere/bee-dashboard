@@ -9,6 +9,7 @@ import { calculateStampCapacityMetrics } from '../../utils/bee'
 import { Context as FMContext } from '../../../../providers/FileManager'
 import { ConfirmModal } from '../ConfirmModal/ConfirmModal'
 import { getHumanReadableFileSize } from '../../../../utils/file'
+import { FILE_MANAGER_EVENTS } from '../../constants/common'
 
 interface AdminStatusBarProps {
   adminStamp: PostageBatch | null
@@ -96,12 +97,12 @@ export function AdminStatusBar({
       }
     }
 
-    window.addEventListener('fm:drive-upgrade-start', onStart as EventListener)
-    window.addEventListener('fm:drive-upgrade-end', onEnd as EventListener)
+    window.addEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_START, onStart as EventListener)
+    window.addEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, onEnd as EventListener)
 
     return () => {
-      window.removeEventListener('fm:drive-upgrade-start', onStart as EventListener)
-      window.removeEventListener('fm:drive-upgrade-end', onEnd as EventListener)
+      window.removeEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_START, onStart as EventListener)
+      window.removeEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, onEnd as EventListener)
     }
   }, [adminDrive, adminStamp, setErrorMessage, setShowError])
 

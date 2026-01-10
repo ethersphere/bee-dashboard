@@ -32,6 +32,7 @@ import { getHumanReadableFileSize } from '../../../../utils/file'
 import { Tooltip } from '../Tooltip/Tooltip'
 import { TOOLTIPS } from '../../constants/tooltips'
 import { useStampPolling } from '../../hooks/useStampPolling'
+import { FILE_MANAGER_EVENTS } from '../../constants/common'
 
 interface UpgradeDriveModalProps {
   stamp: PostageBatch
@@ -73,7 +74,7 @@ export function UpgradeDriveModal({
     refreshStamp,
     onStampUpdated: (updatedStamp: PostageBatch) => {
       window.dispatchEvent(
-        new CustomEvent('fm:drive-upgrade-end', {
+        new CustomEvent(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, {
           detail: {
             driveId: drive.id.toString(),
             success: true,
@@ -319,7 +320,7 @@ export function UpgradeDriveModal({
               try {
                 setIsSubmitting(true)
                 window.dispatchEvent(
-                  new CustomEvent('fm:drive-upgrade-start', {
+                  new CustomEvent(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_START, {
                     detail: { driveId: drive.id.toString() },
                   }),
                 )
@@ -341,7 +342,7 @@ export function UpgradeDriveModal({
               } catch (e) {
                 const msg = e instanceof Error ? e.message : 'Upgrade failed'
                 window.dispatchEvent(
-                  new CustomEvent('fm:drive-upgrade-end', {
+                  new CustomEvent(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, {
                     detail: {
                       driveId: drive.id.toString(),
                       success: false,

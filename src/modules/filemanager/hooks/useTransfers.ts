@@ -16,6 +16,7 @@ import { isTrashed } from '../utils/common'
 import { abortDownload } from '../utils/download'
 import { AbortManager } from '../utils/abortManager'
 import { uuidV4 } from '../../../utils'
+import { FILE_MANAGER_EVENTS } from '../constants/common'
 
 const SAMPLE_WINDOW_MS = 500
 const ETA_SMOOTHING = 0.3
@@ -312,8 +313,20 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
           const { etaSec, updatedState } = calculateETA(etaState, progress, startedAt, now)
           etaState = updatedState
 
+          const isComplete = progress.processed >= progress.total
+
           setUploadItems(prev => {
             const existing = prev.find(it => it.uuid === uuid && it.status === TransferStatus.Uploading)
+
+            if (isComplete) {
+              return updateTransferItems(prev, uuid, {
+                percent: 100,
+                status: TransferStatus.Done,
+                kind,
+                etaSec: 0,
+                elapsedSec: Math.round((now - startedAt) / 1000),
+              })
+            }
 
             return updateTransferItems(prev, uuid, {
               percent: Math.max(existing?.percent || 0, chunkPercentage),
@@ -321,18 +334,6 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
               etaSec,
             })
           })
-
-          if (progress.processed >= progress.total) {
-            const finishedAt = Date.now()
-            setUploadItems(prev => {
-              return updateTransferItems(prev, uuid, {
-                percent: 100,
-                status: TransferStatus.Done,
-                etaSec: 0,
-                elapsedSec: Math.round((finishedAt - startedAt) / 1000),
-              })
-            })
-          }
         }
       }
 
@@ -811,7 +812,31 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
   }, [])
 
   useEffect(() => {
+    const handleFileUploaded = (e: Event) => {
+      const { fileInfo } = (e as CustomEvent).detail || {}
+
+      if (!fileInfo) return
+
+      setUploadItems(prev => {
+        const item = prev.find(it => it.name === fileInfo.name && it.status === TransferStatus.Uploading)
+
+        if (!item) return prev
+
+        const elapsedSec = item.startedAt ? Math.round((Date.now() - item.startedAt) / 1000) : 0
+
+        return updateTransferItems(prev, item.uuid, {
+          percent: 100,
+          status: TransferStatus.Done,
+          etaSec: 0,
+          elapsedSec,
+        })
+      })
+    }
+
+    window.addEventListener(FILE_MANAGER_EVENTS.FILE_UPLOADED, handleFileUploaded as EventListener)
+
     return () => {
+      window.removeEventListener(FILE_MANAGER_EVENTS.FILE_UPLOADED, handleFileUploaded as EventListener)
       isMountedRef.current = false
     }
   }, [])

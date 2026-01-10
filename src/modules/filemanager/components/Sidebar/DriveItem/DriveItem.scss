@@ -5,6 +5,8 @@
   color: rgb(31, 41, 55);
   font-weight: 500;
   transition: background-color 0.3s;
+  flex: 1;
+  min-width: 0;
 
   .fm-drive-item-icon {
     display: flex;
@@ -26,6 +28,7 @@
   flex-direction: column;
   gap: 4px;
   font-size: 11px;
+  min-width: 0;
 }
 
 .fm-drive-item-container {
@@ -48,11 +51,39 @@
 .fm-drive-item-capacity {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  position: relative;
+
+  & > span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .fm-tooltip-wrapper {
+    flex-shrink: 0;
+    margin-left: 0;
+    position: relative;
+    z-index: 10;
+    filter: none !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
 
   &.fm-drive-item-capacity-updating {
-    filter: blur(2px);
-    opacity: 0.6;
+    & > span {
+      filter: blur(2px);
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    
+    // Keep tooltip interactive even when capacity is updating
+    .fm-tooltip-wrapper {
+      filter: none;
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
     transition: all 0.3s ease;
   }
 }

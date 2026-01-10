@@ -1,7 +1,7 @@
 import { useRef, useCallback } from 'react'
 import { PostageBatch } from '@ethersphere/bee-js'
 
-const POLLING_TIMEOUT_MS = 30000
+const POLLING_TIMEOUT_MS = 60000
 const POLLING_INTERVAL_MS = 2000
 
 interface UseStampPollingOptions {
@@ -34,6 +34,7 @@ export function useStampPolling({ onStampUpdated, onPollingStateChange, refreshS
 
       onPollingStateChange(true)
 
+      const batchId = originalStamp.batchID.toString()
       const oldSize = originalStamp.size.toBytes()
       const oldExpiry = originalStamp.duration.toEndDate().getTime()
 
@@ -42,16 +43,25 @@ export function useStampPolling({ onStampUpdated, onPollingStateChange, refreshS
       }, POLLING_TIMEOUT_MS)
 
       pollingIntervalRef.current = setInterval(async () => {
-        const freshStamp = await refreshStamp(originalStamp.batchID.toString())
+        try {
+          const updatedStamp = await refreshStamp(batchId)
 
-        if (freshStamp) {
-          const capacityUpdated = freshStamp.size.toBytes() > oldSize
-          const durationUpdated = freshStamp.duration.toEndDate().getTime() > oldExpiry
+          if (!updatedStamp) {
+            return
+          }
+
+          const newSize = updatedStamp.size.toBytes()
+          const newExpiry = updatedStamp.duration.toEndDate().getTime()
+          const capacityUpdated = newSize > oldSize
+          const durationUpdated = newExpiry > oldExpiry
 
           if (capacityUpdated || durationUpdated) {
-            onStampUpdated(freshStamp)
+            onStampUpdated(updatedStamp)
             stopPolling()
           }
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.error('[useStampPolling] Polling tick failed', { batchId, error: e })
         }
       }, POLLING_INTERVAL_MS)
     },

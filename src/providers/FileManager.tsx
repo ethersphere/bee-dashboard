@@ -6,6 +6,7 @@ import { Context as SettingsContext } from './Settings'
 import { DriveInfo } from '@solarpunkltd/file-manager-lib'
 import { getSignerPk } from '../modules/filemanager/utils/common'
 import { getUsableStamps, validateStampStillExists } from '../../src/modules/filemanager/utils/bee'
+import { FILE_MANAGER_EVENTS } from '../modules/filemanager/constants/common'
 
 interface ContextInterface {
   fm: FileManagerBase | null
@@ -265,9 +266,10 @@ export function Provider({ children }: Props) {
     manager.emitter.on(FileManagerEvents.DRIVE_CREATED, handleDriveCreated)
     manager.emitter.on(FileManagerEvents.DRIVE_DESTROYED, handleDriveDestroyed)
     manager.emitter.on(FileManagerEvents.DRIVE_FORGOTTEN, handleDriveForgotten)
-    manager.emitter.on(FileManagerEvents.FILE_UPLOADED, ({ fileInfo }: { fileInfo: FileInfo }) =>
-      syncFiles(manager, fileInfo),
-    )
+    manager.emitter.on(FileManagerEvents.FILE_UPLOADED, ({ fileInfo }: { fileInfo: FileInfo }) => {
+      syncFiles(manager, fileInfo)
+      window.dispatchEvent(new CustomEvent(FILE_MANAGER_EVENTS.FILE_UPLOADED, { detail: { fileInfo } }))
+    })
     manager.emitter.on(FileManagerEvents.FILE_VERSION_RESTORED, ({ restored }: { restored: FileInfo }) =>
       syncFiles(manager, restored),
     )

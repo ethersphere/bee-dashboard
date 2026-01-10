@@ -18,6 +18,9 @@ import { DriveInfo } from '@solarpunkltd/file-manager-lib'
 import { calculateStampCapacityMetrics, handleDestroyAndForgetDrive } from '../../../utils/bee'
 import { Context as SettingsContext } from '../../../../../providers/Settings'
 import { truncateNameMiddle } from '../../../utils/common'
+import { Tooltip } from '../../Tooltip/Tooltip'
+import { TOOLTIPS } from '../../../constants/tooltips'
+import { FILE_MANAGER_EVENTS } from '../../../constants/common'
 
 interface DriveItemProps {
   drive: DriveInfo
@@ -27,7 +30,7 @@ interface DriveItemProps {
 }
 
 export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveItemProps): ReactElement {
-  const { fm, adminDrive, files, setShowError } = useContext(FMContext)
+  const { fm, adminDrive, files, setShowError, refreshStamp } = useContext(FMContext)
   const { beeApi } = useContext(SettingsContext)
 
   const [isHovered, setIsHovered] = useState(false)
@@ -135,14 +138,28 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
       handleUpgradeEnd(driveId, id, success, error, updatedStamp)
     }
 
-    window.addEventListener('fm:drive-upgrade-start', onStart as EventListener)
-    window.addEventListener('fm:drive-upgrade-end', onEnd as EventListener)
+    const onFileUploaded = async (e: Event) => {
+      const { fileInfo } = (e as CustomEvent).detail || {}
+
+      if (fileInfo && fileInfo.driveId === id) {
+        const updatedStamp = await refreshStamp(actualStamp.batchID.toString())
+
+        if (updatedStamp) {
+          setActualStamp(updatedStamp)
+        }
+      }
+    }
+
+    window.addEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_START, onStart as EventListener)
+    window.addEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, onEnd as EventListener)
+    window.addEventListener(FILE_MANAGER_EVENTS.FILE_UPLOADED, onFileUploaded as EventListener)
 
     return () => {
-      window.removeEventListener('fm:drive-upgrade-start', onStart as EventListener)
-      window.removeEventListener('fm:drive-upgrade-end', onEnd as EventListener)
+      window.removeEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_START, onStart as EventListener)
+      window.removeEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, onEnd as EventListener)
+      window.removeEventListener(FILE_MANAGER_EVENTS.FILE_UPLOADED, onFileUploaded as EventListener)
     }
-  }, [drive.id, handleUpgradeStart, handleUpgradeEnd])
+  }, [drive.id, actualStamp, handleUpgradeStart, handleUpgradeEnd, refreshStamp])
 
   const { capacityPct, usedSize, stampSize } = useMemo(() => {
     const filesPerDrive = files.filter(fi => fi.driveId === drive.id.toString())
@@ -162,8 +179,6 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
 
   const containerClassName = `fm-drive-item-container${isSelected ? ' fm-drive-item-container-selected' : ''}`
   const capacityClassName = `fm-drive-item-capacity ${isUpgrading ? 'fm-drive-item-capacity-updating' : ''}`
-  const updatingTitle = isUpgrading ? 'Capacity is updating... This may take a few moments.' : ''
-  const expiryUpdatingTitle = isUpgrading ? 'Expiry is updating... This may take a few moments.' : ''
   const driveIcon = isHovered ? <DriveFill size="16px" /> : <Drive size="16px" />
 
   return (
@@ -178,11 +193,18 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
           <div>{truncateNameMiddle(drive.name, 35, 8, 8)}</div>
         </div>
         <div className="fm-drive-item-content">
-          <div className={capacityClassName} title={updatingTitle}>
-            Capacity <ProgressBar value={capacityPct} width="64px" /> {usedSize} / {stampSize}
+          <div className={capacityClassName}>
+            <span>
+              Capacity <ProgressBar value={capacityPct} width="64px" /> {usedSize} / {stampSize}
+            </span>
+            <Tooltip
+              label={isUpgrading ? TOOLTIPS.DRIVE_CAPACITY_UPDATING : TOOLTIPS.DRIVE_CAPACITY_INFO}
+              iconSize="12px"
+              disableMargin={true}
+            />
           </div>
-          <div className={capacityClassName} title={expiryUpdatingTitle}>
-            Expiry date: {actualStamp.duration.toEndDate().toLocaleDateString()}
+          <div className={capacityClassName}>
+            <span>Expiry date: {actualStamp.duration.toEndDate().toLocaleDateString()}</span>
           </div>
         </div>
       </div>
