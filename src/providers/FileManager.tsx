@@ -5,7 +5,7 @@ import { FileManagerBase, FileManagerEvents } from '@solarpunkltd/file-manager-l
 import { Context as SettingsContext } from './Settings'
 import { DriveInfo } from '@solarpunkltd/file-manager-lib'
 import { getSignerPk } from '../modules/filemanager/utils/common'
-import { getUsableStamps, validateStampStillExists } from '../../src/modules/filemanager/utils/bee'
+import { getUsableStamps } from '../../src/modules/filemanager/utils/bee'
 import { FILE_MANAGER_EVENTS } from '../modules/filemanager/constants/common'
 
 interface ContextInterface {
@@ -221,20 +221,17 @@ export function Provider({ children }: Props) {
     const bee = new Bee(apiUrl, { signer: pk })
     const manager = new FileManagerBase(bee)
 
-    const handleInitialized = async (success: boolean) => {
+    const handleInitialized = (success: boolean) => {
       setInitializationError(!success)
 
       if (success) {
-        // need to wait for beeApi to init cause it can set invalid state incorrectly
-        if (manager.adminStamp && beeApi) {
-          const isAdminStampValid = await validateStampStillExists(beeApi, manager.adminStamp.batchID)
+        if (manager.adminStamp && !manager.adminStamp.usable) {
+          // eslint-disable-next-line no-console
+          console.warn('Admin stamp exists but is not usable')
+          setShallReset(true)
+          setInitializationError(true)
 
-          if (!isAdminStampValid) {
-            setShallReset(true)
-            setInitializationError(true)
-
-            return
-          }
+          return
         }
 
         setFm(manager)
@@ -290,7 +287,7 @@ export function Provider({ children }: Props) {
     } catch (error) {
       return null
     }
-  }, [apiUrl, beeApi, syncDrives, syncFiles])
+  }, [apiUrl, syncDrives, syncFiles])
 
   const resync = useCallback(async (): Promise<void> => {
     const prevDriveId = currentDrive?.id.toString()
