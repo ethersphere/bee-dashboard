@@ -207,105 +207,111 @@ export function UpgradeDriveModal({
   const shortBatchId = batchIdStr.length > 12 ? `${batchIdStr.slice(0, 4)}...${batchIdStr.slice(-4)}` : batchIdStr
 
   return createPortal(
-    <div className={`fm-modal-container${containerColor === 'none' ? ' fm-modal-container-no-bg' : ''}`}>
+    <div
+      className={`fm-modal-container fm-upgrade-drive-modal-container${
+        containerColor === 'none' ? ' fm-modal-container-no-bg' : ''
+      }`}
+    >
       <div className="fm-modal-window fm-upgrade-drive-modal">
         <div className="fm-modal-window-header">
           <DriveIcon size="18px" /> Upgrade {truncateNameMiddle(drive.name || stamp.label || shortBatchId, 35)}
           <Tooltip label={TOOLTIPS.UPGRADE_CAPACITY_AND_DURATION} />
         </div>
-        <div>Choose extension period and additional storage for your drive.</div>
-        <div className="fm-modal-window-body">
-          <div className="fm-upgrade-drive-modal-wallet">
-            <div className="fm-upgrade-drive-modal-wallet-header fm-emphasized-text">
-              <WalletIcon size="14px" color="rgb(237, 129, 49)" /> Wallet information
-            </div>
-            {walletBalance && nodeAddresses ? (
-              <div className="fm-upgrade-drive-modal-wallet-info-container">
-                <div className="fm-upgrade-drive-modal-wallet-info">
-                  <div>Balance</div>
-                  <div>{`${walletBalance.bzzBalance.toSignificantDigits(4)} xBZZ`}</div>
-                </div>
-                <div className="fm-upgrade-drive-modal-wallet-info">
-                  <div>Wallet address:</div>
-                  <div className="fm-value-snippet">{`${walletBalance.walletAddress.slice(
-                    0,
-                    4,
-                  )}...${walletBalance.walletAddress.slice(-4)}`}</div>
-                </div>
+        <div className="fm-modal-window-scrollable">
+          <div>Choose extension period and additional storage for your drive.</div>
+          <div className="fm-modal-window-body">
+            <div className="fm-upgrade-drive-modal-wallet">
+              <div className="fm-upgrade-drive-modal-wallet-header fm-emphasized-text">
+                <WalletIcon size="14px" color="rgb(237, 129, 49)" /> Wallet information
               </div>
-            ) : (
-              <div>Wallet information is not available</div>
-            )}
-            <div className="fm-upgrade-drive-modal-info fm-swarm-orange-font">
-              <a
-                className="fm-upgrade-drive-modal-info-link fm-pointer"
-                href="https://www.ethswarm.org/get-bzz#how-to-get-bzz"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <ExternalLinkIcon size="14px" />
-                Need help topping up?
-              </a>
+              {walletBalance && nodeAddresses ? (
+                <div className="fm-upgrade-drive-modal-wallet-info-container">
+                  <div className="fm-upgrade-drive-modal-wallet-info">
+                    <div>Balance</div>
+                    <div>{`${walletBalance.bzzBalance.toSignificantDigits(4)} xBZZ`}</div>
+                  </div>
+                  <div className="fm-upgrade-drive-modal-wallet-info">
+                    <div>Wallet address:</div>
+                    <div className="fm-value-snippet">{`${walletBalance.walletAddress.slice(
+                      0,
+                      4,
+                    )}...${walletBalance.walletAddress.slice(-4)}`}</div>
+                  </div>
+                </div>
+              ) : (
+                <div>Wallet information is not available</div>
+              )}
+              <div className="fm-upgrade-drive-modal-info fm-swarm-orange-font">
+                <a
+                  className="fm-upgrade-drive-modal-info-link fm-pointer"
+                  href="https://www.ethswarm.org/get-bzz#how-to-get-bzz"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <ExternalLinkIcon size="14px" />
+                  Need help topping up?
+                </a>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="fm-modal-window-body">
-          <div className="fm-upgrade-drive-modal-input-row">
-            <div className="fm-modal-window-input-container">
-              <CustomDropdown
-                id="drive-type"
-                label="Additional storage"
-                icon={<DatabaseIcon size="14px" color="rgb(237, 129, 49)" />}
-                options={sizeMarks}
-                value={capacityIndex === 0 ? -1 : capacity.toBytes()}
-                onChange={handleCapacityChange}
-              />
-            </div>
-            <div className="fm-modal-window-input-container">
-              <CustomDropdown
-                id="drive-type"
-                label="Duration"
-                icon={<CalendarIcon size="14px" color="rgb(237, 129, 49)" />}
-                options={desiredLifetimeOptions}
-                value={lifetimeIndex}
-                onChange={(value, index) => {
-                  setLifetimeIndex(value)
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="fm-modal-white-section">
-            <div className="fm-emphasized-text">Summary</div>
-            <div>
-              Drive: {truncateNameMiddle(drive.name)} {drive.isAdmin && <Warning style={{ fontSize: '16px' }} />}
-            </div>
-            <div>
-              BatchId: {truncateNameMiddle(stamp.label, 25)} ({shortBatchId})
-            </div>
-            <div>Expiry: {stamp.duration.toEndDate().toLocaleDateString()}</div>
-            <div>
-              Additional storage:{' '}
-              {(() => {
-                if (capacityIndex === 0) return '0 GB'
-
-                return `${
-                  fromBytesConversion(Math.max(capacity.toBytes() - stamp.size.toBytes(), 0), 'GB').toFixed(3) + ' GB'
-                } ${durationExtensionCost === '' ? '' : '(' + extensionCost + ' xBZZ)'}`
-              })()}
-            </div>
-            <div>
-              Extension period:{' '}
-              {`${desiredLifetimeOptions[lifetimeIndex]?.label} ${
-                capacityExtensionCost === '' ? '' : '(' + extensionCost + ' xBZZ)'
-              }`}
+          <div className="fm-modal-window-body">
+            <div className="fm-upgrade-drive-modal-input-row">
+              <div className="fm-modal-window-input-container">
+                <CustomDropdown
+                  id="drive-type"
+                  label="Additional storage"
+                  icon={<DatabaseIcon size="14px" color="rgb(237, 129, 49)" />}
+                  options={sizeMarks}
+                  value={capacityIndex === 0 ? -1 : capacity.toBytes()}
+                  onChange={handleCapacityChange}
+                />
+              </div>
+              <div className="fm-modal-window-input-container">
+                <CustomDropdown
+                  id="drive-type"
+                  label="Duration"
+                  icon={<CalendarIcon size="14px" color="rgb(237, 129, 49)" />}
+                  options={desiredLifetimeOptions}
+                  value={lifetimeIndex}
+                  onChange={(value, index) => {
+                    setLifetimeIndex(value)
+                  }}
+                />
+              </div>
             </div>
 
-            <div className="fm-upgrade-drive-modal-info fm-emphasized-text">
-              Total:{' '}
-              <span className="fm-swarm-orange-font">
-                {extensionCost} xBZZ {isBalanceSufficient ? '' : '(Insufficient balance)'}
-              </span>
+            <div className="fm-modal-white-section">
+              <div className="fm-emphasized-text">Summary</div>
+              <div>
+                Drive: {truncateNameMiddle(drive.name)} {drive.isAdmin && <Warning style={{ fontSize: '16px' }} />}
+              </div>
+              <div>
+                BatchId: {truncateNameMiddle(stamp.label, 25)} ({shortBatchId})
+              </div>
+              <div>Expiry: {stamp.duration.toEndDate().toLocaleDateString()}</div>
+              <div>
+                Additional storage:{' '}
+                {(() => {
+                  if (capacityIndex === 0) return '0 GB'
+
+                  return `${
+                    fromBytesConversion(Math.max(capacity.toBytes() - stamp.size.toBytes(), 0), 'GB').toFixed(3) + ' GB'
+                  } ${durationExtensionCost === '' ? '' : '(' + extensionCost + ' xBZZ)'}`
+                })()}
+              </div>
+              <div>
+                Extension period:{' '}
+                {`${desiredLifetimeOptions[lifetimeIndex]?.label} ${
+                  capacityExtensionCost === '' ? '' : '(' + extensionCost + ' xBZZ)'
+                }`}
+              </div>
+
+              <div className="fm-upgrade-drive-modal-info fm-emphasized-text">
+                Total:{' '}
+                <span className="fm-swarm-orange-font">
+                  {extensionCost} xBZZ {isBalanceSufficient ? '' : '(Insufficient balance)'}
+                </span>
+              </div>
             </div>
           </div>
         </div>
