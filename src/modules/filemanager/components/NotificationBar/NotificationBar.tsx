@@ -72,17 +72,19 @@ export function NotificationBar({ setErrorMessage }: NotificationBarProps): Reac
 
       if (success && updatedStamp && driveId) {
         if (!isExpiring(updatedStamp)) {
-          setStampsToExpire(prev => {
-            const stampIx = prev.findIndex(s => s.batchID.toString() === updatedStamp.batchID.toString())
+          setTimeout(() => {
+            setStampsToExpire(prev => {
+              const stampIx = prev.findIndex(s => s.batchID.toString() === updatedStamp.batchID.toString())
 
-            return stampIx !== -1 ? prev.filter((_, i) => i !== stampIx) : prev
-          })
+              return stampIx !== -1 ? prev.filter((_, i) => i !== stampIx) : prev
+            })
 
-          setDrivesToExpire(prev => {
-            const driveIx = prev.findIndex(d => d.id.toString() === driveId)
+            setDrivesToExpire(prev => {
+              const driveIx = prev.findIndex(d => d.id.toString() === driveId)
 
-            return driveIx !== -1 ? prev.filter((_, i) => i !== driveIx) : prev
-          })
+              return driveIx !== -1 ? prev.filter((_, i) => i !== driveIx) : prev
+            })
+          }, 150)
         }
       }
     }

@@ -1,4 +1,4 @@
-import { ReactElement, useState, useContext, useEffect, useMemo, useCallback } from 'react'
+import { ReactElement, useState, useContext, useEffect, useMemo, useCallback, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import Drive from 'remixicon-react/HardDrive2LineIcon'
 import DriveFill from 'remixicon-react/HardDrive2FillIcon'
@@ -40,6 +40,7 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
   const [isUpgrading, setIsUpgrading] = useState(false)
   const [isDestroying, setIsDestroying] = useState(false)
   const [actualStamp, setActualStamp] = useState<PostageBatch>(stamp)
+  const batchIDRef = useRef(stamp.batchID)
 
   const { showContext, pos, contextRef, setPos, setShowContext } = useContextMenu<HTMLDivElement>()
 
@@ -48,6 +49,7 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
   useEffect(() => {
     if (actualStamp.batchID.toString() !== stamp.batchID.toString()) {
       setActualStamp(stamp)
+      batchIDRef.current = stamp.batchID
 
       return
     }
@@ -59,6 +61,7 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
 
     if (incomingSize > currentSize || incomingExpiry > currentExpiry) {
       setActualStamp(stamp)
+      batchIDRef.current = stamp.batchID
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stamp])
@@ -94,6 +97,7 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
 
       if (updatedStamp) {
         setActualStamp(updatedStamp)
+        batchIDRef.current = updatedStamp.batchID
       }
     },
     [setErrorMessage, setShowError],
@@ -142,10 +146,11 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
       const { fileInfo } = (e as CustomEvent).detail || {}
 
       if (fileInfo && fileInfo.driveId === id) {
-        const updatedStamp = await refreshStamp(actualStamp.batchID.toString())
+        const updatedStamp = await refreshStamp(batchIDRef.current.toString())
 
         if (updatedStamp) {
           setActualStamp(updatedStamp)
+          batchIDRef.current = updatedStamp.batchID
         }
       }
     }
@@ -159,7 +164,7 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
       window.removeEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, onEnd as EventListener)
       window.removeEventListener(FILE_MANAGER_EVENTS.FILE_UPLOADED, onFileUploaded as EventListener)
     }
-  }, [drive.id, actualStamp, handleUpgradeStart, handleUpgradeEnd, refreshStamp])
+  }, [drive.id, handleUpgradeStart, handleUpgradeEnd, refreshStamp])
 
   const { capacityPct, usedSize, stampSize } = useMemo(() => {
     const filesPerDrive = files.filter(fi => fi.driveId === drive.id.toString())
