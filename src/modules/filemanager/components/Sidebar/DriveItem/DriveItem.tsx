@@ -41,12 +41,17 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
   const [isDestroying, setIsDestroying] = useState(false)
   const [actualStamp, setActualStamp] = useState<PostageBatch>(stamp)
   const batchIDRef = useRef(stamp.batchID)
+  const isUpgradingRef = useRef(false)
 
   const { showContext, pos, contextRef, setPos, setShowContext } = useContextMenu<HTMLDivElement>()
 
   const { setView, setActualItemView } = useView()
 
   useEffect(() => {
+    if (isUpgradingRef.current) {
+      return
+    }
+
     if (actualStamp.batchID.toString() !== stamp.batchID.toString()) {
       setActualStamp(stamp)
       batchIDRef.current = stamp.batchID
@@ -74,6 +79,7 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
   const handleUpgradeStart = useCallback(
     (driveId: string, id: string) => {
       if (driveId === id) {
+        isUpgradingRef.current = true
         setIsUpgrading(() => true)
       }
     },
@@ -86,9 +92,9 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
         return
       }
 
-      setIsUpgrading(() => false)
-
       if (!success && error) {
+        setIsUpgrading(() => false)
+        isUpgradingRef.current = false
         setErrorMessage?.(error)
         setShowError(true)
 
@@ -98,6 +104,14 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
       if (updatedStamp) {
         setActualStamp(updatedStamp)
         batchIDRef.current = updatedStamp.batchID
+
+        setTimeout(() => {
+          setIsUpgrading(() => false)
+          isUpgradingRef.current = false
+        }, 300)
+      } else {
+        setIsUpgrading(() => false)
+        isUpgradingRef.current = false
       }
     },
     [setErrorMessage, setShowError],
