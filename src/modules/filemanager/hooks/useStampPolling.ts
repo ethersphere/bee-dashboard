@@ -1,7 +1,7 @@
 import { useRef, useCallback } from 'react'
 import { PostageBatch } from '@ethersphere/bee-js'
 
-const POLLING_TIMEOUT_MS = 60000
+const POLLING_TIMEOUT_MS = 15000
 const POLLING_INTERVAL_MS = 2000
 
 interface UseStampPollingOptions {
@@ -30,7 +30,15 @@ export function useStampPolling({ onStampUpdated, onPollingStateChange, refreshS
 
   const startPolling = useCallback(
     (originalStamp: PostageBatch) => {
-      stopPolling()
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current)
+        pollingIntervalRef.current = null
+      }
+
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
 
       onPollingStateChange(true)
 

@@ -1,4 +1,4 @@
-import { ReactElement, useState, useContext, useEffect, useMemo, useCallback, useRef } from 'react'
+import { ReactElement, useState, useContext, useEffect, useMemo, useCallback, useRef, memo } from 'react'
 import { createPortal } from 'react-dom'
 import Drive from 'remixicon-react/HardDrive2LineIcon'
 import DriveFill from 'remixicon-react/HardDrive2FillIcon'
@@ -21,6 +21,122 @@ import { truncateNameMiddle } from '../../../utils/common'
 import { Tooltip } from '../../Tooltip/Tooltip'
 import { TOOLTIPS } from '../../../constants/tooltips'
 import { FILE_MANAGER_EVENTS } from '../../../constants/common'
+import { useStampPolling } from '../../../hooks/useStampPolling'
+
+function useDriveEventListeners(
+  driveId: string,
+  handleUpgradeStart: (eventDriveId: string, id: string) => void,
+  handleUpgradeEnd: (
+    eventDriveId: string,
+    id: string,
+    success: boolean,
+    error: string | undefined,
+    updatedStamp?: PostageBatch,
+  ) => void,
+  handleFileUploaded: (e: Event) => void,
+) {
+  useEffect(() => {
+    const onStart = (e: Event) => {
+      const { driveId: eventDriveId } = (e as CustomEvent).detail || {}
+      handleUpgradeStart(eventDriveId, driveId)
+    }
+
+    const onEnd = (e: Event) => {
+      const { driveId: eventDriveId, success, error, updatedStamp } = (e as CustomEvent).detail || {}
+      handleUpgradeEnd(eventDriveId, driveId, success, error, updatedStamp)
+    }
+
+    window.addEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_START, onStart as EventListener)
+    window.addEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, onEnd as EventListener)
+    window.addEventListener(FILE_MANAGER_EVENTS.FILE_UPLOADED, handleFileUploaded as EventListener)
+
+    return () => {
+      window.removeEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_START, onStart as EventListener)
+      window.removeEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, onEnd as EventListener)
+      window.removeEventListener(FILE_MANAGER_EVENTS.FILE_UPLOADED, handleFileUploaded as EventListener)
+    }
+  }, [driveId, handleUpgradeStart, handleUpgradeEnd, handleFileUploaded])
+}
+
+interface DriveModalsProps {
+  isUpgradeDriveModalOpen: boolean
+  setIsUpgradeDriveModalOpen: (open: boolean) => void
+  actualStamp: PostageBatch
+  drive: DriveInfo
+  setErrorMessage?: (error: string) => void
+  isUpgrading: boolean
+  isCapacityUpdating: boolean
+  isDestroying: boolean
+  setIsProgressModalOpen: (open: boolean) => void
+  isProgressModalOpen: boolean
+  isDestroyDriveModalOpen: boolean
+  setIsDestroyDriveModalOpen: (open: boolean) => void
+  doDestroy: () => Promise<void>
+}
+
+function DriveModals({
+  isUpgradeDriveModalOpen,
+  setIsUpgradeDriveModalOpen,
+  actualStamp,
+  drive,
+  setErrorMessage,
+  isUpgrading,
+  isCapacityUpdating,
+  isDestroying,
+  setIsProgressModalOpen,
+  isProgressModalOpen,
+  isDestroyDriveModalOpen,
+  setIsDestroyDriveModalOpen,
+  doDestroy,
+}: DriveModalsProps): ReactElement | null {
+  return (
+    <>
+      {isUpgradeDriveModalOpen && (
+        <UpgradeDriveModal
+          stamp={actualStamp}
+          drive={drive}
+          onCancelClick={() => setIsUpgradeDriveModalOpen(false)}
+          setErrorMessage={setErrorMessage}
+        />
+      )}
+
+      {isUpgrading && (
+        <div className="fm-drive-item-creating-overlay" aria-live="polite">
+          <div className="fm-mini-spinner" />
+          <span>Upgrading drive…</span>
+        </div>
+      )}
+      {isCapacityUpdating && !isUpgrading && (
+        <div className="fm-drive-item-creating-overlay" aria-live="polite">
+          <div className="fm-mini-spinner" />
+          <span>Updating capacity…</span>
+        </div>
+      )}
+      {isDestroying && (
+        <div
+          className="fm-drive-item-creating-overlay"
+          aria-live="polite"
+          onClick={() => setIsProgressModalOpen(true)}
+          style={{ cursor: 'pointer' }}
+          title="Click to show progress modal"
+        >
+          <div className="fm-mini-spinner" />
+          <span>Destroying drive…</span>
+        </div>
+      )}
+      {isProgressModalOpen && isDestroying && (
+        <ProgressDestroyModal drive={drive} onMinimize={() => setIsProgressModalOpen(false)} />
+      )}
+      {isDestroyDriveModalOpen && (
+        <DestroyDriveModal
+          drive={drive}
+          onCancelClick={() => setIsDestroyDriveModalOpen(false)}
+          doDestroy={doDestroy}
+        />
+      )}
+    </>
+  )
+}
 
 interface DriveItemProps {
   drive: DriveInfo
@@ -29,19 +145,52 @@ interface DriveItemProps {
   setErrorMessage?: (error: string) => void
 }
 
-export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveItemProps): ReactElement {
+function DriveItemComponent({ drive, stamp, isSelected, setErrorMessage }: DriveItemProps): ReactElement {
   const { fm, adminDrive, files, setShowError, refreshStamp } = useContext(FMContext)
   const { beeApi } = useContext(SettingsContext)
+
+  const driveId = drive.id.toString()
 
   const [isHovered, setIsHovered] = useState(false)
   const [isDestroyDriveModalOpen, setIsDestroyDriveModalOpen] = useState(false)
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false)
   const [isUpgradeDriveModalOpen, setIsUpgradeDriveModalOpen] = useState(false)
   const [isUpgrading, setIsUpgrading] = useState(false)
+  const [isCapacityUpdating, setIsCapacityUpdating] = useState(false)
   const [isDestroying, setIsDestroying] = useState(false)
   const [actualStamp, setActualStamp] = useState<PostageBatch>(stamp)
   const batchIDRef = useRef(stamp.batchID)
   const isUpgradingRef = useRef(false)
+  const actualStampRef = useRef(actualStamp)
+  const startPollingRef = useRef<((stamp: PostageBatch) => void) | null>(null)
+  const stopPollingRef = useRef<(() => void) | null>(null)
+
+  useEffect(() => {
+    actualStampRef.current = actualStamp
+  }, [actualStamp])
+
+  const handleStampUpdated = useCallback((updatedStamp: PostageBatch) => {
+    setActualStamp(updatedStamp)
+    batchIDRef.current = updatedStamp.batchID
+  }, [])
+
+  const handlePollingStateChange = useCallback((isPolling: boolean) => {
+    setIsCapacityUpdating(isPolling)
+  }, [])
+
+  const { startPolling, stopPolling } = useStampPolling({
+    onStampUpdated: handleStampUpdated,
+    onPollingStateChange: handlePollingStateChange,
+    refreshStamp,
+  })
+
+  useEffect(() => {
+    startPollingRef.current = startPolling
+  }, [startPolling])
+
+  useEffect(() => {
+    stopPollingRef.current = stopPolling
+  }, [stopPolling])
 
   const { showContext, pos, contextRef, setPos, setShowContext } = useContextMenu<HTMLDivElement>()
 
@@ -71,6 +220,14 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stamp])
 
+  useEffect(() => {
+    return () => {
+      if (stopPollingRef.current) {
+        stopPollingRef.current()
+      }
+    }
+  }, [])
+
   function handleMenuClick(e: React.MouseEvent) {
     setShowContext(true)
     setPos({ x: e.clientX, y: e.clientY })
@@ -78,23 +235,25 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
 
   const handleUpgradeStart = useCallback(
     (driveId: string, id: string) => {
-      if (driveId === id) {
-        isUpgradingRef.current = true
-        setIsUpgrading(() => true)
-      }
+      if (driveId !== id) return
+
+      isUpgradingRef.current = true
+      setIsUpgrading(() => true)
     },
     [setIsUpgrading],
   )
 
   const handleUpgradeEnd = useCallback(
     (driveId: string, id: string, success: boolean, error: string | undefined, updatedStamp?: PostageBatch) => {
-      if (driveId !== id) {
-        return
+      if (driveId !== id) return
+
+      const resetUpgrading = () => {
+        setIsUpgrading(false)
+        isUpgradingRef.current = false
       }
 
       if (!success && error) {
-        setIsUpgrading(() => false)
-        isUpgradingRef.current = false
+        resetUpgrading()
         setErrorMessage?.(error)
         setShowError(true)
 
@@ -104,20 +263,21 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
       if (updatedStamp) {
         setActualStamp(updatedStamp)
         batchIDRef.current = updatedStamp.batchID
-
-        setTimeout(() => {
-          setIsUpgrading(() => false)
-          isUpgradingRef.current = false
-        }, 300)
+        setTimeout(resetUpgrading, 300)
       } else {
-        setIsUpgrading(() => false)
-        isUpgradingRef.current = false
+        resetUpgrading()
       }
     },
     [setErrorMessage, setShowError],
   )
 
   const doDestroy = useCallback(async () => {
+    const closeModals = () => {
+      setIsDestroyDriveModalOpen(false)
+      setIsDestroying(false)
+      setIsProgressModalOpen(false)
+    }
+
     setIsDestroyDriveModalOpen(false)
     setIsProgressModalOpen(true)
     setIsDestroying(true)
@@ -128,57 +288,27 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
       drive,
       isDestroy: true,
       adminDrive,
-      onSuccess: () => {
-        setIsDestroyDriveModalOpen(false)
-        setIsDestroying(false)
-        setIsProgressModalOpen(false)
-      },
+      onSuccess: closeModals,
       onError: e => {
-        setIsDestroyDriveModalOpen(false)
-        setIsDestroying(false)
-        setIsProgressModalOpen(false)
+        closeModals()
         setErrorMessage?.(`Error destroying drive: ${drive.name}: ${e}`)
         setShowError(true)
       },
     })
   }, [beeApi, fm, drive, adminDrive, setErrorMessage, setShowError])
 
-  useEffect(() => {
-    const id = drive.id.toString()
-
-    const onStart = (e: Event) => {
-      const { driveId } = (e as CustomEvent).detail || {}
-      handleUpgradeStart(driveId, id)
-    }
-
-    const onEnd = (e: Event) => {
-      const { driveId, success, error, updatedStamp } = (e as CustomEvent).detail || {}
-      handleUpgradeEnd(driveId, id, success, error, updatedStamp)
-    }
-
-    const onFileUploaded = async (e: Event) => {
+  const handleFileUploaded = useCallback(
+    (e: Event) => {
       const { fileInfo } = (e as CustomEvent).detail || {}
 
-      if (fileInfo && fileInfo.driveId === id) {
-        const updatedStamp = await refreshStamp(batchIDRef.current.toString())
+      if (!fileInfo || fileInfo.driveId !== driveId || !startPollingRef.current) return
 
-        if (updatedStamp) {
-          setActualStamp(updatedStamp)
-          batchIDRef.current = updatedStamp.batchID
-        }
-      }
-    }
+      startPollingRef.current(actualStampRef.current)
+    },
+    [driveId],
+  )
 
-    window.addEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_START, onStart as EventListener)
-    window.addEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, onEnd as EventListener)
-    window.addEventListener(FILE_MANAGER_EVENTS.FILE_UPLOADED, onFileUploaded as EventListener)
-
-    return () => {
-      window.removeEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_START, onStart as EventListener)
-      window.removeEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, onEnd as EventListener)
-      window.removeEventListener(FILE_MANAGER_EVENTS.FILE_UPLOADED, onFileUploaded as EventListener)
-    }
-  }, [drive.id, handleUpgradeStart, handleUpgradeEnd, refreshStamp])
+  useDriveEventListeners(driveId, handleUpgradeStart, handleUpgradeEnd, handleFileUploaded)
 
   const { capacityPct, usedSize, stampSize } = useMemo(() => {
     const filesPerDrive = files.filter(fi => fi.driveId === drive.id.toString())
@@ -196,8 +326,12 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
     setIsDestroyDriveModalOpen(true)
   }, [setShowContext, setIsDestroyDriveModalOpen])
 
-  const containerClassName = `fm-drive-item-container${isSelected ? ' fm-drive-item-container-selected' : ''}`
-  const capacityClassName = `fm-drive-item-capacity ${isUpgrading ? 'fm-drive-item-capacity-updating' : ''}`
+  const selectedClass = isSelected ? ' fm-drive-item-container-selected' : ''
+  const containerClassName = `fm-drive-item-container${selectedClass}`
+
+  const updatingClass = isUpgrading || isCapacityUpdating ? ' fm-drive-item-capacity-updating' : ''
+  const capacityClassName = `fm-drive-item-capacity${updatingClass}`
+
   const driveIcon = isHovered ? <DriveFill size="16px" /> : <Drive size="16px" />
 
   return (
@@ -217,7 +351,9 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
               Capacity <ProgressBar value={capacityPct} width="64px" /> {usedSize} / {stampSize}
             </span>
             <Tooltip
-              label={isUpgrading ? TOOLTIPS.DRIVE_CAPACITY_UPDATING : TOOLTIPS.DRIVE_CAPACITY_INFO}
+              label={
+                isUpgrading || isCapacityUpdating ? TOOLTIPS.DRIVE_CAPACITY_UPDATING : TOOLTIPS.DRIVE_CAPACITY_INFO
+              }
               iconSize="12px"
               disableMargin={true}
             />
@@ -261,43 +397,32 @@ export function DriveItem({ drive, stamp, isSelected, setErrorMessage }: DriveIt
           onClick={() => setIsUpgradeDriveModalOpen(true)}
         />
       </div>
-      {isUpgradeDriveModalOpen && (
-        <UpgradeDriveModal
-          stamp={actualStamp}
-          drive={drive}
-          onCancelClick={() => setIsUpgradeDriveModalOpen(false)}
-          setErrorMessage={setErrorMessage}
-        />
-      )}
-
-      {isUpgrading && (
-        <div className="fm-drive-item-creating-overlay" aria-live="polite">
-          <div className="fm-mini-spinner" />
-          <span>Upgrading drive…</span>
-        </div>
-      )}
-      {isDestroying && (
-        <div
-          className="fm-drive-item-creating-overlay"
-          aria-live="polite"
-          onClick={() => setIsProgressModalOpen(true)}
-          style={{ cursor: 'pointer' }}
-          title="Click to show progress modal"
-        >
-          <div className="fm-mini-spinner" />
-          <span>Destroying drive…</span>
-        </div>
-      )}
-      {isProgressModalOpen && isDestroying && (
-        <ProgressDestroyModal drive={drive} onMinimize={() => setIsProgressModalOpen(false)} />
-      )}
-      {isDestroyDriveModalOpen && (
-        <DestroyDriveModal
-          drive={drive}
-          onCancelClick={() => setIsDestroyDriveModalOpen(false)}
-          doDestroy={doDestroy}
-        />
-      )}
+      <DriveModals
+        isUpgradeDriveModalOpen={isUpgradeDriveModalOpen}
+        setIsUpgradeDriveModalOpen={setIsUpgradeDriveModalOpen}
+        actualStamp={actualStamp}
+        drive={drive}
+        setErrorMessage={setErrorMessage}
+        isUpgrading={isUpgrading}
+        isCapacityUpdating={isCapacityUpdating}
+        isDestroying={isDestroying}
+        setIsProgressModalOpen={setIsProgressModalOpen}
+        isProgressModalOpen={isProgressModalOpen}
+        isDestroyDriveModalOpen={isDestroyDriveModalOpen}
+        setIsDestroyDriveModalOpen={setIsDestroyDriveModalOpen}
+        doDestroy={doDestroy}
+      />
     </div>
   )
 }
+
+function arePropsEqual(prevProps: DriveItemProps, nextProps: DriveItemProps) {
+  const driveIdEqual = prevProps.drive.id.toString() === nextProps.drive.id.toString()
+  const stampIdEqual = prevProps.stamp.batchID.toString() === nextProps.stamp.batchID.toString()
+  const isSelectedEqual = prevProps.isSelected === nextProps.isSelected
+
+  return driveIdEqual && stampIdEqual && isSelectedEqual
+}
+
+export const MemoizedDriveItem = memo(DriveItemComponent, arePropsEqual)
+export const DriveItem = MemoizedDriveItem
