@@ -29,8 +29,6 @@ import { fromBytesConversion, getExpiryDateByLifetime, truncateNameMiddle } from
 import { Context as SettingsContext } from '../../../../providers/Settings'
 import { Context as FMContext } from '../../../../providers/FileManager'
 import { getHumanReadableFileSize } from '../../../../utils/file'
-import { Tooltip } from '../Tooltip/Tooltip'
-import { TOOLTIPS } from '../../constants/tooltips'
 import { useStampPolling } from '../../hooks/useStampPolling'
 import { FILE_MANAGER_EVENTS } from '../../constants/common'
 
@@ -215,7 +213,6 @@ export function UpgradeDriveModal({
       <div className="fm-modal-window fm-upgrade-drive-modal">
         <div className="fm-modal-window-header">
           <DriveIcon size="18px" /> Upgrade {truncateNameMiddle(drive.name || stamp.label || shortBatchId, 35)}
-          <Tooltip label={TOOLTIPS.UPGRADE_CAPACITY_AND_DURATION} />
         </div>
         <div className="fm-modal-window-scrollable">
           <div>Choose extension period and additional storage for your drive.</div>

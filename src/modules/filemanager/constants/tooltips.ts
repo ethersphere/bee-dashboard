@@ -131,10 +131,5 @@ The system is checking the network for the updated stamp information. This proce
 If no update is detected after the polling period, the display will revert to showing the last known values.`,
 
   DRIVE_CAPACITY_INFO: `${getTitleWithStyle('Drive Capacity')}
-Shows the storage used versus total capacity available for this drive.
-<br/>
-<br/>
-<b>Note:</b> The reported capacity may not always match actual file sizes due to network storage overhead, and metadata. Capacity updates after file operations as the bee-dashboard syncs with network.`,
-  UPGRADE_CAPACITY_AND_DURATION: `${getTitleWithStyle('About Used Capacity')}
-After upgrading, the displayed used capacity percentage will decrease logarithmically (e.g., 50% → 25% → 12.5%) due to stamp dilution when storage increases. This is normal behavior and does not affect your actual data.`,
+Shows how much storage is used on this drive. Actual usage might be a bit higher than file sizes due to storage overhead.`,
 }
