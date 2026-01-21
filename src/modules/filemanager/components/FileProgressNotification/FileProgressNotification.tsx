@@ -9,9 +9,8 @@ interface FileProgressNotificationProps {
   label?: string
   type: FileTransferType
   open?: boolean
-  count?: number
   items?: ProgressItem[]
-  onRowClose?: (name: string) => void
+  onRowClose?: (uuid: string) => void
   onCloseAll?: () => void
 }
 
@@ -19,7 +18,6 @@ export function FileProgressNotification({
   label,
   type,
   open,
-  count,
   items,
   onRowClose,
   onCloseAll,
@@ -77,7 +75,6 @@ export function FileProgressNotification({
 
       {showFileProgressWindow && (
         <FileProgressWindow
-          numberOfFiles={items && items.length ? undefined : count}
           items={items}
           type={type}
           onCancelClick={() => setShowFileProgressWindow(false)}

@@ -21,6 +21,7 @@ import { FILE_MANAGER_EVENTS } from '../constants/common'
 const SAMPLE_WINDOW_MS = 500
 const ETA_SMOOTHING = 0.3
 const MAX_UPLOAD_FILES = 10
+const ABORT_EVENT = 'abort'
 
 type ResolveResult = {
   cancelled: boolean
@@ -174,7 +175,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
   const uploadAbortsRef = useRef<AbortManager>(new AbortManager())
   const queueRef = useRef<UploadTask[]>([])
   const runningRef = useRef(false)
-  const cancelledNamesRef = useRef<Set<string>>(new Set())
+  const cancelledQueuedRef = useRef<Set<string>>(new Set())
   const cancelledUploadingRef = useRef<Set<string>>(new Set())
   const cancelledDownloadingRef = useRef<Set<string>>(new Set())
 
@@ -189,7 +190,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
   )
 
   const clearAllFlagsFor = useCallback((uuid: string) => {
-    cancelledNamesRef.current.delete(uuid)
+    cancelledQueuedRef.current.delete(uuid)
     cancelledUploadingRef.current.delete(uuid)
     uploadAbortsRef.current.abort(uuid)
     queueRef.current = queueRef.current.filter(t => {
@@ -302,9 +303,9 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
       })
 
       const onProgress = (progress: UploadProgress) => {
-        const signal = uploadAbortsRef.current.getSignal(name)
+        const signal = uploadAbortsRef.current.getSignal(uuid)
 
-        if (cancelledUploadingRef.current.has(name) || !isMountedRef.current || signal?.aborted) return
+        if (cancelledUploadingRef.current.has(uuid) || !isMountedRef.current || signal?.aborted) return
 
         if (progress.total > 0) {
           const now = Date.now()
@@ -380,29 +381,37 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
         }),
       )
 
-      uploadAbortsRef.current.create(task.finalName)
-      const signal = uploadAbortsRef.current.getSignal(task.finalName)
+      uploadAbortsRef.current.create(task.uuid)
+      const signal = uploadAbortsRef.current.getSignal(task.uuid)
+
+      let reject: (reason?: Error) => void
+      const abortHandler = () => {
+        reject(new Error('Upload cancelled'))
+      }
+
+      const checkCancellation = new Promise<never>((_, rej) => {
+        reject = rej
+        signal?.addEventListener(ABORT_EVENT, abortHandler)
+      })
 
       try {
         if (signal?.aborted) {
           throw new Error('Upload cancelled')
         }
 
-        await fm.upload(
+        const uploadPromise = fm.upload(
           taskDrive,
           { ...info, onUploadProgress: progressCb },
           { actHistoryAddress: task.isReplace ? task.replaceHistory : undefined },
         )
 
-        if (signal?.aborted) {
-          throw new Error('Upload cancelled')
-        }
+        await Promise.race([uploadPromise, checkCancellation])
 
         if (currentStamp) {
           await refreshStamp(currentStamp.batchID.toString())
         }
       } catch (error) {
-        const wasCancelled = cancelledUploadingRef.current.has(task.finalName) || signal?.aborted
+        const wasCancelled = cancelledUploadingRef.current.has(task.uuid) || signal?.aborted
 
         if (!wasCancelled) {
           const errorMsg = error instanceof Error ? error.message : String(error)
@@ -419,9 +428,15 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
           }),
         )
       } finally {
-        uploadAbortsRef.current.abort(task.finalName)
-        cancelledUploadingRef.current.delete(task.finalName)
-        cancelledNamesRef.current.delete(task.finalName)
+        signal?.removeEventListener(ABORT_EVENT, abortHandler)
+
+        const wasCancelled = cancelledUploadingRef.current.has(task.uuid) || signal?.aborted
+
+        if (!wasCancelled) {
+          uploadAbortsRef.current.abort(task.uuid)
+          cancelledUploadingRef.current.delete(task.uuid)
+          cancelledQueuedRef.current.delete(task.uuid)
+        }
       }
     },
     [fm, files, currentStamp, trackUpload, refreshStamp, setShowError, setErrorMessage],
@@ -677,14 +692,14 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
 
             if (!task) break
 
-            const isCancelled = cancelledNamesRef.current.has(task.uuid)
+            const isCancelled = cancelledQueuedRef.current.has(task.uuid)
 
             if (isCancelled) {
               safeSetState(
                 isMountedRef,
                 setUploadItems,
               )(prev => updateTransferItems(prev, task.uuid, { status: TransferStatus.Cancelled }))
-              cancelledNamesRef.current.delete(task.uuid)
+              cancelledQueuedRef.current.delete(task.uuid)
               queueRef.current.shift()
             } else {
               await processUploadTask(task)
@@ -743,65 +758,63 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
   )
 
   const cancelOrDismissUpload = useCallback(
-    (name: string) => {
+    (uuid: string) => {
       safeSetState(
         isMountedRef,
         setUploadItems,
       )(prev => {
-        const row = prev.find(r => r.name === name)
+        const row = prev.find(r => r.uuid === uuid)
 
         if (!row) return prev
 
         if (row.status === TransferStatus.Queued) {
-          cancelledNamesRef.current.add(name)
-          queueRef.current = queueRef.current.filter(t => !(t.finalName === name && t.driveName === row.driveName))
+          cancelledQueuedRef.current.add(row.uuid)
+          queueRef.current = queueRef.current.filter(t => t.uuid !== row.uuid)
 
-          return prev.map(r =>
-            r.name === name && r.driveName === row.driveName ? { ...r, status: TransferStatus.Cancelled } : r,
-          )
+          return prev.map(r => (r.uuid === row.uuid ? { ...r, status: TransferStatus.Cancelled } : r))
         }
 
         if (row.status === TransferStatus.Uploading) {
-          cancelledUploadingRef.current.add(name)
-          uploadAbortsRef.current.abort(name)
+          cancelledUploadingRef.current.add(row.uuid)
+          uploadAbortsRef.current.abort(row.uuid)
 
-          return prev.map(r => (r.name === name ? { ...r, status: TransferStatus.Cancelled } : r))
+          return prev.map(r => (r.uuid === uuid ? { ...r, status: TransferStatus.Cancelled } : r))
         }
 
-        clearAllFlagsFor(name)
+        clearAllFlagsFor(row.uuid)
 
-        return prev.filter(r => r.name !== name)
+        return prev.filter(r => r.uuid !== uuid)
       })
     },
     [clearAllFlagsFor],
   )
 
-  const cancelOrDismissDownload = useCallback((name: string) => {
+  const cancelOrDismissDownload = useCallback((uuid: string) => {
     safeSetState(
       isMountedRef,
       setDownloadItems,
     )(prev => {
-      const row = prev.find(r => r.name === name)
+      const row = prev.find(r => r.uuid === uuid)
 
       if (!row) return prev
 
       if (row.status === TransferStatus.Downloading) {
-        cancelledDownloadingRef.current.add(name)
-        abortDownload(name)
+        cancelledDownloadingRef.current.add(uuid)
+        abortDownload(uuid)
 
-        return prev.map(r => (r.name === name ? { ...r, status: TransferStatus.Cancelled } : r))
+        return prev.map(r => (r.uuid === uuid ? { ...r, status: TransferStatus.Cancelled } : r))
       }
 
-      cancelledDownloadingRef.current.delete(name)
+      cancelledDownloadingRef.current.delete(uuid)
 
-      return prev.filter(r => r.name !== name)
+      return prev.filter(r => r.uuid !== uuid)
     })
   }, [])
 
   const dismissAllUploads = useCallback(() => {
     uploadAbortsRef.current.clear()
     queueRef.current = []
-    cancelledNamesRef.current.clear()
+    cancelledQueuedRef.current.clear()
     cancelledUploadingRef.current.clear()
     setUploadItems([])
   }, [])
@@ -818,7 +831,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
       if (!fileInfo) return
 
       setUploadItems(prev => {
-        const item = prev.find(it => it.name === fileInfo.name && it.status === TransferStatus.Uploading)
+        const item = prev.find(it => it.uuid === fileInfo.uuid && it.status === TransferStatus.Uploading)
 
         if (!item) return prev
 

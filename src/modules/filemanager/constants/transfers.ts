@@ -59,7 +59,7 @@ export interface DownloadProgress {
 }
 
 export type ProgressItem = {
-  uuid?: string
+  uuid: string
   name: string
   size?: string
   percent?: number
