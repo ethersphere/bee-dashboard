@@ -1,5 +1,5 @@
 import { FileInfo, FileManager } from '@solarpunkltd/file-manager-lib'
-import { getExtensionFromName, guessMime, VIEWERS } from './view'
+import { guessMime, VIEWERS } from './view'
 import { AbortManager } from './abortManager'
 import { DownloadProgress, DownloadState } from '../constants/transfers'
 
@@ -48,15 +48,17 @@ const processStream = async (
       onDownloadProgress?.({ progress, isDownloading: !done })
     }
   } catch (e: unknown) {
-    if ((e as { name?: string }).name === Errors.AbortError) {
-      onDownloadProgress?.({ progress, isDownloading: false, state: DownloadState.Cancelled })
+    const isAbort = (e as { name?: string }).name === Errors.AbortError
 
-      return
+    if (isAbort) {
+      onDownloadProgress?.({ progress, isDownloading: false, state: DownloadState.Cancelled })
+    } else {
+      onDownloadProgress?.({ progress, isDownloading: false, state: DownloadState.Error })
+      // eslint-disable-next-line no-console
+      console.error('Failed to process stream: ', e)
     }
 
-    onDownloadProgress?.({ progress, isDownloading: false, state: DownloadState.Error })
-    // eslint-disable-next-line no-console
-    console.error('Failed to process stream: ', e)
+    throw e
   } finally {
     reader.releaseLock()
 
@@ -66,8 +68,10 @@ const processStream = async (
       } else {
         await writable?.close()
       }
-    } catch {
+    } catch (e: unknown) {
       /* no-op */
+      // eslint-disable-next-line no-console
+      console.error('filehandle close/abort error: ', e)
     }
   }
 }
@@ -142,15 +146,24 @@ const getSingleFileHandle = async (
   info: FileInfo,
   defaultDownloadFolder: string,
 ): Promise<FileInfoWithHandle[] | undefined> => {
-  const mimeType = guessMime(info.name, info.customMetadata)
+  const { mime, ext } = guessMime(info.name, info.customMetadata)
+
+  const pickerOptions: {
+    suggestedName: string
+    startIn: string
+    types?: Array<{ accept: Record<string, string[]> }>
+  } = {
+    suggestedName: info.name,
+    startIn: defaultDownloadFolder,
+  }
+
+  if (ext) {
+    pickerOptions.types = [{ accept: { [mime]: [`.${ext}`] } }]
+  }
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handle = (await (window as any).showSaveFilePicker({
-      suggestedName: info.name,
-      startIn: defaultDownloadFolder,
-      types: [{ accept: { [mimeType]: [`.${getExtensionFromName(info.name)}`] } }],
-    })) as FileSystemFileHandle
+    const handle = (await (window as any).showSaveFilePicker(pickerOptions)) as FileSystemFileHandle
 
     return [{ info, handle }]
   } catch (error: unknown) {
@@ -222,16 +235,20 @@ const downloadToDisk = async (
   handle: FileSystemFileHandle,
   onDownloadProgress?: (progress: DownloadProgress) => void,
   signal?: AbortSignal,
-): Promise<void> => {
+): Promise<boolean> => {
   try {
     for (const stream of streams) {
       await processStream(stream, handle, onDownloadProgress, signal)
     }
+
+    return true
   } catch (error: unknown) {
     if ((error as { name?: string }).name !== Errors.AbortError) {
       // eslint-disable-next-line no-console
       console.error('Error during download to disk: ', error)
     }
+
+    return false
   }
 }
 
@@ -241,30 +258,36 @@ const downloadToBlob = async (
   onDownloadProgress?: (progress: DownloadProgress) => void,
   isOpenWindow?: boolean,
   signal?: AbortSignal,
-): Promise<void> => {
+): Promise<boolean> => {
   try {
     for (const stream of streams) {
-      const mime = guessMime(info.name, info.customMetadata)
+      const { mime } = guessMime(info.name, info.customMetadata)
       const blob = await streamToBlob(stream, mime, onDownloadProgress, signal)
 
-      if (blob) {
-        const url = URL.createObjectURL(blob)
-        let opened = false
+      if (!blob) {
+        return false
+      }
 
-        if (isOpenWindow) {
-          opened = openNewWindow(info.name, mime, url)
-        }
+      const url = URL.createObjectURL(blob)
+      let opened = false
 
-        if (!opened) {
-          downloadFromUrl(url, info.name)
-        }
+      if (isOpenWindow) {
+        opened = openNewWindow(info.name, mime, url)
+      }
+
+      if (!opened) {
+        downloadFromUrl(url, info.name)
       }
     }
+
+    return true
   } catch (error: unknown) {
     if ((error as { name?: string }).name !== Errors.AbortError) {
       // eslint-disable-next-line no-console
       console.error('Error during download and open: ', error)
     }
+
+    return false
   }
 }
 
@@ -319,29 +342,50 @@ export const startDownloadingQueue = async (
         try {
           if (fh.cancelled) {
             tracker?.({ progress: 0, isDownloading: false, state: DownloadState.Cancelled })
+
+            return
+          }
+
+          const dataStreams = (await fm.download(fh.info)) as ReadableStream<Uint8Array>[]
+
+          if (!dataStreams || dataStreams.length === 0) {
+            // eslint-disable-next-line no-console
+            console.error(`No data streams returned for ${name}`)
+            tracker?.({ progress: 0, isDownloading: false, state: DownloadState.Error })
+
+            return
+          }
+
+          let success = false
+
+          if (isOpenWindow || !fh.handle) {
+            success = await downloadToBlob(dataStreams, fh.info, tracker, isOpenWindow, signal)
           } else {
-            const dataStreams = (await fm.download(fh.info)) as ReadableStream<Uint8Array>[]
+            success = await downloadToDisk(dataStreams, fh.handle, tracker, signal)
+          }
 
-            if (isOpenWindow || !fh.handle) {
-              await downloadToBlob(dataStreams, fh.info, tracker, isOpenWindow, signal)
-            } else {
-              await downloadToDisk(dataStreams, fh.handle, tracker, signal)
-            }
+          if (!tracker) {
+            return
+          }
 
-            // Ensure the tracker shows completion
-            if (tracker) {
-              const size = fh.info.customMetadata?.size
-              const finalProgress = size ? Number(size) : 0
+          if (success) {
+            const size = fh.info.customMetadata?.size
+            const finalProgress = size ? Number(size) : 0
+            tracker({ progress: finalProgress, isDownloading: false })
 
-              tracker({ progress: finalProgress, isDownloading: false })
-            }
+            return
+          }
+
+          if (!signal?.aborted) {
+            tracker({ progress: 0, isDownloading: false, state: DownloadState.Error })
           }
         } catch (error: unknown) {
           const isAbortError = (error as { name?: string }).name === Errors.AbortError
 
-          // Ensure the tracker shows completion
           if (!isAbortError) {
             tracker?.({ progress: 0, isDownloading: false, state: DownloadState.Error })
+            // eslint-disable-next-line no-console
+            console.error('download queue error: ', error)
           } else {
             tracker?.({ progress: 0, isDownloading: false, state: DownloadState.Cancelled })
           }
@@ -350,7 +394,8 @@ export const startDownloadingQueue = async (
         }
       }),
     )
-  } catch (error: unknown) {
-    // Errors are handled per-file in the map above
+  } catch (e: unknown) {
+    // eslint-disable-next-line no-console
+    console.error('An error happened in the download queue: ', e)
   }
 }

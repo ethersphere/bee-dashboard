@@ -27,6 +27,7 @@ export function FileManagerPage(): ReactElement {
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [showResetModal, setShowResetModal] = useState<boolean>(false)
   const [isCreationInProgress, setIsCreationInProgress] = useState<boolean>(false)
+  const [showConnectionError, setShowConnectionError] = useState<boolean>(false)
 
   const { status } = useContext(BeeContext)
   const { beeApi } = useContext(SettingsContext)
@@ -39,6 +40,14 @@ export function FileManagerPage(): ReactElement {
       isMountedRef.current = false
     }
   }, [])
+
+  useEffect(() => {
+    if (status.all !== CheckState.OK) {
+      setShowConnectionError(true)
+    } else {
+      setShowConnectionError(false)
+    }
+  }, [status.all])
 
   useEffect(() => {
     if (!beeApi) {
@@ -116,16 +125,6 @@ export function FileManagerPage(): ReactElement {
   const loading = !fm?.adminStamp || !adminDrive
 
   const isFormbricksActive = Boolean(fm && fm.adminStamp && adminDrive && !showInitialModal && !loading)
-
-  if (status.all !== CheckState.OK) {
-    return (
-      <div className="fm-main">
-        <div className="fm-loading">
-          <div className="fm-loading-title">Bee node error - cannot load File Manager</div>
-        </div>
-      </div>
-    )
-  }
 
   if (!hasPk) {
     return (
@@ -224,6 +223,12 @@ export function FileManagerPage(): ReactElement {
     <SearchProvider>
       <ViewProvider>
         <div className="fm-main">
+          {showConnectionError && fm && (
+            <ErrorModal
+              label="Bee node connection error. Please check your node status. File Manager will continue when connection is restored."
+              onClick={() => setShowConnectionError(false)}
+            />
+          )}
           <FormbricksIntegration isActive={isFormbricksActive} />
           <Header />
           <div className="fm-main-content">

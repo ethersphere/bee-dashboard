@@ -143,7 +143,8 @@ export function FileProgressWindow({
 
           const centerDisplay = getCenterText() || '\u00A0'
 
-          const mimeType = guessMime(item.name).split('/')[0].toLowerCase() || 'file'
+          const { mime } = guessMime(item.name)
+          const mimeType = mime.split('/')[0].toLowerCase() || 'file'
 
           return (
             <div

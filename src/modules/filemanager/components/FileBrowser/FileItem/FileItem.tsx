@@ -463,7 +463,8 @@ export function FileItem({
     return <div className="fm-file-item-content">Error</div>
   }
 
-  const mimeType = guessMime(fileInfo.name, fileInfo.customMetadata).split('/')[0]?.toLowerCase() || 'file'
+  const { mime } = guessMime(fileInfo.name, fileInfo.customMetadata)
+  const mimeType = mime.split('/')[0]?.toLowerCase() || 'file'
 
   return (
     <div className="fm-file-item-content" onContextMenu={handleItemContextMenu} onClick={handleCloseContext}>
