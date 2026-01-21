@@ -30,7 +30,7 @@ import { Context as SettingsContext } from '../../../../providers/Settings'
 import { Context as FMContext } from '../../../../providers/FileManager'
 import { getHumanReadableFileSize } from '../../../../utils/file'
 import { useStampPolling } from '../../hooks/useStampPolling'
-import { FILE_MANAGER_EVENTS } from '../../constants/common'
+import { FILE_MANAGER_EVENTS, POLLING_TIMEOUT_MS } from '../../constants/common'
 
 interface UpgradeDriveModalProps {
   stamp: PostageBatch
@@ -81,9 +81,20 @@ export function UpgradeDriveModal({
         }),
       )
     },
+    onTimeout: (finalStamp: PostageBatch | null) => {
+      window.dispatchEvent(
+        new CustomEvent(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_TIMEOUT, {
+          detail: {
+            driveId: drive.id.toString(),
+            finalStamp: finalStamp || null,
+          },
+        }),
+      )
+    },
     onPollingStateChange: () => {
       // no-op
     },
+    timeout: POLLING_TIMEOUT_MS,
   })
 
   const handleCapacityChange = (value: number, index: number) => {

@@ -10,6 +10,7 @@ import { useContextMenu } from '../../../hooks/useContextMenu'
 import { Button } from '../../Button/Button'
 import { DestroyDriveModal, ProgressDestroyModal } from '../../DestroyDriveModal/DestroyDriveModal'
 import { UpgradeDriveModal } from '../../UpgradeDriveModal/UpgradeDriveModal'
+import { UpgradeTimeoutModal } from '../../UpgradeTimeoutModal/UpgradeTimeoutModal'
 import { ViewType } from '../../../constants/transfers'
 import { useView } from '../../../../../pages/filemanager/ViewContext'
 import { Context as FMContext } from '../../../../../providers/FileManager'
@@ -20,7 +21,7 @@ import { Context as SettingsContext } from '../../../../../providers/Settings'
 import { truncateNameMiddle } from '../../../utils/common'
 import { Tooltip } from '../../Tooltip/Tooltip'
 import { TOOLTIPS } from '../../../constants/tooltips'
-import { FILE_MANAGER_EVENTS } from '../../../constants/common'
+import { FILE_MANAGER_EVENTS, UPLOAD_POLLING_TIMEOUT_MS } from '../../../constants/common'
 import { useStampPolling } from '../../../hooks/useStampPolling'
 
 function useDriveEventListeners(
@@ -33,6 +34,7 @@ function useDriveEventListeners(
     error: string | undefined,
     updatedStamp?: PostageBatch,
   ) => void,
+  handleUpgradeTimeout: (eventDriveId: string, id: string) => void,
   handleFileUploaded: (e: Event) => void,
 ) {
   useEffect(() => {
@@ -46,21 +48,29 @@ function useDriveEventListeners(
       handleUpgradeEnd(eventDriveId, driveId, success, error, updatedStamp)
     }
 
+    const onTimeout = (e: Event) => {
+      const { driveId: eventDriveId } = (e as CustomEvent).detail || {}
+      handleUpgradeTimeout(eventDriveId, driveId)
+    }
+
     window.addEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_START, onStart as EventListener)
     window.addEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, onEnd as EventListener)
+    window.addEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_TIMEOUT, onTimeout as EventListener)
     window.addEventListener(FILE_MANAGER_EVENTS.FILE_UPLOADED, handleFileUploaded as EventListener)
 
     return () => {
       window.removeEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_START, onStart as EventListener)
       window.removeEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, onEnd as EventListener)
+      window.removeEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_TIMEOUT, onTimeout as EventListener)
       window.removeEventListener(FILE_MANAGER_EVENTS.FILE_UPLOADED, handleFileUploaded as EventListener)
     }
-  }, [driveId, handleUpgradeStart, handleUpgradeEnd, handleFileUploaded])
+  }, [driveId, handleUpgradeStart, handleUpgradeEnd, handleUpgradeTimeout, handleFileUploaded])
 }
 
 interface DriveModalsProps {
   isUpgradeDriveModalOpen: boolean
   setIsUpgradeDriveModalOpen: (open: boolean) => void
+  isUpgradeTimeoutModalOpen: boolean
   actualStamp: PostageBatch
   drive: DriveInfo
   setErrorMessage?: (error: string) => void
@@ -72,11 +82,13 @@ interface DriveModalsProps {
   isDestroyDriveModalOpen: boolean
   setIsDestroyDriveModalOpen: (open: boolean) => void
   doDestroy: () => Promise<void>
+  onCancelTimeout: () => void
 }
 
 function DriveModals({
   isUpgradeDriveModalOpen,
   setIsUpgradeDriveModalOpen,
+  isUpgradeTimeoutModalOpen,
   actualStamp,
   drive,
   setErrorMessage,
@@ -88,6 +100,7 @@ function DriveModals({
   isDestroyDriveModalOpen,
   setIsDestroyDriveModalOpen,
   doDestroy,
+  onCancelTimeout,
 }: DriveModalsProps): ReactElement | null {
   return (
     <>
@@ -99,6 +112,8 @@ function DriveModals({
           setErrorMessage={setErrorMessage}
         />
       )}
+
+      {isUpgradeTimeoutModalOpen && <UpgradeTimeoutModal driveName={drive.name} onOk={onCancelTimeout} />}
 
       {isUpgrading && (
         <div className="fm-drive-item-creating-overlay" aria-live="polite">
@@ -155,6 +170,7 @@ function DriveItemComponent({ drive, stamp, isSelected, setErrorMessage }: Drive
   const [isDestroyDriveModalOpen, setIsDestroyDriveModalOpen] = useState(false)
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false)
   const [isUpgradeDriveModalOpen, setIsUpgradeDriveModalOpen] = useState(false)
+  const [isUpgradeTimeoutModalOpen, setIsUpgradeTimeoutModalOpen] = useState(false)
   const [isUpgrading, setIsUpgrading] = useState(false)
   const [isCapacityUpdating, setIsCapacityUpdating] = useState(false)
   const [isDestroying, setIsDestroying] = useState(false)
@@ -182,6 +198,7 @@ function DriveItemComponent({ drive, stamp, isSelected, setErrorMessage }: Drive
     onStampUpdated: handleStampUpdated,
     onPollingStateChange: handlePollingStateChange,
     refreshStamp,
+    timeout: UPLOAD_POLLING_TIMEOUT_MS,
   })
 
   useEffect(() => {
@@ -233,15 +250,12 @@ function DriveItemComponent({ drive, stamp, isSelected, setErrorMessage }: Drive
     setPos({ x: e.clientX, y: e.clientY })
   }
 
-  const handleUpgradeStart = useCallback(
-    (driveId: string, id: string) => {
-      if (driveId !== id) return
+  const handleUpgradeStart = useCallback((driveId: string, id: string) => {
+    if (driveId !== id) return
 
-      isUpgradingRef.current = true
-      setIsUpgrading(() => true)
-    },
-    [setIsUpgrading],
-  )
+    isUpgradingRef.current = true
+    setIsUpgrading(true)
+  }, [])
 
   const handleUpgradeEnd = useCallback(
     (driveId: string, id: string, success: boolean, error: string | undefined, updatedStamp?: PostageBatch) => {
@@ -297,6 +311,24 @@ function DriveItemComponent({ drive, stamp, isSelected, setErrorMessage }: Drive
     })
   }, [beeApi, fm, drive, adminDrive, setErrorMessage, setShowError])
 
+  const handleUpgradeTimeout = useCallback(
+    (eventDriveId: string, id: string) => {
+      if (eventDriveId !== id) return
+      setIsUpgradeTimeoutModalOpen(true)
+    },
+    [setIsUpgradeTimeoutModalOpen],
+  )
+
+  const handleCancelTimeout = useCallback(() => {
+    setIsUpgrading(false)
+    isUpgradingRef.current = false
+    setIsUpgradeTimeoutModalOpen(false)
+
+    if (startPollingRef.current && actualStampRef.current) {
+      startPollingRef.current(actualStampRef.current)
+    }
+  }, [])
+
   const handleFileUploaded = useCallback(
     (e: Event) => {
       const { fileInfo } = (e as CustomEvent).detail || {}
@@ -308,7 +340,7 @@ function DriveItemComponent({ drive, stamp, isSelected, setErrorMessage }: Drive
     [driveId],
   )
 
-  useDriveEventListeners(driveId, handleUpgradeStart, handleUpgradeEnd, handleFileUploaded)
+  useDriveEventListeners(driveId, handleUpgradeStart, handleUpgradeEnd, handleUpgradeTimeout, handleFileUploaded)
 
   const { capacityPct, usedSize, stampSize } = useMemo(() => {
     const filesPerDrive = files.filter(fi => fi.driveId === drive.id.toString())
@@ -400,6 +432,7 @@ function DriveItemComponent({ drive, stamp, isSelected, setErrorMessage }: Drive
       <DriveModals
         isUpgradeDriveModalOpen={isUpgradeDriveModalOpen}
         setIsUpgradeDriveModalOpen={setIsUpgradeDriveModalOpen}
+        isUpgradeTimeoutModalOpen={isUpgradeTimeoutModalOpen}
         actualStamp={actualStamp}
         drive={drive}
         setErrorMessage={setErrorMessage}
@@ -411,6 +444,7 @@ function DriveItemComponent({ drive, stamp, isSelected, setErrorMessage }: Drive
         isDestroyDriveModalOpen={isDestroyDriveModalOpen}
         setIsDestroyDriveModalOpen={setIsDestroyDriveModalOpen}
         doDestroy={doDestroy}
+        onCancelTimeout={handleCancelTimeout}
       />
     </div>
   )
