@@ -37,7 +37,8 @@ export function useStampPolling({
   const checkStampUpdate = useCallback(
     async (
       batchId: string,
-      oldSize: number,
+      oldStampSize: number,
+      oldRemainingSize: number,
       oldExpiry: number,
     ): Promise<{ updated: boolean; stamp: PostageBatch | null }> => {
       try {
@@ -47,13 +48,15 @@ export function useStampPolling({
           return { updated: false, stamp: null }
         }
 
-        const newSize = updatedStamp.size.toBytes()
+        const newStampSize = updatedStamp.size.toBytes()
+        const newRemainingSize = updatedStamp.remainingSize.toBytes()
         const newExpiry = updatedStamp.duration.toEndDate().getTime()
-        const capacityUpdated = newSize > oldSize
+        const capacityIncreased = newStampSize > oldStampSize
+        const usageIncreased = newRemainingSize < oldRemainingSize
         const durationUpdated = newExpiry > oldExpiry
 
         return {
-          updated: capacityUpdated || durationUpdated,
+          updated: capacityIncreased || usageIncreased || durationUpdated,
           stamp: updatedStamp,
         }
       } catch (error) {
@@ -81,7 +84,8 @@ export function useStampPolling({
       onPollingStateChange(true)
 
       const batchId = originalStamp.batchID.toString()
-      const oldSize = originalStamp.size.toBytes()
+      const oldStampSize = originalStamp.size.toBytes()
+      const oldRemainingSize = originalStamp.remainingSize.toBytes()
       const oldExpiry = originalStamp.duration.toEndDate().getTime()
 
       timeoutRef.current = setTimeout(async () => {
@@ -89,7 +93,7 @@ export function useStampPolling({
 
         if (!onTimeout) return
 
-        const result = await checkStampUpdate(batchId, oldSize, oldExpiry)
+        const result = await checkStampUpdate(batchId, oldStampSize, oldRemainingSize, oldExpiry)
 
         if (result.updated && result.stamp) {
           onStampUpdated(result.stamp)
@@ -101,7 +105,7 @@ export function useStampPolling({
       }, timeout)
 
       pollingIntervalRef.current = setInterval(async () => {
-        const result = await checkStampUpdate(batchId, oldSize, oldExpiry)
+        const result = await checkStampUpdate(batchId, oldStampSize, oldRemainingSize, oldExpiry)
 
         if (result.updated && result.stamp) {
           onStampUpdated(result.stamp)

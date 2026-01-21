@@ -345,8 +345,8 @@ function DriveItemComponent({ drive, stamp, isSelected, setErrorMessage }: Drive
   const { capacityPct, usedSize, stampSize } = useMemo(() => {
     const filesPerDrive = files.filter(fi => fi.driveId === drive.id.toString())
 
-    return calculateStampCapacityMetrics(actualStamp, filesPerDrive, drive.redundancyLevel)
-  }, [actualStamp, drive, files])
+    return calculateStampCapacityMetrics(actualStamp, filesPerDrive, drive.redundancyLevel, isCapacityUpdating)
+  }, [actualStamp, drive, files, isCapacityUpdating])
 
   const handleDriveClick = useCallback(() => {
     setView(ViewType.File)

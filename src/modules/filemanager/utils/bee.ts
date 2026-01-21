@@ -275,6 +275,7 @@ export const calculateStampCapacityMetrics = (
   stamp: PostageBatch,
   files: FileInfo[],
   redundancyLevel?: RedundancyLevel,
+  useReportedOnly?: boolean,
 ): StampCapacityMetrics => {
   let stampSizeBytes = 0
   let remainingReportedBytes = 0
@@ -287,35 +288,42 @@ export const calculateStampCapacityMetrics = (
     remainingReportedBytes = stamp.remainingSize.toBytes()
   }
 
-  const usedBytesFromFiles = files
-    .map(f => {
-      let rawSize = 0
-
-      const lifecycle = (f.customMetadata?.lifecycle || '').toString().toLowerCase()
-      const isLifecycleOperation =
-        lifecycle === ActionTag.Trashed || lifecycle === ActionTag.Recovered || lifecycle === ActionTag.Restored
-
-      if (
-        (f.customMetadata?.size && !isLifecycleOperation) ||
-        (f.customMetadata?.size && !f.customMetadata?.accumulatedSize)
-      ) {
-        rawSize = Number(f.customMetadata.size)
-      }
-      const accumulatedSize = Number(f.customMetadata?.accumulatedSize || rawSize || 0)
-
-      return accumulatedSize
-    })
-    .reduce((acc, current) => acc + current, 0)
-
-  const remainingBytesFromFiles = stampSizeBytes - usedBytesFromFiles > 0 ? stampSizeBytes - usedBytesFromFiles : 0
-  const remainingBytes = Math.min(remainingReportedBytes, remainingBytesFromFiles)
-
   const usedBytesReported = stampSizeBytes - remainingReportedBytes
   const pctReportedStampUsage = stamp.usage * 100
 
-  const usedSizeMaxBytes = Math.max(usedBytesFromFiles, usedBytesReported)
+  let usedSizeMaxBytes = usedBytesReported
+  let pctFromDriveUsage = pctReportedStampUsage
+  let remainingBytes = remainingReportedBytes
+
+  if (!useReportedOnly) {
+    const usedBytesFromFiles = files
+      .map(f => {
+        let rawSize = 0
+
+        const lifecycle = (f.customMetadata?.lifecycle || '').toString().toLowerCase()
+        const isLifecycleOperation =
+          lifecycle === ActionTag.Trashed || lifecycle === ActionTag.Recovered || lifecycle === ActionTag.Restored
+
+        if (
+          (f.customMetadata?.size && !isLifecycleOperation) ||
+          (f.customMetadata?.size && !f.customMetadata?.accumulatedSize)
+        ) {
+          rawSize = Number(f.customMetadata.size)
+        }
+        const accumulatedSize = Number(f.customMetadata?.accumulatedSize || rawSize || 0)
+
+        return accumulatedSize
+      })
+      .reduce((acc, current) => acc + current, 0)
+
+    const remainingBytesFromFiles = stampSizeBytes - usedBytesFromFiles > 0 ? stampSizeBytes - usedBytesFromFiles : 0
+    remainingBytes = Math.min(remainingReportedBytes, remainingBytesFromFiles)
+
+    usedSizeMaxBytes = Math.max(usedBytesFromFiles, usedBytesReported)
+    pctFromDriveUsage = stampSizeBytes > 0 ? (usedSizeMaxBytes / stampSizeBytes) * 100 : 0
+  }
+
   const usedSizeMax = getHumanReadableFileSize(usedSizeMaxBytes)
-  const pctFromDriveUsage = stampSizeBytes > 0 ? (usedSizeMaxBytes / stampSizeBytes) * 100 : 0
   const capacityPct = Math.max(pctFromDriveUsage, pctReportedStampUsage)
   const stampSize = getHumanReadableFileSize(stampSizeBytes)
 
