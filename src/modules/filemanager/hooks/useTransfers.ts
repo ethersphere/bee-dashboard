@@ -319,6 +319,8 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
           setUploadItems(prev => {
             const existing = prev.find(it => it.uuid === uuid && it.status === TransferStatus.Uploading)
 
+            if (!existing || existing.status === TransferStatus.Done) return prev
+
             if (isComplete) {
               return updateTransferItems(prev, uuid, {
                 percent: 100,
@@ -330,7 +332,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
             }
 
             return updateTransferItems(prev, uuid, {
-              percent: Math.max(existing?.percent || 0, chunkPercentage),
+              percent: Math.max(existing.percent, chunkPercentage),
               kind,
               etaSec,
             })
@@ -831,7 +833,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
       if (!fileInfo) return
 
       setUploadItems(prev => {
-        const item = prev.find(it => it.uuid === fileInfo.uuid && it.status === TransferStatus.Uploading)
+        const item = prev.find(it => it.name === fileInfo.name && it.status === TransferStatus.Uploading)
 
         if (!item) return prev
 
