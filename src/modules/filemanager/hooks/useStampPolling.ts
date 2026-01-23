@@ -40,6 +40,7 @@ export function useStampPolling({
       oldStampSize: number,
       oldRemainingSize: number,
       oldExpiry: number,
+      isCapacityUpgrade?: boolean,
     ): Promise<{ updated: boolean; stamp: PostageBatch | null }> => {
       try {
         const updatedStamp = await refreshStamp(batchId)
@@ -55,8 +56,11 @@ export function useStampPolling({
         const usageIncreased = newRemainingSize < oldRemainingSize
         const durationUpdated = newExpiry > oldExpiry
 
+        const isCapacityIncreased = capacityIncreased && durationUpdated
+        const isStampDataChanged = capacityIncreased || durationUpdated || usageIncreased
+
         return {
-          updated: capacityIncreased || usageIncreased || durationUpdated,
+          updated: isCapacityUpgrade ? isCapacityIncreased : isStampDataChanged,
           stamp: updatedStamp,
         }
       } catch (error) {
@@ -70,7 +74,7 @@ export function useStampPolling({
   )
 
   const startPolling = useCallback(
-    (originalStamp: PostageBatch) => {
+    (originalStamp: PostageBatch, isCapacityUpgrade?: boolean) => {
       if (pollingIntervalRef.current) {
         clearInterval(pollingIntervalRef.current)
         pollingIntervalRef.current = null
@@ -93,7 +97,7 @@ export function useStampPolling({
 
         if (!onTimeout) return
 
-        const result = await checkStampUpdate(batchId, oldStampSize, oldRemainingSize, oldExpiry)
+        const result = await checkStampUpdate(batchId, oldStampSize, oldRemainingSize, oldExpiry, isCapacityUpgrade)
 
         if (result.updated && result.stamp) {
           onStampUpdated(result.stamp)
@@ -105,7 +109,7 @@ export function useStampPolling({
       }, timeout)
 
       pollingIntervalRef.current = setInterval(async () => {
-        const result = await checkStampUpdate(batchId, oldStampSize, oldRemainingSize, oldExpiry)
+        const result = await checkStampUpdate(batchId, oldStampSize, oldRemainingSize, oldExpiry, isCapacityUpgrade)
 
         if (result.updated && result.stamp) {
           onStampUpdated(result.stamp)

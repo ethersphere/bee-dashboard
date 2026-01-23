@@ -352,7 +352,7 @@ export function UpgradeDriveModal({
                   defaultErasureCodeLevel,
                 )
 
-                startPolling(stamp)
+                startPolling(stamp, capacityIndex > 0)
               } catch (e) {
                 const msg = e instanceof Error ? e.message : 'Upgrade failed'
                 window.dispatchEvent(
