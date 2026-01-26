@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.33.4](https://github.com/ethersphere/bee-dashboard/compare/v0.33.3...v0.33.4) (2026-01-26)
+
+
+### Bug Fixes
+
+* file-manager and swarm-desktop bugs ([#714](https://github.com/ethersphere/bee-dashboard/issues/714)) ([0d5138f](https://github.com/ethersphere/bee-dashboard/commit/0d5138f5bc816cece0324793166ec84ef2147679))
+
 ## [0.33.3](https://github.com/ethersphere/bee-dashboard/compare/v0.33.2...v0.33.3) (2025-11-17)
 
 
