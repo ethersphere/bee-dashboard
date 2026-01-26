@@ -20,6 +20,8 @@ import { useView } from '../../../../pages/filemanager/ViewContext'
 import { Context as FMContext } from '../../../../providers/FileManager'
 import { getUsableStamps } from '../../utils/bee'
 import { DriveInfo } from '@solarpunkltd/file-manager-lib'
+import { truncateNameMiddle } from '../../utils/common'
+import { FILE_MANAGER_EVENTS } from '../../constants/common'
 
 interface SidebarProps {
   loading: boolean
@@ -34,6 +36,7 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
   const [isCreateDriveOpen, setIsCreateDriveOpen] = useState(false)
   const [usableStamps, setUsableStamps] = useState<PostageBatch[]>([])
   const [isDriveCreationInProgress, setIsDriveCreationInProgress] = useState(false)
+  const [creatingDriveName, setCreatingDriveName] = useState<string | null>(null)
   const [isExpiredOpen, setIsExpiredOpen] = useState(false)
 
   const { beeApi } = useContext(SettingsContext)
@@ -65,8 +68,17 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
       getStamps()
     }
 
+    const handleUpgradeEnd = async () => {
+      if (isMounted && beeApi) {
+        await getStamps()
+      }
+    }
+
+    window.addEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, handleUpgradeEnd as EventListener)
+
     return () => {
       isMounted = false
+      window.removeEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, handleUpgradeEnd as EventListener)
     }
   }, [beeApi, drives])
 
@@ -81,14 +93,22 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
       setView(ViewType.File)
     }
 
-    if (currentDrive && !currentStamp && usableStamps.length > 0) {
+    if (currentDrive && usableStamps.length > 0) {
       const correspondingStamp = usableStamps.find(s => s.batchID.toString() === currentDrive.batchId.toString())
 
       if (correspondingStamp) {
         setCurrentStamp(correspondingStamp)
       }
     }
-  }, [fm, drives, currentDrive, currentStamp, usableStamps, setCurrentDrive, setCurrentStamp, setView])
+  }, [fm, drives, currentDrive, usableStamps, setCurrentDrive, setCurrentStamp, setView, beeApi])
+
+  const handleCreateNewDrive = () => {
+    if (isDriveCreationInProgress) {
+      return
+    }
+
+    setIsCreateDriveOpen(true)
+  }
 
   const isCurrent = (di: DriveInfo) => currentDrive?.id.toString() === di.id.toString()
 
@@ -96,12 +116,22 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
     <div className="fm-sidebar">
       <div className="fm-sidebar-content">
         {!loading && (
-          <div className="fm-sidebar-item" onClick={() => setIsCreateDriveOpen(true)}>
-            <div className="fm-sidebar-item-icon">
-              <Add size="16px" />
+          <>
+            <div
+              className={`fm-sidebar-item ${isDriveCreationInProgress ? 'disabled' : ''}`}
+              onClick={() => handleCreateNewDrive()}
+            >
+              <div className="fm-sidebar-item-icon">
+                <Add size="16px" />
+              </div>
+              <div>Create new drive</div>
             </div>
-            <div>Create new drive</div>
-          </div>
+            {isDriveCreationInProgress && (
+              <div className="fm-sidebar-item-description">
+                {truncateNameMiddle(creatingDriveName || 'Your Drive', 35, 8, 8)} is currently being created.
+              </div>
+            )}
+          </>
         )}
 
         {isCreateDriveOpen && (
@@ -110,12 +140,19 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
             onDriveCreated={() => {
               setIsCreateDriveOpen(false)
               setIsDriveCreationInProgress(false)
+              setCreatingDriveName(null)
             }}
-            onCreationStarted={() => setIsDriveCreationInProgress(true)}
+            onCreationStarted={(driveName: string) => {
+              setIsDriveCreationInProgress(true)
+              setCreatingDriveName(driveName)
+            }}
             onCreationError={(name: string) => {
               setIsDriveCreationInProgress(false)
-              setErrorMessage?.(`Error creating drive: ${name}`)
+              setErrorMessage?.(
+                `Error creating drive ${name}. Please try again. Possible causes include insufficient xDAI balance or a lost connection to the RPC.`,
+              )
               setShowError(true)
+              setCreatingDriveName(null)
 
               return
             }}
@@ -253,7 +290,7 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
                   }}
                   title={`${d.name} Trash`}
                 >
-                  {d.name} Trash
+                  {truncateNameMiddle(d.name, 35, 8, 8)} Trash
                 </div>
               )
             })}

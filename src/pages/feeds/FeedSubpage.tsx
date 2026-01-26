@@ -27,6 +27,8 @@ export function FeedSubpage(): ReactElement {
 
   useEffect(() => {
     if (!identity || !identity.feedHash) {
+      navigate(ROUTES.ACCOUNT_FEEDS, { replace: true })
+
       return
     }
 
@@ -35,11 +37,9 @@ export function FeedSubpage(): ReactElement {
     } catch {
       setAvailable(false)
     }
-  }, [beeApi, uuid, identity])
+  }, [beeApi, uuid, identity, navigate])
 
   if (!identity || !status.all) {
-    navigate(ROUTES.ACCOUNT_FEEDS, { replace: true })
-
     return <></>
   }
 

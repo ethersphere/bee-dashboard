@@ -3,6 +3,7 @@
   display: inline-flex;
   align-items: center;
   margin-left: 4px;
+  overflow: visible !important;
 }
 
 .fm-tooltip-wrapper.no-margin {
@@ -39,18 +40,15 @@
   text-align: left;
   border-radius: 6px;
   padding: 8px 12px;
-  position: absolute;
-  z-index: 30;
-  top: 50%;
-  left: calc(100% + 6px);
+  position: fixed;
+  z-index: 9999;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   font-size: 12px;
   line-height: 1.4;
-  font-weight: 400; /* ensure no bold styling */
+  font-weight: 400;
   pointer-events: none;
-  transition: opacity 0.16s ease-in-out, visibility 0.16s ease-in-out, transform 0.16s ease-in-out;
+  transition: opacity 0.16s ease-in-out, visibility 0.16s ease-in-out;
   border: 1px solid rgb(209, 213, 219);
-  transform: translateY(-50%) translateX(4px);
 }
 
 .fm-tooltip-container.bottom {
@@ -61,18 +59,6 @@
   visibility: visible;
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(-50%) translateX(0);
-}
-
-/* Left alignment (flip) when wrapper has .left class */
-.fm-tooltip-wrapper.left .fm-tooltip-container {
-  left: auto;
-  right: calc(100% + 6px);
-  transform: translateY(-50%) translateX(-4px);
-}
-
-.fm-tooltip-wrapper.left:hover .fm-tooltip-container {
-  transform: translateY(-50%) translateX(0);
 }
 
 .fm-inline-label-with-tooltip {

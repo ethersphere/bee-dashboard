@@ -8,7 +8,6 @@ import Link from 'remixicon-react/LinkIcon'
 import ExpandableListItem from '../../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../../components/ExpandableListItemKey'
-import { Loading } from '../../../components/Loading'
 import { SwarmButton } from '../../../components/SwarmButton'
 import TroubleshootConnectionCard from '../../../components/TroubleshootConnectionCard'
 import { Context as BeeContext, CheckState } from '../../../providers/Bee'
@@ -16,6 +15,7 @@ import { Context as SettingsContext } from '../../../providers/Settings'
 import { ROUTES } from '../../../routes'
 import { AccountNavigation } from '../AccountNavigation'
 import { Header } from '../Header'
+import { WalletInfoCard } from '../../../pages/info/WalletInfoCard'
 
 export function AccountWallet(): ReactElement {
   const { nodeAddresses, nodeInfo, status, walletBalance } = useContext(BeeContext)
@@ -44,7 +44,7 @@ export function AccountWallet(): ReactElement {
       <Box mb={4}>
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="h2">Wallet balance</Typography>
-          {isDesktop && (
+          {isDesktop && walletBalance && (
             <SwarmButton onClick={onDeposit} iconType={Download}>
               Top up wallet
             </SwarmButton>
@@ -70,8 +70,10 @@ export function AccountWallet(): ReactElement {
           </Box>
         </>
       ) : (
-        <Box mb={8}>
-          <Loading />
+        <Box mb={8} alignItems="center" display="flex" justifyContent="center">
+          <Box maxWidth={400}>
+            <WalletInfoCard />
+          </Box>
         </Box>
       )}
       <ExpandableListItemActions>

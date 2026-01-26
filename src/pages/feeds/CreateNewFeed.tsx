@@ -48,7 +48,7 @@ export default function CreateNewFeed(): ReactElement {
       return
     }
     const wallet = generateWallet()
-    const stamps = await beeApi.getAllPostageBatch()
+    const stamps = await beeApi.getPostageBatches()
 
     if (!stamps || !stamps.length) {
       enqueueSnackbar(<span>No stamp available</span>, { variant: 'error' })

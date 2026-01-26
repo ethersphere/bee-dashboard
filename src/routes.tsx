@@ -28,6 +28,7 @@ import { GiftCardTopUpIndex } from './pages/top-up/GiftCardTopUpIndex'
 import { Swap } from './pages/top-up/Swap'
 import { Context as SettingsContext } from './providers/Settings'
 import { FileManagerPage } from './pages/filemanager'
+import PageNotFound from './pages/not-found/PageNotFound'
 
 export enum ROUTES {
   INFO = '/',
@@ -55,7 +56,7 @@ export enum ROUTES {
   ACCOUNT_FEEDS = '/account/feeds',
   ACCOUNT_FEEDS_NEW = '/account/feeds/new',
   ACCOUNT_FEEDS_UPDATE = '/account/feeds/update/:hash',
-  ACCOUNT_FEEDS_VIEW = '/account/feeds/:uuid',
+  ACCOUNT_FEEDS_VIEW = '/account/feeds/view/:uuid',
   ACCOUNT_INVITATIONS = '/account/invitations',
   ACCOUNT_STAKING = '/account/staking',
   FDP = '/fdp',
@@ -102,6 +103,7 @@ const BaseRouter = (): ReactElement => {
       <Route path={ROUTES.ACCOUNT_STAKING} element={<AccountStaking />} />
       <Route path={ROUTES.FDP} element={<FDP />} />
       {isDesktop && <Route path={ROUTES.ACCOUNT_INVITATIONS} element={<GiftCards />} />}
+      <Route path="*" element={<PageNotFound />} />
     </Routes>
   )
 }

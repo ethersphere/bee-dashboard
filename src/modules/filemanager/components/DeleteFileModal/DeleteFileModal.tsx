@@ -8,8 +8,10 @@ import AlertIcon from 'remixicon-react/AlertLineIcon'
 import Radio from '@material-ui/core/Radio'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import FormControl from '@material-ui/core/FormControl'
+import { Tooltip } from '../Tooltip/Tooltip'
 
 import { FileAction } from '../../constants/transfers'
+import { TOOLTIPS } from '../../constants/tooltips'
 
 interface DeleteFileModalProps {
   name?: string
@@ -59,7 +61,10 @@ export function DeleteFileModal({
                   control={<Radio checked={value === FileAction.Trash} onChange={() => setValue(FileAction.Trash)} />}
                   label={
                     <div className="fm-radio-label">
-                      <div className="fm-radio-label-header fm-main-font-color fm-line-height-fit">Move to Trash</div>
+                      <div className="fm-radio-label-header fm-main-font-color fm-line-height-fit">
+                        Move to Trash
+                        <Tooltip label={TOOLTIPS.FILE_OPERATION_TRASH} iconSize="14px" />
+                      </div>
                       <div onClick={e => e.preventDefault()}>
                         Moves {subjectNoun} to the trash. It will still take up space on{' '}
                         {currentDriveName ?? 'this drive'} and expire along with it. You can restore it later.
@@ -75,7 +80,10 @@ export function DeleteFileModal({
                   control={<Radio checked={value === FileAction.Forget} onChange={() => setValue(FileAction.Forget)} />}
                   label={
                     <div className="fm-radio-label">
-                      <div className="fm-radio-label-header fm-main-font-color fm-line-height-fit">Forget</div>
+                      <div className="fm-radio-label-header fm-main-font-color fm-line-height-fit">
+                        Forget
+                        <Tooltip label={TOOLTIPS.FILE_OPERATION_FORGET} iconSize="14px" />
+                      </div>
                       <div onClick={e => e.preventDefault()}>
                         Removes {subjectNoun} from your view. The data will remain on Swarm until{' '}
                         {currentDriveName ?? 'the drive'} expires. This action cannot be easily undone.

@@ -22,6 +22,7 @@ export function Tooltip({
   bottomTooltip = false,
 }: TooltipProps): ReactElement {
   const [alignLeft, setAlignLeft] = useState(false)
+  const [position, setPosition] = useState<{ top: number; left?: number; right?: number } | null>(null)
   const wrapperRef = useRef<HTMLSpanElement>(null)
 
   const evaluateAlignment = useCallback(() => {
@@ -33,14 +34,27 @@ export function Tooltip({
     if (!container) return
 
     const wrapperRect = wrapper.getBoundingClientRect()
+
+    const modalContainer = wrapper.closest('.fm-modal-container') as HTMLElement | null
+    let containerOffset = 0
+
+    if (modalContainer) {
+      const containerRect = modalContainer.getBoundingClientRect()
+      containerOffset = containerRect.left
+    }
+
     const tooltipWidth = container.offsetWidth || 0
     const projectedRight = wrapperRect.right + gapPx + tooltipWidth + edgeOffsetPx
     const viewportWidth = window.innerWidth
 
+    const top = wrapperRect.top + wrapperRect.height / 2
+
     if (projectedRight > viewportWidth) {
       setAlignLeft(true)
+      setPosition({ top, right: viewportWidth - wrapperRect.left + gapPx - containerOffset })
     } else {
       setAlignLeft(false)
+      setPosition({ top, left: wrapperRect.right + gapPx - containerOffset })
     }
   }, [edgeOffsetPx, gapPx])
 
@@ -58,6 +72,16 @@ export function Tooltip({
       </span>
       <div
         className={`fm-tooltip-container${bottomTooltip ? ' bottom' : ''}`}
+        style={
+          position
+            ? {
+                top: `${position.top}px`,
+                left: position.left !== undefined ? `${position.left}px` : undefined,
+                right: position.right !== undefined ? `${position.right}px` : undefined,
+                transform: 'translateY(-50%)',
+              }
+            : undefined
+        }
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: label }}
       />

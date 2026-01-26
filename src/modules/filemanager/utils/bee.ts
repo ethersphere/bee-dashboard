@@ -1,6 +1,13 @@
 import { BatchId, Bee, BZZ, Duration, PostageBatch, RedundancyLevel, Size } from '@ethersphere/bee-js'
-import { FileManagerBase, DriveInfo } from '@solarpunkltd/file-manager-lib'
+import {
+  FileManagerBase,
+  DriveInfo,
+  estimateDriveListMetadataSize,
+  estimateFileInfoMetadataSize,
+  FileInfo,
+} from '@solarpunkltd/file-manager-lib'
 import { getHumanReadableFileSize } from '../../../utils/file'
+import { ActionTag } from '../constants/transfers'
 
 export const getUsableStamps = async (bee: Bee | null): Promise<PostageBatch[]> => {
   if (!bee) {
@@ -13,6 +20,19 @@ export const getUsableStamps = async (bee: Bee | null): Promise<PostageBatch[]> 
       .sort((a, b) => (a.label || '').localeCompare(b.label || ''))
   } catch {
     return []
+  }
+}
+
+export const validateStampStillExists = async (bee: Bee, batchId: BatchId): Promise<boolean> => {
+  try {
+    const stamp = await bee.getPostageBatch(batchId.toString())
+
+    return stamp.usable
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.warn(`Failed to validate stamp ${batchId.toString().slice(0, 8)}...:`, error)
+
+    return false
   }
 }
 
@@ -50,6 +70,7 @@ export const fmFetchCost = async (
   beeApi: Bee | null,
   setCost: (cost: BZZ) => void,
   currentFetch: React.MutableRefObject<Promise<void> | null>,
+  onError?: (error: unknown) => void,
 ) => {
   if (currentFetch.current) {
     await currentFetch.current
@@ -58,10 +79,22 @@ export const fmFetchCost = async (
   let isCurrentFetch = true
 
   const fetchPromise = (async () => {
-    const cost = await fmGetStorageCost(capacity, validityEndDate, encryption, erasureCodeLevel, beeApi)
+    try {
+      const cost = await fmGetStorageCost(capacity, validityEndDate, encryption, erasureCodeLevel, beeApi)
 
-    if (isCurrentFetch) {
-      setCost(cost ?? BZZ.fromDecimalString('0'))
+      if (isCurrentFetch) {
+        if (cost) {
+          setCost(cost)
+        } else {
+          setCost(BZZ.fromDecimalString('0'))
+          onError?.(new Error('Storage cost unavailable - node may be syncing'))
+        }
+      }
+    } catch (error) {
+      if (isCurrentFetch) {
+        setCost(BZZ.fromDecimalString('0'))
+        onError?.(error)
+      }
     }
   })()
 
@@ -72,32 +105,95 @@ export const fmFetchCost = async (
   currentFetch.current = null
 }
 
-export const handleCreateDrive = async (
-  beeApi: Bee | null,
-  fm: FileManagerBase | null,
-  size: Size,
-  duration: Duration,
-  label: string,
-  encryption: boolean,
-  erasureCodeLevel: RedundancyLevel,
-  isAdmin: boolean,
-  resetState: boolean,
-  existingBatch: PostageBatch | null,
-  onSuccess?: () => void,
-  onError?: (error: unknown) => void,
-): Promise<void> => {
-  if (!beeApi || !fm) return
+export interface CreateDriveOptions {
+  beeApi: Bee | null
+  fm: FileManagerBase | null
+  size: Size
+  duration: Duration
+  label: string
+  encryption: boolean
+  redundancyLevel: RedundancyLevel
+  adminRedundancy: RedundancyLevel
+  isAdmin: boolean
+  resetState: boolean
+  existingBatch: PostageBatch | null
+  onSuccess?: () => void
+  onError?: (error: unknown) => void
+}
+
+export const handleCreateDrive = async (options: CreateDriveOptions): Promise<void> => {
+  const {
+    beeApi,
+    fm,
+    size,
+    duration,
+    label,
+    encryption,
+    redundancyLevel,
+    adminRedundancy,
+    isAdmin,
+    resetState,
+    existingBatch,
+    onSuccess,
+    onError,
+  } = { ...options }
+
+  if (!beeApi || !fm) {
+    // eslint-disable-next-line no-console
+    console.error('Error creating drive: Bee API or FM is invalid!')
+
+    onError?.('Error creating drive: Bee API or FM is invalid!')
+
+    return
+  }
 
   try {
     let batchId: BatchId
 
     if (!existingBatch) {
-      batchId = await beeApi.buyStorage(size, duration, { label }, undefined, encryption, erasureCodeLevel)
+      if (!isAdmin) {
+        if (!fm.adminStamp) {
+          // eslint-disable-next-line no-console
+          console.error('Error creating drive: admin stamp is not available')
+
+          throw new Error('Error creating drive: admin stamp is not available')
+        }
+
+        verifyDriveSpace({
+          fm,
+          redundancyLevel,
+          stamp: fm.adminStamp,
+          adminRedundancy,
+          cb: err => {
+            throw new Error(err)
+          },
+        })
+      }
+
+      batchId = await beeApi.buyStorage(size, duration, { label }, undefined, encryption, redundancyLevel)
     } else {
+      const isValid = await validateStampStillExists(beeApi, existingBatch.batchID)
+
+      if (!isValid) {
+        throw new Error(
+          'The stamp is no longer valid or has been deleted. Please select a different stamp from the list.',
+        )
+      }
+
+      verifyDriveSpace({
+        fm,
+        redundancyLevel,
+        stamp: existingBatch,
+        adminRedundancy,
+        cb: err => {
+          throw new Error(err)
+        },
+      })
+
       batchId = existingBatch.batchID
     }
 
-    await fm.createDrive(batchId, label, isAdmin, erasureCodeLevel, resetState)
+    await fm.createDrive(batchId, label, isAdmin, redundancyLevel, resetState)
 
     onSuccess?.()
   } catch (e) {
@@ -107,68 +203,22 @@ export const handleCreateDrive = async (
   }
 }
 
-interface StampCapacityMetrics {
-  capacityPct: number
-  usedSize: string
-  totalSize: string
-  usedBytes: number
-  totalBytes: number
-  remainingBytes: number
+export interface DestroyDriveOptions {
+  beeApi?: Bee | null
+  fm: FileManagerBase | null
+  drive: DriveInfo
+  adminDrive: DriveInfo | null
+  isDestroy: boolean
+  onSuccess?: () => void
+  onError?: (error: unknown) => void
 }
 
-export const calculateStampCapacityMetrics = (
-  stamp: PostageBatch | null,
-  drive?: DriveInfo | null,
-): StampCapacityMetrics => {
-  if (!stamp) {
-    return {
-      capacityPct: 0,
-      usedSize: '—',
-      totalSize: '—',
-      usedBytes: 0,
-      totalBytes: 0,
-      remainingBytes: 0,
-    }
-  }
+export const handleDestroyAndForgetDrive = async (options: DestroyDriveOptions): Promise<void> => {
+  const { beeApi, fm, adminDrive, drive, isDestroy, onSuccess, onError } = { ...options }
 
-  let usedBytes = 0
-  let totalBytes = 0
-  let capacityPct = 0
-  let remainingBytes = 0
+  if (!beeApi || !fm || !fm.adminStamp || !adminDrive) {
+    onError?.('Error destroying drive: Admin Drive, Bee API or FM is invalid!')
 
-  if (drive) {
-    totalBytes = stamp.calculateSize(false, drive.redundancyLevel).toBytes()
-    remainingBytes = stamp.calculateRemainingSize(false, drive.redundancyLevel).toBytes()
-    usedBytes = totalBytes - remainingBytes
-    capacityPct = ((totalBytes - remainingBytes) / totalBytes) * 100
-  } else {
-    capacityPct = stamp.usage * 100
-    usedBytes = stamp.size.toBytes() - stamp.remainingSize.toBytes()
-    totalBytes = stamp.size.toBytes()
-    remainingBytes = totalBytes - usedBytes
-  }
-
-  const usedSize = getHumanReadableFileSize(usedBytes)
-  const totalSize = getHumanReadableFileSize(totalBytes)
-
-  return {
-    capacityPct,
-    usedSize,
-    totalSize,
-    usedBytes,
-    totalBytes,
-    remainingBytes,
-  }
-}
-
-export const handleDestroyDrive = async (
-  beeApi: Bee | null,
-  fm: FileManagerBase | null,
-  drive: DriveInfo,
-  onSuccess?: () => void,
-  onError?: (error: unknown) => void,
-): Promise<void> => {
-  if (!beeApi || !fm) {
     return
   }
 
@@ -179,11 +229,26 @@ export const handleDestroyDrive = async (
       throw new Error(`Postage stamp (${drive.batchId}) for the current drive (${drive.name}) not found`)
     }
 
+    verifyDriveSpace({
+      fm,
+      driveId: drive.id.toString(),
+      redundancyLevel: drive.redundancyLevel,
+      stamp: fm.adminStamp,
+      isRemove: true,
+      adminRedundancy: adminDrive.redundancyLevel,
+      cb: err => {
+        throw new Error(err)
+      },
+    })
+
     const ttlDays = stamp.duration.toDays()
 
-    if (ttlDays <= 2) {
-      // eslint-disable-next-line no-console
-      console.warn(`Stamp TTL ${ttlDays} <= 2 days, skipping drive destruction: forgetting the drive.`)
+    if (ttlDays <= 2 || !isDestroy) {
+      if (isDestroy) {
+        // eslint-disable-next-line no-console
+        console.warn(`Stamp TTL ${ttlDays} <= 2 days, skipping drive destruction: forgetting the drive.`)
+      }
+
       await fm.forgetDrive(drive)
 
       return
@@ -197,18 +262,156 @@ export const handleDestroyDrive = async (
   }
 }
 
-export const handleForgetDrive = async (
-  fm: FileManagerBase | null,
-  drive: DriveInfo,
-  onSuccess?: () => void,
-  onError?: (error: unknown) => void,
-): Promise<void> => {
-  if (!fm) return
+export interface StampCapacityMetrics {
+  capacityPct: number
+  usedSize: string
+  stampSize: string
+  usedBytes: number
+  stampSizeBytes: number
+  remainingBytes: number
+}
 
-  try {
-    await fm.forgetDrive(drive)
-    onSuccess?.()
-  } catch (e) {
-    onError?.(e)
+export const calculateStampCapacityMetrics = (
+  stamp: PostageBatch,
+  files: FileInfo[],
+  redundancyLevel?: RedundancyLevel,
+  useReportedOnly?: boolean,
+): StampCapacityMetrics => {
+  let stampSizeBytes = 0
+  let remainingReportedBytes = 0
+
+  if (redundancyLevel !== undefined) {
+    stampSizeBytes = stamp.calculateSize(false, redundancyLevel).toBytes()
+    remainingReportedBytes = stamp.calculateRemainingSize(false, redundancyLevel).toBytes()
+  } else {
+    stampSizeBytes = stamp.size.toBytes()
+    remainingReportedBytes = stamp.remainingSize.toBytes()
   }
+
+  const usedBytesReported = stampSizeBytes - remainingReportedBytes
+  const pctReportedStampUsage = stamp.usage * 100
+
+  let usedSizeMaxBytes = usedBytesReported
+  let pctFromDriveUsage = pctReportedStampUsage
+  let remainingBytes = remainingReportedBytes
+
+  if (!useReportedOnly) {
+    const usedBytesFromFiles = files
+      .map(f => {
+        let rawSize = 0
+
+        const lifecycle = (f.customMetadata?.lifecycle || '').toString().toLowerCase()
+        const isLifecycleOperation =
+          lifecycle === ActionTag.Trashed || lifecycle === ActionTag.Recovered || lifecycle === ActionTag.Restored
+
+        if (
+          (f.customMetadata?.size && !isLifecycleOperation) ||
+          (f.customMetadata?.size && !f.customMetadata?.accumulatedSize)
+        ) {
+          rawSize = Number(f.customMetadata.size)
+        }
+        const accumulatedSize = Number(f.customMetadata?.accumulatedSize || rawSize || 0)
+
+        return accumulatedSize
+      })
+      .reduce((acc, current) => acc + current, 0)
+
+    const remainingBytesFromFiles = stampSizeBytes - usedBytesFromFiles > 0 ? stampSizeBytes - usedBytesFromFiles : 0
+    remainingBytes = Math.min(remainingReportedBytes, remainingBytesFromFiles)
+
+    usedSizeMaxBytes = Math.max(usedBytesFromFiles, usedBytesReported)
+    pctFromDriveUsage = stampSizeBytes > 0 ? (usedSizeMaxBytes / stampSizeBytes) * 100 : 0
+  }
+
+  const usedSizeMax = getHumanReadableFileSize(usedSizeMaxBytes)
+  const capacityPct = Math.max(pctFromDriveUsage, pctReportedStampUsage)
+  const stampSize = getHumanReadableFileSize(stampSizeBytes)
+
+  return {
+    capacityPct,
+    usedSize: usedSizeMax,
+    stampSize,
+    usedBytes: usedSizeMaxBytes,
+    stampSizeBytes,
+    remainingBytes,
+  }
+}
+
+export interface DriveSpaceOptions {
+  fm: FileManagerBase
+  driveId?: string
+  redundancyLevel: RedundancyLevel
+  stamp: PostageBatch
+  adminRedundancy?: RedundancyLevel
+  useInfoSize?: boolean
+  isRemove?: boolean
+  fileSize?: number
+  fileCount?: number
+  cb?: (msg: string) => void
+}
+
+export const verifyDriveSpace = (
+  options: DriveSpaceOptions,
+): { remainingBytes: number; totalSizeBytes: number; ok: boolean } => {
+  const { fm, driveId, redundancyLevel, stamp, adminRedundancy, useInfoSize, isRemove, fileSize, fileCount, cb } = {
+    ...options,
+  }
+
+  const drives = [...fm.driveList]
+  let filesPerDrives: FileInfo[] = []
+
+  // new drivelist state size calc.
+  if (isRemove) {
+    const driveIx = drives.findIndex(d => d.id.toString() === driveId?.toString())
+
+    if (driveIx === -1) {
+      cb?.(`Admin drive not found during stamp verification`)
+
+      return { remainingBytes: 0, totalSizeBytes: 0, ok: false }
+    }
+
+    drives.splice(driveIx, 1)
+    filesPerDrives = fm.fileInfoList.filter(fi => fi.driveId !== driveId)
+  } else {
+    filesPerDrives = driveId ? fm.fileInfoList.filter(fi => fi.driveId === driveId) : []
+  }
+
+  // admin stamp capacity calcl., needed for forget, destroy, create
+  if (adminRedundancy !== undefined && fm.adminStamp) {
+    // upper limit estimate on the drivelist metadata state size based on the number of drives and files
+    const estimatedDlSizeBytes = estimateDriveListMetadataSize(drives) * drives.length
+    const { remainingBytes: remainingAdminBytes } = calculateStampCapacityMetrics(fm.adminStamp, [], adminRedundancy)
+
+    const ok = remainingAdminBytes >= estimatedDlSizeBytes
+
+    if (!ok) {
+      cb?.(
+        `Insufficient admin drive capacity. Required: ~${getHumanReadableFileSize(
+          estimatedDlSizeBytes,
+        )} bytes, Available: ${getHumanReadableFileSize(
+          remainingAdminBytes,
+        )} bytes. Please top up the admin drive/stamp.`,
+      )
+
+      return { remainingBytes: remainingAdminBytes, totalSizeBytes: estimatedDlSizeBytes, ok }
+    }
+  }
+
+  // other fileinfo metadata size calc.
+  const estimatedFiSize = estimateFileInfoMetadataSize()
+  const count = fileCount ?? 1
+  const estimateReqSizeBytes = Number(Boolean(useInfoSize)) * estimatedFiSize * count + (fileSize ? fileSize : 0)
+  const { remainingBytes } = calculateStampCapacityMetrics(stamp, filesPerDrives, redundancyLevel)
+
+  const ok = remainingBytes >= estimateReqSizeBytes
+
+  if (!ok) {
+    cb?.(
+      `Insufficient capacity. Required: ~${getHumanReadableFileSize(
+        estimateReqSizeBytes,
+      )} bytes, Available: ${getHumanReadableFileSize(remainingBytes)} bytes. Please top up the drive/stamp.`,
+    )
+  }
+
+  return { remainingBytes, totalSizeBytes: estimateReqSizeBytes, ok }
 }

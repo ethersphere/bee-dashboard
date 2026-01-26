@@ -28,6 +28,7 @@ const useStyles = (backgroundColor: string) =>
         flexDirection: 'column',
         alignItems: 'center',
         textAlign: 'center',
+        height: '130px',
       },
       iconWrapper: {
         display: 'flex',

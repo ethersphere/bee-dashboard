@@ -14,7 +14,8 @@
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  padding-right: 2px;
+  padding-right: 14px;
+  padding-left: 14px;
 }
 .fm-modal-window.fm-get-info-modal .fm-modal-window-body::-webkit-scrollbar,
 .fm-get-info-body::-webkit-scrollbar {
@@ -66,23 +67,60 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  max-width: 60%;
   overflow-wrap: anywhere;
   word-break: break-word;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   color: #111827;
+  text-align: right;
 }
 
-.fm-copy-btn {
-  margin-left: 6px;
+.fm-copyable-value {
   border: none;
   background: transparent;
   cursor: pointer;
-  padding: 2px;
-  line-height: 0;
+  padding: 4px 8px;
+  transition: background-color 0.2s;
+  position: relative;
 }
 
-.fm-copy-btn:hover {
-  background: #f5f5f5;
+.fm-copyable-value:hover {
+  background: rgba(237, 129, 49, 0.1);
   border-radius: 4px;
+}
+
+.fm-copyable-value svg {
+  flex-shrink: 0;
+  color: rgb(237, 129, 49);
+}
+
+.fm-copied-indicator {
+  position: absolute;
+  left: -70px;
+  background: rgb(237, 129, 49);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  animation: fadeInOut 2s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  90% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
 }

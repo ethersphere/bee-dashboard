@@ -70,97 +70,100 @@ export function PrivateKeyModal({ onSaved }: Props): ReactElement {
       <div className="fm-modal-window">
         <div className="fm-modal-window-header">
           <div>Create Private Key</div>
+          <Tooltip label={TOOLTIPS.PRIVATE_KEY_MODAL_HEADER} />
         </div>
-        <div>
-          Using a private key ensures that only you can access this File Manager instance. Save it securely before
-          continuing.
-        </div>
-        <div className="fm-modal-info-warning flex-column">
-          <span className="fm-modal-info-warning-text-header">IMPORTANT: Lost keys cannot be recovered</span>
-          <span>
-            Swarm never stores private keys. If you lose this key, access to this File Manager instance will be
-            permanently lost.
-          </span>
-        </div>
-        <div className="fm-modal-window-body">
-          <div className="fm-modal-window-input-container">
-            <label htmlFor="fm-private-key" className="fm-emphasized-text fm-private-key-label">
-              <span>New Private key</span>
-              <button
-                onClick={handleGenerateNew}
-                type="button"
-                className="fm-generate-btn"
-                onMouseEnter={e => (e.currentTarget.style.background = '#e5e7eb')}
-                onMouseLeave={e => (e.currentTarget.style.background = '#f3f4f6')}
-              >
-                Generate New
-              </button>
-            </label>
 
-            <div className="fm-private-key-input-row">
-              <input
-                id="fm-private-key"
-                type="text"
-                className={`fm-input${showError ? ' has-error' : ''} fm-private-key-input`}
-                autoComplete="off"
-                value={value}
-                onChange={e => {
-                  setValue(e.target.value)
-                  setCopied(false)
-                  setShowError(false)
-                }}
-                onBlur={handleBlur}
-                spellCheck={false}
-              />
-              {
+        <div className="fm-modal-window-scrollable">
+          <div>This key grants access to this File Manager instance. Save it before continuing..</div>
+          <div className="fm-modal-info-warning flex-column">
+            <span className="fm-modal-info-warning-text-header">CRITICAL: Key Cannot Be Recovered</span>
+            <span>
+              Swarm does not store this key and <strong>cannot</strong> retrieve it. Loss of the key will result in
+              permanent loss of access to this File Manager instance.
+            </span>
+          </div>
+          <div className="fm-modal-window-body">
+            <div className="fm-modal-window-input-container">
+              <label htmlFor="fm-private-key" className="fm-emphasized-text fm-private-key-label">
+                <span>1. New Private key</span>
                 <button
-                  className="fm-copy-btn"
-                  onClick={handleCopyPrivateKey}
-                  aria-label="Copy private key"
+                  onClick={handleGenerateNew}
                   type="button"
-                  title={copied ? 'Copied!' : 'Copy'}
+                  className="fm-generate-btn"
+                  onMouseEnter={e => (e.currentTarget.style.background = '#e5e7eb')}
+                  onMouseLeave={e => (e.currentTarget.style.background = '#f3f4f6')}
                 >
-                  {copied ? <CheckDoubleLineIcon size="16px" /> : <ClipboardIcon size="16px" />}
+                  Generate New
                 </button>
-              }
-              <Tooltip label={TOOLTIPS.PRIVATE_KEY_MODAL_GENERATED_KEY} />
+              </label>
+
+              <div className="fm-private-key-input-row">
+                <input
+                  id="fm-private-key"
+                  type="text"
+                  className={`fm-input${showError ? ' has-error' : ''} fm-private-key-input`}
+                  autoComplete="off"
+                  value={value}
+                  onChange={e => {
+                    setValue(e.target.value)
+                    setCopied(false)
+                    setShowError(false)
+                  }}
+                  onBlur={handleBlur}
+                  spellCheck={false}
+                />
+                {
+                  <button
+                    className="fm-copy-btn"
+                    onClick={handleCopyPrivateKey}
+                    aria-label="Copy private key"
+                    type="button"
+                    title={copied ? 'Copied!' : 'Copy'}
+                  >
+                    {copied ? <CheckDoubleLineIcon size="16px" /> : <ClipboardIcon size="16px" />}
+                  </button>
+                }
+                <Tooltip label={TOOLTIPS.PRIVATE_KEY_MODAL_GENERATED_KEY} />
+              </div>
+              <div className="fm-input-hint-error">{showError ? 'Invalid private key.' : ''}</div>
             </div>
-            <div className="fm-input-hint-error">{showError ? 'Invalid private key.' : ''}</div>
+
+            <div className="fm-modal-window-input-container">
+              <label htmlFor="fm-private-key-confirm" className="fm-emphasized-text fm-confirm-key-label">
+                Confirm Private Key
+              </label>
+              <div className="fm-private-key-input-row">
+                <input
+                  id="fm-private-key-confirm"
+                  type="text"
+                  className="fm-input fm-confirm-key-input"
+                  placeholder="Paste or type your private key again"
+                  autoComplete="off"
+                  value={confirmValue}
+                  onChange={e => setConfirmValue(e.target.value)}
+                  spellCheck={false}
+                />
+                <Tooltip label={TOOLTIPS.PRIVATE_KEY_MODAL_CONFIRM_KEY} />
+              </div>
+              <div className="fm-input-hint fm-confirm-key-hint">
+                {confirmValue && value === confirmValue
+                  ? '✓ Private keys match!'
+                  : 'Save the private key securely, then paste or type it again to confirm.'}
+              </div>
+            </div>
           </div>
 
-          <div className="fm-modal-window-input-container">
-            <label htmlFor="fm-private-key-confirm" className="fm-emphasized-text fm-confirm-key-label">
-              Confirm Private Key
-            </label>
-            <div className="fm-private-key-input-row">
-              <input
-                id="fm-private-key-confirm"
-                type="text"
-                className="fm-input fm-confirm-key-input"
-                placeholder="Paste or type your private key again"
-                autoComplete="off"
-                value={confirmValue}
-                onChange={e => setConfirmValue(e.target.value)}
-                spellCheck={false}
-              />
+          <div className="fm-modal-window-body">
+            <div className="flex-row">
+              <div>
+                <b>Key Storage:</b>
+              </div>
+              <Tooltip label={TOOLTIPS.PRIVATE_KEY_MODAL_KEY_INFO} />
             </div>
-            <div className="fm-input-hint fm-confirm-key-hint">
-              {confirmValue && value === confirmValue ? '✓ Private keys match!' : ''}
-            </div>
+            The key is saved only in this browser&apos;s local storage. If browser data is cleared, a different browser
+            is used, or the OS is updated, this local copy might be deleted. The key will be required to access this
+            File Manager instance after that.
           </div>
-        </div>
-
-        <div className="fm-modal-window-body">
-          <div className="flex-row">
-            <div>
-              <b>Safety Reminder:</b>
-            </div>
-          </div>
-          <span>
-            A copy of your private key is stored in this browser for convenience, but it’s not a backup - clearing
-            browser data or switching devices will remove it.{' '}
-            <b>Make sure you’ve saved your private key before continuing.</b>
-          </span>
         </div>
 
         <div className="fm-modal-window-footer">

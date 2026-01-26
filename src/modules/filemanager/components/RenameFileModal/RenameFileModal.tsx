@@ -7,6 +7,8 @@ import EditIcon from 'remixicon-react/EditLineIcon'
 import { createPortal } from 'react-dom'
 import { safeSetState } from '../../utils/common'
 
+const maxFileNameLength = 60
+
 interface RenameFileModalProps {
   currentName: string
   takenNames?: Set<string> | string[]
@@ -115,6 +117,7 @@ export function RenameFileModal({
               onBlur={() => setTouched(true)}
               onKeyDown={onKeyDown}
               placeholder="Enter a new file name"
+              maxLength={maxFileNameLength}
             />
             {error && (
               <div className="fm-error-text" style={{ marginTop: 8 }}>

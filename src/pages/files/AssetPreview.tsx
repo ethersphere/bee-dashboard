@@ -9,6 +9,7 @@ import { getHumanReadableFileSize } from '../../utils/file'
 import { shortenHash } from '../../utils/hash'
 import { AssetIcon } from './AssetIcon'
 import { FitVideo } from '../../components/FitVideo'
+import { FitAudio } from '../../components/FitAudio'
 
 interface Props {
   previewUri?: string
@@ -19,6 +20,10 @@ interface Props {
 const getPreviewComponent = (previewUri?: string, metadata?: Metadata) => {
   if (metadata?.isVideo) {
     return () => <FitVideo src={previewUri} maxWidth="250px" maxHeight="175px" />
+  }
+
+  if (metadata?.isAudio) {
+    return () => <FitAudio src={previewUri} maxWidth="250px" />
   }
 
   if (metadata?.isImage) {

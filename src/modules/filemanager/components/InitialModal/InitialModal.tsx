@@ -1,6 +1,6 @@
 import { ReactElement, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 
-import { BZZ, DAI, Duration, PostageBatch, RedundancyLevel, Size, Utils } from '@ethersphere/bee-js'
+import { BeeModes, BZZ, DAI, Duration, PostageBatch, RedundancyLevel, Size, Utils } from '@ethersphere/bee-js'
 import './InitialModal.scss'
 import { CustomDropdown } from '../CustomDropdown/CustomDropdown'
 import { Button } from '../Button/Button'
@@ -21,7 +21,7 @@ import { TOOLTIPS } from '../../constants/tooltips'
 interface InitialModalProps {
   resetState: boolean
   handleVisibility: (isVisible: boolean) => void
-  handleShowError: (flag: boolean) => void
+  handleShowError: (flag: boolean, errorMessage?: string) => void
   setIsCreationInProgress: (isCreating: boolean) => void
 }
 
@@ -43,6 +43,25 @@ const createBatchIdOptions = (stamps: PostageBatch[]) => [
   }),
 ]
 
+const setSecurityLevel = (setter: (value: RedundancyLevel) => void) => {
+  return (
+    <div className="fm-modal-window-input-container">
+      <label htmlFor="admin-security-level" className="fm-input-label">
+        Security Level <Tooltip label={TOOLTIPS.ADMIN_SECURITY_LEVEL} />
+      </label>
+      <FMSlider
+        id="admin-security-level"
+        defaultValue={0}
+        marks={erasureCodeMarks}
+        onChange={v => setter(v)}
+        minValue={minMarkValue}
+        maxValue={maxMarkValue}
+        step={1}
+      />
+    </div>
+  )
+}
+
 export function InitialModal({
   resetState,
   setIsCreationInProgress,
@@ -60,8 +79,9 @@ export function InitialModal({
   const [usableStamps, setUsableStamps] = useState<PostageBatch[]>([])
   const [selectedBatch, setSelectedBatch] = useState<PostageBatch | null>(null)
   const [selectedBatchIndex, setSelectedBatchIndex] = useState<number>(-1)
+  const [isNodeSyncing, setIsNodeSyncing] = useState(true)
 
-  const { walletBalance } = useContext(BeeContext)
+  const { walletBalance, nodeInfo } = useContext(BeeContext)
   const { beeApi } = useContext(SettingsContext)
   const { fm } = useContext(FMContext)
 
@@ -74,30 +94,64 @@ export function InitialModal({
     }
   }, [])
 
+  const checkBalances = useCallback(
+    (cost: BZZ) => {
+      setIsBalanceSufficient(true)
+      setIsxDaiBalanceSufficient(true)
+
+      if ((walletBalance && cost.gte(walletBalance.bzzBalance)) || !walletBalance) {
+        safeSetState(isMountedRef, setIsBalanceSufficient)(false)
+      }
+
+      const zeroDAI = DAI.fromDecimalString('0')
+
+      if ((walletBalance && zeroDAI.eq(walletBalance.nativeTokenBalance)) || !walletBalance) {
+        safeSetState(isMountedRef, setIsxDaiBalanceSufficient)(false)
+      }
+    },
+    [walletBalance],
+  )
+
+  const handleCostFetch = useCallback(
+    (cost: BZZ) => {
+      safeSetState(isMountedRef, setIsNodeSyncing)(false)
+      checkBalances(cost)
+      safeSetState(isMountedRef, setCost)(cost.toSignificantDigits(2))
+    },
+    [checkBalances],
+  )
+
+  const handleCostFetchError = useCallback(() => {
+    safeSetState(isMountedRef, setIsNodeSyncing)(true)
+    safeSetState(isMountedRef, setCost)('0')
+  }, [])
+
   const createAdminDrive = useCallback(async () => {
     setIsCreationInProgress?.(true)
     handleVisibility(false)
 
-    await handleCreateDrive(
+    await handleCreateDrive({
       beeApi,
       fm,
-      Size.fromBytes(capacity),
-      Duration.fromEndDate(validityEndDate),
-      ADMIN_STAMP_LABEL,
-      false,
-      erasureCodeLevel,
-      true,
+      size: Size.fromBytes(capacity),
+      duration: Duration.fromEndDate(validityEndDate),
+      label: ADMIN_STAMP_LABEL,
+      encryption: false,
+      redundancyLevel: erasureCodeLevel,
+      adminRedundancy: erasureCodeLevel,
+      isAdmin: true,
       resetState,
-      selectedBatch,
-      () => {
+      existingBatch: selectedBatch,
+      onSuccess: () => {
         handleVisibility(false)
         setIsCreationInProgress(false)
-      }, // onSuccess
-      () => {
-        handleShowError(true)
+      },
+      onError: err => {
+        const errorMessage = err instanceof Error ? err.message : String(err)
+        handleShowError(true, errorMessage)
         setIsCreationInProgress(false)
-      }, // onError
-    )
+      },
+    })
   }, [
     beeApi,
     fm,
@@ -113,11 +167,7 @@ export function InitialModal({
 
   useEffect(() => {
     const getStamps = async () => {
-      const stamps = (await getUsableStamps(beeApi)).filter(s => {
-        const { capacityPct } = calculateStampCapacityMetrics(s)
-
-        return capacityPct < 100
-      })
+      const stamps = await getUsableStamps(beeApi)
 
       safeSetState(isMountedRef, setUsableStamps)([...stamps])
     }
@@ -141,70 +191,117 @@ export function InitialModal({
         false,
         erasureCodeLevel,
         beeApi,
-        (cost: BZZ) => {
-          setIsBalanceSufficient(true)
-          setIsxDaiBalanceSufficient(true)
-
-          if ((walletBalance && cost.gte(walletBalance.bzzBalance)) || !walletBalance) {
-            safeSetState(isMountedRef, setIsBalanceSufficient)(false)
-          }
-
-          const zeroDAI = DAI.fromDecimalString('0')
-
-          if ((walletBalance && zeroDAI.eq(walletBalance.nativeTokenBalance)) || !walletBalance) {
-            safeSetState(isMountedRef, setIsxDaiBalanceSufficient)(false)
-          }
-
-          safeSetState(isMountedRef, setCost)(cost.toSignificantDigits(2))
-        },
+        handleCostFetch,
         currentFetch,
+        handleCostFetchError,
       )
 
-      if (lifetimeIndex >= 0) {
+      if (lifetimeIndex >= 0 && !isNodeSyncing) {
         setIsCreateEnabled(true)
+      } else {
+        setIsCreateEnabled(false)
       }
     } else {
       setCost('0')
       setIsCreateEnabled(false)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [validityEndDate, beeApi, capacity, lifetimeIndex, walletBalance])
+  }, [
+    validityEndDate,
+    erasureCodeLevel,
+    beeApi,
+    capacity,
+    lifetimeIndex,
+    isNodeSyncing,
+    handleCostFetch,
+    handleCostFetchError,
+  ])
 
   useEffect(() => {
     setValidityEndDate(getExpiryDateByLifetime(lifetimeIndex))
   }, [lifetimeIndex])
 
+  const nonFullStamps = useMemo(() => {
+    return usableStamps.filter(s => {
+      const { capacityPct } = calculateStampCapacityMetrics(s, [], erasureCodeLevel)
+
+      return capacityPct < 100
+    })
+  }, [usableStamps, erasureCodeLevel])
+
   useEffect(() => {
-    if (selectedBatchIndex >= 0 && selectedBatchIndex < usableStamps.length) {
-      setSelectedBatch(usableStamps[selectedBatchIndex])
+    if (selectedBatchIndex >= 0 && selectedBatchIndex < nonFullStamps.length) {
+      setSelectedBatch(nonFullStamps[selectedBatchIndex])
     } else {
       setSelectedBatch(null)
     }
-  }, [usableStamps, selectedBatchIndex])
+  }, [nonFullStamps, selectedBatchIndex])
 
-  const { capacityPct, usedSize, totalSize } = useMemo(
-    () => calculateStampCapacityMetrics(selectedBatch),
-    [selectedBatch],
-  )
+  const { capacityPct, usedSize, stampSize } = useMemo(() => {
+    if (!selectedBatch) {
+      return {
+        capacityPct: 0,
+        usedSize: '—',
+        stampSize: '—',
+        usedBytes: 0,
+        stampSizeBytes: 0,
+        remainingBytes: 0,
+      }
+    }
+
+    return calculateStampCapacityMetrics(selectedBatch, [], erasureCodeLevel)
+  }, [selectedBatch, erasureCodeLevel])
 
   const initText = resetState ? 'Resetting' : 'Initializing'
   const createText = resetState ? 'Reset' : 'Create'
+
+  const isUltraLightNode = nodeInfo?.beeMode === BeeModes.ULTRA_LIGHT
+
+  const isCreateDriveDisabled =
+    isUltraLightNode ||
+    isNodeSyncing ||
+    (selectedBatch ? false : !isCreateEnabled || !isBalanceSufficient || !isxDaiBalanceSufficient)
+
+  const renderUltraLightNodeWarning = () => {
+    if (!isUltraLightNode) return null
+
+    const upgradeLink = (
+      <a
+        href="https://docs.ethswarm.org/docs/desktop/configuration/#upgrading-from-an-ultra-light-to-a-light-node"
+        target="_blank"
+        rel="noreferrer"
+      >
+        upgrade
+      </a>
+    )
+
+    if (selectedBatch) {
+      return (
+        <div>
+          {resetState ? 'Resetting' : 'Creating'} a drive requires running a light node. Please {upgradeLink} to
+          continue.
+        </div>
+      )
+    }
+
+    return (
+      <div>
+        Purchasing a stamp and {resetState ? 'resetting' : 'creating'} a drive requires running a light node. Please{' '}
+        {upgradeLink} to continue.
+      </div>
+    )
+  }
 
   return (
     <div className="fm-initialization-modal-container">
       <div className="fm-modal-window">
         <div className="fm-modal-window-header">Welcome to your Swarm File Manager</div>
         <div>{initText} the File Manager</div>
-        {usableStamps.length > 0 && (
+        {nonFullStamps.length > 0 && (
           <div className="fm-modal-window-body">
             <div className="fm-modal-window-input-container">
-              {/* <label htmlFor="admin-desired-lifetime" className="fm-input-label">
-                Link an existing Admin Drive (optional)
-              </label>
-              <br /> */}
               <CustomDropdown
                 id="batch-id-selector"
-                options={createBatchIdOptions(usableStamps)}
+                options={createBatchIdOptions(nonFullStamps)}
                 value={selectedBatchIndex}
                 label="Link an existing Admin Drive (optional)"
                 onChange={(index: number) => {
@@ -219,13 +316,14 @@ export function InitialModal({
               {selectedBatch && (
                 <div className="fm-drive-item-content">
                   <div className="fm-drive-item-capacity">
-                    Capacity <ProgressBar value={capacityPct} width="64px" /> {usedSize} / {totalSize}
+                    Capacity <ProgressBar value={capacityPct} width="64px" /> {usedSize} / {stampSize}
                   </div>
                   <div className="fm-drive-item-capacity">
                     Expiry date: {selectedBatch.duration.toEndDate().toLocaleDateString()}
                   </div>
                 </div>
               )}
+              {selectedBatch && setSecurityLevel(setErasureCodeLevel)}
             </div>
           </div>
         )}
@@ -243,20 +341,7 @@ export function InitialModal({
                 placeholder="Select a value"
               />
             </div>
-            <div className="fm-modal-window-input-container">
-              <label htmlFor="admin-security-level" className="fm-input-label">
-                Security Level <Tooltip label={TOOLTIPS.ADMIN_SECURITY_LEVEL} />
-              </label>
-              <FMSlider
-                id="admin-security-level"
-                defaultValue={0}
-                marks={erasureCodeMarks}
-                onChange={value => setErasureCodeLevel(value)}
-                minValue={minMarkValue}
-                maxValue={maxMarkValue}
-                step={1}
-              />
-            </div>
+            {setSecurityLevel(setErasureCodeLevel)}
             <div className="fm-modal-window-input-container">
               <div className="fm-modal-estimated-cost-container">
                 <div className="fm-emphasized-text">Estimated Cost:</div>
@@ -267,6 +352,12 @@ export function InitialModal({
                 <Tooltip label={TOOLTIPS.ADMIN_ESTIMATED_COST} />
               </div>
               <div>(Based on current network conditions)</div>
+              {renderUltraLightNodeWarning()}
+              {isNodeSyncing && !selectedBatch && (
+                <div className="fm-modal-info-warning" style={{ marginBottom: '16px' }}>
+                  Node is syncing. Please wait until sync completes before purchasing a stamp.
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -274,7 +365,7 @@ export function InitialModal({
           <Button
             label={selectedBatch ? `${createText} Drive` : `Purchase Stamp & ${createText} Drive`}
             variant="primary"
-            disabled={selectedBatch ? false : !isCreateEnabled || !isBalanceSufficient || !isxDaiBalanceSufficient}
+            disabled={isCreateDriveDisabled}
             onClick={createAdminDrive}
           />
           <Tooltip

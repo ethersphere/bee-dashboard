@@ -59,6 +59,13 @@ export function Provider({ children }: Props): ReactElement {
       setPreviewBlob(videoBlob)
     }
 
+    if (metadata.isAudio) {
+      const audioFile = files[0]
+      const audioBlob = new Blob([audioFile], { type: audioFile.type })
+      setPreviewUri(URL.createObjectURL(audioBlob))
+      setPreviewBlob(audioBlob)
+    }
+
     if (metadata.isImage) {
       resize(files[0], PREVIEW_DIMENSIONS.maxWidth, PREVIEW_DIMENSIONS.maxHeight).then(blob => {
         setPreviewUri(URL.createObjectURL(blob)) // NOTE: Until it is cleared with URL.revokeObjectURL, the file stays allocated in memory

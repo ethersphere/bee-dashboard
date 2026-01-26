@@ -11,10 +11,45 @@ interface DestroyDriveModalProps {
   doDestroy: () => void | Promise<void>
 }
 
+interface ProgressDestroyModalProps {
+  drive: DriveInfo
+  onMinimize: () => void
+}
+
+export function ProgressDestroyModal({ drive, onMinimize }: ProgressDestroyModalProps): ReactElement {
+  const modalRoot = document.querySelector('.fm-main') || document.body
+
+  return createPortal(
+    <div className="fm-modal-container">
+      <div className="fm-modal-window">
+        <div className="fm-modal-window-header fm-red-font">Destroying Drive</div>
+        <div className="fm-modal-window-body">
+          <div className="fm-modal-body-destroy">
+            <div className="fm-emphasized-text">Drive &quot;{drive.name}&quot; is being destroyed</div>
+            <div>Please wait while the operation completes...</div>
+            <div style={{ marginTop: '20px', textAlign: 'center' }}>
+              <div className="fm-mini-spinner" style={{ display: 'inline-block', marginRight: '10px' }} />
+              <span>Destroying drive...</span>
+            </div>
+          </div>
+        </div>
+        <div className="fm-modal-window-footer">
+          <Button label="Minimize" variant="secondary" onClick={onMinimize} />
+        </div>
+      </div>
+    </div>,
+    modalRoot,
+  )
+}
+
 export function DestroyDriveModal({ drive, onCancelClick, doDestroy }: DestroyDriveModalProps): ReactElement {
   const [driveNameInput, setDriveNameInput] = useState('')
   const destroyDriveText = `DESTROY DRIVE ${drive.name}`
   const modalRoot = document.querySelector('.fm-main') || document.body
+
+  const handleDestroy = () => {
+    doDestroy()
+  }
 
   return createPortal(
     <div className="fm-modal-container">
@@ -50,7 +85,7 @@ export function DestroyDriveModal({ drive, onCancelClick, doDestroy }: DestroyDr
             label="Destroy entire drive"
             variant="danger"
             disabled={destroyDriveText !== driveNameInput}
-            onClick={() => doDestroy()}
+            onClick={handleDestroy}
           />
           <Button label="Cancel" variant="secondary" onClick={onCancelClick} />
         </div>

@@ -18,9 +18,9 @@ Stay up to date by joining the [official Discord](https://discord.gg/GU22h2utj6)
 
 ![Status page](/ui_samples/info.png)
 
-| Node Setup                           | Upload Files                           | Download Content                           | Accounting                                | Settings                              |
-| ------------------------------------ | -------------------------------------- | ------------------------------------------ | ----------------------------------------- | ------------------------------------- |
-| ![Setup](/ui_samples/node_setup.png) | ![Upload](/ui_samples/file_upload.png) | ![Download](/ui_samples/file_download.png) | ![Accounting](/ui_samples/accounting.png) | ![Settings](/ui_samples/settings.png) |
+| Node Setup                           | Upload Files                           | Download Content                           | Accounting                                | Settings                              | File Manager                       |
+| ------------------------------------ | -------------------------------------- | ------------------------------------------ | ----------------------------------------- | ------------------------------------- | ---------------------------------- |
+| ![Setup](/ui_samples/node_setup.png) | ![Upload](/ui_samples/file_upload.png) | ![Download](/ui_samples/file_download.png) | ![Accounting](/ui_samples/accounting.png) | ![Settings](/ui_samples/settings.png) | ![File Manager](/ui_samples/file_manager.png) |
 
 ## Table of Contents
 
@@ -30,6 +30,7 @@ Stay up to date by joining the [official Discord](https://discord.gg/GU22h2utj6)
   - [Docker](#docker)
 - [Contribute](#contribute)
 - [Development](#development)
+- [File Manager](#file-manager)
 - [Maintainers](#maintainers)
 - [License](#license)
 
@@ -107,6 +108,9 @@ files. We support following variables:
 - `REACT_APP_DEFAULT_RPC_URL` (`string`) defines the default RPC provider URL. Be aware, that his only configures the
   default value. The user can override this in Settings, which is then persisted in local store and has priority over
   the value set in this env. variable. By default `https://xdai.fairdatasociety.org` is used.
+- `REACT_APP_FORMBRICKS_ENV_ID` and `REACT_APP_FORMBRICKS_APP_URL` (`string`) configures the
+  [Formbricks](https://formbricks.com/) integration for user feedback collection. If these variables are not set, the
+  feedback form is not available in the app.
 
 #### Swarm Desktop development
 
@@ -120,6 +124,19 @@ REACT_APP_BEE_DESKTOP_ENABLED=true" > .env.development.local
 npm start
 npm run desktop # This will inject the API key to the Dashboard
 ```
+
+## File Manager
+
+The File Manager module provides intuitive decentralized file storage and management.
+
+For comprehensive documentation, see the [File Manager Documentation](./docs/FILE_MANAGER.md).
+
+### Features
+
+- Create and manage multiple drives with configurable capacity and lifetime
+- Upload, download, and organize files with version control
+- Manage postage stamps required for file uploads
+- Configure erasure coding levels for data redundancy
 
 ## Contribute
 

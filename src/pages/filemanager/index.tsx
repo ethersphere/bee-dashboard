@@ -8,6 +8,7 @@ import { AdminStatusBar } from '../../modules/filemanager/components/AdminStatus
 import { FileBrowser } from '../../modules/filemanager/components/FileBrowser/FileBrowser'
 import { InitialModal } from '../../modules/filemanager/components/InitialModal/InitialModal'
 import { Context as FMContext } from '../../providers/FileManager'
+import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as BeeContext, CheckState } from '../../providers/Bee'
 import { PrivateKeyModal } from '../../modules/filemanager/components/PrivateKeyModal/PrivateKeyModal'
 import { getSignerPk, removeSignerPk } from '../../../src/modules/filemanager/utils/common'
@@ -26,8 +27,10 @@ export function FileManagerPage(): ReactElement {
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [showResetModal, setShowResetModal] = useState<boolean>(false)
   const [isCreationInProgress, setIsCreationInProgress] = useState<boolean>(false)
+  const [showConnectionError, setShowConnectionError] = useState<boolean>(false)
 
   const { status } = useContext(BeeContext)
+  const { beeApi } = useContext(SettingsContext)
   const { fm, shallReset, adminDrive, initializationError, init } = useContext(FMContext)
 
   useEffect(() => {
@@ -39,6 +42,18 @@ export function FileManagerPage(): ReactElement {
   }, [])
 
   useEffect(() => {
+    if (status.all !== CheckState.OK) {
+      setShowConnectionError(true)
+    } else {
+      setShowConnectionError(false)
+    }
+  }, [status.all])
+
+  useEffect(() => {
+    if (!beeApi) {
+      return
+    }
+
     if (!hasPk) {
       setIsLoading(false)
 
@@ -71,7 +86,7 @@ export function FileManagerPage(): ReactElement {
     }
 
     setIsLoading(true)
-  }, [fm, hasPk, initializationError, adminDrive, shallReset])
+  }, [fm, beeApi, hasPk, initializationError, adminDrive, shallReset])
 
   const handlePrivateKeySaved = useCallback(async () => {
     if (!isMountedRef.current) return
@@ -110,16 +125,6 @@ export function FileManagerPage(): ReactElement {
   const loading = !fm?.adminStamp || !adminDrive
 
   const isFormbricksActive = Boolean(fm && fm.adminStamp && adminDrive && !showInitialModal && !loading)
-
-  if (status.all !== CheckState.OK) {
-    return (
-      <div className="fm-main">
-        <div className="fm-loading">
-          <div className="fm-loading-title">Bee node error - cannot load File Manager</div>
-        </div>
-      </div>
-    )
-  }
 
   if (!hasPk) {
     return (
@@ -174,7 +179,13 @@ export function FileManagerPage(): ReactElement {
         <InitialModal
           resetState={shallReset}
           handleVisibility={(isVisible: boolean) => setShowInitialModal(isVisible)}
-          handleShowError={(flag: boolean) => setShowErrorModal(flag)}
+          handleShowError={(flag: boolean, error?: string) => {
+            setShowErrorModal(flag)
+
+            if (error) {
+              setErrorMessage(error)
+            }
+          }}
           setIsCreationInProgress={(isCreating: boolean) => setIsCreationInProgress(isCreating)}
         />
       </div>
@@ -196,10 +207,13 @@ export function FileManagerPage(): ReactElement {
   if (showErrorModal) {
     return (
       <ErrorModal
-        label={'Error during admin state creation, try again'}
+        label={
+          'Error creating Admin Drive. Please try again. Possible causes include insufficient xDAI balance or a lost connection to the RPC.'
+        }
         onClick={() => {
           setShowErrorModal(false)
           setShowInitialModal(true)
+          setErrorMessage('')
         }}
       />
     )
@@ -209,6 +223,12 @@ export function FileManagerPage(): ReactElement {
     <SearchProvider>
       <ViewProvider>
         <div className="fm-main">
+          {showConnectionError && fm && (
+            <ErrorModal
+              label="Bee node connection error. Please check your node status. File Manager will continue when connection is restored."
+              onClick={() => setShowConnectionError(false)}
+            />
+          )}
           <FormbricksIntegration isActive={isFormbricksActive} />
           <Header />
           <div className="fm-main-content">
