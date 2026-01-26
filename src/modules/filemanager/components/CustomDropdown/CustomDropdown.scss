@@ -58,8 +58,27 @@
     padding: 4px 0;
     list-style: none;
     max-height: 220px;
-    overflow-y: auto;
+    overflow-y: scroll;
     animation: fadeIn 0.15s;
+
+    scrollbar-gutter: stable;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
 
     li {
       padding: 10px 16px;

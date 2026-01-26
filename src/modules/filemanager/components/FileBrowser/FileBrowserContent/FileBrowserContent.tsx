@@ -1,4 +1,4 @@
-import { ReactElement, useCallback } from 'react'
+import { ReactElement, useCallback, memo } from 'react'
 import { FileItem } from '../FileItem/FileItem'
 import { FileInfo, DriveInfo } from '@solarpunkltd/file-manager-lib'
 import { DownloadProgress, TrackDownloadProps, ViewType } from '../../../constants/transfers'
@@ -24,7 +24,7 @@ interface FileBrowserContentProps {
   setErrorMessage?: (error: string) => void
 }
 
-export function FileBrowserContent({
+function FileBrowserContentInner({
   listToRender,
   drives,
   currentDrive,
@@ -127,4 +127,5 @@ export function FileBrowserContent({
   return <>{renderFileList(listToRender, true)}</>
 }
 
-export default FileBrowserContent
+// Memoize to prevent rerenders when parent FileBrowser rerenders due to upload/download progress
+export const FileBrowserContent = memo(FileBrowserContentInner)

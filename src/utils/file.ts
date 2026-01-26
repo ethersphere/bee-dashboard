@@ -1,5 +1,6 @@
 import { isSupportedImageType } from './image'
 import { isSupportedVideoType } from './video'
+import { isSupportedAudioType } from './audio'
 
 const indexHtmls = ['index.html', 'index.htm']
 
@@ -12,6 +13,10 @@ export function detectIndexHtml(files: FilePath[]): DetectedIndex | false {
   const paths = files.map(getPath)
 
   if (!paths.length) {
+    return false
+  }
+
+  if (files.length === 1) {
     return false
   }
 
@@ -48,24 +53,30 @@ export function detectIndexHtml(files: FilePath[]): DetectedIndex | false {
 }
 
 export function getHumanReadableFileSize(bytes: number): string {
-  if (bytes >= 1e15) {
-    return (bytes / 1e15).toFixed(2) + ' PB'
+  const KB = 1000
+  const MB = KB * 1000
+  const GB = MB * 1000
+  const TB = GB * 1000
+  const PB = TB * 1000
+
+  if (bytes >= PB) {
+    return (bytes / PB).toFixed(2) + ' PB'
   }
 
-  if (bytes >= 1e12) {
-    return (bytes / 1e12).toFixed(2) + ' TB'
+  if (bytes >= TB) {
+    return (bytes / TB).toFixed(2) + ' TB'
   }
 
-  if (bytes >= 1e9) {
-    return (bytes / 1e9).toFixed(2) + ' GB'
+  if (bytes >= GB) {
+    return (bytes / GB).toFixed(2) + ' GB'
   }
 
-  if (bytes >= 1e6) {
-    return (bytes / 1e6).toFixed(2) + ' MB'
+  if (bytes >= MB) {
+    return (bytes / MB).toFixed(2) + ' MB'
   }
 
-  if (bytes >= 1e3) {
-    return (bytes / 1e3).toFixed(2) + ' kB'
+  if (bytes >= KB) {
+    return (bytes / KB).toFixed(2) + ' KB'
   }
 
   return bytes + ' bytes'
@@ -91,9 +102,10 @@ export function getMetadata(files: FilePath[]): Metadata {
   const count = files.length
   const isWebsite = Boolean(detectIndexHtml(files))
   const isVideo = isSupportedVideoType(type)
+  const isAudio = isSupportedAudioType(type)
   const isImage = isSupportedImageType(type)
 
-  return { size, name, type, isWebsite, count, isVideo, isImage }
+  return { size, name, type, isWebsite, count, isVideo, isAudio, isImage }
 }
 
 export function getPath(file: FilePath): string {

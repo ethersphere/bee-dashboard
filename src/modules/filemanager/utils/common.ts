@@ -2,6 +2,7 @@ import { PrivateKey } from '@ethersphere/bee-js'
 import { FileInfo, FileStatus } from '@solarpunkltd/file-manager-lib'
 import { keccak256 } from '@ethersproject/keccak256'
 import { toUtf8Bytes } from '@ethersproject/strings'
+import { lifetimeAdjustments } from '../constants/stamps'
 
 export function getDaysLeft(expiryDate: Date): number {
   const now = new Date()
@@ -21,14 +22,6 @@ export const fromBytesConversion = (size: number, metric: string) => {
       return 0
   }
 }
-
-const lifetimeAdjustments = new Map<number, (date: Date) => void>([
-  [0, date => date.setDate(date.getDate() + 7)],
-  [1, date => date.setMonth(date.getMonth() + 1)],
-  [2, date => date.setMonth(date.getMonth() + 3)],
-  [3, date => date.setMonth(date.getMonth() + 6)],
-  [4, date => date.setFullYear(date.getFullYear() + 1)],
-])
 
 export function getExpiryDateByLifetime(lifetimeValue: number, actualValidity?: Date): Date {
   const now = actualValidity || new Date()
@@ -65,13 +58,13 @@ export const formatBytes = (v?: string | number): string | undefined => {
 
   if (!Number.isFinite(n) || n < 0) return undefined
 
-  if (n < 1024) return `${n} B`
+  if (n < 1000) return `${n} B`
 
   const units = ['KB', 'MB', 'GB', 'TB'] as const
-  let val = n / 1024
+  let val = n / 1000
   let i = 0
-  while (val >= 1024 && i < units.length - 1) {
-    val /= 1024
+  while (val >= 1000 && i < units.length - 1) {
+    val /= 1000
     i++
   }
 
@@ -135,3 +128,15 @@ export const safeSetState =
   (value: React.SetStateAction<T>) => {
     if (ref.current) setter(value)
   }
+
+export const truncateNameMiddle = (s: string, max = 40, start?: number, end?: number): string => {
+  if (s.length <= max) return s
+
+  if (start && end && start + end < s.length) {
+    return `${s.slice(0, start)}…${s.slice(-end)}`
+  }
+
+  const half = Math.floor((max - 1) / 2)
+
+  return `${s.slice(0, half)}…${s.slice(-half)}`
+}

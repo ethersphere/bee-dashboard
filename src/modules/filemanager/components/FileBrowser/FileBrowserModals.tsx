@@ -1,9 +1,11 @@
 import { ReactElement } from 'react'
 import type { FileInfo, DriveInfo } from '@solarpunkltd/file-manager-lib'
 import { ConfirmModal } from '../ConfirmModal/ConfirmModal'
+import { Tooltip } from '../Tooltip/Tooltip'
 import { DeleteFileModal } from '../DeleteFileModal/DeleteFileModal'
 import { DestroyDriveModal } from '../DestroyDriveModal/DestroyDriveModal'
 import { FileAction } from '../../constants/transfers'
+import { TOOLTIPS } from '../../constants/tooltips'
 
 interface FileBrowserModalsProps {
   showDeleteModal: boolean
@@ -11,12 +13,15 @@ interface FileBrowserModalsProps {
   fileCountText: string
   currentDrive: DriveInfo | null
   confirmBulkForget: boolean
+  confirmBulkRestore: boolean
   showDestroyDriveModal: boolean
   pendingCancelUpload: string | null
   onDeleteCancel: () => void
   onDeleteProceed: (action: FileAction) => void
   onForgetConfirm: () => Promise<void>
   onForgetCancel: () => void
+  onRestoreConfirm: () => Promise<void>
+  onRestoreCancel: () => void
   onDestroyCancel: () => void
   onDestroyConfirm: () => Promise<void>
   onCancelUploadConfirm: () => void
@@ -29,12 +34,15 @@ export function FileBrowserModals({
   fileCountText,
   currentDrive,
   confirmBulkForget,
+  confirmBulkRestore,
   showDestroyDriveModal,
   pendingCancelUpload,
   onDeleteCancel,
   onDeleteProceed,
   onForgetConfirm,
   onForgetCancel,
+  onRestoreConfirm,
+  onRestoreCancel,
   onDestroyCancel,
   onDestroyConfirm,
   onCancelUploadConfirm,
@@ -53,7 +61,12 @@ export function FileBrowserModals({
 
       {confirmBulkForget && (
         <ConfirmModal
-          title="Forget permanently?"
+          title={
+            <>
+              Forget permanently?
+              <Tooltip label={TOOLTIPS.FILE_OPERATION_FORGET} />
+            </>
+          }
           message={
             <>
               This removes <b>{selectedFiles.length}</b> {fileCountText} from your view.
@@ -65,6 +78,26 @@ export function FileBrowserModals({
           cancelLabel="Cancel"
           onConfirm={onForgetConfirm}
           onCancel={onForgetCancel}
+        />
+      )}
+
+      {confirmBulkRestore && (
+        <ConfirmModal
+          title={
+            <>
+              Restore from trash?
+              <Tooltip label={TOOLTIPS.FILE_OPERATION_RESTORE_FROM_TRASH} />
+            </>
+          }
+          message={
+            <>
+              This will restore <b>{selectedFiles.length}</b> {fileCountText} from trash.
+            </>
+          }
+          confirmLabel="Restore"
+          cancelLabel="Cancel"
+          onConfirm={onRestoreConfirm}
+          onCancel={onRestoreCancel}
         />
       )}
 

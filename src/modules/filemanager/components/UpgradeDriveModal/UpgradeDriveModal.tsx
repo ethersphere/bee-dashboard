@@ -1,20 +1,13 @@
 import { ReactElement, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import './UpgradeDriveModal.scss'
 import '../../styles/global.scss'
-import { CustomDropdown } from '../CustomDropdown/CustomDropdown'
-import { Button } from '../Button/Button'
+import { Warning } from '@material-ui/icons'
 import { createPortal } from 'react-dom'
 import DriveIcon from 'remixicon-react/HardDrive2LineIcon'
 import DatabaseIcon from 'remixicon-react/Database2LineIcon'
 import WalletIcon from 'remixicon-react/Wallet3LineIcon'
 import ExternalLinkIcon from 'remixicon-react/ExternalLinkLineIcon'
 import CalendarIcon from 'remixicon-react/CalendarLineIcon'
-import { desiredLifetimeOptions } from '../../constants/stamps'
-import { Context as BeeContext } from '../../../../providers/Bee'
-import { fromBytesConversion, getExpiryDateByLifetime } from '../../utils/common'
-import { Context as SettingsContext } from '../../../../providers/Settings'
-import { Context as FMContext } from '../../../../providers/FileManager'
-
 import {
   BatchId,
   BeeRequestOptions,
@@ -27,8 +20,17 @@ import {
   Utils,
 } from '@ethersphere/bee-js'
 import { DriveInfo } from '@solarpunkltd/file-manager-lib'
+
+import { CustomDropdown } from '../CustomDropdown/CustomDropdown'
+import { Button } from '../Button/Button'
+import { desiredLifetimeOptions } from '../../constants/stamps'
+import { Context as BeeContext } from '../../../../providers/Bee'
+import { fromBytesConversion, getExpiryDateByLifetime, truncateNameMiddle } from '../../utils/common'
+import { Context as SettingsContext } from '../../../../providers/Settings'
+import { Context as FMContext } from '../../../../providers/FileManager'
 import { getHumanReadableFileSize } from '../../../../utils/file'
-import { Warning } from '@material-ui/icons'
+import { useStampPolling } from '../../hooks/useStampPolling'
+import { FILE_MANAGER_EVENTS, POLLING_TIMEOUT_MS } from '../../constants/common'
 
 interface UpgradeDriveModalProps {
   stamp: PostageBatch
@@ -50,10 +52,10 @@ export function UpgradeDriveModal({
 }: UpgradeDriveModalProps): ReactElement {
   const { nodeAddresses, walletBalance } = useContext(BeeContext)
   const { beeApi } = useContext(SettingsContext)
-  const { setShowError } = useContext(FMContext)
+  const { refreshStamp, setShowError } = useContext(FMContext)
 
   const [isBalanceSufficient, setIsBalanceSufficient] = useState(true)
-  const [capacity, setCapacity] = useState(Size.fromBytes(0))
+  const [capacity, setCapacity] = useState(stamp.size)
   const [capacityExtensionCost, setCapacityExtensionCost] = useState('')
   const [capacityIndex, setCapacityIndex] = useState(0)
   const [durationExtensionCost, setDurationExtensionCost] = useState('')
@@ -66,14 +68,37 @@ export function UpgradeDriveModal({
   const modalRoot = document.querySelector('.fm-main') || document.body
   const isMountedRef = useRef(true)
 
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false
-    }
-  }, [])
+  const { startPolling } = useStampPolling({
+    refreshStamp,
+    onStampUpdated: (updatedStamp: PostageBatch) => {
+      window.dispatchEvent(
+        new CustomEvent(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, {
+          detail: {
+            driveId: drive.id.toString(),
+            success: true,
+            updatedStamp,
+          },
+        }),
+      )
+    },
+    onTimeout: (finalStamp: PostageBatch | null) => {
+      window.dispatchEvent(
+        new CustomEvent(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_TIMEOUT, {
+          detail: {
+            driveId: drive.id.toString(),
+            finalStamp: finalStamp || null,
+          },
+        }),
+      )
+    },
+    onPollingStateChange: () => {
+      // no-op
+    },
+    timeout: POLLING_TIMEOUT_MS,
+  })
 
   const handleCapacityChange = (value: number, index: number) => {
-    setCapacity(Size.fromBytes(value === -1 ? 0 : value))
+    setCapacity(value === -1 ? stamp.size : Size.fromBytes(value))
     setCapacityIndex(index)
   }
 
@@ -88,8 +113,6 @@ export function UpgradeDriveModal({
       isCapacityExtensionSet: boolean,
       isDurationExtensionSet: boolean,
     ) => {
-      setIsBalanceSufficient(true)
-
       let cost: BZZ | undefined
 
       try {
@@ -107,6 +130,8 @@ export function UpgradeDriveModal({
 
       if ((walletBalance && cost && cost.gte(walletBalance.bzzBalance)) || !walletBalance) {
         setIsBalanceSufficient(false)
+      } else {
+        setIsBalanceSufficient(true)
       }
 
       const bothExtensions = isCapacityExtensionSet && isDurationExtensionSet
@@ -130,7 +155,7 @@ export function UpgradeDriveModal({
 
       setExtensionCost(noExtensions ? '0' : costText)
     },
-    [beeApi, walletBalance, setErrorMessage, setShowError],
+    [beeApi, walletBalance, isMountedRef, setErrorMessage, setShowError],
   )
 
   useEffect(() => {
@@ -158,13 +183,14 @@ export function UpgradeDriveModal({
   useEffect(() => {
     const fetchExtensionCost = () => {
       const isCapacitySet = capacityIndex > 0
-      const isDurationSet = true
-      const duration = Duration.fromEndDate(validityEndDate)
+      const isDurationSet = lifetimeIndex >= 0
+      const extendDuration =
+        lifetimeIndex >= 0 ? Duration.fromEndDate(validityEndDate, stamp.duration.toEndDate()) : Duration.ZERO
 
       handleCostCalculation(
         stamp.batchID,
         capacity,
-        duration,
+        extendDuration,
         undefined,
         false,
         defaultErasureCodeLevel,
@@ -174,114 +200,126 @@ export function UpgradeDriveModal({
     }
 
     fetchExtensionCost()
-  }, [capacity, validityEndDate, capacityIndex, handleCostCalculation, lifetimeIndex, stamp.batchID])
+  }, [capacity, validityEndDate, capacityIndex, handleCostCalculation, lifetimeIndex, stamp.batchID, stamp.duration])
 
   useEffect(() => {
     setValidityEndDate(getExpiryDateByLifetime(lifetimeIndex, stamp.duration.toEndDate()))
   }, [lifetimeIndex, stamp.duration])
 
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
+
   const batchIdStr = stamp.batchID.toString()
   const shortBatchId = batchIdStr.length > 12 ? `${batchIdStr.slice(0, 4)}...${batchIdStr.slice(-4)}` : batchIdStr
 
   return createPortal(
-    <div className={`fm-modal-container${containerColor === 'none' ? ' fm-modal-container-no-bg' : ''}`}>
+    <div
+      className={`fm-modal-container fm-upgrade-drive-modal-container${
+        containerColor === 'none' ? ' fm-modal-container-no-bg' : ''
+      }`}
+    >
       <div className="fm-modal-window fm-upgrade-drive-modal">
         <div className="fm-modal-window-header">
-          <DriveIcon size="18px" /> Upgrade {drive.name || stamp.label || shortBatchId}
+          <DriveIcon size="18px" /> Upgrade {truncateNameMiddle(drive.name || stamp.label || shortBatchId, 35)}
         </div>
-        <div>Choose extension period and additional storage for your drive.</div>
-        <div className="fm-modal-window-body">
-          <div className="fm-upgrade-drive-modal-wallet">
-            <div className="fm-upgrade-drive-modal-wallet-header fm-emphasized-text">
-              <WalletIcon size="14px" color="rgb(237, 129, 49)" /> Wallet information
-            </div>
-            {walletBalance && nodeAddresses ? (
-              <div className="fm-upgrade-drive-modal-wallet-info-container">
-                <div className="fm-upgrade-drive-modal-wallet-info">
-                  <div>Balance</div>
-                  <div>{`${walletBalance.bzzBalance.toSignificantDigits(4)} xBZZ`}</div>
-                </div>
-                <div className="fm-upgrade-drive-modal-wallet-info">
-                  <div>Wallet address:</div>
-                  <div className="fm-value-snippet">{`${walletBalance.walletAddress.slice(
-                    0,
-                    4,
-                  )}...${walletBalance.walletAddress.slice(-4)}`}</div>
-                </div>
+        <div className="fm-modal-window-scrollable">
+          <div>Choose extension period and additional storage for your drive.</div>
+          <div className="fm-modal-window-body">
+            <div className="fm-upgrade-drive-modal-wallet">
+              <div className="fm-upgrade-drive-modal-wallet-header fm-emphasized-text">
+                <WalletIcon size="14px" color="rgb(237, 129, 49)" /> Wallet information
               </div>
-            ) : (
-              <div>Wallet information is not available</div>
-            )}
-            <div className="fm-upgrade-drive-modal-info fm-swarm-orange-font">
-              <a
-                className="fm-upgrade-drive-modal-info-link fm-pointer"
-                href="https://www.ethswarm.org/get-bzz#how-to-get-bzz"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <ExternalLinkIcon size="14px" />
-                Need help topping up?
-              </a>
+              {walletBalance && nodeAddresses ? (
+                <div className="fm-upgrade-drive-modal-wallet-info-container">
+                  <div className="fm-upgrade-drive-modal-wallet-info">
+                    <div>Balance</div>
+                    <div>{`${walletBalance.bzzBalance.toSignificantDigits(4)} xBZZ`}</div>
+                  </div>
+                  <div className="fm-upgrade-drive-modal-wallet-info">
+                    <div>Wallet address:</div>
+                    <div className="fm-value-snippet">{`${walletBalance.walletAddress.slice(
+                      0,
+                      4,
+                    )}...${walletBalance.walletAddress.slice(-4)}`}</div>
+                  </div>
+                </div>
+              ) : (
+                <div>Wallet information is not available</div>
+              )}
+              <div className="fm-upgrade-drive-modal-info fm-swarm-orange-font">
+                <a
+                  className="fm-upgrade-drive-modal-info-link fm-pointer"
+                  href="https://www.ethswarm.org/get-bzz#how-to-get-bzz"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <ExternalLinkIcon size="14px" />
+                  Need help topping up?
+                </a>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="fm-modal-window-body">
-          <div className="fm-upgrade-drive-modal-input-row">
-            <div className="fm-modal-window-input-container">
-              <CustomDropdown
-                id="drive-type"
-                label="Additional storage"
-                icon={<DatabaseIcon size="14px" color="rgb(237, 129, 49)" />}
-                options={sizeMarks}
-                value={capacityIndex === 0 ? -1 : capacity.toBytes()}
-                onChange={handleCapacityChange}
-              />
-            </div>
-            <div className="fm-modal-window-input-container">
-              <CustomDropdown
-                id="drive-type"
-                label="Duration"
-                icon={<CalendarIcon size="14px" color="rgb(237, 129, 49)" />}
-                options={desiredLifetimeOptions}
-                value={lifetimeIndex}
-                onChange={(value, index) => {
-                  setLifetimeIndex(value)
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="fm-modal-white-section">
-            <div className="fm-emphasized-text">Summary</div>
-            <div>
-              Drive: {drive.name} {drive.isAdmin && <Warning style={{ fontSize: '16px' }} />}
-            </div>
-            <div>
-              BatchId: {stamp.label} ({shortBatchId})
-            </div>
-            <div>Expiry: {stamp.duration.toEndDate().toLocaleDateString()}</div>
-            <div>
-              Additional storage:{' '}
-              {(() => {
-                if (capacityIndex === 0) return '0 GB'
-
-                return `${
-                  fromBytesConversion(Math.max(capacity.toBytes() - stamp.size.toBytes(), 0), 'GB').toFixed(3) + ' GB'
-                } ${durationExtensionCost === '' ? '' : '(' + extensionCost + ' xBZZ)'}`
-              })()}
-            </div>
-            <div>
-              Extension period:{' '}
-              {`${desiredLifetimeOptions[lifetimeIndex]?.label} ${
-                capacityExtensionCost === '' ? '' : '(' + extensionCost + ' xBZZ)'
-              }`}
+          <div className="fm-modal-window-body">
+            <div className="fm-upgrade-drive-modal-input-row">
+              <div className="fm-modal-window-input-container">
+                <CustomDropdown
+                  id="drive-type"
+                  label="Additional storage"
+                  icon={<DatabaseIcon size="14px" color="rgb(237, 129, 49)" />}
+                  options={sizeMarks}
+                  value={capacityIndex === 0 ? -1 : capacity.toBytes()}
+                  onChange={handleCapacityChange}
+                />
+              </div>
+              <div className="fm-modal-window-input-container">
+                <CustomDropdown
+                  id="drive-type"
+                  label="Duration"
+                  icon={<CalendarIcon size="14px" color="rgb(237, 129, 49)" />}
+                  options={desiredLifetimeOptions}
+                  value={lifetimeIndex}
+                  onChange={(value, index) => {
+                    setLifetimeIndex(value)
+                  }}
+                />
+              </div>
             </div>
 
-            <div className="fm-upgrade-drive-modal-info fm-emphasized-text">
-              Total:{' '}
-              <span className="fm-swarm-orange-font">
-                {extensionCost} xBZZ {isBalanceSufficient ? '' : '(Insufficient balance)'}
-              </span>
+            <div className="fm-modal-white-section">
+              <div className="fm-emphasized-text">Summary</div>
+              <div>
+                Drive: {truncateNameMiddle(drive.name)} {drive.isAdmin && <Warning style={{ fontSize: '16px' }} />}
+              </div>
+              <div>
+                BatchId: {truncateNameMiddle(stamp.label, 25)} ({shortBatchId})
+              </div>
+              <div>Expiry: {stamp.duration.toEndDate().toLocaleDateString()}</div>
+              <div>
+                Additional storage:{' '}
+                {(() => {
+                  if (capacityIndex === 0) return '0 GB'
+
+                  return `${
+                    fromBytesConversion(Math.max(capacity.toBytes() - stamp.size.toBytes(), 0), 'GB').toFixed(3) + ' GB'
+                  } ${durationExtensionCost === '' ? '' : '(' + extensionCost + ' xBZZ)'}`
+                })()}
+              </div>
+              <div>
+                Extension period:{' '}
+                {`${desiredLifetimeOptions[lifetimeIndex]?.label} ${
+                  capacityExtensionCost === '' ? '' : '(' + extensionCost + ' xBZZ)'
+                }`}
+              </div>
+
+              <div className="fm-upgrade-drive-modal-info fm-emphasized-text">
+                Total:{' '}
+                <span className="fm-swarm-orange-font">
+                  {extensionCost} xBZZ {isBalanceSufficient ? '' : '(Insufficient balance)'}
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -296,7 +334,7 @@ export function UpgradeDriveModal({
               try {
                 setIsSubmitting(true)
                 window.dispatchEvent(
-                  new CustomEvent('fm:drive-upgrade-start', {
+                  new CustomEvent(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_START, {
                     detail: { driveId: drive.id.toString() },
                   }),
                 )
@@ -306,24 +344,19 @@ export function UpgradeDriveModal({
                 await beeApi.extendStorage(
                   stamp.batchID,
                   capacity,
-                  durationExtensionCost === '0'
-                    ? Duration.ZERO
-                    : Duration.fromEndDate(validityEndDate, stamp.duration.toEndDate()),
+                  lifetimeIndex >= 0
+                    ? Duration.fromEndDate(validityEndDate, stamp.duration.toEndDate())
+                    : Duration.ZERO,
                   undefined,
                   false,
                   defaultErasureCodeLevel,
                 )
 
-                // TODO: replace eventlisteners with a better maintainable solution
-                window.dispatchEvent(
-                  new CustomEvent('fm:drive-upgrade-end', {
-                    detail: { driveId: drive.id.toString(), success: true },
-                  }),
-                )
+                startPolling(stamp, capacityIndex > 0)
               } catch (e) {
                 const msg = e instanceof Error ? e.message : 'Upgrade failed'
                 window.dispatchEvent(
-                  new CustomEvent('fm:drive-upgrade-end', {
+                  new CustomEvent(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, {
                     detail: {
                       driveId: drive.id.toString(),
                       success: false,

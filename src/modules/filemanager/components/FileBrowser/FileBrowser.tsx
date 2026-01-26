@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useLayoutEffect, useRef, useState, useContext } from 'react'
+import { ReactElement, useEffect, useLayoutEffect, useRef, useState, useContext, useMemo, useCallback } from 'react'
 import './FileBrowser.scss'
 import { FileBrowserHeader } from './FileBrowserHeader/FileBrowserHeader'
 import { FileBrowserContent } from './FileBrowserContent/FileBrowserContent'
@@ -15,15 +15,47 @@ import { useDragAndDrop } from '../../hooks/useDragAndDrop'
 import { useBulkActions } from '../../hooks/useBulkActions'
 import { SortKey, SortDir, useSorting } from '../../hooks/useSorting'
 
-import { Point, Dir, safeSetState } from '../../utils/common'
+import { Point, Dir, safeSetState, getFileId } from '../../utils/common'
 import { computeContextMenuPosition } from '../../utils/ui'
 import { FileBrowserTopBar } from './FileBrowserTopBar/FileBrowserTopBar'
-import { handleDestroyDrive } from '../../utils/bee'
+import { handleDestroyAndForgetDrive } from '../../utils/bee'
 import { Context as SettingsContext } from '../../../../providers/Settings'
 import { ErrorModal } from '../ErrorModal/ErrorModal'
 import { FileBrowserModals } from './FileBrowserModals'
 import { FileBrowserContextMenu } from './FileBrowserMenu/FileBrowserContextMenu'
-import { FileInfo } from '@solarpunkltd/file-manager-lib'
+import { DriveInfo, FileInfo } from '@solarpunkltd/file-manager-lib'
+import { ProgressDestroyModal } from '../DestroyDriveModal/DestroyDriveModal'
+
+const renderDestroySpinner = (
+  isDestroying: boolean,
+  isProgressModalOpen: boolean,
+  currentDrive: DriveInfo | undefined,
+  setter: () => void,
+) => {
+  if (isProgressModalOpen && isDestroying && currentDrive) {
+    return <ProgressDestroyModal drive={currentDrive} onMinimize={setter} />
+  }
+
+  return null
+}
+
+const showDestroyModal = (isDestroying: boolean, setter: () => void) => {
+  if (!isDestroying) return null
+
+  return (
+    <div className="fm-refresh-overlay" aria-busy="true" aria-live="polite">
+      <div
+        className="fm-refresh-content"
+        onClick={setter}
+        style={{ cursor: 'pointer' }}
+        title="Click to show progress modal"
+      >
+        <div className="fm-mini-spinner" role="status" aria-label="Destroying drive…" />
+        <span className="fm-refresh-text">Destroying drive…</span>
+      </div>
+    </div>
+  )
+}
 
 const extractFilesFromClipboardEvent = (e: React.ClipboardEvent): File[] => {
   const out: File[] = []
@@ -50,7 +82,7 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
   const { showContext, pos, contextRef, handleContextMenu, handleCloseContext } = useContextMenu<HTMLDivElement>()
   const { view, setActualItemView } = useView()
   const { beeApi } = useContext(SettingsContext)
-  const { files, currentDrive, resync, drives, fm, showError, setShowError } = useContext(FMContext)
+  const { files, adminDrive, currentDrive, resync, drives, fm, showError, setShowError } = useContext(FMContext)
   const {
     uploadFiles,
     isUploading,
@@ -78,7 +110,10 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
 
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false)
   const [showDestroyDriveModal, setShowDestroyDriveModal] = useState(false)
+  const [isDestroying, setIsDestroying] = useState(false)
+  const [isProgressModalOpen, setIsProgressModalOpen] = useState(false)
   const [confirmBulkForget, setConfirmBulkForget] = useState(false)
+  const [confirmBulkRestore, setConfirmBulkRestore] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [pendingCancelUpload, setPendingCancelUpload] = useState<string | null>(null)
 
@@ -124,6 +159,10 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
     defaultState: { key: SortKey.Timestamp, dir: SortDir.Desc },
     getDriveName,
   })
+
+  const sortedKey = sorted.map(f => getFileId(f)).join('|')
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const stableSorted = useMemo(() => sorted, [sortedKey])
 
   const bulk = useBulkActions({
     listToRender,
@@ -200,32 +239,50 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
     }
   }
 
-  const handleDestroyDriveConfirm = async () => {
+  const handleDestroyDriveConfirm = useCallback(async () => {
     if (!currentDrive) return
 
     setShowDestroyDriveModal(false)
+    setIsProgressModalOpen(true)
+    setIsDestroying(true)
 
-    await handleDestroyDrive(
+    await handleDestroyAndForgetDrive({
       beeApi,
       fm,
-      currentDrive,
-      () => {
+      drive: currentDrive,
+      isDestroy: true,
+      adminDrive,
+      onSuccess: () => {
+        setIsDestroying(false)
+        setIsProgressModalOpen(false)
         setShowDestroyDriveModal(false)
       },
-      e => {
+      onError: e => {
+        setIsDestroying(false)
+        setIsProgressModalOpen(false)
+        setShowDestroyDriveModal(false)
         setErrorMessage?.(`Error destroying drive: ${currentDrive.name}: ${e}`)
         setShowError(true)
       },
-    )
-  }
+    })
+  }, [
+    beeApi,
+    fm,
+    currentDrive,
+    adminDrive,
+    setErrorMessage,
+    setIsProgressModalOpen,
+    setShowDestroyDriveModal,
+    setShowError,
+  ])
 
-  const handleUploadClose = (name: string) => {
-    const row = uploadItems.find(i => i.name === name)
+  const handleUploadClose = (uuid: string) => {
+    const row = uploadItems.find(i => i.uuid === uuid)
 
     if (row?.status === TransferStatus.Uploading) {
-      setPendingCancelUpload(name)
+      setPendingCancelUpload(uuid)
     } else {
-      cancelOrDismissUpload(name)
+      cancelOrDismissUpload(uuid)
     }
   }
 
@@ -322,6 +379,18 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
   const showDragOverlay = isDragging && Boolean(currentDrive)
   const fileCountText = bulk.selectedFiles.length === 1 ? 'file' : 'files'
 
+  // Memoize onBulk object to prevent FileBrowserContent rerenders
+  const onBulk = useMemo(
+    () => ({
+      download: () => bulk.bulkDownload(bulk.selectedFiles),
+      restore: () => setConfirmBulkRestore(true),
+      forget: () => bulk.bulkForget(bulk.selectedFiles),
+      destroy: () => setShowDestroyDriveModal(true),
+      delete: () => setShowBulkDeleteModal(true),
+    }),
+    [bulk],
+  )
+
   return (
     <>
       {conflictPortal}
@@ -364,7 +433,7 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
           >
             <FileBrowserContent
               key={isSearchMode ? `content-search` : `content-${currentDrive?.id.toString() ?? 'none'}`}
-              listToRender={sorted}
+              listToRender={stableSorted}
               drives={drives}
               currentDrive={currentDrive || null}
               view={view}
@@ -373,13 +442,7 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
               selectedIds={bulk.selectedIds}
               onToggleSelected={bulk.toggleOne}
               bulkSelectedCount={bulk.selectedCount}
-              onBulk={{
-                download: () => bulk.bulkDownload(bulk.selectedFiles),
-                restore: () => bulk.bulkRestore(bulk.selectedFiles),
-                forget: () => bulk.bulkForget(bulk.selectedFiles),
-                destroy: () => setShowDestroyDriveModal(true),
-                delete: () => setShowBulkDeleteModal(true),
-              }}
+              onBulk={onBulk}
               setErrorMessage={setErrorMessage}
             />
             {showError && (
@@ -411,7 +474,7 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
                   enableRefresh={Boolean(fm?.adminStamp)}
                   onUploadFile={onContextUploadFile}
                   onBulkDownload={() => bulk.bulkDownload(bulk.selectedFiles)}
-                  onBulkRestore={() => bulk.bulkRestore(bulk.selectedFiles)}
+                  onBulkRestore={() => setConfirmBulkRestore(true)}
                   onBulkDelete={() => setShowBulkDeleteModal(true)}
                   onBulkDestroy={() => setShowDestroyDriveModal(true)}
                   onBulkForget={() => bulk.bulkForget(bulk.selectedFiles)}
@@ -439,6 +502,7 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
             fileCountText={fileCountText}
             currentDrive={currentDrive || null}
             confirmBulkForget={confirmBulkForget}
+            confirmBulkRestore={confirmBulkRestore}
             showDestroyDriveModal={showDestroyDriveModal}
             pendingCancelUpload={pendingCancelUpload}
             onDeleteCancel={() => setShowBulkDeleteModal(false)}
@@ -448,6 +512,11 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
               setConfirmBulkForget(false)
             }}
             onForgetCancel={() => setConfirmBulkForget(false)}
+            onRestoreConfirm={async () => {
+              await bulk.bulkRestore(bulk.selectedFiles)
+              setConfirmBulkRestore(false)
+            }}
+            onRestoreCancel={() => setConfirmBulkRestore(false)}
             onDestroyCancel={() => setShowDestroyDriveModal(false)}
             onDestroyConfirm={handleDestroyDriveConfirm}
             onCancelUploadConfirm={() => {
@@ -467,6 +536,10 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
               </div>
             </div>
           )}
+
+          {showDestroyModal(isDestroying, () => setIsProgressModalOpen(true))}
+
+          {renderDestroySpinner(isDestroying, isProgressModalOpen, currentDrive, () => setIsProgressModalOpen(false))}
         </div>
 
         <div className="fm-file-browser-footer">
@@ -474,7 +547,6 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
             label="Uploading files"
             type={FileTransferType.Upload}
             open={isUploading}
-            count={uploadItems.length}
             items={uploadItems}
             onRowClose={handleUploadClose}
             onCloseAll={() => dismissAllUploads()}
@@ -483,7 +555,6 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
             label="Downloading files"
             type={FileTransferType.Download}
             open={isDownloading}
-            count={downloadItems.length}
             items={downloadItems}
             onRowClose={name => cancelOrDismissDownload(name)}
             onCloseAll={() => dismissAllDownloads()}

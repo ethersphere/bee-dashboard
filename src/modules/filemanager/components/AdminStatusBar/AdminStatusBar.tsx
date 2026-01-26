@@ -1,13 +1,17 @@
-import { ReactElement, useState, useMemo, useEffect, useRef, useContext } from 'react'
+import { ReactElement, useState, useMemo, useEffect, useContext, useCallback } from 'react'
 import './AdminStatusBar.scss'
 import { ProgressBar } from '../ProgressBar/ProgressBar'
 import { Tooltip } from '../Tooltip/Tooltip'
 import { PostageBatch } from '@ethersphere/bee-js'
-import { DriveInfo } from '@solarpunkltd/file-manager-lib'
-import { UpgradeDriveModal } from '../UpgradeDriveModal/UpgradeDriveModal'
-import { calculateStampCapacityMetrics } from '../../utils/bee'
+import { DriveInfo, estimateDriveListMetadataSize } from '@solarpunkltd/file-manager-lib'
 import { Context as FMContext } from '../../../../providers/FileManager'
 import { ConfirmModal } from '../ConfirmModal/ConfirmModal'
+import { calculateStampCapacityMetrics } from '../../utils/bee'
+import { getHumanReadableFileSize } from '../../../../utils/file'
+import { UpgradeDriveModal } from '../UpgradeDriveModal/UpgradeDriveModal'
+import { UpgradeTimeoutModal } from '../UpgradeTimeoutModal/UpgradeTimeoutModal'
+import { FILE_MANAGER_EVENTS, POLLING_TIMEOUT_MS } from '../../constants/common'
+import { useStampPolling } from '../../hooks/useStampPolling'
 
 interface AdminStatusBarProps {
   adminStamp: PostageBatch | null
@@ -24,34 +28,61 @@ export function AdminStatusBar({
   isCreationInProgress,
   setErrorMessage,
 }: AdminStatusBarProps): ReactElement {
-  const { setShowError, refreshStamp } = useContext(FMContext)
+  const { drives, setShowError, refreshStamp } = useContext(FMContext)
 
   const [isUpgradeDriveModalOpen, setIsUpgradeDriveModalOpen] = useState(false)
+  const [isUpgradeTimeoutModalOpen, setIsUpgradeTimeoutModalOpen] = useState(false)
   const [isUpgrading, setIsUpgrading] = useState(false)
   const [actualStamp, setActualStamp] = useState<PostageBatch | null>(adminStamp)
   const [showProgressModal, setShowProgressModal] = useState(true)
 
-  const isMountedRef = useRef(true)
-
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false
-    }
+  const handleStampUpdated = useCallback((updatedStamp: PostageBatch) => {
+    setActualStamp(updatedStamp)
   }, [])
+
+  const handlePollingStateChange = useCallback((_isPolling: boolean) => {
+    // no-op
+  }, [])
+
+  const { startPolling } = useStampPolling({
+    onStampUpdated: handleStampUpdated,
+    onPollingStateChange: handlePollingStateChange,
+    refreshStamp,
+    timeout: POLLING_TIMEOUT_MS,
+  })
 
   useEffect(() => {
     setShowProgressModal(isCreationInProgress || loading)
   }, [isCreationInProgress, loading, setShowProgressModal])
 
   useEffect(() => {
-    setActualStamp(adminStamp)
-  }, [adminStamp, setActualStamp])
+    if (!adminStamp || !actualStamp) {
+      setActualStamp(adminStamp)
+
+      return
+    }
+
+    if (actualStamp.batchID.toString() !== adminStamp.batchID.toString()) {
+      setActualStamp(adminStamp)
+
+      return
+    }
+
+    const incomingSize = adminStamp.size.toBytes()
+    const currentSize = actualStamp.size.toBytes()
+    const incomingExpiry = adminStamp.duration.toEndDate().getTime()
+    const currentExpiry = actualStamp.duration.toEndDate().getTime()
+
+    if (incomingSize > currentSize || incomingExpiry > currentExpiry) {
+      setActualStamp(adminStamp)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [adminStamp])
 
   useEffect(() => {
     if (!adminDrive) return
 
     const id = adminDrive.id.toString()
-    const batchId = adminStamp?.batchID.toString() || ''
 
     const onStart = (e: Event) => {
       const { driveId } = (e as CustomEvent).detail || {}
@@ -61,43 +92,79 @@ export function AdminStatusBar({
       }
     }
 
-    const onEnd = async (e: Event) => {
-      const { driveId, success, error } = (e as CustomEvent).detail || {}
+    const onEnd = (e: Event) => {
+      const { driveId, success, error, updatedStamp } = (e as CustomEvent).detail || {}
 
-      if (!success) {
-        if (error) {
-          setErrorMessage?.(error)
-        }
+      if (driveId !== id) return
 
+      if (!success && error) {
+        setIsUpgrading(false)
+        setErrorMessage?.(error)
         setShowError(true)
+
+        return
       }
 
-      if (driveId === id && batchId) {
-        setIsUpgrading(false)
+      if (updatedStamp) {
+        setActualStamp(updatedStamp)
+      }
 
-        const upgradedStamp = await refreshStamp(batchId)
+      setIsUpgrading(false)
+    }
 
-        if (!isMountedRef.current) return
+    const onTimeout = (e: Event) => {
+      const { driveId } = (e as CustomEvent).detail || {}
 
-        if (upgradedStamp) {
-          setActualStamp(upgradedStamp)
-        }
+      if (driveId === id) {
+        setIsUpgradeTimeoutModalOpen(true)
       }
     }
 
-    window.addEventListener('fm:drive-upgrade-start', onStart as EventListener)
-    window.addEventListener('fm:drive-upgrade-end', onEnd as EventListener)
+    window.addEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_START, onStart as EventListener)
+    window.addEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, onEnd as EventListener)
+    window.addEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_TIMEOUT, onTimeout as EventListener)
 
     return () => {
-      window.removeEventListener('fm:drive-upgrade-start', onStart as EventListener)
-      window.removeEventListener('fm:drive-upgrade-end', onEnd as EventListener)
+      window.removeEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_START, onStart as EventListener)
+      window.removeEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_END, onEnd as EventListener)
+      window.removeEventListener(FILE_MANAGER_EVENTS.DRIVE_UPGRADE_TIMEOUT, onTimeout as EventListener)
     }
-  }, [adminDrive, adminStamp?.batchID, setErrorMessage, setShowError, refreshStamp, setIsUpgrading])
+  }, [adminDrive, setErrorMessage, setShowError])
 
-  const { capacityPct, usedSize, totalSize } = useMemo(
-    () => calculateStampCapacityMetrics(actualStamp, adminDrive),
-    [actualStamp, adminDrive],
-  )
+  const handleTimeoutCancel = useCallback(() => {
+    setIsUpgrading(false)
+    setIsUpgradeTimeoutModalOpen(false)
+
+    // Restart polling to continue checking for capacity updates
+    if (actualStamp) {
+      startPolling(actualStamp)
+    }
+  }, [actualStamp, startPolling])
+
+  const { capacityPct, usedSize, totalSize } = useMemo(() => {
+    if (!actualStamp) {
+      return {
+        capacityPct: 0,
+        usedSize: '—',
+        totalSize: '—',
+      }
+    }
+
+    const estimatedDlSizeBytes = estimateDriveListMetadataSize(drives) * drives.length
+    const {
+      capacityPct: reportedPct,
+      usedBytes: reportedUsedBytes,
+      stampSizeBytes,
+    } = calculateStampCapacityMetrics(actualStamp, [], adminDrive?.redundancyLevel)
+    const actualUsedSizeBytes = Math.max(reportedUsedBytes, estimatedDlSizeBytes)
+    const actualPct = Math.max(reportedPct, (actualUsedSizeBytes / stampSizeBytes) * 100)
+
+    return {
+      capacityPct: actualPct,
+      usedSize: getHumanReadableFileSize(actualUsedSizeBytes),
+      totalSize: getHumanReadableFileSize(stampSizeBytes),
+    }
+  }, [actualStamp, adminDrive, drives])
 
   const expiresAt = useMemo(
     () => (actualStamp ? actualStamp.duration.toEndDate().toLocaleDateString() : '—'),
@@ -109,22 +176,9 @@ export function AdminStatusBar({
   const statusVerb = isCreationInProgress ? 'Creating' : 'Loading'
   const statusText = statusVerb + '  admin drive, please do not reload'
 
-  return (
-    <div>
-      <div className={`fm-admin-status-bar-container${blurCls}`} aria-busy={isBusy ? 'true' : 'false'}>
-        <div className="fm-admin-status-bar-left">
-          <div className="fm-drive-item-capacity">
-            Capacity <ProgressBar value={capacityPct} width="150px" /> {usedSize} / {totalSize}
-          </div>
-
-          <div>File Manager Available: Until: {expiresAt}</div>
-
-          <Tooltip
-            label="The File Manager works only while your storage remains valid. If it expires, all catalogue metadata is
-            permanently lost."
-          />
-        </div>
-
+  const renderModalsAndOverlays = () => {
+    return (
+      <>
         {isUpgradeDriveModalOpen && actualStamp && adminDrive && (
           <UpgradeDriveModal
             stamp={actualStamp}
@@ -134,13 +188,9 @@ export function AdminStatusBar({
           />
         )}
 
-        <div
-          className="fm-admin-status-bar-upgrade-button"
-          onClick={() => !isBusy && actualStamp && adminDrive && setIsUpgradeDriveModalOpen(true)}
-          aria-disabled={isBusy ? 'true' : 'false'}
-        >
-          {isBusy ? 'Working…' : 'Manage'}
-        </div>
+        {isUpgradeTimeoutModalOpen && adminDrive && actualStamp && (
+          <UpgradeTimeoutModal driveName={adminDrive.name} onOk={handleTimeoutCancel} />
+        )}
 
         {isUpgrading && (
           <div className="fm-drive-item-creating-overlay" aria-live="polite">
@@ -159,6 +209,38 @@ export function AdminStatusBar({
             onMinimize={() => setShowProgressModal(false)}
           />
         )}
+      </>
+    )
+  }
+
+  return (
+    <div>
+      <div className={`fm-admin-status-bar-container${blurCls}`} aria-busy={isBusy ? 'true' : 'false'}>
+        <div className="fm-admin-status-bar-left">
+          <div
+            className={`fm-drive-item-capacity ${isUpgrading ? 'fm-drive-item-capacity-updating' : ''}`}
+            title={isUpgrading ? 'Capacity is updating... This may take a few moments.' : ''}
+          >
+            Capacity <ProgressBar value={capacityPct} width="150px" /> {usedSize} / {totalSize}
+          </div>
+
+          <div>File Manager Available: Until: {expiresAt}</div>
+
+          <Tooltip
+            label="The File Manager works only while your storage remains valid. If it expires, all catalogue metadata is
+            permanently lost."
+          />
+        </div>
+
+        {renderModalsAndOverlays()}
+
+        <div
+          className="fm-admin-status-bar-upgrade-button"
+          onClick={() => !isBusy && actualStamp && adminDrive && setIsUpgradeDriveModalOpen(true)}
+          aria-disabled={isBusy ? 'true' : 'false'}
+        >
+          {isBusy ? 'Working…' : 'Manage'}
+        </div>
       </div>
       {!showProgressModal && (loading || isCreationInProgress) && (
         <div className="fm-admin-status-bar-progress-pill-container">

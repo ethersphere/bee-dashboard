@@ -3,26 +3,14 @@ import './FileProgressNotification.scss'
 import UpIcon from 'remixicon-react/ArrowUpSLineIcon'
 import DownIcon from 'remixicon-react/ArrowDownSLineIcon'
 import { FileProgressWindow } from '../FileProgressWindow/FileProgressWindow'
-import { FileTransferType, TransferStatus } from '../../constants/transfers'
-
-type ProgressItem = {
-  name: string
-  size?: string
-  percent?: number
-  kind?: FileTransferType
-  status?: TransferStatus
-  driveName?: string
-  etaSec?: number
-  elapsedSec?: number
-}
+import { FileTransferType, TransferStatus, ProgressItem } from '../../constants/transfers'
 
 interface FileProgressNotificationProps {
   label?: string
   type: FileTransferType
   open?: boolean
-  count?: number
   items?: ProgressItem[]
-  onRowClose?: (name: string) => void
+  onRowClose?: (uuid: string) => void
   onCloseAll?: () => void
 }
 
@@ -30,7 +18,6 @@ export function FileProgressNotification({
   label,
   type,
   open,
-  count,
   items,
   onRowClose,
   onCloseAll,
@@ -88,7 +75,6 @@ export function FileProgressNotification({
 
       {showFileProgressWindow && (
         <FileProgressWindow
-          numberOfFiles={items && items.length ? undefined : count}
           items={items}
           type={type}
           onCancelClick={() => setShowFileProgressWindow(false)}

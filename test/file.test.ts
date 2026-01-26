@@ -1,22 +1,38 @@
 import { detectIndexHtml } from './file'
 
 describe('file utils', () => {
-  it('detectIndexHtml should find index.html', () => {
+  it('detectIndexHtml should find index.html with multiple files', () => {
     expect(
       detectIndexHtml([
         { name: 'swarm.png', path: 'swarm.png' },
         { name: 'index.html', path: 'index.html' },
       ]),
-    ).toBe('index.html')
+    ).toEqual({ indexPath: 'index.html' })
   })
 
-  it('detectIndexHtml should find index.htm', () => {
+  it('detectIndexHtml should find index.htm with multiple files', () => {
     expect(
       detectIndexHtml([
         { name: 'index.htm', path: 'index.htm' },
         { name: 'swarm.png', path: 'swarm.png' },
       ]),
-    ).toBe('index.htm')
+    ).toEqual({ indexPath: 'index.htm' })
+  })
+
+  it('detectIndexHtml should NOT detect single index.html file as website', () => {
+    expect(
+      detectIndexHtml([
+        { name: 'index.html', path: 'index.html' },
+      ]),
+    ).toBe(false)
+  })
+
+  it('detectIndexHtml should NOT detect single index.htm file as website', () => {
+    expect(
+      detectIndexHtml([
+        { name: 'index.htm', path: 'index.htm' },
+      ]),
+    ).toBe(false)
   })
 
   it('detectIndexHtml should find nested index.html', () => {
@@ -25,7 +41,7 @@ describe('file utils', () => {
         { name: 'swarm.png', path: 'sample-folder/swarm.png' },
         { name: 'index.html', path: 'sample-folder/index.html' },
       ]),
-    ).toBe('index.html')
+    ).toEqual({ indexPath: 'sample-folder/index.html', commonPrefix: 'sample-folder/' })
   })
 
   it('detectIndexHtml should not find nested index.htm when ambigous', () => {

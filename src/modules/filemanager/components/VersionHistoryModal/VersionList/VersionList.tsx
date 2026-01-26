@@ -10,20 +10,15 @@ import DownloadIcon from 'remixicon-react/Download2LineIcon'
 import { FileInfo } from '@solarpunkltd/file-manager-lib'
 
 import { Context as FMContext } from '../../../../../providers/FileManager'
-import { capitalizeFirstLetter, formatBytes, indexStrToBigint } from '../../../utils/common'
+import { capitalizeFirstLetter, formatBytes, indexStrToBigint, truncateNameMiddle } from '../../../utils/common'
 import { startDownloadingQueue } from '../../../utils/download'
 import { ActionTag, DownloadProgress, TrackDownloadProps } from '../../../constants/transfers'
 import { Context as SettingsContext } from '../../../../../providers/Settings'
 import { useContextMenu } from '../../../hooks/useContextMenu'
-
-export const truncateNameMiddle = (s: string, max = 42): string => {
-  const str = String(s)
-
-  if (str.length <= max) return str
-  const half = Math.floor((max - 1) / 2)
-
-  return `${str.slice(0, half)}…${str.slice(-half)}`
-}
+import { uuidV4 } from '../../../../../utils'
+import { ConfirmModal } from '../../ConfirmModal/ConfirmModal'
+import { Tooltip } from '../../Tooltip/Tooltip'
+import { TOOLTIPS } from '../../../constants/tooltips'
 
 interface VersionListProps {
   versions: FileInfo[]
@@ -322,11 +317,11 @@ const RowFull = memo(
             <div className="vh-rename" title={`Restoring will rename: “${headFi.name}” → “${item.name}”`}>
               Restoring will rename{' '}
               <b className="vh-name" title={headFi.name}>
-                {truncateNameMiddle(headFi.name, 44)}
+                {truncateNameMiddle(headFi.name)}
               </b>{' '}
               →{' '}
               <b className="vh-name" title={item.name}>
-                {truncateNameMiddle(item.name, 44)}
+                {truncateNameMiddle(item.name)}
               </b>
             </div>
           )}
@@ -401,9 +396,10 @@ VersionRow.displayName = 'VersionRow'
 export function VersionsList({ versions, headFi, restoreVersion, onDownload }: VersionListProps) {
   const { handleCloseContext } = useContextMenu<HTMLDivElement>()
 
-  const { fm } = useContext(FMContext)
+  const { fm, drives, currentDrive } = useContext(FMContext)
   const { beeApi } = useContext(SettingsContext)
   const [expanded, setExpanded] = useState<Record<string, boolean>>({})
+  const [confirmRestore, setConfirmRestore] = useState<FileInfo | null>(null)
 
   const toggle = useCallback(
     (key: string, fi: FileInfo) => {
@@ -433,14 +429,19 @@ export function VersionsList({ versions, headFi, restoreVersion, onDownload }: V
       if (!fm || !beeApi) return
       const rawSize = fileInfo.customMetadata?.size
       const expectedSize = rawSize ? Number(rawSize) : undefined
+      const driveName = drives.find(d => d.id.toString() === fileInfo.driveId.toString())?.name ?? currentDrive?.name
       await startDownloadingQueue(
         fm,
         [fileInfo],
-        [onDownload({ name: fileInfo.name, size: formatBytes(rawSize), expectedSize })],
+        [onDownload({ uuid: uuidV4(), name: fileInfo.name, size: formatBytes(rawSize), expectedSize, driveName })],
       )
     },
-    [handleCloseContext, fm, beeApi, onDownload],
+    [handleCloseContext, fm, beeApi, onDownload, drives, currentDrive],
   )
+
+  const handleRestoreClick = useCallback((fileInfo: FileInfo) => {
+    setConfirmRestore(fileInfo)
+  }, [])
 
   if (!versions.length || !fm) return null
 
@@ -466,12 +467,38 @@ export function VersionsList({ versions, headFi, restoreVersion, onDownload }: V
             headFi={headFi}
             isCurrent={Boolean(isCurrent)}
             fmDownload={() => handleDownload(item)}
-            onRestore={restoreVersion}
+            onRestore={handleRestoreClick}
             collapsed={collapsed}
             onToggle={() => toggle(key, item)}
           />
         )
       })}
+
+      {confirmRestore && (
+        <ConfirmModal
+          title={
+            <>
+              Restore this version?
+              <Tooltip label={TOOLTIPS.FILE_OPERATION_RESTORE_VERSION} />
+            </>
+          }
+          message={
+            <>
+              This will restore <b title={confirmRestore.name}>{truncateNameMiddle(confirmRestore.name)}</b> to version{' '}
+              {indexStrToBigint(confirmRestore.version)?.toString()}.
+            </>
+          }
+          confirmLabel="Restore"
+          cancelLabel="Cancel"
+          onConfirm={async () => {
+            await restoreVersion(confirmRestore)
+            setConfirmRestore(null)
+          }}
+          onCancel={() => {
+            setConfirmRestore(null)
+          }}
+        />
+      )}
     </div>
   )
 }

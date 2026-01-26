@@ -45,13 +45,27 @@ export enum DownloadState {
 }
 
 export type TrackDownloadProps = {
+  uuid: string
   name: string
   size?: string
   expectedSize?: number
+  driveName?: string
 }
 
 export interface DownloadProgress {
   progress: number
   isDownloading: boolean
   state?: DownloadState
+}
+
+export type ProgressItem = {
+  uuid: string
+  name: string
+  size?: string
+  percent?: number
+  kind?: FileTransferType
+  status?: TransferStatus
+  driveName?: string
+  etaSec?: number
+  elapsedSec?: number
 }
