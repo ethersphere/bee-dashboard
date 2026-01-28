@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { Typography } from '@material-ui/core'
 import { Link } from 'react-router-dom'
-import { ROUTES } from 'src/routes'
+import { ROUTES } from '../../routes'
 
 export default function PageNotFound(): ReactElement {
   return (
