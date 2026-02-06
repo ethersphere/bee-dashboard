@@ -162,7 +162,7 @@ export function FileManagerPage(): ReactElement {
       <div className="fm-main">
         <ConfirmModal
           title="Reset File Manager State"
-          message="Your File Manager state appears invalid. Please reset it to continue."
+          message="Your File Manager state appears invalid. Please clear the browser cache and reload. Then reset reset the FileManager to continue."
           confirmLabel="Proceed"
           onConfirm={() => {
             setShowResetModal(false)

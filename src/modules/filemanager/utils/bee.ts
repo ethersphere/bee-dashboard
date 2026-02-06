@@ -8,6 +8,7 @@ import {
 } from '@solarpunkltd/file-manager-lib'
 import { getHumanReadableFileSize } from '../../../utils/file'
 import { ActionTag } from '../constants/transfers'
+import { NO_CACHE_BEE_REQUES_OPTIONS } from '../constants/common'
 
 export const getUsableStamps = async (bee: Bee | null): Promise<PostageBatch[]> => {
   if (!bee) {
@@ -15,7 +16,7 @@ export const getUsableStamps = async (bee: Bee | null): Promise<PostageBatch[]> 
   }
 
   try {
-    return (await bee.getPostageBatches())
+    return (await bee.getPostageBatches(NO_CACHE_BEE_REQUES_OPTIONS))
       .filter(s => s.usable)
       .sort((a, b) => (a.label || '').localeCompare(b.label || ''))
   } catch {
@@ -25,7 +26,7 @@ export const getUsableStamps = async (bee: Bee | null): Promise<PostageBatch[]> 
 
 export const validateStampStillExists = async (bee: Bee, batchId: BatchId): Promise<boolean> => {
   try {
-    const stamp = await bee.getPostageBatch(batchId.toString())
+    const stamp = await bee.getPostageBatch(batchId.toString(), NO_CACHE_BEE_REQUES_OPTIONS)
 
     return stamp.usable
   } catch (error) {
@@ -172,6 +173,7 @@ export const handleCreateDrive = async (options: CreateDriveOptions): Promise<vo
 
       batchId = await beeApi.buyStorage(size, duration, { label }, undefined, encryption, redundancyLevel)
     } else {
+      // TODO: redundant, fm checks for stamp validtiy
       const isValid = await validateStampStillExists(beeApi, existingBatch.batchID)
 
       if (!isValid) {
