@@ -60,7 +60,7 @@ export function FileManagerPage(): ReactElement {
       return
     }
 
-    setShowResetModal(shallReset)
+    setShowResetModal(true)
 
     if (shallReset) {
       setShowInitialModal(true)
@@ -162,8 +162,21 @@ export function FileManagerPage(): ReactElement {
       <div className="fm-main">
         <ConfirmModal
           title="Reset File Manager State"
-          message="Your File Manager state appears invalid. Please clear the browser cache and reload. Then reset reset the FileManager to continue."
-          confirmLabel="Proceed"
+          message={
+            <span>
+              Your File Manager state appears invalid. Please{' '}
+              <a
+                href="https://support.google.com/accounts/answer/32050?hl=en&co=GENIE.Platform%3DDesktop"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: 'inline', textDecoration: 'underline' }}
+              >
+                clear the browser cache
+              </a>{' '}
+              and reload the page. Then you can reset the File Manager to continue.
+            </span>
+          }
+          confirmLabel="Continue"
           onConfirm={() => {
             setShowResetModal(false)
           }}

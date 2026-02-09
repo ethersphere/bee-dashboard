@@ -1,4 +1,4 @@
-import { BeeRequestOptions, FeedIndex, RedundancyLevel } from '@ethersphere/bee-js'
+import { FeedIndex, RedundancyLevel } from '@ethersphere/bee-js'
 import { capitalizeFirstLetter } from '../utils/common'
 
 export const FEED_INDEX_ZERO = FeedIndex.fromBigInt(BigInt(0))
@@ -22,11 +22,3 @@ export type FileManagerEventName = typeof FILE_MANAGER_EVENTS[keyof typeof FILE_
 export const POLLING_TIMEOUT_MS = 90000
 export const UPLOAD_POLLING_TIMEOUT_MS = 10000
 export const POLLING_INTERVAL_MS = 2000
-
-export const NO_CACHE_BEE_REQUES_OPTIONS: BeeRequestOptions = {
-  headers: {
-    'Cache-Control': 'no-cache, no-store, must-revalidate',
-    Pragma: 'no-cache',
-    Expires: '0',
-  },
-}
