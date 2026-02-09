@@ -60,7 +60,7 @@ export function FileManagerPage(): ReactElement {
       return
     }
 
-    setShowResetModal(true)
+    setShowResetModal(shallReset)
 
     if (shallReset) {
       setShowInitialModal(true)
