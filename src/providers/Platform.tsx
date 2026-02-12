@@ -74,15 +74,11 @@ export async function detectBrowser(): Promise<BrowserPlatform> {
 
   if (ua.includes('edge') || ua.includes('edg/')) return BrowserPlatform.Edge
 
-  if (ua.includes('chrome')) {
-    if (await isBraveBrowser()) return BrowserPlatform.Brave
-
-    return BrowserPlatform.Chrome
-  }
+  if (ua.includes('chrome') && (await isBraveBrowser())) return BrowserPlatform.Brave
 
   if (ua.includes('firefox')) return BrowserPlatform.Firefox
 
-  if (ua.includes('safari')) return BrowserPlatform.Safari
+  if (ua.includes('safari') && !ua.includes('chrome')) return BrowserPlatform.Safari
 
   return BrowserPlatform.Chrome
 }
