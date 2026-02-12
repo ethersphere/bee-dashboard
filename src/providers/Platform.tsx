@@ -72,7 +72,7 @@ export async function isBraveBrowser(): Promise<boolean> {
 export async function detectBrowser(): Promise<BrowserPlatform> {
   const ua = window.navigator.userAgent.toLowerCase()
 
-  if (ua.includes('edge')) return BrowserPlatform.Edge
+  if (ua.includes('edge') || ua.includes('edg/')) return BrowserPlatform.Edge
 
   if (ua.includes('chrome')) {
     if (await isBraveBrowser()) return BrowserPlatform.Brave
