@@ -2,6 +2,7 @@ import { useState, ReactElement, useEffect } from 'react'
 import './PrivateKeyModal.scss'
 import { Button } from '../Button/Button'
 import { setSignerPk, getSigner } from '../../utils/common'
+import { uuidV4 } from '../../../../utils'
 import { PrivateKey } from '@ethersphere/bee-js'
 import ClipboardIcon from 'remixicon-react/FileCopyLineIcon'
 import CheckDoubleLineIcon from 'remixicon-react/CheckDoubleLineIcon'
@@ -31,7 +32,7 @@ export function PrivateKeyModal({ onSaved }: Props): ReactElement {
   }
 
   const handleGenerateNew = () => {
-    const id = crypto.randomUUID()
+    const id = uuidV4()
     const signer = getSigner(id)
     const privKey = signer.toHex()
 
