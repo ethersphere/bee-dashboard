@@ -55,6 +55,46 @@ function getOS(): Platforms | null {
   return null
 }
 
+export enum BrowserPlatform {
+  Chrome = 'chrome',
+  Firefox = 'firefox',
+  Safari = 'safari',
+  Brave = 'brave',
+  Edge = 'edge',
+}
+
+export async function isBraveBrowser(): Promise<boolean> {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  return (window.navigator.brave && (await window.navigator.brave.isBrave())) === true
+}
+
+export async function detectBrowser(): Promise<BrowserPlatform> {
+  const ua = window.navigator.userAgent.toLowerCase()
+
+  if (ua.includes('edge')) return BrowserPlatform.Edge
+
+  if (ua.includes('chrome')) {
+    if (await isBraveBrowser()) return BrowserPlatform.Brave
+
+    return BrowserPlatform.Chrome
+  }
+
+  if (ua.includes('firefox')) return BrowserPlatform.Firefox
+
+  if (ua.includes('safari')) return BrowserPlatform.Safari
+
+  return BrowserPlatform.Chrome
+}
+
+export const cacheClearUrls = {
+  chrome: 'https://support.google.com/accounts/answer/32050?hl=en&co=GENIE.Platform%3DDesktop',
+  brave: 'https://support.brave.app/hc/en-us/articles/360048833872-How-Do-I-Clear-Cookies-And-Site-Data-In-Brave',
+  firefox: 'https://support.mozilla.org/en-US/kb/how-clear-firefox-cache',
+  safari: 'https://support.apple.com/en-il/guide/safari/sfri47acf5d6/mac',
+  edge: 'https://support.microsoft.com/en-us/microsoft-edge/view-and-delete-browser-history-in-microsoft-edge-00cf7943-a9e1-975a-a33d-ac10ce454ca4',
+}
+
 export function Provider({ children }: Props): ReactElement {
   const [platform, setPlatform] = useState<SupportedPlatforms>(SupportedPlatforms.Linux)
 
