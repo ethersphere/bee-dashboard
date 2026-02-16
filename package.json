@@ -39,12 +39,11 @@
     "@material-ui/core": "4.12.3",
     "@material-ui/icons": "4.11.2",
     "@material-ui/lab": "4.0.0-alpha.57",
-    "@solarpunkltd/file-manager-lib": "^1.0.4",
+    "@solarpunkltd/file-manager-lib": "1.0.4",
     "axios": "^0.28.1",
     "bignumber.js": "^9.1.2",
     "buffer": "^6.0.3",
     "crypto": "npm:crypto-browserify",
-    "crypto-browserify": "^3.12.0",
     "dotted-map": "^2.2.3",
     "ethers": "^5.7.2",
     "file-saver": "^2.0.5",
@@ -55,17 +54,16 @@
     "notistack": "^3.0.1",
     "opener": "1.5.2",
     "qrcode.react": "1.0.1",
-    "react": ">= 17.0.2",
+    "react": "^17.0.2",
     "react-copy-to-clipboard": "^5.1.0",
-    "react-dom": ">= 17.0.2",
+    "react-dom": "^17.0.2",
     "react-identicons": "1.2.5",
     "react-router": "6.2.1",
     "react-router-dom": "6.2.1",
     "react-syntax-highlighter": "15.4.4",
     "remixicon-react": "^1.0.0",
     "serve-handler": "6.1.3",
-    "stream": "npm:stream-browserify",
-    "stream-browserify": "^3.0.0"
+    "stream": "npm:stream-browserify"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
@@ -96,7 +94,10 @@
     "babel-plugin-syntax-dynamic-import": "6.18.0",
     "babel-plugin-tsconfig-paths": "1.0.2",
     "base64-inline-loader": "^2.0.1",
+    "browserify-fs": "^1.0.0",
     "cors": "^2.8.5",
+    "crypto-browserify": "^3.12.0",
+    "css-loader": "^7.1.3",
     "depcheck": "^1.4.3",
     "env-paths": "^3.0.0",
     "eslint": "8.17.0 ",
@@ -113,11 +114,16 @@
     "express": "^4.17.3",
     "file-loader": "6.2.0",
     "open": "^8.4.0",
+    "path-browserify": "^1.0.1",
     "prettier": "2.4.1",
+    "process": "^0.11.10",
     "puppeteer": "^15.4.0",
     "react-scripts": "^5.0.1",
     "rimraf": "^3.0.2",
     "sass": "^1.91.0",
+    "sass-loader": "^16.0.7",
+    "stream-browserify": "^3.0.0",
+    "style-loader": "^4.0.0",
     "ts-node": "^10.8.1",
     "typescript": "4.8.3",
     "web-vitals": "2.1.2",
@@ -125,15 +131,23 @@
     "webpack-cli": "^4.10.0"
   },
   "peerDependencies": {
-    "react": ">= 17.0.2",
-    "react-dom": ">= 17.0.2"
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "core-js",
+      "core-js-pure",
+      "puppeteer"
+    ]
   },
   "scripts": {
-    "prepare": "npm run build && npm run build:component",
+    "prepare": "pnpm run build && pnpm run build:component",
     "start": "react-scripts start",
     "desktop": "node ./desktop.mjs",
     "build": "react-scripts build",
-    "build:component": "rimraf ./lib && webpack --mode=production && npm run compile:types",
+    "build:component": "rimraf ./lib && webpack --mode=production && pnpm run compile:types",
     "compile:types": "tsc --project tsconfig.lib.json --emitDeclarationOnly --declaration",
     "test": "react-scripts test",
     "test:ui": "node ui-test/index.js",
@@ -165,6 +179,7 @@
   "engines": {
     "node": ">=14.0.0",
     "npm": ">=6.9.0",
+    "pnpm": ">=10.0.0",
     "bee": "1.16.1-8e269c8"
   }
 }

@@ -28,3 +28,7 @@ yarn-error.log*
 settings.json
 
 **.tgz
+
+api-key.txt
+# TODO: remove utils/, it is just a helper for now
+utils/

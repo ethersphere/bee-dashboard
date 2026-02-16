@@ -4,7 +4,7 @@
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fethersphere%2Fbee-dashboard.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fethersphere%2Fbee-dashboard?ref=badge_shield)
-![](https://img.shields.io/badge/npm-%3E%3D6.9.0-orange.svg?style=flat-square)
+![](https://img.shields.io/badge/pnpm-%3E%3D10.0.0-orange.svg?style=flat-square)
 ![](https://img.shields.io/badge/Node.js-%3E%3D14.0.0-orange.svg?style=flat-square)
 
 > An app which helps users to setup their Bee node and do actions like cash out cheques, upload and download files or
@@ -36,10 +36,10 @@ Stay up to date by joining the [official Discord](https://discord.gg/GU22h2utj6)
 
 ## Install
 
-Install globally with npm. We require Node.js's version of at least 12.x and npm v6.x (or yarn v2.x).
+Install globally with pnpm. We require Node.js's version of at least 14.x and pnpm v10.x.
 
 ```sh
-npm install -g @ethersphere/bee-dashboard
+pnpm add -g @ethersphere/bee-dashboard
 ```
 
 For the latest stable version, always use the official npm registry.
@@ -88,9 +88,9 @@ git clone git@github.com:ethersphere/bee-dashboard.git
 
 cd  bee-dashboard
 
-npm i
+pnpm install
 
-npm start
+pnpm start
 ```
 
 The Bee Dashboard runs in development mode on [http://localhost:3031/](http://localhost:3031/)
@@ -121,8 +121,8 @@ is initialized (eq. the splash screen disappear) and:
 echo "REACT_APP_BEE_DESKTOP_URL=http://localhost:3054
 REACT_APP_BEE_DESKTOP_ENABLED=true" > .env.development.local
 
-npm start
-npm run desktop # This will inject the API key to the Dashboard
+pnpm start
+pnpm run desktop # This will inject the API key to the Dashboard
 ```
 
 ## File Manager

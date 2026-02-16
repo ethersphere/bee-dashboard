@@ -25,33 +25,37 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
 
-      - name: Install npm deps
-        run: npm ci
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Commit linting
         uses: wagoid/commitlint-github-action@v2
 
       - name: Code linting
-        run: npm run lint:check
+        run: pnpm run lint:check
         env:
           CI: true
 
       - name: Dependency check
-        run: npm run depcheck
+        run: pnpm run depcheck
 
       - name: Types check
-        run: npm run check:types
+        run: pnpm run check:types
 
       - name: Build
-        run: npm run build
+        run: pnpm run build
 
       - name: Build Component
-        run: npm run build:component
+        run: pnpm run build:component
 
       - name: Create preview
         uses: ethersphere/swarm-actions/pr-preview@v1

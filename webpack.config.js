@@ -1,5 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Path = require('path')
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const webpack = require('webpack')
 
 // eslint-disable-next-line import/no-anonymous-default-export
 module.exports = () => {
@@ -16,6 +18,13 @@ module.exports = () => {
     },
     resolve: {
       extensions: ['.css', '.png', '.svg', '.ttf', '.ts', '.tsx', '.js'],
+      fallback: {
+        path: require.resolve('path-browserify'),
+        crypto: require.resolve('crypto-browserify'),
+        stream: require.resolve('stream-browserify'),
+        buffer: require.resolve('buffer'),
+        fs: require.resolve('browserify-fs'),
+      },
     },
     devtool: 'source-map',
     externals: {
@@ -25,6 +34,12 @@ module.exports = () => {
       'react-dom': 'react-dom',
     },
     target: 'web',
+    plugins: [
+      new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
+        process: 'process/browser',
+      }),
+    ],
     optimization: {
       minimize: false,
     },
