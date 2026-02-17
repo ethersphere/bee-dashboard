@@ -12,6 +12,7 @@ import { UpgradeDriveModal } from '../UpgradeDriveModal/UpgradeDriveModal'
 import { UpgradeTimeoutModal } from '../UpgradeTimeoutModal/UpgradeTimeoutModal'
 import { FILE_MANAGER_EVENTS, POLLING_TIMEOUT_MS } from '../../constants/common'
 import { useStampPolling } from '../../hooks/useStampPolling'
+import { TOOLTIPS } from '../../constants/tooltips'
 
 interface AdminStatusBarProps {
   adminStamp: PostageBatch | null
@@ -226,10 +227,7 @@ export function AdminStatusBar({
 
           <div>File Manager Available: Until: {expiresAt}</div>
 
-          <Tooltip
-            label="The File Manager works only while your storage remains valid. If it expires, all catalogue metadata is
-            permanently lost."
-          />
+          <Tooltip label={TOOLTIPS.ADMIN_STATUS_WARNING} />
         </div>
 
         {renderModalsAndOverlays()}

@@ -211,6 +211,7 @@ interface Options {
   timeout?: number
 }
 
+// TODO: merge this with FM component getUsableStamps()
 export function waitUntilStampUsable(batchId: BatchId | string, bee: Bee, options?: Options): Promise<PostageBatch> {
   return waitForStamp(batchId, bee, options)
 }

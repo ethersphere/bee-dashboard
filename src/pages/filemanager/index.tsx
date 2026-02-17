@@ -8,6 +8,7 @@ import { AdminStatusBar } from '../../modules/filemanager/components/AdminStatus
 import { FileBrowser } from '../../modules/filemanager/components/FileBrowser/FileBrowser'
 import { InitialModal } from '../../modules/filemanager/components/InitialModal/InitialModal'
 import { Context as FMContext } from '../../providers/FileManager'
+import { BrowserPlatform, cacheClearUrls, detectBrowser } from '../../providers/Platform'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as BeeContext, CheckState } from '../../providers/Bee'
 import { PrivateKeyModal } from '../../modules/filemanager/components/PrivateKeyModal/PrivateKeyModal'
@@ -28,6 +29,7 @@ export function FileManagerPage(): ReactElement {
   const [showResetModal, setShowResetModal] = useState<boolean>(false)
   const [isCreationInProgress, setIsCreationInProgress] = useState<boolean>(false)
   const [showConnectionError, setShowConnectionError] = useState<boolean>(false)
+  const [cacheHelpUrl, setCacheHelpUrl] = useState<string>(cacheClearUrls[BrowserPlatform.Chrome])
 
   const { status } = useContext(BeeContext)
   const { beeApi } = useContext(SettingsContext)
@@ -35,6 +37,13 @@ export function FileManagerPage(): ReactElement {
 
   useEffect(() => {
     isMountedRef.current = true
+
+    const getBrowserPlatform = async () => {
+      const browserPlatform = await detectBrowser()
+      setCacheHelpUrl(cacheClearUrls[browserPlatform])
+    }
+
+    getBrowserPlatform()
 
     return () => {
       isMountedRef.current = false
@@ -162,8 +171,21 @@ export function FileManagerPage(): ReactElement {
       <div className="fm-main">
         <ConfirmModal
           title="Reset File Manager State"
-          message="Your File Manager state appears invalid. Please reset it to continue."
-          confirmLabel="Proceed"
+          message={
+            <span>
+              Your File Manager state appears invalid. Please{' '}
+              <a
+                href={cacheHelpUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: 'inline', textDecoration: 'underline' }}
+              >
+                clear the browser cache
+              </a>{' '}
+              and reload the page. Then you can reset the File Manager to continue.
+            </span>
+          }
+          confirmLabel="Continue"
           onConfirm={() => {
             setShowResetModal(false)
           }}
