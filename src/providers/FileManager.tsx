@@ -5,8 +5,8 @@ import { FileManagerBase, FileManagerEvents } from '@solarpunkltd/file-manager-l
 import { Context as SettingsContext } from './Settings'
 import { DriveInfo } from '@solarpunkltd/file-manager-lib'
 import { getSignerPk } from '../modules/filemanager/utils/common'
-import { getUsableStamps } from '../../src/modules/filemanager/utils/bee'
 import { FILE_MANAGER_EVENTS } from '../modules/filemanager/constants/common'
+import { getUsableStamps } from '../modules/filemanager/utils/bee'
 
 interface ContextInterface {
   fm: FileManagerBase | null
@@ -256,6 +256,12 @@ export function Provider({ children }: Props) {
 
     const handleResetState = (isInvalid: boolean) => {
       setShallReset(isInvalid)
+      setFiles([])
+      setDrives([])
+      setExpiredDrives([])
+      setAdminDrive(null)
+      setCurrentDrive(undefined)
+      setCurrentStamp(undefined)
     }
 
     manager.emitter.on(FileManagerEvents.STATE_INVALID, handleResetState)

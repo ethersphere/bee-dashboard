@@ -172,6 +172,7 @@ export const handleCreateDrive = async (options: CreateDriveOptions): Promise<vo
 
       batchId = await beeApi.buyStorage(size, duration, { label }, undefined, encryption, redundancyLevel)
     } else {
+      // TODO: redundant, fm checks for stamp validtiy
       const isValid = await validateStampStillExists(beeApi, existingBatch.batchID)
 
       if (!isValid) {
