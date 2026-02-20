@@ -1,4 +1,4 @@
-import { Box, Dialog, Grid } from '@material-ui/core'
+import { Box, Dialog, Grid } from '@mui/material'
 import { ReactElement } from 'react'
 
 interface Props {

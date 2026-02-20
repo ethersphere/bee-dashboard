@@ -1,17 +1,17 @@
+import FormControl from '@mui/material/FormControl'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Radio from '@mui/material/Radio'
 import { ReactElement, useState } from 'react'
-import './DeleteFileModal.scss'
-import { Button } from '../Button/Button'
 import { createPortal } from 'react-dom'
-import TrashIcon from 'remixicon-react/DeleteBin6LineIcon'
 import AlertIcon from 'remixicon-react/AlertLineIcon'
+import TrashIcon from 'remixicon-react/DeleteBin6LineIcon'
 
-import Radio from '@material-ui/core/Radio'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import FormControl from '@material-ui/core/FormControl'
+import { TOOLTIPS } from '../../constants/tooltips'
+import { FileAction } from '../../constants/transfers'
+import { Button } from '../Button/Button'
 import { Tooltip } from '../Tooltip/Tooltip'
 
-import { FileAction } from '../../constants/transfers'
-import { TOOLTIPS } from '../../constants/tooltips'
+import './DeleteFileModal.scss'
 
 interface DeleteFileModalProps {
   name?: string

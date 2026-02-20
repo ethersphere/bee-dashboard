@@ -1,9 +1,10 @@
-import { Box, Grid } from '@material-ui/core'
+import { Box, Grid } from '@mui/material'
 import { ReactElement } from 'react'
-import X from 'remixicon-react/CloseLineIcon'
 import Bookmark from 'remixicon-react/BookmarkLineIcon'
+import X from 'remixicon-react/CloseLineIcon'
 import Download from 'remixicon-react/DownloadLineIcon'
 import Link from 'remixicon-react/LinkIcon'
+
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import { SwarmButton } from '../../components/SwarmButton'
 

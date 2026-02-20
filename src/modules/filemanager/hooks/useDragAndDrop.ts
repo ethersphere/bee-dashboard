@@ -1,5 +1,5 @@
-import { useCallback, useRef, useState } from 'react'
 import { DriveInfo } from '@solarpunkltd/file-manager-lib'
+import React, { useCallback, useRef, useState } from 'react'
 
 interface UseDragAndDropProps {
   onFilesDropped: (files: FileList) => void

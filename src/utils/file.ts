@@ -1,6 +1,6 @@
+import { isSupportedAudioType } from './audio'
 import { isSupportedImageType } from './image'
 import { isSupportedVideoType } from './video'
-import { isSupportedAudioType } from './audio'
 
 const indexHtmls = ['index.html', 'index.htm']
 
@@ -134,5 +134,6 @@ export function packageFile(file: FilePath, pathOverwrite?: string): FilePath {
     slice: (start: number, end: number) => file.slice(start, end),
     text: file.text,
     arrayBuffer: async () => await file.arrayBuffer(),
+    bytes: file.bytes,
   }
 }

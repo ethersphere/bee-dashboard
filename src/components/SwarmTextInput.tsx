@@ -1,7 +1,8 @@
-import { createStyles, makeStyles, TextField as SimpleTextField, Theme } from '@material-ui/core'
+import { TextField as SimpleTextField } from '@mui/material'
 import { Field } from 'formik'
-import { TextField } from 'formik-material-ui'
+import { TextField } from 'formik-mui'
 import { ChangeEvent, ReactElement } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 interface Props {
   name: string
@@ -14,25 +15,23 @@ interface Props {
   onChange?: (event: ChangeEvent<HTMLTextAreaElement>) => void
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    field: {
-      background: theme.palette.background.paper,
-      '& fieldset': {
-        border: 0,
-      },
-      '& .Mui-focused': {
-        background: theme.palette.background.paper,
-      },
-      '& .MuiInputBase-root': {
-        background: theme.palette.background.paper,
-      },
-      '& .MuiFilledInput-root': {
-        borderRadius: 0,
-      },
+const useStyles = makeStyles()(theme => ({
+  field: {
+    background: theme.palette.background.paper,
+    '& fieldset': {
+      border: 0,
     },
-  }),
-)
+    '& .Mui-focused': {
+      background: theme.palette.background.paper,
+    },
+    '& .MuiInputBase-root': {
+      background: theme.palette.background.paper,
+    },
+    '& .MuiFilledInput-root': {
+      borderRadius: 0,
+    },
+  },
+}))
 
 export function SwarmTextInput({
   name,
@@ -44,7 +43,7 @@ export function SwarmTextInput({
   defaultValue,
   placeholder,
 }: Props): ReactElement {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   if (formik) {
     return (

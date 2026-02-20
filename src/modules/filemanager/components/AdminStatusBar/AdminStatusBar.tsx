@@ -1,18 +1,20 @@
-import { ReactElement, useState, useMemo, useEffect, useContext, useCallback } from 'react'
-import './AdminStatusBar.scss'
-import { ProgressBar } from '../ProgressBar/ProgressBar'
-import { Tooltip } from '../Tooltip/Tooltip'
 import { PostageBatch } from '@ethersphere/bee-js'
 import { DriveInfo, estimateDriveListMetadataSize } from '@solarpunkltd/file-manager-lib'
+import { ReactElement, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+
 import { Context as FMContext } from '../../../../providers/FileManager'
-import { ConfirmModal } from '../ConfirmModal/ConfirmModal'
-import { calculateStampCapacityMetrics } from '../../utils/bee'
 import { getHumanReadableFileSize } from '../../../../utils/file'
+import { FILE_MANAGER_EVENTS, POLLING_TIMEOUT_MS } from '../../constants/common'
+import { TOOLTIPS } from '../../constants/tooltips'
+import { useStampPolling } from '../../hooks/useStampPolling'
+import { calculateStampCapacityMetrics } from '../../utils/bee'
+import { ConfirmModal } from '../ConfirmModal/ConfirmModal'
+import { ProgressBar } from '../ProgressBar/ProgressBar'
+import { Tooltip } from '../Tooltip/Tooltip'
 import { UpgradeDriveModal } from '../UpgradeDriveModal/UpgradeDriveModal'
 import { UpgradeTimeoutModal } from '../UpgradeTimeoutModal/UpgradeTimeoutModal'
-import { FILE_MANAGER_EVENTS, POLLING_TIMEOUT_MS } from '../../constants/common'
-import { useStampPolling } from '../../hooks/useStampPolling'
-import { TOOLTIPS } from '../../constants/tooltips'
+
+import './AdminStatusBar.scss'
 
 interface AdminStatusBarProps {
   adminStamp: PostageBatch | null

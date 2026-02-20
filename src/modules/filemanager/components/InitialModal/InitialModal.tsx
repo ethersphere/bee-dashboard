@@ -1,22 +1,22 @@
+import { BeeModes, BZZ, DAI, Duration, PostageBatch, RedundancyLevel, Size, Utils } from '@ethersphere/bee-js'
+import { ADMIN_STAMP_LABEL } from '@solarpunkltd/file-manager-lib'
 import { ReactElement, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 
-import { BeeModes, BZZ, DAI, Duration, PostageBatch, RedundancyLevel, Size, Utils } from '@ethersphere/bee-js'
-import './InitialModal.scss'
-import { CustomDropdown } from '../CustomDropdown/CustomDropdown'
-import { Button } from '../Button/Button'
-import { calculateStampCapacityMetrics, fmFetchCost, getUsableStamps, handleCreateDrive } from '../../utils/bee'
-import { getExpiryDateByLifetime, safeSetState } from '../../utils/common'
+import { Context as BeeContext } from '../../../../providers/Bee'
+import { Context as FMContext } from '../../../../providers/FileManager'
+import { Context as SettingsContext } from '../../../../providers/Settings'
 import { erasureCodeMarks } from '../../constants/common'
 import { desiredLifetimeOptions } from '../../constants/stamps'
-import { Context as SettingsContext } from '../../../../providers/Settings'
-import { Context as BeeContext } from '../../../../providers/Bee'
-
-import { FMSlider } from '../Slider/Slider'
-import { Context as FMContext } from '../../../../providers/FileManager'
-import { ADMIN_STAMP_LABEL } from '@solarpunkltd/file-manager-lib'
-import { ProgressBar } from '../ProgressBar/ProgressBar'
-import { Tooltip } from '../Tooltip/Tooltip'
 import { TOOLTIPS } from '../../constants/tooltips'
+import { calculateStampCapacityMetrics, fmFetchCost, getUsableStamps, handleCreateDrive } from '../../utils/bee'
+import { getExpiryDateByLifetime, safeSetState } from '../../utils/common'
+import { Button } from '../Button/Button'
+import { CustomDropdown } from '../CustomDropdown/CustomDropdown'
+import { ProgressBar } from '../ProgressBar/ProgressBar'
+import { FMSlider } from '../Slider/Slider'
+import { Tooltip } from '../Tooltip/Tooltip'
+
+import './InitialModal.scss'
 
 interface InitialModalProps {
   resetState: boolean

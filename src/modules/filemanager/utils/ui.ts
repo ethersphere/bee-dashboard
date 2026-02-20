@@ -1,4 +1,4 @@
-import { Point, Dir } from './common'
+import { Dir, Point } from './common'
 
 export function computeContextMenuPosition(args: {
   clickPos: Point

@@ -1,6 +1,7 @@
 import { ReactElement, useContext } from 'react'
 import TimerFlashFill from 'remixicon-react/TimerFlashFillIcon'
 import TimerFlashLine from 'remixicon-react/TimerFlashLineIcon'
+
 import ExpandableElement from '../../components/ExpandableElement'
 import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItem from '../../components/ExpandableListItem'
@@ -11,6 +12,7 @@ import { Context } from '../../providers/Settings'
 import { EnrichedPostageBatch } from '../../providers/Stamps'
 import { secondsToTimeString } from '../../utils'
 import { getHumanReadableFileSize } from '../../utils/file'
+
 import { PostageStamp } from './PostageStamp'
 
 interface Props {

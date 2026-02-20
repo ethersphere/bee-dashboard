@@ -1,5 +1,6 @@
 import { BZZ } from '@ethersphere/bee-js'
 import type { ReactElement } from 'react'
+
 import CashoutModal from '../../components/CashoutModal'
 import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItem from '../../components/ExpandableListItem'

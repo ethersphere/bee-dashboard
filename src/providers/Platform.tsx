@@ -1,4 +1,4 @@
-import { createContext, ReactChild, ReactElement, useState, useEffect } from 'react'
+import { createContext, ReactElement, ReactNode, useState } from 'react'
 
 // These need to be numeric values as they are used as indexes in the TabsContainer
 export enum Platforms {
@@ -21,14 +21,14 @@ interface ContextInterface {
 
 const initialValues: ContextInterface = {
   platform: SupportedPlatforms.macOS,
-  setPlatform: () => {}, // eslint-disable-line
+  setPlatform: () => {},
 }
 
 export const Context = createContext<ContextInterface>(initialValues)
 export const Consumer = Context.Consumer
 
 interface Props {
-  children: ReactChild
+  children: ReactNode
 }
 
 function isSupportedPlatform(platform: unknown): platform is SupportedPlatforms {
@@ -37,20 +37,16 @@ function isSupportedPlatform(platform: unknown): platform is SupportedPlatforms 
 
 function getOS(): Platforms | null {
   const userAgent = window.navigator.userAgent
-  const platform = window.navigator.platform
-  const macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K']
-  const windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE']
-  const iosPlatforms = ['iPhone', 'iPad', 'iPod']
 
-  if (macosPlatforms.includes(platform)) return Platforms.macOS
+  if (/Macintosh|MacIntel|MacPPC|Mac68K/.test(userAgent)) return Platforms.macOS
 
-  if (iosPlatforms.includes(platform)) return Platforms.iOS
+  if (/iPhone|iPad|iPod/.test(userAgent)) return Platforms.iOS
 
-  if (windowsPlatforms.includes(platform)) return Platforms.Windows
+  if (/Win32|Win64|Windows|WinCE/.test(userAgent)) return Platforms.Windows
 
   if (/Android/.test(userAgent)) return Platforms.Android
 
-  if (/Linux/.test(platform)) return Platforms.Linux
+  if (/Linux/.test(userAgent)) return Platforms.Linux
 
   return null
 }
@@ -92,14 +88,11 @@ export const cacheClearUrls = {
 }
 
 export function Provider({ children }: Props): ReactElement {
-  const [platform, setPlatform] = useState<SupportedPlatforms>(SupportedPlatforms.Linux)
-
-  // This is in useEffect as it really just needs to run once and not on each re-render
-  useEffect(() => {
+  const [platform, setPlatform] = useState<SupportedPlatforms>(() => {
     const os = getOS()
 
-    setPlatform(isSupportedPlatform(os) ? os : SupportedPlatforms.Linux)
-  }, [])
+    return isSupportedPlatform(os) ? os : SupportedPlatforms.Linux
+  })
 
   return <Context.Provider value={{ platform, setPlatform }}>{children}</Context.Provider>
 }

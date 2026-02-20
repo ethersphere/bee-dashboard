@@ -1,24 +1,23 @@
-import './VersionList.scss'
-import '../../../styles/global.scss'
-import { memo, useState, useCallback, useContext } from 'react'
-
-import { Button } from '../../Button/Button'
-import CalendarIcon from 'remixicon-react/CalendarLineIcon'
-import UserIcon from 'remixicon-react/UserLineIcon'
-import DownloadIcon from 'remixicon-react/Download2LineIcon'
-
 import { FileInfo } from '@solarpunkltd/file-manager-lib'
+import { memo, useCallback, useContext, useState } from 'react'
+import CalendarIcon from 'remixicon-react/CalendarLineIcon'
+import DownloadIcon from 'remixicon-react/Download2LineIcon'
+import UserIcon from 'remixicon-react/UserLineIcon'
 
 import { Context as FMContext } from '../../../../../providers/FileManager'
+import { Context as SettingsContext } from '../../../../../providers/Settings'
+import { uuidV4 } from '../../../../../utils'
+import { TOOLTIPS } from '../../../constants/tooltips'
+import { ActionTag, DownloadProgress, TrackDownloadProps } from '../../../constants/transfers'
+import { useContextMenu } from '../../../hooks/useContextMenu'
 import { capitalizeFirstLetter, formatBytes, indexStrToBigint, truncateNameMiddle } from '../../../utils/common'
 import { startDownloadingQueue } from '../../../utils/download'
-import { ActionTag, DownloadProgress, TrackDownloadProps } from '../../../constants/transfers'
-import { Context as SettingsContext } from '../../../../../providers/Settings'
-import { useContextMenu } from '../../../hooks/useContextMenu'
-import { uuidV4 } from '../../../../../utils'
+import { Button } from '../../Button/Button'
 import { ConfirmModal } from '../../ConfirmModal/ConfirmModal'
 import { Tooltip } from '../../Tooltip/Tooltip'
-import { TOOLTIPS } from '../../../constants/tooltips'
+
+import './VersionList.scss'
+import '../../../styles/global.scss'
 
 interface VersionListProps {
   versions: FileInfo[]

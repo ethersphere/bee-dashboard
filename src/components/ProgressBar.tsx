@@ -1,7 +1,7 @@
+import Box from '@mui/material/Box'
+import LinearProgress, { LinearProgressProps } from '@mui/material/LinearProgress'
+import Typography from '@mui/material/Typography'
 import React, { ReactElement } from 'react'
-import LinearProgress, { LinearProgressProps } from '@material-ui/core/LinearProgress'
-import Typography from '@material-ui/core/Typography'
-import Box from '@material-ui/core/Box'
 
 interface Props {
   linearProgressProps?: LinearProgressProps

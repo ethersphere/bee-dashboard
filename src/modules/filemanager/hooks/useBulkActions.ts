@@ -1,14 +1,15 @@
-import { useCallback, useMemo, useRef, useState, useContext, useEffect } from 'react'
-import type { FileInfo } from '@solarpunkltd/file-manager-lib'
 import { PostageBatch } from '@ethersphere/bee-js'
+import type { FileInfo } from '@solarpunkltd/file-manager-lib'
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+
 import { Context as FMContext } from '../../../providers/FileManager'
 import { Context as SettingsContext } from '../../../providers/Settings'
-import { startDownloadingQueue } from '../utils/download'
-import { formatBytes, getFileId, safeSetState } from '../utils/common'
+import { uuidV4 } from '../../../utils'
 import { DownloadProgress, TrackDownloadProps } from '../constants/transfers'
 import { getUsableStamps } from '../utils/bee'
-import { performBulkFileOperation, FileOperation } from '../utils/fileOperations'
-import { uuidV4 } from '../../../utils'
+import { formatBytes, getFileId, safeSetState } from '../utils/common'
+import { startDownloadingQueue } from '../utils/download'
+import { FileOperation, performBulkFileOperation } from '../utils/fileOperations'
 
 interface BulkOptions {
   listToRender: FileInfo[]

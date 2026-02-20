@@ -1,13 +1,15 @@
-import { ReactElement, useContext, useEffect, useState } from 'react'
-import './NotificationBar.scss'
-import UpIcon from 'remixicon-react/ArrowUpSLineIcon'
-import { ExpiringNotificationModal } from '../ExpiringNotificationModal/ExpiringNotificationModal'
-import { getUsableStamps } from '../../utils/bee'
-import { Context as SettingsContext } from '../../../../providers/Settings'
 import { PostageBatch } from '@ethersphere/bee-js'
-import { Context as FMContext } from '../../../../providers/FileManager'
 import { DriveInfo } from '@solarpunkltd/file-manager-lib'
+import { ReactElement, useContext, useEffect, useState } from 'react'
+import UpIcon from 'remixicon-react/ArrowUpSLineIcon'
+
+import { Context as FMContext } from '../../../../providers/FileManager'
+import { Context as SettingsContext } from '../../../../providers/Settings'
 import { FILE_MANAGER_EVENTS } from '../../constants/common'
+import { getUsableStamps } from '../../utils/bee'
+import { ExpiringNotificationModal } from '../ExpiringNotificationModal/ExpiringNotificationModal'
+
+import './NotificationBar.scss'
 
 const NUMBER_OF_DAYS_WARNING = 7
 const DAYS_TO_MILLISECONDS_MULTIPLIER = 24 * 60 * 60 * 1000

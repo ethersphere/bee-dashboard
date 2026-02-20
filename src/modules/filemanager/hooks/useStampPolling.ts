@@ -1,5 +1,6 @@
-import { useRef, useCallback } from 'react'
 import { PostageBatch } from '@ethersphere/bee-js'
+import { useCallback, useRef } from 'react'
+
 import { POLLING_INTERVAL_MS } from '../constants/common'
 
 interface UseStampPollingOptions {

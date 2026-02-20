@@ -1,6 +1,8 @@
 import { ReactElement } from 'react'
-import './ErrorModal.scss'
+
 import { Button } from '../Button/Button'
+
+import './ErrorModal.scss'
 
 interface ErrorModalProps {
   label: string

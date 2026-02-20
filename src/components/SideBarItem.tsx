@@ -1,9 +1,9 @@
-import { ListItem, ListItemIcon, ListItemText } from '@material-ui/core'
-import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core/styles'
+import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 import type { ReactElement, ReactNode } from 'react'
 import { matchPath, useLocation } from 'react-router-dom'
+import { makeStyles } from 'tss-react/mui'
 
-const StyledListItem = withStyles((theme: Theme) => ({
+const useItemStyles = makeStyles()(theme => ({
   root: {
     paddingLeft: theme.spacing(4),
     paddingRight: theme.spacing(4),
@@ -13,8 +13,6 @@ const StyledListItem = withStyles((theme: Theme) => ({
       backgroundColor: '#2c2c2c',
       color: '#f9f9f9',
     },
-  },
-  button: {
     '&:hover': {
       backgroundColor: '#2c2c2c',
       color: '#f9f9f9',
@@ -26,18 +24,16 @@ const StyledListItem = withStyles((theme: Theme) => ({
       },
     },
   },
-}))(ListItem)
+}))
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    icon: {
-      color: 'inherit',
-    },
-    activeIcon: {
-      color: theme.palette.primary.main,
-    },
-  }),
-)
+const useStyles = makeStyles()(theme => ({
+  icon: {
+    color: 'inherit',
+  },
+  activeIcon: {
+    color: theme.palette.primary.main,
+  },
+}))
 
 interface Props {
   iconStart?: ReactNode
@@ -48,17 +44,18 @@ interface Props {
 }
 
 export default function SideBarItem({ iconStart, iconEnd, path, label, pathMatcherSubstring }: Props): ReactElement {
-  const classes = useStyles()
+  const { classes } = useStyles()
+  const { classes: itemClasses } = useItemStyles()
   const location = useLocation()
   const isSelected = pathMatcherSubstring
     ? location.pathname.startsWith(pathMatcherSubstring)
     : Boolean(path && matchPath(location.pathname, path))
 
   return (
-    <StyledListItem button selected={isSelected} disableRipple>
+    <ListItemButton className={itemClasses.root} selected={isSelected} disableRipple>
       <ListItemIcon className={isSelected ? classes.activeIcon : classes.icon}>{iconStart}</ListItemIcon>
       <ListItemText primary={label} />
       <ListItemIcon className={isSelected ? classes.activeIcon : classes.icon}>{iconEnd}</ListItemIcon>
-    </StyledListItem>
+    </ListItemButton>
   )
 }

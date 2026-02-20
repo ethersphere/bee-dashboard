@@ -1,7 +1,8 @@
-import { Box } from '@material-ui/core'
+import { Box } from '@mui/material'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import X from 'remixicon-react/CloseLineIcon'
+
 import { DocumentationText } from '../../components/DocumentationText'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
@@ -11,6 +12,7 @@ import { Context as BeeContext } from '../../providers/Bee'
 import { Context as IdentityContext } from '../../providers/Feeds'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
+import { FileOrigin } from '../files/FileNavigation'
 import { UploadArea } from '../files/UploadArea'
 
 export function FeedSubpage(): ReactElement {
@@ -32,11 +34,10 @@ export function FeedSubpage(): ReactElement {
       return
     }
 
-    try {
-      beeApi?.downloadData(identity.feedHash).then(() => setAvailable(true))
-    } catch {
-      setAvailable(false)
-    }
+    beeApi
+      ?.downloadData(identity.feedHash)
+      .then(() => setAvailable(true))
+      .catch(() => setAvailable(false))
   }, [beeApi, uuid, identity, navigate])
 
   if (!identity || !status.all) {
@@ -50,7 +51,7 @@ export function FeedSubpage(): ReactElement {
   return (
     <div>
       <HistoryHeader>{`${identity.name} Website`}</HistoryHeader>
-      <UploadArea showHelp={false} uploadOrigin={{ origin: 'FEED', uuid }} />
+      <UploadArea showHelp={false} uploadOrigin={{ origin: FileOrigin.Feed, uuid }} />
       {available && identity.feedHash ? (
         <>
           <Box mb={4}>

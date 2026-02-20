@@ -1,9 +1,10 @@
+import Slider from '@mui/material/Slider'
 import { ReactElement, useState } from 'react'
-import './Slider.scss'
-import Slider from '@material-ui/core/Slider'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from 'tss-react/mui'
 
-const useStyles = makeStyles({
+import './Slider.scss'
+
+const useStyles = makeStyles()({
   root: {
     width: '98%',
     marginLeft: '-3px',
@@ -50,7 +51,7 @@ export function FMSlider({
   step,
 }: FMSliderProps): ReactElement {
   const [value, setValue] = useState(defaultValue || 0)
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   return (
     <>
