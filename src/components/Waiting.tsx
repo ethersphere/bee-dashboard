@@ -1,4 +1,4 @@
-import { CircularProgress, Grid } from '@material-ui/core'
+import { CircularProgress, Grid } from '@mui/material'
 import { ReactElement } from 'react'
 
 export function Waiting(): ReactElement {

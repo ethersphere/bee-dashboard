@@ -1,16 +1,18 @@
-import { ReactElement, useState, useContext } from 'react'
-import { createPortal } from 'react-dom'
-import Drive from 'remixicon-react/HardDrive2LineIcon'
-import DriveFill from 'remixicon-react/HardDrive2FillIcon'
-import MoreFill from 'remixicon-react/MoreFillIcon'
-import { ContextMenu } from '../../ContextMenu/ContextMenu'
-import { useContextMenu } from '../../../hooks/useContextMenu'
 import { DriveInfo } from '@solarpunkltd/file-manager-lib'
+import React, { ReactElement, useContext, useState } from 'react'
+import { createPortal } from 'react-dom'
+import DriveFill from 'remixicon-react/HardDrive2FillIcon'
+import Drive from 'remixicon-react/HardDrive2LineIcon'
+import MoreFill from 'remixicon-react/MoreFillIcon'
+
 import { Context as FMContext } from '../../../../../providers/FileManager'
+import { useContextMenu } from '../../../hooks/useContextMenu'
 import { handleDestroyAndForgetDrive } from '../../../utils/bee'
-import { ConfirmModal } from '../../ConfirmModal/ConfirmModal'
-import './DriveItem.scss'
 import { truncateNameMiddle } from '../../../utils/common'
+import { ConfirmModal } from '../../ConfirmModal/ConfirmModal'
+import { ContextMenu } from '../../ContextMenu/ContextMenu'
+
+import './DriveItem.scss'
 
 interface Props {
   drive: DriveInfo

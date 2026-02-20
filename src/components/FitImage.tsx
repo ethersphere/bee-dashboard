@@ -1,15 +1,13 @@
-import { createStyles, makeStyles } from '@material-ui/core'
 import { ReactElement } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    image: {
-      width: '100%',
-      height: '100%',
-      objectFit: 'cover',
-    },
-  }),
-)
+const useStyles = makeStyles()(() => ({
+  image: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  },
+}))
 
 interface Props {
   alt: string
@@ -19,12 +17,17 @@ interface Props {
 }
 
 export function FitImage(props: Props): ReactElement {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const inlineStyles: Record<string, string> = {}
 
-  props.maxHeight && (inlineStyles.maxHeight = props.maxHeight)
-  props.maxWidth && (inlineStyles.maxWidth = props.maxWidth)
+  if (props.maxHeight) {
+    inlineStyles.maxHeight = props.maxHeight
+  }
+
+  if (props.maxWidth) {
+    inlineStyles.maxWidth = props.maxWidth
+  }
 
   return <img className={classes.image} alt={props.alt} src={props.src} style={inlineStyles} />
 }

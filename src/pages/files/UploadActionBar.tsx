@@ -1,13 +1,19 @@
-import { Box, Grid } from '@material-ui/core'
+import { Box, Grid } from '@mui/material'
 import { ReactElement } from 'react'
+import PlusSquare from 'remixicon-react/AddBoxLineIcon'
+import ArrowLeft from 'remixicon-react/ArrowLeftLineIcon'
 import Check from 'remixicon-react/CheckLineIcon'
 import X from 'remixicon-react/CloseLineIcon'
-import ArrowLeft from 'remixicon-react/ArrowLeftLineIcon'
-import PlusSquare from 'remixicon-react/AddBoxLineIcon'
 import Layers from 'remixicon-react/StackLineIcon'
+
 import { DocumentationText } from '../../components/DocumentationText'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import { SwarmButton } from '../../components/SwarmButton'
+
+export enum StampMode {
+  Buy = 'BUY',
+  Select = 'SELECT',
+}
 
 interface Props {
   step: number
@@ -19,8 +25,8 @@ interface Props {
   hasStamp: boolean
   hasAnyStamps: boolean
   uploadLabel: string
-  stampMode: 'BUY' | 'SELECT'
-  setStampMode: (mode: 'BUY' | 'SELECT') => void
+  stampMode: StampMode
+  setStampMode: (mode: StampMode) => void
 }
 
 export function UploadActionBar({
@@ -68,7 +74,7 @@ export function UploadActionBar({
     return (
       <Grid container direction="row" justifyContent="space-between">
         <ExpandableListItemActions>
-          {stampMode === 'SELECT' && (
+          {stampMode === StampMode.Select && (
             <SwarmButton onClick={onProceed} iconType={Check} disabled={!hasStamp}>
               Proceed With Selected Stamp
             </SwarmButton>
@@ -79,11 +85,11 @@ export function UploadActionBar({
         </ExpandableListItemActions>
         {hasAnyStamps && (
           <SwarmButton
-            disabled={stampMode === 'BUY' && !hasAnyStamps}
-            onClick={() => setStampMode(stampMode === 'BUY' ? 'SELECT' : 'BUY')}
-            iconType={stampMode === 'BUY' ? Layers : PlusSquare}
+            disabled={stampMode === StampMode.Buy && !hasAnyStamps}
+            onClick={() => setStampMode(stampMode === StampMode.Buy ? StampMode.Select : StampMode.Buy)}
+            iconType={stampMode === StampMode.Buy ? Layers : PlusSquare}
           >
-            {stampMode === 'BUY' ? 'Use Existing Stamp' : 'Buy New Stamp'}
+            {stampMode === StampMode.Buy ? 'Use Existing Stamp' : 'Buy New Stamp'}
           </SwarmButton>
         )}
       </Grid>

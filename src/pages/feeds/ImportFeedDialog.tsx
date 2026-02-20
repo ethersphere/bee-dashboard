@@ -1,8 +1,10 @@
-import { Box, createStyles, makeStyles, TextareaAutosize, Theme } from '@material-ui/core'
+import { Box, TextareaAutosize } from '@mui/material'
 import { useSnackbar } from 'notistack'
 import React, { ReactElement, useContext, useRef, useState } from 'react'
 import Check from 'remixicon-react/CheckLineIcon'
 import Upload from 'remixicon-react/UploadLineIcon'
+import { makeStyles } from 'tss-react/mui'
+
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmDialog } from '../../components/SwarmDialog'
@@ -15,18 +17,16 @@ interface Props {
   onClose: () => void
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    textarea: {
-      width: '100%',
-      border: 0,
-      padding: theme.spacing(1),
-    },
-    displayNone: {
-      display: 'none',
-    },
-  }),
-)
+const useStyles = makeStyles()(theme => ({
+  textarea: {
+    width: '100%',
+    border: 0,
+    padding: theme.spacing(1),
+  },
+  displayNone: {
+    display: 'none',
+  },
+}))
 
 export function ImportFeedDialog({ onClose }: Props): ReactElement {
   const [textareaValue, setTextareaValue] = useState('')
@@ -37,7 +37,7 @@ export function ImportFeedDialog({ onClose }: Props): ReactElement {
 
   const { enqueueSnackbar } = useSnackbar()
 
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   async function onImport() {
     const feed = await importIdentity(name, textareaValue)

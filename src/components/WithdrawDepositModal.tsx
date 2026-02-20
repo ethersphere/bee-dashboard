@@ -1,14 +1,14 @@
-import Button from '@material-ui/core/Button'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogContentText from '@material-ui/core/DialogContentText'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import FormHelperText from '@material-ui/core/FormHelperText'
-import Input from '@material-ui/core/Input'
 import { BZZ, TransactionId } from '@ethersphere/bee-js'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
+import FormHelperText from '@mui/material/FormHelperText'
+import Input from '@mui/material/Input'
 import { useSnackbar } from 'notistack'
-import { ReactElement, ReactNode, useState } from 'react'
+import React, { ReactElement, ReactNode, useState } from 'react'
 
 interface Props {
   successMessage: string
@@ -54,7 +54,8 @@ export default function WithdrawDepositModal({
       setOpen(false)
       enqueueSnackbar(`${successMessage} Transaction ${transactionHash}`, { variant: 'success' })
     } catch (e) {
-      console.error(e) // eslint-disable-line
+      // eslint-disable-next-line no-console
+      console.error(e)
       enqueueSnackbar(`${errorMessage} Error: ${(e as Error).message}`, { variant: 'error' })
     }
   }
@@ -77,7 +78,7 @@ export default function WithdrawDepositModal({
 
   return (
     <div>
-      <Button variant="contained" onClick={handleClickOpen} startIcon={icon}>
+      <Button variant="text" onClick={handleClickOpen} startIcon={icon}>
         {label}
       </Button>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">

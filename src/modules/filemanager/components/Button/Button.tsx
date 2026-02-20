@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+
 import './Button.scss'
 
 interface ButtonProps {

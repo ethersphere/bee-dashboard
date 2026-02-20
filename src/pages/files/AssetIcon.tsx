@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+
 import { StripedWrapper } from '../../components/StripedWrapper'
 
 interface Props {

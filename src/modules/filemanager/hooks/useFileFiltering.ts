@@ -1,5 +1,6 @@
-import { useMemo, useCallback } from 'react'
-import { FileInfo, DriveInfo } from '@solarpunkltd/file-manager-lib'
+import { DriveInfo, FileInfo } from '@solarpunkltd/file-manager-lib'
+import { useCallback, useMemo } from 'react'
+
 import { ViewType } from '../constants/transfers'
 import { indexStrToBigint, isTrashed } from '../utils/common'
 

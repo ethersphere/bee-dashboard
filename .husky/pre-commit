@@ -1,0 +1,1 @@
+pnpm run lint && pnpm run check:types && pnpm run depcheck

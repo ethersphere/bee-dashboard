@@ -1,12 +1,9 @@
 import { Wallet } from 'ethers'
-import { createContext, ReactElement, useContext, useEffect, useState } from 'react'
-import { Context as SettingsContext } from './Settings'
+import { createContext, ReactElement, useCallback, useContext, useEffect, useState } from 'react'
 
-const LocalStorageKeys = {
-  depositWallet: 'deposit-wallet',
-  giftWallets: 'gift-wallets',
-  invitation: 'invitation',
-}
+import { LocalStorageKeys } from '../utils/localStorage'
+
+import { Context as SettingsContext } from './Settings'
 
 interface ContextInterface {
   giftWallets: Wallet[]
@@ -15,7 +12,7 @@ interface ContextInterface {
 
 const initialValues: ContextInterface = {
   giftWallets: [],
-  addGiftWallet: () => {}, // eslint-disable-line
+  addGiftWallet: () => {},
 }
 
 export const Context = createContext<ContextInterface>(initialValues)
@@ -39,11 +36,14 @@ export function Provider({ children }: Props): ReactElement {
     }
   }, [rpcProvider])
 
-  function addGiftWallet(wallet: Wallet) {
-    const newArray = [...giftWallets, wallet]
-    localStorage.setItem(LocalStorageKeys.giftWallets, JSON.stringify(newArray.map(x => x.privateKey)))
-    setGiftWallets(newArray)
-  }
+  const addGiftWallet = useCallback((wallet: Wallet) => {
+    setGiftWallets(prev => {
+      const newArray = [...prev, wallet]
+      localStorage.setItem(LocalStorageKeys.giftWallets, JSON.stringify(newArray.map(x => x.privateKey)))
+
+      return newArray
+    })
+  }, [])
 
   return (
     <Context.Provider

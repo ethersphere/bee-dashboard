@@ -1,27 +1,25 @@
-import { Grid } from '@material-ui/core'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import { Grid } from '@mui/material'
 import { ReactElement, ReactNode } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    wrapper: {
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-    },
-    action: {
-      marginBottom: theme.spacing(1),
-      marginRight: theme.spacing(1),
-    },
-  }),
-)
+const useStyles = makeStyles()(theme => ({
+  wrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  action: {
+    marginBottom: theme.spacing(1),
+    marginRight: theme.spacing(1),
+  },
+}))
 
 interface Props {
   children: ReactNode | ReactNode[]
 }
 
 export default function ExpandableListItemActions({ children }: Props): ReactElement | null {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   if (Array.isArray(children)) {
     return (

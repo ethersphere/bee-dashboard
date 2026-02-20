@@ -1,7 +1,9 @@
-import { createStyles, makeStyles, Tab, Tabs, Theme } from '@material-ui/core'
 import { BeeModes } from '@ethersphere/bee-js'
-import { ReactElement, useContext } from 'react'
+import { Tab, Tabs } from '@mui/material'
+import React, { ReactElement, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { makeStyles } from 'tss-react/mui'
+
 import { Context } from '../../providers/Bee'
 import { ACCOUNT_TABS } from '../../routes'
 
@@ -17,28 +19,26 @@ interface Props {
   active: 'WALLET' | 'CHEQUEBOOK' | 'STAMPS' | 'FEEDS' | 'STAKING'
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1,
-      marginBottom: theme.spacing(4),
-      textTransform: 'none',
-      marginLeft: theme.spacing(-0.25),
-      marginRight: theme.spacing(-0.25),
-    },
-    tab: {
-      marginLeft: theme.spacing(0.25),
-      marginRight: theme.spacing(0.25),
-    },
-  }),
-)
+const useStyles = makeStyles()(theme => ({
+  root: {
+    flexGrow: 1,
+    marginBottom: theme.spacing(4),
+    textTransform: 'none',
+    marginLeft: theme.spacing(-0.25),
+    marginRight: theme.spacing(-0.25),
+  },
+  tab: {
+    marginLeft: theme.spacing(0.25),
+    marginRight: theme.spacing(0.25),
+  },
+}))
 
 export function AccountNavigation({ active }: Props): ReactElement {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const navigate = useNavigate()
   const { nodeInfo } = useContext(Context)
 
-  function onChange(event: React.ChangeEvent<Record<string, never>>, newValue: number) {
+  function onChange(_event: React.SyntheticEvent, newValue: number) {
     navigate(ACCOUNT_TABS[newValue])
   }
 

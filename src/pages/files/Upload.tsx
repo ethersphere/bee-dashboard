@@ -1,32 +1,35 @@
-import { Box } from '@material-ui/core'
+import { Box } from '@mui/material'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+
 import { DocumentationText } from '../../components/DocumentationText'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { ProgressIndicator } from '../../components/ProgressIndicator'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { META_FILE_NAME } from '../../constants'
-import { Context as BeeContext, CheckState } from '../../providers/Bee'
-import { Identity, Context as IdentityContext } from '../../providers/Feeds'
+import { CheckState, Context as BeeContext } from '../../providers/Bee'
+import { Context as IdentityContext, Identity, IdentityType } from '../../providers/Feeds'
 import { Context as FileContext } from '../../providers/File'
 import { Context as SettingsContext } from '../../providers/Settings'
-import { EnrichedPostageBatch, Context as StampsContext } from '../../providers/Stamps'
+import { Context as StampsContext, EnrichedPostageBatch } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
 import { waitUntilStampUsable } from '../../utils'
 import { detectIndexHtml, getAssetNameFromFiles, packageFile } from '../../utils/file'
 import { persistIdentity, updateFeed } from '../../utils/identity'
-import { HISTORY_KEYS, putHistory } from '../../utils/local-storage'
+import { LocalStorageKeys, putHistory } from '../../utils/localStorage'
 import { FeedPasswordDialog } from '../feeds/FeedPasswordDialog'
 import { PostageStampAdvancedCreation } from '../stamps/PostageStampAdvancedCreation'
 import { PostageStampSelector } from '../stamps/PostageStampSelector'
+
 import { AssetPreview } from './AssetPreview'
+import { FileOrigin } from './FileNavigation'
 import { StampPreview } from './StampPreview'
-import { UploadActionBar } from './UploadActionBar'
+import { StampMode, UploadActionBar } from './UploadActionBar'
 
 export function Upload(): ReactElement {
   const [step, setStep] = useState(0)
-  const [stampMode, setStampMode] = useState<'SELECT' | 'BUY'>('SELECT')
+  const [stampMode, setStampMode] = useState<StampMode>(StampMode.Select)
   const [stamp, setStamp] = useState<EnrichedPostageBatch | null>(null)
   const [isUploading, setUploading] = useState(false)
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
@@ -44,7 +47,7 @@ export function Upload(): ReactElement {
 
   useEffect(() => {
     refresh()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [refresh])
 
   if (status.all === CheckState.ERROR) return <TroubleshootConnectionCard />
 
@@ -58,10 +61,10 @@ export function Upload(): ReactElement {
   const identity = uploadOrigin.uuid ? identities.find(x => x.uuid === uploadOrigin.uuid) : null
 
   const onUpload = () => {
-    if (uploadOrigin.origin === 'UPLOAD') {
+    if (uploadOrigin.origin === FileOrigin.Upload) {
       uploadFiles()
     } else {
-      if ((identity as Identity).type === 'PRIVATE_KEY') {
+      if ((identity as Identity).type === IdentityType.PrivateKey) {
         uploadFiles()
       } else {
         setShowPasswordPrompt(true)
@@ -114,9 +117,9 @@ export function Upload(): ReactElement {
     beeApi
       .uploadFiles(stamp.batchID, fls, { indexDocument, deferred: true })
       .then(hash => {
-        putHistory(HISTORY_KEYS.UPLOAD_HISTORY, hash.reference.toHex(), getAssetNameFromFiles(files))
+        putHistory(LocalStorageKeys.uploadHistory, hash.reference.toHex(), getAssetNameFromFiles(files))
 
-        if (uploadOrigin.origin === 'UPLOAD') {
+        if (uploadOrigin.origin === FileOrigin.Upload) {
           navigate(ROUTES.HASH.replace(':hash', hash.reference.toHex()), { replace: true })
         } else {
           updateFeed(beeApi, identity as Identity, hash.reference, stamp.batchID, password as string).then(() => {
@@ -127,7 +130,8 @@ export function Upload(): ReactElement {
         }
       })
       .catch(e => {
-        console.error(e) // eslint-disable-line
+        // eslint-disable-next-line no-console
+        console.error(e)
         enqueueSnackbar(`Error uploading: ${e.message}`, { variant: 'error' })
         setUploading(false)
       })
@@ -163,10 +167,10 @@ export function Upload(): ReactElement {
       {step === 1 && (
         <>
           <Box mb={2}>
-            {hasAnyStamps && stampMode === 'SELECT' ? (
+            {hasAnyStamps && stampMode === StampMode.Select ? (
               <PostageStampSelector onSelect={stamp => setStamp(stamp)} defaultValue={stamp?.batchID.toHex()} />
             ) : (
-              <PostageStampAdvancedCreation onFinished={() => setStampMode('SELECT')} />
+              <PostageStampAdvancedCreation onFinished={() => setStampMode(StampMode.Select)} />
             )}
           </Box>
           <Box mb={4}>

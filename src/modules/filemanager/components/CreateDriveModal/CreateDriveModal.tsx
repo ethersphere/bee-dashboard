@@ -1,20 +1,21 @@
+import { BeeModes, BZZ, DAI, Duration, RedundancyLevel, Size, Utils } from '@ethersphere/bee-js'
 import { ReactElement, useContext, useEffect, useRef, useState } from 'react'
 
-import { BeeModes, BZZ, DAI, Duration, RedundancyLevel, Size, Utils } from '@ethersphere/bee-js'
-import './CreateDriveModal.scss'
-import { CustomDropdown } from '../CustomDropdown/CustomDropdown'
-import { Button } from '../Button/Button'
-import { fmFetchCost, handleCreateDrive } from '../../utils/bee'
-import { getExpiryDateByLifetime } from '../../utils/common'
+import { Context as BeeContext } from '../../../../providers/Bee'
+import { Context as FMContext } from '../../../../providers/FileManager'
+import { Context as SettingsContext } from '../../../../providers/Settings'
+import { getHumanReadableFileSize } from '../../../../utils/file'
 import { erasureCodeMarks } from '../../constants/common'
 import { desiredLifetimeOptions } from '../../constants/stamps'
-import { Context as BeeContext } from '../../../../providers/Bee'
-import { Context as SettingsContext } from '../../../../providers/Settings'
-import { FMSlider } from '../Slider/Slider'
-import { Context as FMContext } from '../../../../providers/FileManager'
-import { getHumanReadableFileSize } from '../../../../utils/file'
-import { Tooltip } from '../Tooltip/Tooltip'
 import { TOOLTIPS } from '../../constants/tooltips'
+import { fmFetchCost, handleCreateDrive } from '../../utils/bee'
+import { getExpiryDateByLifetime } from '../../utils/common'
+import { Button } from '../Button/Button'
+import { CustomDropdown } from '../CustomDropdown/CustomDropdown'
+import { FMSlider } from '../Slider/Slider'
+import { Tooltip } from '../Tooltip/Tooltip'
+
+import './CreateDriveModal.scss'
 
 const minMarkValue = Math.min(...erasureCodeMarks.map(mark => mark.value))
 const maxMarkValue = Math.max(...erasureCodeMarks.map(mark => mark.value))
@@ -26,7 +27,7 @@ interface CreateDriveModalProps {
   onCreationStarted: (driveName: string) => void
   onCreationError: (name: string) => void
 }
-// TODO: select existing batch id or create a new one - just like in InitialModal
+
 export function CreateDriveModal({
   onCancelClick,
   onDriveCreated,
@@ -72,7 +73,7 @@ export function CreateDriveModal({
     }
   }, [duplicate, nameExists])
 
-  const handleCapacityChange = (value: number, index: number) => {
+  const handleCapacityChange = (_: number, index: number) => {
     setCapacityIndex(index)
   }
 

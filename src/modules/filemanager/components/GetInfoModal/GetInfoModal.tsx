@@ -1,11 +1,12 @@
-import { ReactElement, useState, useEffect } from 'react'
-import './GetInfoModal.scss'
-import { Button } from '../Button/Button'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import InfoIcon from 'remixicon-react/InformationLineIcon'
 import ClipboardIcon from 'remixicon-react/FileCopyLineIcon'
+import InfoIcon from 'remixicon-react/InformationLineIcon'
 
 import type { FileProperty, FilePropertyGroup } from '../../utils/infoGroups'
+import { Button } from '../Button/Button'
+
+import './GetInfoModal.scss'
 
 interface GetInfoModalProps {
   name: string
@@ -13,31 +14,35 @@ interface GetInfoModalProps {
   onCancelClick: () => void
 }
 
+const COPY_TIMEOUT_MS = 2000
+
 export function GetInfoModal({ name, onCancelClick, properties }: GetInfoModalProps): ReactElement {
   const modalRoot = document.querySelector('.fm-main') || document.body
   const [copiedKey, setCopiedKey] = useState<string | null>(null)
-  const timeoutRef = useState<{ [key: string]: NodeJS.Timeout }>({})[0]
+
+  const timeoutRef = useRef<Record<string, NodeJS.Timeout>>({})
 
   useEffect(() => {
     return () => {
-      Object.values(timeoutRef).forEach(timeout => clearTimeout(timeout))
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      Object.values(timeoutRef.current).forEach(clearTimeout)
     }
-  }, [timeoutRef])
+  }, [])
 
   const handleCopy = async (prop: FileProperty) => {
     try {
       await navigator.clipboard.writeText(prop.raw ?? prop.value)
 
-      if (timeoutRef[prop.key]) {
-        clearTimeout(timeoutRef[prop.key])
+      if (timeoutRef.current[prop.key]) {
+        clearTimeout(timeoutRef.current[prop.key])
       }
 
       setCopiedKey(prop.key)
 
-      timeoutRef[prop.key] = setTimeout(() => {
+      timeoutRef.current[prop.key] = setTimeout(() => {
         setCopiedKey(prev => (prev === prop.key ? null : prev))
-        delete timeoutRef[prop.key]
-      }, 2000)
+        delete timeoutRef.current[prop.key]
+      }, COPY_TIMEOUT_MS)
     } catch {
       /* noop */
     }

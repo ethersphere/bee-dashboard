@@ -1,6 +1,9 @@
 import { PostageBatch } from '@ethersphere/bee-js'
-import { createContext, ReactChild, ReactElement, useContext, useEffect, useState } from 'react'
+import { createContext, ReactElement, ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react'
+
 import { Context as SettingsContext } from './Settings'
+
+const DEFUALT_REFRESH_REQUENCY_MS = 30_000
 
 export interface EnrichedPostageBatch extends PostageBatch {
   usage: number
@@ -22,8 +25,8 @@ const initialValues: ContextInterface = {
   error: null,
   isLoading: false,
   lastUpdate: null,
-  start: () => {}, // eslint-disable-line
-  stop: () => {}, // eslint-disable-line
+  start: () => {},
+  stop: () => {},
   refresh: () => Promise.reject(),
 }
 
@@ -31,7 +34,7 @@ export const Context = createContext<ContextInterface>(initialValues)
 export const Consumer = Context.Consumer
 
 interface Props {
-  children: ReactChild
+  children: ReactNode
 }
 
 export function enrichStamp(postageBatch: PostageBatch): EnrichedPostageBatch {
@@ -55,18 +58,20 @@ export function Provider({ children }: Props): ReactElement {
   const [lastUpdate, setLastUpdate] = useState<number | null>(initialValues.lastUpdate)
   const [frequency, setFrequency] = useState<number | null>(null)
 
-  const refresh = async () => {
-    if (isLoading) {
-      return
-    }
+  const isLoadingRef = useRef<boolean>(isLoading)
 
-    if (!beeApi) {
+  useEffect(() => {
+    isLoadingRef.current = isLoading
+  }, [isLoading])
+
+  const refresh = useCallback(async () => {
+    if (isLoadingRef.current || !beeApi) {
       return
     }
 
     try {
       setIsLoading(true)
-      const stamps = await beeApi.getAllPostageBatch()
+      const stamps = await beeApi.getPostageBatches()
 
       setStamps(stamps.map(enrichStamp))
       setLastUpdate(Date.now())
@@ -76,22 +81,24 @@ export function Provider({ children }: Props): ReactElement {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [beeApi])
 
-  const start = (freq = 30000) => setFrequency(freq)
+  const start = (freq = DEFUALT_REFRESH_REQUENCY_MS) => setFrequency(freq)
   const stop = () => setFrequency(null)
 
-  // Start the update loop
   useEffect(() => {
-    refresh()
+    if (beeApi) {
+      refresh()
+    }
+  }, [beeApi, refresh])
 
-    // Start autorefresh only if the frequency is set
+  useEffect(() => {
     if (frequency) {
       const interval = setInterval(refresh, frequency)
 
       return () => clearInterval(interval)
     }
-  }, [frequency]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [frequency, refresh])
 
   return (
     <Context.Provider value={{ stamps, error, isLoading, lastUpdate, start, stop, refresh }}>

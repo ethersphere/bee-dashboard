@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
 import type { FileInfo } from '@solarpunkltd/file-manager-lib'
+import { useEffect, useMemo, useState } from 'react'
+
+import { LocalStorageKeys } from '../../../utils/localStorage'
 
 export enum SortKey {
   Name = 'name',
@@ -19,10 +21,9 @@ type Options = {
   persist?: boolean
   defaultState?: SortState
   storageKey?: string
-  getDriveName?: (fi: FileInfo) => string
+  getDriveName?: (driveId: string) => string
 }
 
-const STORAGE_KEY = 'fm.sort.v1'
 const DEFAULT_STATE: SortState = { key: SortKey.Timestamp, dir: SortDir.Desc }
 
 const coerceNumber = (v: unknown): number => {
@@ -61,7 +62,7 @@ export function useSorting(
   toggle: (key: SortKey) => void
   reset: () => void
 } {
-  const { persist = true, defaultState = DEFAULT_STATE, storageKey = STORAGE_KEY, getDriveName } = opts
+  const { persist = true, defaultState = DEFAULT_STATE, storageKey = LocalStorageKeys.fmSortKey, getDriveName } = opts
 
   const [sort, setSort] = useState<SortState>(() => {
     if (!persist) return defaultState
@@ -127,8 +128,8 @@ export function useSorting(
       }
 
       if (sort.key === SortKey.Drive) {
-        const ad = (getDriveName?.(a) ?? '').toLocaleLowerCase()
-        const bd = (getDriveName?.(b) ?? '').toLocaleLowerCase()
+        const ad = (getDriveName?.(a.driveId.toString()) ?? '').toLocaleLowerCase()
+        const bd = (getDriveName?.(b.driveId.toString()) ?? '').toLocaleLowerCase()
 
         if (ad < bd) return -1 * mul
 

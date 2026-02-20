@@ -1,9 +1,11 @@
-import { ContextMenu } from '../../ContextMenu/ContextMenu'
-import { ReactElement } from 'react'
-import '../FileBrowser.scss'
-import { ViewType } from '../../../constants/transfers'
 import { DriveInfo } from '@solarpunkltd/file-manager-lib'
+import { ReactElement } from 'react'
+
+import { ViewType } from '../../../constants/transfers'
+import { ContextMenu } from '../../ContextMenu/ContextMenu'
 import { Tooltip } from '../../Tooltip/Tooltip'
+
+import '../FileBrowser.scss'
 
 interface FileBrowserContextMenuProps {
   drives: DriveInfo[]

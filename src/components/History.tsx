@@ -1,6 +1,8 @@
 import { ReactElement, useEffect, useState } from 'react'
+
 import { getPrettyDateString } from '../utils/date'
-import { getHistorySafe, HistoryItem, HISTORY_KEYS } from '../utils/local-storage'
+import { getHistorySafe, HISTORY_KEYS, HistoryItem } from '../utils/localStorage'
+
 import ExpandableList from './ExpandableList'
 import ExpandableListItemLink from './ExpandableListItemLink'
 

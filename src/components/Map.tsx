@@ -1,6 +1,7 @@
 import type { Peer } from '@ethersphere/bee-js'
 import DottedMap, { DottedMapWithoutCountriesLib } from 'dotted-map/without-countries'
 import { CSSProperties, ReactElement, useContext, useEffect, useState } from 'react'
+
 import mapData from '../assets/data/map-data.json'
 import nodesDb from '../assets/data/nodes-db.json'
 import { Context } from '../providers/Bee'
@@ -18,17 +19,10 @@ interface MapRecord {
 type MapDB = Record<string, MapRecord>
 
 const fullMapDb = nodesDb as unknown as MapDB
-const deduplicatedRecords = deduplicate(fullMapDb)
 
-function deduplicate(db: MapDB): MapRecord[] {
-  const noDuplicates: Record<string, MapRecord> = {}
-
-  Object.entries(fullMapDb).forEach(([key, record]) => {
-    noDuplicates[`${record.lat} ${record.lng}`] = record
-  })
-
-  return Object.values(noDuplicates)
-}
+const deduplicatedRecords = Object.values(
+  Object.fromEntries(Object.values(fullMapDb).map(r => [`${r.lat} ${r.lng}`, r])),
+)
 
 function findIntersection(db: MapDB, peers: Peer[]): MapRecord[] {
   const noDuplicates: Record<string, MapRecord> = {}
@@ -47,27 +41,45 @@ function addPins(map: DottedMap, pins: MapRecord[], color: string) {
   })
 }
 
+enum PeerColors {
+  Black = '#303030',
+  Green = '#09CA6C',
+  LightGrey = '#dadada',
+  White = '#eaeaea',
+}
+
 const mapPrecomputed = new DottedMap({ map: JSON.parse(mapData) })
 const mapNoPins = new DottedMap({ map: JSON.parse(mapData) })
-addPins(mapPrecomputed, deduplicatedRecords, '#303030')
+addPins(mapPrecomputed, deduplicatedRecords, PeerColors.Black)
 
-const mapSvgOptions: DottedMapWithoutCountriesLib.SvgSettings = { shape: 'hexagon', radius: 0.21, color: '#dadada' }
+const mapSvgOptions: DottedMapWithoutCountriesLib.SvgSettings = {
+  shape: 'hexagon',
+  radius: 0.21,
+  color: PeerColors.LightGrey,
+}
 
 export default function Card({ style, error }: Props): ReactElement {
   const { peers } = useContext(Context)
   const [map, setMap] = useState<string>(mapPrecomputed.getSVG(mapSvgOptions))
 
   useEffect(() => {
-    // Display error map
-    if (error) setMap(mapNoPins.getSVG({ ...mapSvgOptions, color: '#eaeaea' }))
+    let newSvg: string
 
-    // Display just the base map without any connections
-    if (!peers) return
+    if (error) {
+      newSvg = mapNoPins.getSVG({ ...mapSvgOptions, color: PeerColors.White })
+    } else if (peers) {
+      const points = findIntersection(fullMapDb, peers)
+      const mapNew = Object.create(mapPrecomputed)
+      addPins(mapNew, points, PeerColors.Green)
+      newSvg = mapNew.getSVG(mapSvgOptions)
+    } else {
+      return
+    }
 
-    const points = findIntersection(fullMapDb, peers)
-    const mapNew = Object.create(mapPrecomputed)
-    addPins(mapNew, points, '#09CA6C')
-    setMap(mapNew.getSVG(mapSvgOptions))
+    if (newSvg !== map) {
+      setMap(newSvg)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [peers, error])
 
   return (

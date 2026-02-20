@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable no-console */
 
 const axios = require('axios')
 const fs = require('fs')

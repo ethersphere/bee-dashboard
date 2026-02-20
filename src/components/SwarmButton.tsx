@@ -1,6 +1,7 @@
-import { Button, ButtonProps, CircularProgress, createStyles, makeStyles } from '@material-ui/core'
+import { Button, ButtonProps, CircularProgress } from '@mui/material'
 import React, { ReactElement } from 'react'
 import type { RemixiconReactIconProps } from 'remixicon-react'
+import { makeStyles } from 'tss-react/mui'
 
 export interface SwarmButtonProps extends ButtonProps {
   iconType: React.ComponentType<RemixiconReactIconProps>
@@ -9,34 +10,32 @@ export interface SwarmButtonProps extends ButtonProps {
   variant?: 'text' | 'contained' | 'outlined'
 }
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    button: {
-      height: '42px',
-      position: 'relative',
-      whiteSpace: 'nowrap',
-      color: '#242424',
-      '&:hover, &:focus': {
-        '& svg': {
-          fill: '#fff',
-          transition: '0.1s',
-        },
+const useStyles = makeStyles()(() => ({
+  button: {
+    height: '42px',
+    position: 'relative',
+    whiteSpace: 'nowrap',
+    color: '#242424',
+    '&:hover, &:focus': {
+      '& svg': {
+        fill: '#fff',
+        transition: '0.1s',
       },
     },
-    cancelButton: {
-      background: '#f7f7f7',
-      color: '#606060',
-    },
-    spinnerWrapper: {
-      position: 'absolute',
-      left: '50%',
-      top: '50%',
-      width: '40px',
-      height: '40px',
-      transform: 'translate(-50%, -50%)',
-    },
-  }),
-)
+  },
+  cancelButton: {
+    background: '#f7f7f7',
+    color: '#606060',
+  },
+  spinnerWrapper: {
+    position: 'absolute',
+    left: '50%',
+    top: '50%',
+    width: '40px',
+    height: '40px',
+    transform: 'translate(-50%, -50%)',
+  },
+}))
 
 export function SwarmButton({
   children,
@@ -50,7 +49,7 @@ export function SwarmButton({
   style,
   ...other
 }: SwarmButtonProps): ReactElement {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   function getIconColor() {
     if (loading || disabled) {

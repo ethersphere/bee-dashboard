@@ -1,10 +1,15 @@
-import { BatchId, Bee, NULL_TOPIC, Reference } from '@ethersphere/bee-js'
-import { Wallet } from 'ethers'
-import { uuidV4, waitUntilStampUsable } from '.'
+import { BatchId, Bee, NULL_TOPIC, PrivateKey, Reference } from '@ethersphere/bee-js'
+import { randomBytes, Wallet } from 'ethers'
+
 import { Identity, IdentityType } from '../providers/Feeds'
 
+import { LocalStorageKeys } from './localStorage'
+import { uuidV4, waitUntilStampUsable } from '.'
+
 export function generateWallet(): Wallet {
-  return Wallet.createRandom()
+  const privateKey = randomBytes(PrivateKey.LENGTH).toString()
+
+  return new Wallet(privateKey)
 }
 
 export function persistIdentity(identities: Identity[], identity: Identity): void {
@@ -14,11 +19,11 @@ export function persistIdentity(identities: Identity[], identity: Identity): voi
     identities.splice(existingIndex, 1)
   }
   identities.unshift(identity)
-  localStorage.setItem('feeds', JSON.stringify(identities))
+  localStorage.setItem(LocalStorageKeys.feeds, JSON.stringify(identities))
 }
 
 export function persistIdentitiesWithoutUpdate(identities: Identity[]): void {
-  localStorage.setItem('feeds', JSON.stringify(identities))
+  localStorage.setItem(LocalStorageKeys.feeds, JSON.stringify(identities))
 }
 
 export async function convertWalletToIdentity(
@@ -27,16 +32,17 @@ export async function convertWalletToIdentity(
   name: string,
   password?: string,
 ): Promise<Identity> {
-  if (type === 'V3' && !password) {
+  if (type === IdentityType.V3 && !password) {
     throw Error('V3 passwords require password')
   }
 
-  const identityString = type === 'PRIVATE_KEY' ? identity.privateKey : await identity.encrypt(password as string)
+  const identityString =
+    type === IdentityType.PrivateKey ? identity.privateKey : await identity.encrypt(password as string)
 
   return {
     uuid: uuidV4(),
     name,
-    type: password ? 'V3' : 'PRIVATE_KEY',
+    type: password ? IdentityType.V3 : IdentityType.PrivateKey,
     address: identity.address,
     identity: identityString,
   }
@@ -44,26 +50,26 @@ export async function convertWalletToIdentity(
 
 export async function importIdentity(name: string, data: string): Promise<Identity | null> {
   if (data.length === 64) {
-    const wallet = await getWallet('PRIVATE_KEY', data)
+    const wallet = await getWallet(IdentityType.PrivateKey, data)
 
     return {
       uuid: uuidV4(),
       name,
-      type: 'PRIVATE_KEY',
+      type: IdentityType.PrivateKey,
       identity: data,
       address: wallet.address,
     }
   }
 
   if (data.length === 66 && data.toLowerCase().startsWith('0x')) {
-    const wallet = await getWallet('PRIVATE_KEY', data.slice(2))
+    const wallet = await getWallet(IdentityType.PrivateKey, data.slice(2))
 
-    return { uuid: uuidV4(), name, type: 'PRIVATE_KEY', identity: data, address: wallet.address }
+    return { uuid: uuidV4(), name, type: IdentityType.PrivateKey, identity: data, address: wallet.address }
   }
   try {
     const { address } = JSON.parse(data)
 
-    return { uuid: uuidV4(), name, type: 'V3', identity: data, address }
+    return { uuid: uuidV4(), name, type: IdentityType.V3, identity: data, address }
   } catch {
     return null
   }
@@ -74,7 +80,17 @@ function getWalletFromIdentity(identity: Identity, password?: string): Promise<W
 }
 
 async function getWallet(type: IdentityType, data: string, password?: string): Promise<Wallet> {
-  return type === 'PRIVATE_KEY' ? new Wallet(data) : await Wallet.fromEncryptedJson(data, password as string)
+  if (type === IdentityType.PrivateKey) {
+    return new Wallet(data)
+  }
+
+  if (!password) {
+    throw new Error('password is required for wallet')
+  }
+
+  const w = await Wallet.fromEncryptedJson(data, password)
+
+  return new Wallet(w.privateKey)
 }
 
 export async function updateFeed(
@@ -93,5 +109,5 @@ export async function updateFeed(
   const writer = beeApi.makeFeedWriter(NULL_TOPIC, wallet.privateKey)
 
   await waitUntilStampUsable(stamp, beeApi)
-  await writer.upload(stamp, hash)
+  await writer.uploadReference(stamp, hash)
 }

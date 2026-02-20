@@ -1,5 +1,6 @@
-import { Box } from '@material-ui/core'
+import { Box } from '@mui/material'
 import { ReactElement, useContext } from 'react'
+
 import ExpandableList from '../../../components/ExpandableList'
 import ExpandableListItem from '../../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../../components/ExpandableListItemActions'
@@ -8,7 +9,7 @@ import TroubleshootConnectionCard from '../../../components/TroubleshootConnecti
 import DepositModal from '../../../containers/DepositModal'
 import WithdrawModal from '../../../containers/WithdrawModal'
 import { useAccounting } from '../../../hooks/accounting'
-import { Context as BeeContext, CheckState } from '../../../providers/Bee'
+import { CheckState, Context as BeeContext } from '../../../providers/Bee'
 import { Context as SettingsContext } from '../../../providers/Settings'
 import PeerBalances from '../../accounting/PeerBalances'
 import { AccountNavigation } from '../AccountNavigation'

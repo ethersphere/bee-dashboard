@@ -1,7 +1,9 @@
 import { FileInfo, FileManager } from '@solarpunkltd/file-manager-lib'
-import { guessMime, VIEWERS } from './view'
-import { AbortManager } from './abortManager'
+
 import { DownloadProgress, DownloadState } from '../constants/transfers'
+
+import { AbortManager } from './abortManager'
+import { guessMime, VIEWERS } from './view'
 
 const downloadAborts = new AbortManager()
 
@@ -54,6 +56,7 @@ const processStream = async (
       onDownloadProgress?.({ progress, isDownloading: false, state: DownloadState.Cancelled })
     } else {
       onDownloadProgress?.({ progress, isDownloading: false, state: DownloadState.Error })
+
       // eslint-disable-next-line no-console
       console.error('Failed to process stream: ', e)
     }
@@ -70,6 +73,7 @@ const processStream = async (
       }
     } catch (e: unknown) {
       /* no-op */
+
       // eslint-disable-next-line no-console
       console.error('filehandle close/abort error: ', e)
     }
@@ -106,6 +110,7 @@ const streamToBlob = async (
       onDownloadProgress?.({ progress, isDownloading: false, state: DownloadState.Cancelled })
     } else {
       onDownloadProgress?.({ progress, isDownloading: false, state: DownloadState.Error })
+
       // eslint-disable-next-line no-console
       console.error('Error during stream processing: ', error)
     }
@@ -133,6 +138,7 @@ interface FileInfoWithHandle {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isPickerSupported = (): boolean => typeof (window as any).showSaveFilePicker === 'function'
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isDirectoryPickerSupported = (): boolean => typeof (window as any).showDirectoryPicker === 'function'
 
@@ -384,6 +390,7 @@ export const startDownloadingQueue = async (
 
           if (!isAbortError) {
             tracker?.({ progress: 0, isDownloading: false, state: DownloadState.Error })
+
             // eslint-disable-next-line no-console
             console.error('download queue error: ', error)
           } else {
