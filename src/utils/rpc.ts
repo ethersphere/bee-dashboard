@@ -117,7 +117,7 @@ export async function sendBzzTransaction(
   const feeData = await signer.provider.getFeeData()
   const gasPrice = feeData.gasPrice || BigInt(0)
   const bzz = new Contract(BZZ_TOKEN_ADDRESS, bzzABI, signer)
-  const transaction = await bzz.transfer(to, value, { gasPrice })
+  const transaction = await bzz.transfer(to.toChecksum(), value, { gasPrice })
   const receipt = await transaction.wait(1)
 
   if (!receipt) {
