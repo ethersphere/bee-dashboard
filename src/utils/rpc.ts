@@ -94,7 +94,7 @@ export async function sendBzzTransaction(
   const signer = await makeReadySigner(privateKey, jsonRpcProvider)
   const gasPrice = await signer.getGasPrice()
   const bzz = new Contract(BZZ_TOKEN_ADDRESS, bzzABI, signer)
-  const transaction = await bzz.transfer(to, value, { gasPrice })
+  const transaction = await bzz.transfer(to.toChecksum(), value, { gasPrice })
   const receipt = await transaction.wait(1)
 
   return { transaction, receipt }
