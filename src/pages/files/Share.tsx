@@ -104,6 +104,20 @@ export function Share(): ReactElement {
   }
 
   function onOpen() {
+    const isImage = Boolean(metadata?.isImage)
+
+    if (isImage) {
+      const imagePath = Object.keys(swarmEntries).find(path => /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(path))
+      const candidatePath = imagePath || metadata?.name
+      const normalizedPath = candidatePath?.replace(/^\/+/, '')
+
+      if (normalizedPath) {
+        window.open(`${apiUrl}/bzz/${hash}/${encodeURI(normalizedPath)}`, '_blank')
+
+        return
+      }
+    }
+
     window.open(`${apiUrl}/bzz/${hash}/`, '_blank')
   }
 
@@ -239,6 +253,7 @@ export function Share(): ReactElement {
         onDownload={onDownload}
         onUpdateFeed={onUpdateFeed}
         hasIndexDocument={Boolean(metadata?.isWebsite)}
+        isImage={Boolean(metadata?.isImage)}
         loading={downloading}
       />
     </>
