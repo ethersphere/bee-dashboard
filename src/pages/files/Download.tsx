@@ -1,8 +1,9 @@
-import { BeeModes, MantarayNode, NULL_ADDRESS, Reference } from '@ethersphere/bee-js'
+import { BeeModes, Reference } from '@ethersphere/bee-js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Search from 'remixicon-react/SearchLineIcon'
+
 import ExpandableListItemInput from '../../components/ExpandableListItemInput'
 import { History } from '../../components/History'
 import { Context as BeeContext } from '../../providers/Bee'
@@ -10,8 +11,10 @@ import { Context as FileContext, defaultUploadOrigin } from '../../providers/Fil
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
 import { recognizeEnsOrSwarmHash, regexpEns } from '../../utils'
-import { HISTORY_KEYS, determineHistoryName, putHistory } from '../../utils/local-storage'
-import { FileNavigation } from './FileNavigation'
+import { determineHistoryName, LocalStorageKeys, putHistory } from '../../utils/localStorage'
+import { loadManifest } from '../../utils/manifest'
+
+import { FileNavigation, FileOrigin } from './FileNavigation'
 
 export function Download(): ReactElement {
   const [loading, setLoading] = useState(false)
@@ -43,22 +46,11 @@ export function Download(): ReactElement {
     setLoading(true)
 
     try {
-      let manifest = await MantarayNode.unmarshal(beeApi, identifier)
-      await manifest.loadRecursively(beeApi)
-
-      // If the manifest is a feed, resolve it and overwrite the manifest
-      await manifest.resolveFeed(beeApi).then(
-        async feed =>
-          await feed.ifPresentAsync(async feedUpdate => {
-            manifest = MantarayNode.unmarshalFromData(feedUpdate.payload.toUint8Array(), NULL_ADDRESS)
-            await manifest.loadRecursively(beeApi)
-          }),
-      )
-
+      const manifest = await loadManifest(beeApi, identifier)
       const rootMetadata = manifest.getDocsMetadata()
 
       putHistory(
-        HISTORY_KEYS.DOWNLOAD_HISTORY,
+        LocalStorageKeys.downloadHistory,
         identifier,
         determineHistoryName(identifier, rootMetadata.indexDocument),
       )
@@ -74,7 +66,8 @@ export function Download(): ReactElement {
       if (message.includes('Not Found: Not Found')) {
         message = 'The specified hash was not found.'
       }
-      console.error(error) // eslint-disable-line
+      // eslint-disable-next-line no-console
+      console.error(error)
       enqueueSnackbar(<span>Error: {message || 'Unknown'}</span>, { variant: 'error' })
     } finally {
       setLoading(false)
@@ -83,7 +76,7 @@ export function Download(): ReactElement {
 
   return (
     <>
-      {nodeInfo?.beeMode !== BeeModes.ULTRA_LIGHT && <FileNavigation active="DOWNLOAD" />}
+      {nodeInfo?.beeMode !== BeeModes.ULTRA_LIGHT && <FileNavigation active={FileOrigin.Download} />}
       <ExpandableListItemInput
         label="Swarm Hash or ENS"
         onConfirm={value => onSwarmIdentifier(value)}
@@ -97,7 +90,7 @@ export function Download(): ReactElement {
         mapperFn={value => recognizeEnsOrSwarmHash(value)}
         loading={loading}
       />
-      <History title="Download History" localStorageKey={HISTORY_KEYS.DOWNLOAD_HISTORY} />
+      <History title="Download History" localStorageKey={LocalStorageKeys.downloadHistory} />
     </>
   )
 }

@@ -1,7 +1,11 @@
 import { ChainState } from '@ethersphere/bee-js'
 import { useContext, useEffect, useState } from 'react'
+
 import { Context } from '../providers/Settings'
+
 import ExpandableListItem from './ExpandableListItem'
+
+const CHAIN_STATE_INTERVAL_MS = 3_000
 
 export function ChainSync() {
   const { beeApi } = useContext(Context)
@@ -13,8 +17,9 @@ export function ChainSync() {
         return
       }
 
-      beeApi.getChainState().then(setChainState).catch(console.error) // eslint-disable-line
-    }, 3_000)
+      // eslint-disable-next-line no-console
+      beeApi.getChainState().then(setChainState).catch(console.error)
+    }, CHAIN_STATE_INTERVAL_MS)
 
     return () => clearInterval(interval)
   })

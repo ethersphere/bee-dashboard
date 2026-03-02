@@ -1,5 +1,6 @@
 import { ReactPortal, useCallback, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
+
 import { UploadConflictModal } from '../components/UploadConflictModal/UploadConflictModal'
 
 export enum ConflictAction {

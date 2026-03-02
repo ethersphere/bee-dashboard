@@ -1,6 +1,8 @@
 import { ReactElement } from 'react'
 import { createPortal } from 'react-dom'
+
 import { Button } from '../Button/Button'
+
 import '../../styles/global.scss'
 import './UpgradeTimeoutModal.scss'
 

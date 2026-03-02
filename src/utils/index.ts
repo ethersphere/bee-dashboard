@@ -1,5 +1,6 @@
 import { BatchId, Bee, PostageBatch, Reference } from '@ethersphere/bee-js'
 import { BigNumber } from 'bignumber.js'
+
 import { BZZ_LINK_DOMAIN } from '../constants'
 
 /**
@@ -90,21 +91,25 @@ export function unwrapPromiseSettlements<T>(
  * If all attempts fail, then this `Promise<T>` also rejects.
  */
 export function makeRetriablePromise<T>(fn: () => Promise<T>, maxRetries = 3, delayMs = 1000): Promise<T> {
-  return new Promise(async (resolve, reject) => {
-    for (let tries = 0; tries < maxRetries; tries++) {
-      try {
-        const results = await fn()
-        resolve(results)
+  return new Promise((resolve, reject) => {
+    const attempt = async () => {
+      for (let tries = 0; tries < maxRetries; tries++) {
+        try {
+          const results = await fn()
+          resolve(results)
 
-        return
-      } catch (error) {
-        if (tries < maxRetries - 1) {
-          await sleepMs(delayMs)
-        } else {
-          reject(error)
+          return
+        } catch (error) {
+          if (tries < maxRetries - 1) {
+            await sleepMs(delayMs)
+          } else {
+            reject(error)
+          }
         }
       }
     }
+
+    attempt()
   })
 }
 
@@ -130,7 +135,7 @@ export function extractSwarmCid(s: string): string | undefined {
   const cid = matches[1]
   try {
     return new Reference(cid).toHex()
-  } catch (e) {
+  } catch {
     return
   }
 }
@@ -211,7 +216,6 @@ interface Options {
   timeout?: number
 }
 
-// TODO: merge this with FM component getUsableStamps()
 export function waitUntilStampUsable(batchId: BatchId | string, bee: Bee, options?: Options): Promise<PostageBatch> {
   return waitForStamp(batchId, bee, options)
 }

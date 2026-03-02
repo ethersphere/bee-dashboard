@@ -1,13 +1,3 @@
-import { ReactElement, useCallback, useContext, useEffect, useRef, useState } from 'react'
-import './UpgradeDriveModal.scss'
-import '../../styles/global.scss'
-import { Warning } from '@material-ui/icons'
-import { createPortal } from 'react-dom'
-import DriveIcon from 'remixicon-react/HardDrive2LineIcon'
-import DatabaseIcon from 'remixicon-react/Database2LineIcon'
-import WalletIcon from 'remixicon-react/Wallet3LineIcon'
-import ExternalLinkIcon from 'remixicon-react/ExternalLinkLineIcon'
-import CalendarIcon from 'remixicon-react/CalendarLineIcon'
 import {
   BatchId,
   BeeRequestOptions,
@@ -19,18 +9,29 @@ import {
   Size,
   Utils,
 } from '@ethersphere/bee-js'
+import { Warning } from '@mui/icons-material'
 import { DriveInfo } from '@solarpunkltd/file-manager-lib'
+import { ReactElement, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import CalendarIcon from 'remixicon-react/CalendarLineIcon'
+import DatabaseIcon from 'remixicon-react/Database2LineIcon'
+import ExternalLinkIcon from 'remixicon-react/ExternalLinkLineIcon'
+import DriveIcon from 'remixicon-react/HardDrive2LineIcon'
+import WalletIcon from 'remixicon-react/Wallet3LineIcon'
 
-import { CustomDropdown } from '../CustomDropdown/CustomDropdown'
-import { Button } from '../Button/Button'
-import { desiredLifetimeOptions } from '../../constants/stamps'
 import { Context as BeeContext } from '../../../../providers/Bee'
-import { fromBytesConversion, getExpiryDateByLifetime, truncateNameMiddle } from '../../utils/common'
-import { Context as SettingsContext } from '../../../../providers/Settings'
 import { Context as FMContext } from '../../../../providers/FileManager'
+import { Context as SettingsContext } from '../../../../providers/Settings'
 import { getHumanReadableFileSize } from '../../../../utils/file'
-import { useStampPolling } from '../../hooks/useStampPolling'
 import { FILE_MANAGER_EVENTS, POLLING_TIMEOUT_MS } from '../../constants/common'
+import { desiredLifetimeOptions } from '../../constants/stamps'
+import { useStampPolling } from '../../hooks/useStampPolling'
+import { fromBytesConversion, getExpiryDateByLifetime, truncateNameMiddle } from '../../utils/common'
+import { Button } from '../Button/Button'
+import { CustomDropdown } from '../CustomDropdown/CustomDropdown'
+
+import './UpgradeDriveModal.scss'
+import '../../styles/global.scss'
 
 interface UpgradeDriveModalProps {
   stamp: PostageBatch
@@ -117,7 +118,7 @@ export function UpgradeDriveModal({
 
       try {
         cost = await beeApi?.getExtensionCost(batchId, capacity, duration, options, encryption, erasureCodeLevel)
-      } catch (e) {
+      } catch {
         setErrorMessage?.('Failed to calculate extension cost')
         setShowError(true)
 
@@ -281,7 +282,7 @@ export function UpgradeDriveModal({
                   icon={<CalendarIcon size="14px" color="rgb(237, 129, 49)" />}
                   options={desiredLifetimeOptions}
                   value={lifetimeIndex}
-                  onChange={(value, index) => {
+                  onChange={(value, _) => {
                     setLifetimeIndex(value)
                   }}
                 />

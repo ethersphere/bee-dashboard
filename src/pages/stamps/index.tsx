@@ -1,33 +1,33 @@
-import { CircularProgress, Container } from '@material-ui/core'
-import { createStyles, makeStyles } from '@material-ui/core/styles'
+import { CircularProgress, Container } from '@mui/material'
 import { ReactElement, useContext, useEffect } from 'react'
-import PlusSquare from 'remixicon-react/AddBoxLineIcon'
 import { useNavigate } from 'react-router'
+import PlusSquare from 'remixicon-react/AddBoxLineIcon'
+import { makeStyles } from 'tss-react/mui'
+
 import { SwarmButton } from '../../components/SwarmButton'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { CheckState, Context as BeeContext } from '../../providers/Bee'
 import { Context as StampsContext } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
+
 import StampsTable from './StampsTable'
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    root: {
-      width: '100%',
-      display: 'grid',
-    },
-    actions: {
-      display: 'flex',
-      width: '100%',
-      flex: '0 1 auto',
-      flexWrap: 'wrap',
-      alignItems: 'center',
-    },
-  }),
-)
+const useStyles = makeStyles()(() => ({
+  root: {
+    width: '100%',
+    display: 'grid',
+  },
+  actions: {
+    display: 'flex',
+    width: '100%',
+    flex: '0 1 auto',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+  },
+}))
 
 export default function Stamp(): ReactElement {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const navigate = useNavigate()
 

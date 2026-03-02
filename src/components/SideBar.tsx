@@ -1,73 +1,73 @@
-import { Box, Divider, Drawer, Grid, List, Link as MUILink, Typography } from '@material-ui/core'
-import { Theme, createStyles, makeStyles } from '@material-ui/core/styles'
 import { BeeModes } from '@ethersphere/bee-js'
+import { Box, Divider, Drawer, Grid, Link as MUILink, List, Typography } from '@mui/material'
 import { ReactElement, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import FilesIcon from 'remixicon-react/ArrowUpDownLineIcon'
-import FileManagerIcon from 'remixicon-react/FolderOpenLineIcon'
 import DocsIcon from 'remixicon-react/BookOpenLineIcon'
 import ExternalLinkIcon from 'remixicon-react/ExternalLinkLineIcon'
+import FileManagerIcon from 'remixicon-react/FolderOpenLineIcon'
 import GithubIcon from 'remixicon-react/GithubFillIcon'
 import HomeIcon from 'remixicon-react/Home3LineIcon'
 import SettingsIcon from 'remixicon-react/Settings2LineIcon'
 import AccountIcon from 'remixicon-react/Wallet3LineIcon'
+import { makeStyles } from 'tss-react/mui'
+
 import DashboardLogo from '../assets/dashboard-logo.svg'
 import DesktopLogo from '../assets/desktop-logo.svg'
 import { BEE_DOCS_HOST, GITHUB_BEE_DASHBOARD_URL } from '../constants'
 import { Context as BeeContext } from '../providers/Bee'
 import { Context as SettingsContext } from '../providers/Settings'
 import { ROUTES } from '../routes'
+
 import SideBarItem from './SideBarItem'
 import SideBarStatus from './SideBarStatus'
 
 const drawerWidth = 300
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexWrap: 'nowrap',
-      minHeight: '100vh',
-      paddingTop: theme.spacing(8),
-      paddingBottom: theme.spacing(8),
-    },
-    drawer: {
-      width: drawerWidth,
-      flexShrink: 0,
-    },
-    drawerPaper: {
-      width: drawerWidth,
-      backgroundColor: '#212121',
-      zIndex: 988,
-    },
-    logo: {
-      marginLeft: theme.spacing(8),
-      marginRight: theme.spacing(8),
-    },
-    icon: {
-      height: theme.spacing(4),
-    },
-    divider: {
-      backgroundColor: '#2c2c2c',
-      marginLeft: theme.spacing(4),
-      marginRight: theme.spacing(4),
-    },
-    link: {
-      color: '#9f9f9f',
+const useStyles = makeStyles()(theme => ({
+  root: {
+    flexWrap: 'nowrap',
+    minHeight: '100vh',
+    paddingTop: theme.spacing(8),
+    paddingBottom: theme.spacing(8),
+  },
+  drawer: {
+    width: drawerWidth,
+    flexShrink: 0,
+  },
+  drawerPaper: {
+    width: drawerWidth,
+    backgroundColor: '#212121',
+    zIndex: 988,
+  },
+  logo: {
+    marginLeft: theme.spacing(8),
+    marginRight: theme.spacing(8),
+  },
+  icon: {
+    height: theme.spacing(4),
+  },
+  divider: {
+    backgroundColor: '#2c2c2c',
+    marginLeft: theme.spacing(4),
+    marginRight: theme.spacing(4),
+  },
+  link: {
+    color: '#9f9f9f',
+    textDecoration: 'none',
+    '&:hover': {
       textDecoration: 'none',
-      '&:hover': {
-        textDecoration: 'none',
 
-        // https://github.com/mui-org/material-ui/issues/22543
-        '@media (hover: none)': {
-          textDecoration: 'none',
-        },
+      // https://github.com/mui-org/material-ui/issues/22543
+      '@media (hover: none)': {
+        textDecoration: 'none',
       },
     },
-  }),
-)
+  },
+}))
 
 export default function SideBar(): ReactElement {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const { isDesktop } = useContext(SettingsContext)
   const { nodeInfo } = useContext(BeeContext)
 

@@ -1,195 +1,18 @@
-import { orange } from '@material-ui/core/colors'
-import { createTheme, Theme } from '@material-ui/core/styles'
+import { orange } from '@mui/material/colors'
+import { createTheme } from '@mui/material/styles'
 
-declare module '@material-ui/core/styles/createPalette' {
+declare module '@mui/material/styles' {
   interface TypeBackground {
     appBar: string
   }
-}
-
-// Overwriting default components styles
-const componentsOverrides = (theme: Theme) => ({
-  MuiListItem: {
-    button: {
-      '&:hover': {
-        backgroundColor: '#fcf2e8',
-        color: theme.palette.primary.main,
-        // https://github.com/mui-org/material-ui/issues/22543
-        '@media (hover: none)': {
-          backgroundColor: '#fcf2e8',
-          color: theme.palette.primary.main,
-        },
-      },
-    },
-  },
-  MuiContainer: {
-    root: { padding: theme.spacing(8) },
-    maxWidthXs: { padding: theme.spacing(8) },
-    maxWidthSm: { padding: theme.spacing(8) },
-    maxWidthMd: { padding: theme.spacing(8) },
-    maxWidthLg: { padding: theme.spacing(8) },
-    maxWidthXl: { padding: theme.spacing(8) },
-  },
-  MuiButton: {
-    startIcon: { marginLeft: theme.spacing(1) },
-    endIcon: { marginRight: theme.spacing(1) },
-    outlined: {
-      border: 'none',
-      borderRadius: theme.spacing(10),
-      color: theme.palette.primary.main,
-      backgroundColor: '#fcf2e8',
-    },
-    outlinedSizeSmall: {
-      padding: theme.spacing(1),
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2),
-      boxShadow: 'none',
-      '&:hover': {
-        backgroundColor: theme.palette.primary.main,
-        color: 'white',
-        boxShadow: 'none',
-        // https://github.com/mui-org/material-ui/issues/22543
-        '@media (hover: none)': {
-          backgroundColor: theme.palette.primary.main,
-          color: 'white',
-          boxShadow: 'none',
-        },
-      },
-    },
-    outlinedSizeLarge: {
-      padding: theme.spacing(4),
-      borderRadius: 0,
-      boxShadow: 'none',
-      '&:hover': {
-        backgroundColor: theme.palette.primary.main,
-        color: 'white',
-        boxShadow: 'none',
-        // https://github.com/mui-org/material-ui/issues/22543
-        '@media (hover: none)': {
-          backgroundColor: theme.palette.primary.main,
-          color: 'white',
-          boxShadow: 'none',
-        },
-      },
-    },
-    containedSizeLarge: {
-      padding: theme.spacing(4),
-      borderRadius: 0,
-      boxShadow: 'none',
-      '&:hover': {
-        backgroundColor: theme.palette.primary.main,
-        color: 'white',
-        boxShadow: 'none',
-        // https://github.com/mui-org/material-ui/issues/22543
-        '@media (hover: none)': {
-          backgroundColor: theme.palette.primary.main,
-          color: 'white',
-          boxShadow: 'none',
-        },
-      },
-    },
-    containedSizeSmall: {
-      padding: theme.spacing(1),
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2),
-      borderRadius: 0,
-      boxShadow: 'none',
-      '&:hover': {
-        backgroundColor: theme.palette.primary.main,
-        color: 'white',
-        boxShadow: 'none',
-        // https://github.com/mui-org/material-ui/issues/22543
-        '@media (hover: none)': {
-          backgroundColor: theme.palette.primary.main,
-          color: 'white',
-          boxShadow: 'none',
-        },
-      },
-    },
-    contained: {
-      padding: theme.spacing(2),
-      backgroundColor: 'white',
-      boxShadow: 'none',
-      borderRadius: 0,
-      '&:hover': {
-        backgroundColor: theme.palette.primary.main,
-        color: 'white',
-        boxShadow: 'none',
-        // https://github.com/mui-org/material-ui/issues/22543
-        '@media (hover: none)': {
-          backgroundColor: theme.palette.primary.main,
-          color: 'white',
-          boxShadow: 'none',
-        },
-      },
-      '&:focus': {
-        backgroundColor: theme.palette.primary.main,
-        color: 'white',
-      },
-      '&:active': {
-        backgroundColor: theme.palette.primary.main,
-        color: 'white',
-      },
-      '&:disabled': {
-        backgroundColor: 'white',
-      },
-    },
-  },
-  MuiTab: {
-    root: {
-      backgroundColor: theme.palette.background.paper,
-      '&:hover': {
-        backgroundColor: '#fcf2e8',
-        color: theme.palette.primary.main,
-        opacity: 1,
-      },
-      '&$selected': {
-        fontWeight: theme.typography.fontWeightMedium,
-      },
-    },
-    textColorInherit: {
-      opacity: 0.5,
-    },
-  },
-  MuiTabs: {
-    root: {
-      borderBottom: 'none',
-    },
-    indicator: {
-      backgroundColor: 'transparent',
-    },
-  },
-  MuiSlider: {
-    root: {
-      '& .MuiSlider-valueLabel': {
-        top: '-27px',
-        '& span': {
-          height: '20px',
-          borderRadius: '0px',
-          transform: 'none',
-          '& span': {
-            display: 'flex',
-            alignItems: 'center',
-            transform: 'none',
-          },
-        },
-      },
-    },
-  },
-})
-
-const propsOverrides = {
-  MuiTab: {
-    disableRipple: true,
-  },
-  MuiButtonBase: {
-    disableRipple: true,
-  },
+  interface PaletteOptions {
+    mode?: 'light' | 'dark'
+  }
 }
 
 export const theme = createTheme({
   palette: {
-    type: 'light',
+    mode: 'light',
     background: {
       default: '#ededed',
     },
@@ -228,7 +51,172 @@ export const theme = createTheme({
       textTransform: 'none',
     },
   },
+  components: {
+    MuiContainer: {
+      styleOverrides: {
+        root: { padding: '64px' },
+        maxWidthXs: { padding: '64px' },
+        maxWidthSm: { padding: '64px' },
+        maxWidthMd: { padding: '64px' },
+        maxWidthLg: { padding: '64px' },
+        maxWidthXl: { padding: '64px' },
+      },
+    },
+    MuiButton: {
+      defaultProps: {
+        disableRipple: true,
+      },
+      styleOverrides: {
+        startIcon: { marginLeft: '8px' },
+        endIcon: { marginRight: '8px' },
+        outlined: {
+          border: 'none',
+          borderRadius: '80px',
+          color: '#dd7700',
+          backgroundColor: '#fcf2e8',
+        },
+        outlinedSizeSmall: {
+          padding: '8px 16px',
+          boxShadow: 'none',
+          '&:hover': {
+            backgroundColor: '#dd7700',
+            color: 'white',
+            boxShadow: 'none',
+            '@media (hover: none)': {
+              backgroundColor: '#dd7700',
+              color: 'white',
+              boxShadow: 'none',
+            },
+          },
+        },
+        outlinedSizeLarge: {
+          padding: '32px',
+          borderRadius: 0,
+          boxShadow: 'none',
+          '&:hover': {
+            backgroundColor: '#dd7700',
+            color: 'white',
+            boxShadow: 'none',
+            '@media (hover: none)': {
+              backgroundColor: '#dd7700',
+              color: 'white',
+              boxShadow: 'none',
+            },
+          },
+        },
+        containedSizeLarge: {
+          padding: '32px',
+          borderRadius: 0,
+          boxShadow: 'none',
+          '&:hover': {
+            backgroundColor: '#dd7700',
+            color: 'white',
+            boxShadow: 'none',
+            '@media (hover: none)': {
+              backgroundColor: '#dd7700',
+              color: 'white',
+              boxShadow: 'none',
+            },
+          },
+        },
+        containedSizeSmall: {
+          padding: '8px 16px',
+          borderRadius: 0,
+          boxShadow: 'none',
+          '&:hover': {
+            backgroundColor: '#dd7700',
+            color: 'white',
+            boxShadow: 'none',
+            '@media (hover: none)': {
+              backgroundColor: '#dd7700',
+              color: 'white',
+              boxShadow: 'none',
+            },
+          },
+        },
+        contained: {
+          padding: '16px',
+          backgroundColor: 'white',
+          boxShadow: 'none',
+          borderRadius: 0,
+          '&:hover': {
+            backgroundColor: '#dd7700',
+            color: 'white',
+            boxShadow: 'none',
+            '@media (hover: none)': {
+              backgroundColor: '#dd7700',
+              color: 'white',
+              boxShadow: 'none',
+            },
+          },
+          '&:focus': {
+            backgroundColor: '#dd7700',
+            color: 'white',
+          },
+          '&:active': {
+            backgroundColor: '#dd7700',
+            color: 'white',
+          },
+          '&:disabled': {
+            backgroundColor: 'white',
+          },
+        },
+      },
+    },
+    MuiTab: {
+      defaultProps: {
+        disableRipple: true,
+      },
+      styleOverrides: {
+        root: {
+          backgroundColor: 'white',
+          '&:hover': {
+            backgroundColor: '#fcf2e8',
+            color: '#dd7700',
+            opacity: 1,
+          },
+          '&.Mui-selected': {
+            fontWeight: 500,
+          },
+        },
+        textColorInherit: {
+          opacity: 0.5,
+        },
+      },
+    },
+    MuiTabs: {
+      styleOverrides: {
+        root: {
+          borderBottom: 'none',
+        },
+        indicator: {
+          backgroundColor: 'transparent',
+        },
+      },
+    },
+    MuiSlider: {
+      styleOverrides: {
+        root: {
+          '& .MuiSlider-valueLabel': {
+            top: '-27px',
+            '& span': {
+              height: '20px',
+              borderRadius: '0px',
+              transform: 'none',
+              '& span': {
+                display: 'flex',
+                alignItems: 'center',
+                transform: 'none',
+              },
+            },
+          },
+        },
+      },
+    },
+    MuiButtonBase: {
+      defaultProps: {
+        disableRipple: true,
+      },
+    },
+  },
 })
-
-theme.overrides = componentsOverrides(theme)
-theme.props = propsOverrides

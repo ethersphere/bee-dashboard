@@ -1,7 +1,9 @@
 import { ReactElement, useContext } from 'react'
-import TabsContainer from './TabsContainer'
-import CodeBlock from './CodeBlock'
+
 import { Context } from '../providers/Platform'
+
+import CodeBlock from './CodeBlock'
+import TabsContainer from './TabsContainer'
 
 interface Props {
   linux: string

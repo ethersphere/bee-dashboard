@@ -1,12 +1,15 @@
-import { Box, Grid, Typography } from '@material-ui/core'
 import { BeeModes } from '@ethersphere/bee-js'
+import { Box, Grid, Typography } from '@mui/material'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router'
+
 import { ChainSync } from '../../components/ChainSync'
 import { Waiting } from '../../components/Waiting'
 import { Context } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
+
+const LIGHTMODE_START_INTERVAL_MS = 3_000
 
 export default function LightModeRestart(): ReactElement {
   const navigate = useNavigate()
@@ -27,8 +30,9 @@ export default function LightModeRestart(): ReactElement {
             navigate(ROUTES.INFO)
           }
         })
-        .catch(console.error) // eslint-disable-line
-    }, 3_000)
+        // eslint-disable-next-line no-console
+        .catch(console.error)
+    }, LIGHTMODE_START_INTERVAL_MS)
 
     return () => clearInterval(interval)
   }, [beeApi, enqueueSnackbar, navigate])

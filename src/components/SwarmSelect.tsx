@@ -1,12 +1,10 @@
-import { createStyles, FormHelperText, makeStyles, MenuItem, Select as MuiSelect, Theme } from '@material-ui/core'
+import { FormHelperText, MenuItem, Select as MuiSelect, SelectChangeEvent } from '@mui/material'
 import { Field } from 'formik'
-import { Select } from 'formik-material-ui'
+import { Select } from 'formik-mui'
 import { ReactElement, ReactNode } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
-export type SelectEvent = React.ChangeEvent<{
-  name?: string | undefined
-  value: unknown
-}>
+export type SelectEvent = SelectChangeEvent<string>
 
 function renderValue(value: unknown): ReactNode {
   if (typeof value === 'string') {
@@ -28,33 +26,31 @@ interface Props {
   options: { value: string; label: string }[]
   onChange?: (event: SelectEvent) => void
   formik?: boolean
-  defaultValue?: string
+  value?: string
   placeholder?: string
   disabled?: boolean
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    select: {
-      borderRadius: 0,
-      background: theme.palette.background.paper,
-      '& fieldset': {
-        border: 0,
-      },
-      '& .MuiSelect-select': {
-        '&:focus': {
-          background: theme.palette.background.paper,
-        },
+const useStyles = makeStyles()(theme => ({
+  select: {
+    borderRadius: 0,
+    background: theme.palette.background.paper,
+    '& fieldset': {
+      border: 0,
+    },
+    '& .MuiSelect-select': {
+      '&:focus': {
+        background: theme.palette.background.paper,
       },
     },
-    option: {
-      height: '52px',
-    },
-  }),
-)
+  },
+  option: {
+    height: '52px',
+  },
+}))
 
 export function SwarmSelect({
-  defaultValue,
+  value,
   formik,
   name,
   options,
@@ -63,7 +59,7 @@ export function SwarmSelect({
   placeholder,
   disabled = false,
 }: Props): ReactElement {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   if (formik) {
     return (
@@ -76,7 +72,7 @@ export function SwarmSelect({
           name={name}
           fullWidth
           variant="outlined"
-          defaultValue={defaultValue}
+          value={value}
           className={classes.select}
           displayEmpty
           renderValue={(value: unknown) => (value ? renderValue(value) : placeholder)}
@@ -102,7 +98,7 @@ export function SwarmSelect({
         fullWidth
         variant="outlined"
         className={classes.select}
-        defaultValue={defaultValue}
+        value={value}
         onChange={onChange}
         displayEmpty
         renderValue={(value: unknown) => (value ? renderValue(value) : placeholder)}

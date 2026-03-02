@@ -1,11 +1,13 @@
-import { Box, Grid, IconButton, Typography, createStyles, makeStyles } from '@material-ui/core'
 import { PostageBatchOptions, Utils } from '@ethersphere/bee-js'
+import { Box, Grid, IconButton, Typography } from '@mui/material'
 import BigNumber from 'bignumber.js'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Check from 'remixicon-react/CheckLineIcon'
 import Info from 'remixicon-react/InformationLineIcon'
+import { makeStyles } from 'tss-react/mui'
+
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmSelect } from '../../components/SwarmSelect'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
@@ -20,33 +22,31 @@ interface Props {
   onFinished: () => void
 }
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    link: {
-      color: '#dd7700',
-      textDecoration: 'underline',
-      '&:hover': {
-        textDecoration: 'none',
+const useStyles = makeStyles()(() => ({
+  link: {
+    color: '#dd7700',
+    textDecoration: 'underline',
+    '&:hover': {
+      textDecoration: 'none',
 
-        // https://github.com/mui-org/material-ui/issues/22543
-        '@media (hover: none)': {
-          textDecoration: 'none',
-        },
+      // https://github.com/mui-org/material-ui/issues/22543
+      '@media (hover: none)': {
+        textDecoration: 'none',
       },
     },
-    stampVolumeWrapper: {
-      width: 'fit-content',
-      '& button': {
-        marginLeft: 4,
-        width: 24,
-        padding: 2,
-      },
+  },
+  stampVolumeWrapper: {
+    width: 'fit-content',
+    '& button': {
+      marginLeft: 4,
+      width: 24,
+      padding: 2,
     },
-  }),
-)
+  },
+}))
 
 export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElement {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const { chainState } = useContext(BeeContext)
   const { refresh } = useContext(StampsContext)
   const { beeApi } = useContext(SettingsContext)
@@ -115,7 +115,8 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
       await refresh()
       onFinished()
     } catch (e) {
-      console.error(e) // eslint-disable-line
+      // eslint-disable-next-line no-console
+      console.error(e)
       enqueueSnackbar(`Error: ${(e as Error).message}`, { variant: 'error' })
     }
     setSubmitting(false)
@@ -180,7 +181,7 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
     const effectiveVolume = getHumanReadableFileSize(Utils.getStampEffectiveBytes(depth))
 
     return (
-      <Grid item container alignItems="center" className={classes.stampVolumeWrapper}>
+      <Grid container alignItems="center" className={classes.stampVolumeWrapper}>
         <Typography>
           Theoretical: ~{theoreticalMaximumVolume} / Effective: ~{effectiveVolume}
         </Typography>
@@ -241,7 +242,7 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
       <Box mb={2}>
         <SwarmSelect
           label="Immutable"
-          defaultValue="No"
+          value="No"
           onChange={event => setImmutable(event.target.value === 'Yes')}
           options={[
             { value: 'Yes', label: 'Yes' },
@@ -277,7 +278,7 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
       </Box>
 
       <Grid container justifyContent="space-between" alignItems="center">
-        <Grid item>
+        <Grid>
           <SwarmButton
             disabled={submitting || Boolean(depthError) || Boolean(amountError) || !depthInput || !amountInput}
             onClick={submit}
@@ -287,7 +288,7 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
             Buy New Stamp
           </SwarmButton>
         </Grid>
-        <Grid item>
+        <Grid>
           <Link to={ROUTES.ACCOUNT_STAMPS_NEW_STANDARD} className={classes.link}>
             Standard mode
           </Link>

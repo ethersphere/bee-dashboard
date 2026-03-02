@@ -1,8 +1,9 @@
-import { ReactElement, useCallback, memo } from 'react'
-import { FileItem } from '../FileItem/FileItem'
-import { FileInfo, DriveInfo } from '@solarpunkltd/file-manager-lib'
+import { DriveInfo, FileInfo } from '@solarpunkltd/file-manager-lib'
+import { memo, ReactElement, useCallback } from 'react'
+
 import { DownloadProgress, TrackDownloadProps, ViewType } from '../../../constants/transfers'
 import { getFileId } from '../../../utils/common'
+import { FileItem } from '../FileItem/FileItem'
 
 interface FileBrowserContentProps {
   listToRender: FileInfo[]

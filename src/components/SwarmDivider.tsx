@@ -1,4 +1,4 @@
-import { Box, Divider } from '@material-ui/core'
+import { Box, Divider } from '@mui/material'
 import { ReactElement } from 'react'
 
 interface Props {

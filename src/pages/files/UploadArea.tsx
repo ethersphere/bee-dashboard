@@ -1,75 +1,83 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core'
-import { DropzoneArea } from 'material-ui-dropzone'
+import { BeeModes } from '@ethersphere/bee-js'
+import { Box } from '@mui/material'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useContext, useState } from 'react'
+import { ReactElement, useContext, useRef, useState } from 'react'
+import { useDropzone } from 'react-dropzone'
+import { useNavigate } from 'react-router-dom'
 import PlusCircle from 'remixicon-react/AddCircleLineIcon'
 import FilePlus from 'remixicon-react/FileAddLineIcon'
 import FolderPlus from 'remixicon-react/FolderAddLineIcon'
-import { useNavigate } from 'react-router-dom'
+import { makeStyles } from 'tss-react/mui'
+
 import { DocumentationText } from '../../components/DocumentationText'
 import { SwarmButton } from '../../components/SwarmButton'
-import { Context, UploadOrigin } from '../../providers/File'
 import { Context as BeeContext } from '../../providers/Bee'
+import { Context, UploadOrigin } from '../../providers/File'
 import { ROUTES } from '../../routes'
 import { detectIndexHtml } from '../../utils/file'
-import { BeeModes } from '@ethersphere/bee-js'
 
 interface Props {
   uploadOrigin: UploadOrigin
   showHelp: boolean
 }
 
-const MAX_FILE_SIZE = 1_000_000_000 // 1 gigabyte
+const MAX_FILE_SIZE = 1_000_000_000 // 1 GB
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    areaWrapper: { position: 'relative', marginBottom: theme.spacing(2) },
-    dropzone: {
-      background: theme.palette.background.default,
-      outline: 'none',
-      color: 'transparent',
-      zIndex: 1,
-      '& svg': {
-        opacity: 0,
-      },
+const useStyles = makeStyles()(theme => ({
+  areaWrapper: { position: 'relative', marginBottom: theme.spacing(2) },
+  dropzone: {
+    background: theme.palette.background.default,
+    outline: 'none',
+    border: '2px dashed #ccc',
+    borderRadius: 4,
+    padding: theme.spacing(4),
+    textAlign: 'center',
+    cursor: 'pointer',
+    minHeight: 200,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    '&:hover': {
+      borderColor: theme.palette.primary.main,
     },
-    buttonWrapper: {
-      top: '0',
-      left: '0',
-      position: 'absolute',
-      display: 'flex',
-      width: '100%',
-      height: '100%',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    button: {
-      marginLeft: theme.spacing(0.5),
-      marginRight: theme.spacing(0.5),
-      zIndex: 2,
-    },
-  }),
-)
+  },
+  buttonWrapper: {
+    display: 'flex',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: theme.spacing(1),
+  },
+  button: {
+    zIndex: 2,
+  },
+}))
 
 export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
   const { setFiles, setUploadOrigin } = useContext(Context)
   const { nodeInfo } = useContext(BeeContext)
-  const classes = useStyles()
+  const { classes } = useStyles()
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
   const [strictWebsiteMode, setStrictWebsiteMode] = useState(false)
-  const [version, setVersion] = useState(0)
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  const getDropzoneInputDomElement = () => document.querySelector('.MuiDropzoneArea-root input') as HTMLInputElement
+  const onDrop = (acceptedFiles: File[]) => {
+    handleChange(acceptedFiles)
+  }
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    maxSize: MAX_FILE_SIZE,
+    noClick: true,
+  })
 
   const onUploadCollectionClick = () => {
-    const element = getDropzoneInputDomElement()
-
-    if (element) {
-      element.setAttribute('directory', '')
-      element.setAttribute('webkitdirectory', '')
-      element.setAttribute('mozdirectory', '')
-      element.click()
+    if (inputRef.current) {
+      inputRef.current.setAttribute('directory', '')
+      inputRef.current.setAttribute('webkitdirectory', '')
+      inputRef.current.setAttribute('mozdirectory', '')
+      inputRef.current.click()
     }
   }
 
@@ -84,21 +92,12 @@ export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
   }
 
   const onUploadFileClick = () => {
-    const element = getDropzoneInputDomElement()
-
-    if (element) {
-      element.removeAttribute('directory')
-      element.removeAttribute('webkitdirectory')
-      element.removeAttribute('mozdirectory')
-      element.click()
+    if (inputRef.current) {
+      inputRef.current.removeAttribute('directory')
+      inputRef.current.removeAttribute('webkitdirectory')
+      inputRef.current.removeAttribute('mozdirectory')
+      inputRef.current.click()
     }
-  }
-
-  const resetComponentOnAddingInvalidContent = () => {
-    setTimeout(() => {
-      setVersion(x => x + 1)
-      setFiles([])
-    }, 0)
   }
 
   const handleChange = (files?: File[]) => {
@@ -110,7 +109,8 @@ export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
         enqueueSnackbar('To upload a website, there must be an index.html or index.htm in the root of the folder.', {
           variant: 'error',
         })
-        resetComponentOnAddingInvalidContent()
+        setFiles([])
+        setStrictWebsiteMode(false)
 
         return
       }
@@ -129,27 +129,22 @@ export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
   return (
     <>
       {isUploadEnabled && (
-        <div className={classes.areaWrapper}>
-          <DropzoneArea
-            key={version}
-            dropzoneClass={classes.dropzone}
-            onChange={handleChange}
-            filesLimit={1e9}
-            maxFileSize={MAX_FILE_SIZE}
-            showPreviews={false}
-          />
-          <div className={classes.buttonWrapper}>
-            <SwarmButton className={classes.button} onClick={onUploadFileClick} iconType={FilePlus}>
-              Add File
-            </SwarmButton>
-            <SwarmButton className={classes.button} onClick={onUploadFolderClick} iconType={FolderPlus}>
-              Add Folder
-            </SwarmButton>
-            <SwarmButton className={classes.button} onClick={onUploadWebsiteClick} iconType={PlusCircle}>
-              Add Website
-            </SwarmButton>
-          </div>
-        </div>
+        <Box className={classes.areaWrapper}>
+          <Box {...getRootProps()} className={classes.dropzone}>
+            <input {...getInputProps()} ref={inputRef} />
+            <Box className={classes.buttonWrapper}>
+              <SwarmButton className={classes.button} onClick={onUploadFileClick} iconType={FilePlus}>
+                Add File
+              </SwarmButton>
+              <SwarmButton className={classes.button} onClick={onUploadFolderClick} iconType={FolderPlus}>
+                Add Folder
+              </SwarmButton>
+              <SwarmButton className={classes.button} onClick={onUploadWebsiteClick} iconType={PlusCircle}>
+                Add Website
+              </SwarmButton>
+            </Box>
+          </Box>
+        </Box>
       )}
       {isUploadEnabled && showHelp && (
         <DocumentationText>

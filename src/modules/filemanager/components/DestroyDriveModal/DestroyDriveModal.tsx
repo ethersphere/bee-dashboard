@@ -1,9 +1,11 @@
+import { DriveInfo } from '@solarpunkltd/file-manager-lib'
 import { ReactElement, useState } from 'react'
+import { createPortal } from 'react-dom'
+
+import { Button } from '../Button/Button'
+
 import '../../styles/global.scss'
 import './DestroyDriveModal.scss'
-import { Button } from '../Button/Button'
-import { createPortal } from 'react-dom'
-import { DriveInfo } from '@solarpunkltd/file-manager-lib'
 
 interface DestroyDriveModalProps {
   drive: DriveInfo

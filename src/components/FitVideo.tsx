@@ -1,15 +1,13 @@
-import { createStyles, makeStyles } from '@material-ui/core'
 import { ReactElement } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    video: {
-      width: '100%',
-      height: '100%',
-      objectFit: 'cover',
-    },
-  }),
-)
+const useStyles = makeStyles()(() => ({
+  video: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  },
+}))
 
 interface VideoProps {
   src: string | undefined
@@ -18,12 +16,17 @@ interface VideoProps {
 }
 
 export function FitVideo(props: VideoProps): ReactElement {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   const inlineStyles: Record<string, string> = {}
 
-  props.maxHeight && (inlineStyles.maxHeight = props.maxHeight)
-  props.maxWidth && (inlineStyles.maxWidth = props.maxWidth)
+  if (props.maxHeight) {
+    inlineStyles.maxHeight = props.maxHeight
+  }
+
+  if (props.maxWidth) {
+    inlineStyles.maxWidth = props.maxWidth
+  }
 
   return <video className={classes.video} src={props.src} style={inlineStyles} controls />
 }

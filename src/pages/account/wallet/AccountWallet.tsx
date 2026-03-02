@@ -1,21 +1,22 @@
-import { Box, Grid, Typography } from '@material-ui/core'
 import { BeeModes } from '@ethersphere/bee-js'
+import { Box, Grid, Typography } from '@mui/material'
 import { ReactElement, useContext } from 'react'
 import { useNavigate } from 'react-router'
 import Download from 'remixicon-react/DownloadLineIcon'
 import Gift from 'remixicon-react/GiftLineIcon'
 import Link from 'remixicon-react/LinkIcon'
+
 import ExpandableListItem from '../../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../../components/ExpandableListItemKey'
 import { SwarmButton } from '../../../components/SwarmButton'
 import TroubleshootConnectionCard from '../../../components/TroubleshootConnectionCard'
-import { Context as BeeContext, CheckState } from '../../../providers/Bee'
+import { WalletInfoCard } from '../../../pages/info/WalletInfoCard'
+import { CheckState, Context as BeeContext } from '../../../providers/Bee'
 import { Context as SettingsContext } from '../../../providers/Settings'
 import { ROUTES } from '../../../routes'
 import { AccountNavigation } from '../AccountNavigation'
 import { Header } from '../Header'
-import { WalletInfoCard } from '../../../pages/info/WalletInfoCard'
 
 export function AccountWallet(): ReactElement {
   const { nodeAddresses, nodeInfo, status, walletBalance } = useContext(BeeContext)

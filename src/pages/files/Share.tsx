@@ -1,10 +1,11 @@
-import { Box, Typography } from '@material-ui/core'
-import { Bytes, MantarayNode, NULL_ADDRESS } from '@ethersphere/bee-js'
+import { Bytes } from '@ethersphere/bee-js'
+import { Box, Typography } from '@mui/material'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { Loading } from '../../components/Loading'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
@@ -12,7 +13,9 @@ import { META_FILE_NAME } from '../../constants'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
-import { determineHistoryName, HISTORY_KEYS, putHistory } from '../../utils/local-storage'
+import { determineHistoryName, LocalStorageKeys, putHistory } from '../../utils/localStorage'
+import { loadManifest } from '../../utils/manifest'
+
 import { AssetPreview } from './AssetPreview'
 import { AssetSummary } from './AssetSummary'
 import { AssetSyncing } from './AssetSyncing'
@@ -23,7 +26,6 @@ export function Share(): ReactElement {
   const { status } = useContext(BeeContext)
 
   const { hash } = useParams()
-  const reference = hash! // eslint-disable-line
 
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
@@ -39,23 +41,12 @@ export function Share(): ReactElement {
   const isMountedRef = useRef(true)
 
   async function prepare() {
-    if (!beeApi || !status.all) {
+    if (!beeApi || !status.all || !hash) {
       return
     }
 
     try {
-      let manifest = await MantarayNode.unmarshal(beeApi, reference)
-      await manifest.loadRecursively(beeApi)
-
-      // If the manifest is a feed, resolve it and overwrite the manifest
-      await manifest.resolveFeed(beeApi).then(
-        async feed =>
-          await feed.ifPresentAsync(async feedUpdate => {
-            manifest = MantarayNode.unmarshalFromData(feedUpdate.payload.toUint8Array(), NULL_ADDRESS)
-            await manifest.loadRecursively(beeApi)
-          }),
-      )
-
+      const manifest = await loadManifest(beeApi, hash)
       const entries = manifest.collectAndMap()
       delete entries[META_FILE_NAME]
 
@@ -73,18 +64,18 @@ export function Share(): ReactElement {
       setIndexDocument(indexDocument)
 
       try {
-        const remoteMetadata = await beeApi.downloadFile(reference, META_FILE_NAME)
+        const remoteMetadata = await beeApi.downloadFile(hash, META_FILE_NAME)
         const formattedMetadata = remoteMetadata.data.toJSON() as Metadata
 
         if (formattedMetadata.isVideo || formattedMetadata.isAudio || formattedMetadata.isImage) {
           if (!isMountedRef.current) return
-          setPreview(`${apiUrl}/bzz/${reference}`)
+          setPreview(`${apiUrl}/bzz/${hash}`)
         }
 
         if (!isMountedRef.current) return
 
         setMetadata({ ...formattedMetadata, hash })
-      } catch (e) {
+      } catch {
         // if metadata is not available or invalid go with the default one
         const count = Object.keys(entries).length
 
@@ -93,7 +84,7 @@ export function Share(): ReactElement {
         setMetadata({
           hash,
           type: count > 1 ? 'folder' : 'unknown',
-          name: reference,
+          name: hash,
           count,
           isWebsite: Boolean(indexDocument && /.*\.html?$/i.test(indexDocument)),
           isVideo: Boolean(indexDocument && /.*\.(mp4|webm|ogv)$/i.test(indexDocument)),
@@ -113,7 +104,7 @@ export function Share(): ReactElement {
   }
 
   function onOpen() {
-    window.open(`${apiUrl}/bzz/${reference}/`, '_blank')
+    window.open(`${apiUrl}/bzz/${hash}/`, '_blank')
   }
 
   function onClose() {
@@ -127,10 +118,19 @@ export function Share(): ReactElement {
   }
 
   function onUpdateFeed() {
-    navigate(ROUTES.ACCOUNT_FEEDS_UPDATE.replace(':hash', reference))
+    if (!hash) {
+      // eslint-disable-next-line no-console
+      console.error('hash is invalid')
+
+      return
+    }
+
+    navigate(ROUTES.ACCOUNT_FEEDS_UPDATE.replace(':hash', hash))
   }
 
   useEffect(() => {
+    isMountedRef.current = true
+
     return () => {
       isMountedRef.current = false
     }
@@ -143,14 +143,17 @@ export function Share(): ReactElement {
       setLoading(false)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reference])
+  }, [hash])
 
   async function onDownload() {
-    if (!beeApi) {
+    if (!beeApi || !hash) {
+      // eslint-disable-next-line no-console
+      console.error('hash is invalid')
+
       return
     }
 
-    putHistory(HISTORY_KEYS.DOWNLOAD_HISTORY, reference, determineHistoryName(reference, indexDocument))
+    putHistory(LocalStorageKeys.downloadHistory, hash, determineHistoryName(hash, indexDocument))
     setDownloading(true)
 
     if (Object.keys(swarmEntries).length === 1) {
@@ -172,7 +175,7 @@ export function Share(): ReactElement {
       const view = new Uint8Array(arrayBuffer)
       view.set(dataArray)
       const blob = new Blob([arrayBuffer], { type: metadata?.type || 'application/octet-stream' })
-      saveAs(blob, metadata?.name || singleFileName || reference)
+      saveAs(blob, metadata?.name || singleFileName || hash)
     } else {
       const zip = new JSZip()
       for (const [path, hash] of Object.entries(swarmEntries)) {
@@ -196,7 +199,7 @@ export function Share(): ReactElement {
         return
       }
 
-      saveAs(content, reference + '.zip')
+      saveAs(content, hash + '.zip')
     }
 
     if (!isMountedRef.current) return
@@ -225,10 +228,10 @@ export function Share(): ReactElement {
         <AssetPreview metadata={metadata} previewUri={preview} />
       </Box>
       <Box mb={4}>
-        <AssetSummary isWebsite={metadata?.isWebsite} reference={reference} />
+        <AssetSummary isWebsite={metadata?.isWebsite} reference={hash} />
       </Box>
       <Box mb={4}>
-        <AssetSyncing reference={reference} />
+        <AssetSyncing reference={hash} />
       </Box>
       <DownloadActionBar
         onOpen={onOpen}

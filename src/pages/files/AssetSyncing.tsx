@@ -1,13 +1,16 @@
-import { Box } from '@material-ui/core'
 import { Tag } from '@ethersphere/bee-js'
-import { ReactElement, useContext, useEffect, useRef, useState } from 'react'
+import { Box } from '@mui/material'
+import { ReactElement, useCallback, useContext, useEffect, useRef, useState } from 'react'
+
 import { DocumentationText } from '../../components/DocumentationText'
 import { LinearProgressWithLabel } from '../../components/ProgressBar'
 import { Context as SettingsContext } from '../../providers/Settings'
 
 interface Props {
-  reference: string
+  reference?: string
 }
+
+const SYNC_CHECK_INTERVAL_MS = 2000
 
 export function AssetSyncing({ reference }: Props): ReactElement {
   const { beeApi } = useContext(SettingsContext)
@@ -16,8 +19,8 @@ export function AssetSyncing({ reference }: Props): ReactElement {
   const [isRetrieveChecking, setIsRetrieveChecking] = useState<boolean>(false)
   const [syncProgress, setSyncProgress] = useState<number>(0)
 
-  const syncCheck = async () => {
-    if (!beeApi) return
+  const syncCheck = useCallback(async () => {
+    if (!beeApi || !reference) return
 
     let allTags: Tag[] = []
     let offset = 0
@@ -36,10 +39,10 @@ export function AssetSyncing({ reference }: Props): ReactElement {
       const progress = ((tag.seen + tag.synced) / tag.split) * 100
       setSyncProgress(progress)
     }
-  }
+  }, [beeApi, reference])
 
   useEffect(() => {
-    syncTimer.current = setInterval(syncCheck, 2000)
+    syncTimer.current = setInterval(syncCheck, SYNC_CHECK_INTERVAL_MS)
 
     return () => {
       if (syncTimer.current) {
@@ -47,8 +50,7 @@ export function AssetSyncing({ reference }: Props): ReactElement {
         syncTimer.current = null
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reference])
+  }, [reference, syncCheck])
 
   useEffect(() => {
     if (syncProgress === 100 && syncTimer.current) {
@@ -63,7 +65,7 @@ export function AssetSyncing({ reference }: Props): ReactElement {
           To ensure it's not due to invalid synchronization data,
           verify availability from at least 70% using one of the stewardship endpoints.
     */
-    if (beeApi && !isRetrieveChecking && syncProgress > 10 && syncProgress < 100) {
+    if (beeApi && reference && !isRetrieveChecking && syncProgress > 10 && syncProgress < 100) {
       // It's a long running task make sure only one run occurs at a time.
       setIsRetrieveChecking(true)
 

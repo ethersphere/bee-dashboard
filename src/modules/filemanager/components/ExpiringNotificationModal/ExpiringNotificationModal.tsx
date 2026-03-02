@@ -1,19 +1,19 @@
-import { ReactElement, useState, useMemo, useEffect } from 'react'
-import { Warning } from '@material-ui/icons'
+import { PostageBatch } from '@ethersphere/bee-js'
+import { Warning } from '@mui/icons-material'
+import { DriveInfo, FileInfo } from '@solarpunkltd/file-manager-lib'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
+import AlertIcon from 'remixicon-react/AlertLineIcon'
+import CalendarIcon from 'remixicon-react/CalendarLineIcon'
+import DriveIcon from 'remixicon-react/HardDrive2LineIcon'
+
+import { calculateStampCapacityMetrics } from '../../utils/bee'
+import { getDaysLeft } from '../../utils/common'
+import { Button } from '../Button/Button'
+import { UpgradeDriveModal } from '../UpgradeDriveModal/UpgradeDriveModal'
+
 import './ExpiringNotificationModal.scss'
 import '../../styles/global.scss'
-
-import { Button } from '../Button/Button'
-import { createPortal } from 'react-dom'
-import DriveIcon from 'remixicon-react/HardDrive2LineIcon'
-import CalendarIcon from 'remixicon-react/CalendarLineIcon'
-import AlertIcon from 'remixicon-react/AlertLineIcon'
-import { UpgradeDriveModal } from '../UpgradeDriveModal/UpgradeDriveModal'
-import { getDaysLeft } from '../../utils/common'
-
-import { PostageBatch } from '@ethersphere/bee-js'
-import { DriveInfo, FileInfo } from '@solarpunkltd/file-manager-lib'
-import { calculateStampCapacityMetrics } from '../../utils/bee'
 
 const EXPIRING_ITEMS_PAGE_SIZE = 3
 
@@ -52,7 +52,10 @@ export function ExpiringNotificationModal({
   const paginatedStamps = sortedStamps.slice(startIndex, startIndex + EXPIRING_ITEMS_PAGE_SIZE)
 
   useEffect(() => {
-    setCurrentPage(0)
+    if (currentPage !== 0) {
+      setCurrentPage(0)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stamps])
 
   if (stamps.length === 0) return <></>

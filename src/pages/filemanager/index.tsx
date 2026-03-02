@@ -1,22 +1,157 @@
-import { ReactElement, useContext, useEffect, useState, useRef, useCallback, useMemo } from 'react'
-import './FileManager.scss'
+import { DriveInfo, FileManagerBase } from '@solarpunkltd/file-manager-lib'
+import { ReactElement, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+
 import { SearchProvider } from './SearchContext'
 import { ViewProvider } from './ViewContext'
-import { Header } from '../../modules/filemanager/components/Header/Header'
-import { Sidebar } from '../../modules/filemanager/components/Sidebar/Sidebar'
-import { AdminStatusBar } from '../../modules/filemanager/components/AdminStatusBar/AdminStatusBar'
-import { FileBrowser } from '../../modules/filemanager/components/FileBrowser/FileBrowser'
-import { InitialModal } from '../../modules/filemanager/components/InitialModal/InitialModal'
-import { Context as FMContext } from '../../providers/FileManager'
-import { BrowserPlatform, cacheClearUrls, detectBrowser } from '../../providers/Platform'
-import { Context as SettingsContext } from '../../providers/Settings'
-import { Context as BeeContext, CheckState } from '../../providers/Bee'
-import { PrivateKeyModal } from '../../modules/filemanager/components/PrivateKeyModal/PrivateKeyModal'
-import { getSignerPk, removeSignerPk } from '../../../src/modules/filemanager/utils/common'
-import { ErrorModal } from '../../../src/modules/filemanager/components/ErrorModal/ErrorModal'
-import { ConfirmModal } from '../../modules/filemanager/components/ConfirmModal/ConfirmModal'
-import { Button } from '../../modules/filemanager/components/Button/Button'
-import { FormbricksIntegration } from '../../modules/filemanager/components/FormbricksIntegration/FormbricksIntegration'
+
+import './FileManager.scss'
+
+import { AdminStatusBar } from '@/modules/filemanager/components/AdminStatusBar/AdminStatusBar'
+import { Button } from '@/modules/filemanager/components/Button/Button'
+import { ConfirmModal } from '@/modules/filemanager/components/ConfirmModal/ConfirmModal'
+import { ErrorModal } from '@/modules/filemanager/components/ErrorModal/ErrorModal'
+import { FileBrowser } from '@/modules/filemanager/components/FileBrowser/FileBrowser'
+import { FormbricksIntegration } from '@/modules/filemanager/components/FormbricksIntegration/FormbricksIntegration'
+import { Header } from '@/modules/filemanager/components/Header/Header'
+import { InitialModal } from '@/modules/filemanager/components/InitialModal/InitialModal'
+import { PrivateKeyModal } from '@/modules/filemanager/components/PrivateKeyModal/PrivateKeyModal'
+import { Sidebar } from '@/modules/filemanager/components/Sidebar/Sidebar'
+import { getSignerPk, removeSignerPk } from '@/modules/filemanager/utils/common'
+import { CheckState, Context as BeeContext } from '@/providers/Bee'
+import { Context as FMContext } from '@/providers/FileManager'
+import { BrowserPlatform, cacheClearUrls, detectBrowser } from '@/providers/Platform'
+import { Context as SettingsContext } from '@/providers/Settings'
+
+function PrivateKeyModalBlock({ onSaved }: { onSaved: () => void }) {
+  return (
+    <div className="fm-main">
+      <PrivateKeyModal onSaved={onSaved} />
+    </div>
+  )
+}
+
+function InitializationErrorBlock({ onOk }: { onOk: () => void }) {
+  return (
+    <div className="fm-main">
+      <div className="fm-loading">
+        <div className="fm-loading-title">Failed to initialize File Manager, reload and try again </div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+          <div style={{ minWidth: '120px' }}>
+            <Button label={'OK'} variant="primary" disabled={false} onClick={onOk} />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ResetModalBlock({ cacheHelpUrl, onConfirm }: { cacheHelpUrl: string; onConfirm: () => void }) {
+  return (
+    <div className="fm-main">
+      <ConfirmModal
+        title="Reset File Manager State"
+        message={
+          <span>
+            Your File Manager state appears invalid. Please{' '}
+            <a
+              href={cacheHelpUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: 'inline', textDecoration: 'underline' }}
+            >
+              clear the browser cache
+            </a>{' '}
+            and reload the page. Then you can reset the File Manager to continue.
+          </span>
+        }
+        confirmLabel="Continue"
+        onConfirm={onConfirm}
+        background={false}
+      />
+    </div>
+  )
+}
+
+function InitialModalBlock(props: {
+  resetState: boolean
+  handleVisibility: (isVisible: boolean) => void
+  handleShowError: (flag: boolean, error?: string) => void
+  setIsCreationInProgress: (isCreating: boolean) => void
+}) {
+  return (
+    <div className="fm-main">
+      <InitialModal {...props} />
+    </div>
+  )
+}
+
+function LoadingBlock() {
+  return (
+    <div className="fm-main">
+      <div className="fm-loading" aria-live="polite">
+        <div className="fm-spinner" aria-hidden="true" />
+        <div className="fm-loading-title">File manager loading…</div>
+        <div className="fm-loading-subtitle">Please wait a few seconds</div>
+      </div>
+    </div>
+  )
+}
+
+function ErrorModalBlock({ onClick, label }: { onClick: () => void; label: string }) {
+  return <ErrorModal label={label} onClick={onClick} />
+}
+
+function FileManagerMainContent(props: {
+  fm: FileManagerBase | null
+  showConnectionError: boolean
+  setShowConnectionError: (v: boolean) => void
+  isFormbricksActive: boolean
+  errorMessage: string
+  setErrorMessage: (msg: string) => void
+  loading: boolean
+  adminDrive: DriveInfo | null
+  isCreationInProgress: boolean
+}) {
+  const {
+    fm,
+    showConnectionError,
+    setShowConnectionError,
+    isFormbricksActive,
+    errorMessage,
+    setErrorMessage,
+    loading,
+    adminDrive,
+    isCreationInProgress,
+  } = props
+
+  return (
+    <SearchProvider>
+      <ViewProvider>
+        <div className="fm-main">
+          {showConnectionError && fm && (
+            <ErrorModal
+              label="Bee node connection error. Please check your node status. File Manager will continue when connection is restored."
+              onClick={() => setShowConnectionError(false)}
+            />
+          )}
+          <FormbricksIntegration isActive={isFormbricksActive} />
+          <Header />
+          <div className="fm-main-content">
+            <Sidebar errorMessage={errorMessage} setErrorMessage={setErrorMessage} loading={loading} />
+            <FileBrowser errorMessage={errorMessage} setErrorMessage={setErrorMessage} />
+          </div>
+          <AdminStatusBar
+            adminStamp={fm?.adminStamp || null}
+            adminDrive={adminDrive}
+            loading={loading}
+            isCreationInProgress={isCreationInProgress}
+            setErrorMessage={setErrorMessage}
+          />
+        </div>
+      </ViewProvider>
+    </SearchProvider>
+  )
+}
 
 export function FileManagerPage(): ReactElement {
   const isMountedRef = useRef(true)
@@ -136,99 +271,46 @@ export function FileManagerPage(): ReactElement {
   const isFormbricksActive = Boolean(fm && fm.adminStamp && adminDrive && !showInitialModal && !loading)
 
   if (!hasPk) {
-    return (
-      <div className="fm-main">
-        <PrivateKeyModal onSaved={handlePrivateKeySaved} />
-      </div>
-    )
+    return <PrivateKeyModalBlock onSaved={handlePrivateKeySaved} />
   }
 
   if (initializationError && !isLoading && !shallReset) {
     return (
-      <div className="fm-main">
-        <div className="fm-loading">
-          <div className="fm-loading-title">Failed to initialize File Manager, reload and try again </div>
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
-            <div style={{ minWidth: '120px' }}>
-              <Button
-                label={'OK'}
-                variant="primary"
-                disabled={false}
-                onClick={() => {
-                  removeSignerPk()
-                  setHasPk(false)
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+      <InitializationErrorBlock
+        onOk={() => {
+          removeSignerPk()
+          setHasPk(false)
+        }}
+      />
     )
   }
 
   if (showResetModal) {
-    return (
-      <div className="fm-main">
-        <ConfirmModal
-          title="Reset File Manager State"
-          message={
-            <span>
-              Your File Manager state appears invalid. Please{' '}
-              <a
-                href={cacheHelpUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ display: 'inline', textDecoration: 'underline' }}
-              >
-                clear the browser cache
-              </a>{' '}
-              and reload the page. Then you can reset the File Manager to continue.
-            </span>
-          }
-          confirmLabel="Continue"
-          onConfirm={() => {
-            setShowResetModal(false)
-          }}
-          background={false}
-        />
-      </div>
-    )
+    return <ResetModalBlock cacheHelpUrl={cacheHelpUrl} onConfirm={() => setShowResetModal(false)} />
   }
 
   if (!showErrorModal && (isEmptyState || isInvalidState)) {
     return (
-      <div className="fm-main">
-        <InitialModal
-          resetState={shallReset}
-          handleVisibility={(isVisible: boolean) => setShowInitialModal(isVisible)}
-          handleShowError={(flag: boolean, error?: string) => {
-            setShowErrorModal(flag)
+      <InitialModalBlock
+        resetState={shallReset}
+        handleVisibility={(isVisible: boolean) => setShowInitialModal(isVisible)}
+        handleShowError={(flag: boolean, error?: string) => {
+          setShowErrorModal(flag)
 
-            if (error) {
-              setErrorMessage(error)
-            }
-          }}
-          setIsCreationInProgress={(isCreating: boolean) => setIsCreationInProgress(isCreating)}
-        />
-      </div>
+          if (error) setErrorMessage(error)
+        }}
+        setIsCreationInProgress={(isCreating: boolean) => setIsCreationInProgress(isCreating)}
+      />
     )
   }
 
   if (!fm) {
-    return (
-      <div className="fm-main">
-        <div className="fm-loading" aria-live="polite">
-          <div className="fm-spinner" aria-hidden="true" />
-          <div className="fm-loading-title">File manager loading…</div>
-          <div className="fm-loading-subtitle">Please wait a few seconds</div>
-        </div>
-      </div>
-    )
+    return <LoadingBlock />
   }
 
   if (showErrorModal) {
     return (
-      <ErrorModal
+      <ErrorModalBlock
         label={
           'Error creating Admin Drive. Please try again. Possible causes include insufficient xDAI balance or a lost connection to the RPC.'
         }
@@ -242,30 +324,16 @@ export function FileManagerPage(): ReactElement {
   }
 
   return (
-    <SearchProvider>
-      <ViewProvider>
-        <div className="fm-main">
-          {showConnectionError && fm && (
-            <ErrorModal
-              label="Bee node connection error. Please check your node status. File Manager will continue when connection is restored."
-              onClick={() => setShowConnectionError(false)}
-            />
-          )}
-          <FormbricksIntegration isActive={isFormbricksActive} />
-          <Header />
-          <div className="fm-main-content">
-            <Sidebar errorMessage={errorMessage} setErrorMessage={setErrorMessage} loading={loading} />
-            <FileBrowser errorMessage={errorMessage} setErrorMessage={setErrorMessage} />
-          </div>
-          <AdminStatusBar
-            adminStamp={fm?.adminStamp || null}
-            adminDrive={adminDrive}
-            loading={loading}
-            isCreationInProgress={isCreationInProgress}
-            setErrorMessage={setErrorMessage}
-          />
-        </div>
-      </ViewProvider>
-    </SearchProvider>
+    <FileManagerMainContent
+      fm={fm}
+      showConnectionError={showConnectionError}
+      setShowConnectionError={() => setShowConnectionError(false)}
+      isFormbricksActive={isFormbricksActive}
+      errorMessage={errorMessage}
+      setErrorMessage={setErrorMessage}
+      loading={loading}
+      adminDrive={adminDrive}
+      isCreationInProgress={isCreationInProgress}
+    />
   )
 }

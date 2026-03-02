@@ -1,20 +1,18 @@
 {
   "ignores": [
-    "@testing-library/react",
     "@types/*",
-    "@commitlint/config-conventional",
+    "@commitlint/*",
     "@babel/*",
-    "babel*",
+    "@eslint/*",
+    "@eslint/*",
     "eslint*",
-    "file-loader",
-    "ts-node",
-    "webpack-cli",
-    "buffer",
-    "crypto*",
-    "stream*",
     "env-paths",
+    "husky",
+    "jest-environment-jsdom",
     "open",
-    "base64-inline-loader",
-    "sass"
+    "rimraf",
+    "sass",
+    "ts-node",
+    "@vitejs/plugin-react"
   ]
 }

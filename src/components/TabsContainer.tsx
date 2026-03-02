@@ -1,6 +1,6 @@
+import { Tab, Tabs } from '@mui/material'
 import React, { ReactElement, ReactNode } from 'react'
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
-import { Tab, Tabs } from '@material-ui/core'
+import { makeStyles } from 'tss-react/mui'
 
 interface TabPanelProps {
   children?: ReactNode
@@ -18,16 +18,14 @@ function TabPanel(props: TabPanelProps) {
   )
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1,
-    },
-    content: {
-      marginTop: theme.spacing(2),
-    },
-  }),
-)
+const useStyles = makeStyles()(theme => ({
+  root: {
+    flexGrow: 1,
+  },
+  content: {
+    marginTop: theme.spacing(2),
+  },
+}))
 
 interface TabsValues {
   component: ReactNode
@@ -41,10 +39,10 @@ interface Props {
 }
 
 export default function SimpleTabs({ values, index, indexChanged }: Props): ReactElement {
-  const classes = useStyles()
+  const { classes } = useStyles()
   const [value, setValue] = React.useState<number>(index || 0)
 
-  const handleChange = (event: React.ChangeEvent<Record<string, never>>, newValue: number) => {
+  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     if (indexChanged) indexChanged(newValue)
     else setValue(newValue)
   }

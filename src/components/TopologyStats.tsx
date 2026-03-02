@@ -1,6 +1,8 @@
 import type { Topology } from '@ethersphere/bee-js'
 import type { ReactElement } from 'react'
+
 import { pickThreshold, ThresholdValues } from '../utils/threshold'
+
 import ExpandableListItem from './ExpandableListItem'
 
 interface Props {

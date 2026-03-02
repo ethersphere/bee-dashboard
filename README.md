@@ -4,7 +4,7 @@
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fethersphere%2Fbee-dashboard.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fethersphere%2Fbee-dashboard?ref=badge_shield)
-![](https://img.shields.io/badge/npm-%3E%3D6.9.0-orange.svg?style=flat-square)
+![](https://img.shields.io/badge/pnpm-%3E%3D10.0.0-orange.svg?style=flat-square)
 ![](https://img.shields.io/badge/Node.js-%3E%3D14.0.0-orange.svg?style=flat-square)
 
 > An app which helps users to setup their Bee node and do actions like cash out cheques, upload and download files or
@@ -16,11 +16,11 @@ working. Also, no guarantees can be made about its stability, efficiency, and se
 Stay up to date by joining the [official Discord](https://discord.gg/GU22h2utj6) and by keeping an eye on the
 [releases tab](https://github.com/ethersphere/bee-dashboard/releases).
 
-![Status page](/ui_samples/info.png)
+![Status page](/docs/ui_samples/info.png)
 
-| Node Setup                           | Upload Files                           | Download Content                           | Accounting                                | Settings                              | File Manager                       |
-| ------------------------------------ | -------------------------------------- | ------------------------------------------ | ----------------------------------------- | ------------------------------------- | ---------------------------------- |
-| ![Setup](/ui_samples/node_setup.png) | ![Upload](/ui_samples/file_upload.png) | ![Download](/ui_samples/file_download.png) | ![Accounting](/ui_samples/accounting.png) | ![Settings](/ui_samples/settings.png) | ![File Manager](/ui_samples/file_manager.png) |
+| Node Setup                                | Upload Files                                | Download Content                                | Accounting                                     | Settings                                   | File Manager                                       |
+| ----------------------------------------- | ------------------------------------------- | ----------------------------------------------- | ---------------------------------------------- | ------------------------------------------ | -------------------------------------------------- |
+| ![Setup](/docs/ui_samples/node_setup.png) | ![Upload](/docs/ui_samples/file_upload.png) | ![Download](/docs/ui_samples/file_download.png) | ![Accounting](/docs/ui_samples/accounting.png) | ![Settings](/docs/ui_samples/settings.png) | ![File Manager](/docs/ui_samples/file_manager.png) |
 
 ## Table of Contents
 
@@ -36,10 +36,10 @@ Stay up to date by joining the [official Discord](https://discord.gg/GU22h2utj6)
 
 ## Install
 
-Install globally with npm. We require Node.js's version of at least 12.x and npm v6.x (or yarn v2.x).
+Install globally with pnpm. We require Node.js's version of at least 24.x and pnpm v10.x, npm v11.x.
 
 ```sh
-npm install -g @ethersphere/bee-dashboard
+pnpm add -g @ethersphere/bee-dashboard
 ```
 
 For the latest stable version, always use the official npm registry.
@@ -88,9 +88,11 @@ git clone git@github.com:ethersphere/bee-dashboard.git
 
 cd  bee-dashboard
 
-npm i
+pnpm install
 
-npm start
+pnpm run init:husky
+
+pnpm start
 ```
 
 The Bee Dashboard runs in development mode on [http://localhost:3031/](http://localhost:3031/)
@@ -100,17 +102,17 @@ The Bee Dashboard runs in development mode on [http://localhost:3031/](http://lo
 The CRA supports to specify "environmental variables" during build time which are then hardcoded into the served static
 files. We support following variables:
 
-- `REACT_APP_BEE_DESKTOP_ENABLED` (`boolean`) that toggles if the Dashboard is in Desktop mode or not.
-- `REACT_APP_BEE_DESKTOP_URL` (`string`) defines custom URL where the Desktop API is expected. By default, it is same
-  origin under which the Dashboard is served.
-- `REACT_APP_BEE_HOST` (`string`) defines custom Bee API URL to be used as default one. By default, the
+- `VITE_BEE_DESKTOP_ENABLED` (`boolean`) that toggles if the Dashboard is in Desktop mode or not.
+- `VITE_BEE_DESKTOP_URL` (`string`) defines custom URL where the Desktop API is expected. By default, it is same origin
+  under which the Dashboard is served.
+- `VITE_BEE_HOST` (`string`) defines custom Bee API URL to be used as default one. By default, the
   `http://localhost:1633` is used.
-- `REACT_APP_DEFAULT_RPC_URL` (`string`) defines the default RPC provider URL. Be aware, that his only configures the
-  default value. The user can override this in Settings, which is then persisted in local store and has priority over
-  the value set in this env. variable. By default `https://xdai.fairdatasociety.org` is used.
-- `REACT_APP_FORMBRICKS_ENV_ID` and `REACT_APP_FORMBRICKS_APP_URL` (`string`) configures the
-  [Formbricks](https://formbricks.com/) integration for user feedback collection. If these variables are not set, the
-  feedback form is not available in the app.
+- `VITE_DEFAULT_RPC_URL` (`string`) defines the default RPC provider URL. Be aware, that his only configures the default
+  value. The user can override this in Settings, which is then persisted in local store and has priority over the value
+  set in this env. variable. By default `https://xdai.fairdatasociety.org` is used.
+- `VITE_FORMBRICKS_ENV_ID` and `VITE_FORMBRICKS_APP_URL` (`string`) configures the [Formbricks](https://formbricks.com/)
+  integration for user feedback collection. If these variables are not set, the feedback form is not available in the
+  app.
 
 #### Swarm Desktop development
 
@@ -118,11 +120,11 @@ If you want to develop Bee Dashboard in the Swarm Desktop mode, then spin up `sw
 is initialized (eq. the splash screen disappear) and:
 
 ```sh
-echo "REACT_APP_BEE_DESKTOP_URL=http://localhost:3054
-REACT_APP_BEE_DESKTOP_ENABLED=true" > .env.development.local
+echo "VITE_BEE_DESKTOP_URL=http://localhost:3054
+VITE_BEE_DESKTOP_ENABLED=true" > .env.development.local
 
-npm start
-npm run desktop # This will inject the API key to the Dashboard
+pnpm start
+pnpm run desktop # This will inject the API key to the Dashboard
 ```
 
 ## File Manager

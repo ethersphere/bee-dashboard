@@ -1,15 +1,22 @@
 import { ReactElement } from 'react'
-import ImageIcon from 'remixicon-react/Image2LineIcon'
 import FileIcon from 'remixicon-react/FileTextLineIcon'
+import ImageIcon from 'remixicon-react/Image2LineIcon'
+
+import { guessMime } from './view'
 
 interface ContextMenuProps {
-  icon: string
+  name: string
+  metadata?: Record<string, string>
   size?: string
   color?: string
 }
 
-export function GetIconElement({ icon, size = '21px', color = '#ed8131' }: ContextMenuProps): ReactElement {
-  switch (icon) {
+export function GetIconElement({ name, metadata, size = '21px', color = '#ed8131' }: ContextMenuProps): ReactElement {
+  const { mime } = guessMime(name, metadata)
+
+  const iconType = mime.split('/')[0]?.toLowerCase() || 'file'
+
+  switch (iconType) {
     case 'image':
       return <ImageIcon size={size} color={color} />
     default:

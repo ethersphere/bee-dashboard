@@ -1,5 +1,7 @@
-import { createStyles, Grid, makeStyles, Typography } from '@material-ui/core'
+import { Grid, Typography } from '@mui/material'
 import { ReactElement } from 'react'
+import { makeStyles } from 'tss-react/mui'
+
 import { CloseButton } from './CloseButton'
 
 interface Props {
@@ -7,17 +9,15 @@ interface Props {
   onClose: () => void
 }
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    text: {
-      color: '#606060',
-      fontWeight: 'bold',
-    },
-  }),
-)
+const useStyles = makeStyles()(() => ({
+  text: {
+    color: '#606060',
+    fontWeight: 'bold',
+  },
+}))
 
 export function TitleWithClose({ children, onClose }: Props): ReactElement {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   return (
     <Grid container justifyContent="space-between" alignItems="center">

@@ -1,25 +1,31 @@
-import { useState, ReactElement, useEffect } from 'react'
-import './PrivateKeyModal.scss'
-import { Button } from '../Button/Button'
-import { setSignerPk, getSigner } from '../../utils/common'
-import { uuidV4 } from '../../../../utils'
 import { PrivateKey } from '@ethersphere/bee-js'
-import ClipboardIcon from 'remixicon-react/FileCopyLineIcon'
+import { ReactElement, useState } from 'react'
 import CheckDoubleLineIcon from 'remixicon-react/CheckDoubleLineIcon'
-import { Tooltip } from '../Tooltip/Tooltip'
+import ClipboardIcon from 'remixicon-react/FileCopyLineIcon'
+
 import { TOOLTIPS } from '../../constants/tooltips'
+import { getSigner, setSignerPk } from '../../utils/common'
+import { Button } from '../Button/Button'
+import { Tooltip } from '../Tooltip/Tooltip'
+
+import './PrivateKeyModal.scss'
+
+import { uuidV4 } from '@/utils'
 
 type Props = { onSaved: () => void }
 
+const generateNewPrivateKey = (): string => {
+  const id = uuidV4()
+  const signer = getSigner(id)
+
+  return signer.toHex()
+}
+
 export function PrivateKeyModal({ onSaved }: Props): ReactElement {
-  const [value, setValue] = useState('')
+  const [value, setValue] = useState(generateNewPrivateKey())
   const [confirmValue, setConfirmValue] = useState('')
   const [showError, setShowError] = useState(false)
   const [copied, setCopied] = useState(false)
-
-  useEffect(() => {
-    handleGenerateNew()
-  }, [])
 
   const handleCopyPrivateKey = async () => {
     try {
@@ -32,11 +38,7 @@ export function PrivateKeyModal({ onSaved }: Props): ReactElement {
   }
 
   const handleGenerateNew = () => {
-    const id = uuidV4()
-    const signer = getSigner(id)
-    const privKey = signer.toHex()
-
-    setValue(privKey)
+    setValue(generateNewPrivateKey())
     setConfirmValue('')
     setCopied(false)
     setShowError(false)

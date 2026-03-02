@@ -1,5 +1,6 @@
 import { AllSettlements, Bee, BZZ, LastCashoutActionResponse, PeerBalance, Settlements } from '@ethersphere/bee-js'
 import { useEffect, useState } from 'react'
+
 import { makeRetriablePromise, unwrapPromiseSettlements } from '../utils'
 
 interface UseAccountingHook {

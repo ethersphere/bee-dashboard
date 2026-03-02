@@ -1,48 +1,47 @@
-import { Grid, IconButton, ListItem, Tooltip, Typography } from '@material-ui/core'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import { ArrowForward, OpenInNewSharp } from '@material-ui/icons'
-import { ReactElement, useState } from 'react'
-import CopyToClipboard from 'react-copy-to-clipboard'
+import { ArrowForward, OpenInNewSharp } from '@mui/icons-material'
+import { Grid, IconButton, ListItemButton, Tooltip, Typography } from '@mui/material'
+import { ReactElement } from 'react'
 import { useNavigate } from 'react-router'
+import { makeStyles } from 'tss-react/mui'
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    header: {
-      backgroundColor: theme.palette.background.paper,
-      marginBottom: theme.spacing(0.25),
-      borderLeft: `${theme.spacing(0.25)}px solid rgba(0,0,0,0)`,
-      wordBreak: 'break-word',
+import { useClipboardCopy } from '../hooks/useClipboardCopy'
+
+const useStyles = makeStyles()(theme => ({
+  header: {
+    backgroundColor: theme.palette.background.paper,
+    marginBottom: theme.spacing(0.25),
+    borderLeft: `${theme.spacing(0.25)}px solid rgba(0,0,0,0)`,
+    wordBreak: 'break-word',
+  },
+  headerOpen: {
+    borderLeft: `${theme.spacing(0.25)}px solid ${theme.palette.primary.main}`,
+  },
+  openLinkIcon: {
+    cursor: 'pointer',
+    padding: theme.spacing(1),
+    borderRadius: 0,
+    '&:hover': {
+      backgroundColor: '#fcf2e8',
+      color: theme.palette.primary.main,
     },
-    headerOpen: {
-      borderLeft: `${theme.spacing(0.25)}px solid ${theme.palette.primary.main}`,
+  },
+  content: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+  },
+  keyMargin: {
+    marginRight: theme.spacing(1),
+  },
+  copyValue: {
+    cursor: 'pointer',
+    padding: theme.spacing(1),
+    borderRadius: 0,
+    '&:hover': {
+      backgroundColor: '#fcf2e8',
+      color: theme.palette.primary.main,
     },
-    openLinkIcon: {
-      cursor: 'pointer',
-      padding: theme.spacing(1),
-      borderRadius: 0,
-      '&:hover': {
-        backgroundColor: '#fcf2e8',
-        color: theme.palette.primary.main,
-      },
-    },
-    content: {
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2),
-    },
-    keyMargin: {
-      marginRight: theme.spacing(1),
-    },
-    copyValue: {
-      cursor: 'pointer',
-      padding: theme.spacing(1),
-      borderRadius: 0,
-      '&:hover': {
-        backgroundColor: '#fcf2e8',
-        color: theme.palette.primary.main,
-      },
-    },
-  }),
-)
+  },
+}))
 
 interface Props {
   label: string
@@ -59,12 +58,9 @@ export default function ExpandableListItemLink({
   navigationType = 'NEW_WINDOW',
   allowClipboard = true,
 }: Props): ReactElement | null {
-  const classes = useStyles()
-  const [copied, setCopied] = useState(false)
+  const { classes } = useStyles()
   const navigate = useNavigate()
-
-  const tooltipClickHandler = () => setCopied(true)
-  const tooltipCloseHandler = () => setCopied(false)
+  const { copied, handleCopy, tooltipCloseHandler } = useClipboardCopy(value)
 
   const displayValue = value.length > 22 ? value.slice(0, 19) + '...' : value
 
@@ -77,7 +73,7 @@ export default function ExpandableListItemLink({
   }
 
   return (
-    <ListItem className={classes.header}>
+    <ListItemButton className={classes.header}>
       <Grid container direction="column" justifyContent="space-between" alignItems="stretch">
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
           {label && <Typography variant="body1">{label}</Typography>}
@@ -85,9 +81,7 @@ export default function ExpandableListItemLink({
             {allowClipboard && (
               <span className={classes.copyValue}>
                 <Tooltip title={copied ? 'Copied' : 'Copy'} placement="top" arrow onClose={tooltipCloseHandler}>
-                  <CopyToClipboard text={value}>
-                    <span onClick={tooltipClickHandler}>{displayValue}</span>
-                  </CopyToClipboard>
+                  <span onClick={handleCopy}>{displayValue}</span>
                 </Tooltip>
               </span>
             )}
@@ -99,6 +93,6 @@ export default function ExpandableListItemLink({
           </Typography>
         </Grid>
       </Grid>
-    </ListItem>
+    </ListItemButton>
   )
 }

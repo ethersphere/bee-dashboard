@@ -1,19 +1,21 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
+
 import App from './App'
-import './index.css'
 import reportWebVitals from './reportWebVitals'
 
-const desktopEnabled = process.env.REACT_APP_BEE_DESKTOP_ENABLED === 'true'
-const desktopUrl = process.env.REACT_APP_BEE_DESKTOP_URL
-const beeApiUrl = process.env.REACT_APP_BEE_HOST
-const defaultRpcUrl = process.env.REACT_APP_DEFAULT_RPC_URL
+import './index.css'
 
-ReactDOM.render(
+const desktopEnabled = import.meta.env.VITE_BEE_DESKTOP_ENABLED === 'true'
+const desktopUrl = import.meta.env.VITE_BEE_DESKTOP_URL
+const beeApiUrl = import.meta.env.VITE_BEE_HOST
+const defaultRpcUrl = import.meta.env.VITE_DEFAULT_RPC_URL
+
+const root = createRoot(document.getElementById('root') as HTMLElement)
+root.render(
   <React.StrictMode>
     <App isDesktop={desktopEnabled} desktopUrl={desktopUrl} beeApiUrl={beeApiUrl} defaultRpcUrl={defaultRpcUrl} />
   </React.StrictMode>,
-  document.getElementById('root'),
 )
 
 // If you want to start measuring performance in your app, pass a function

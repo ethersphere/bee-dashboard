@@ -1,3 +1,9 @@
+import { EthAddress } from '@ethersphere/bee-js'
+import { getAddress, JsonRpcProvider, Networkish } from 'ethers'
+
+export const GNOIS_NETWORK_ID = 100
+export const GnosisNetwork: Networkish = { chainId: GNOIS_NETWORK_ID, name: 'gnosis', ensAddress: undefined }
+
 const chains = [
   {
     name: 'Ethereum Mainnet',
@@ -21,10 +27,18 @@ const chains = [
   },
   {
     name: 'Gnosis Chain',
-    chainId: 100,
+    chainId: GNOIS_NETWORK_ID,
   },
 ]
 
 export function chainIdToName(chainId: number): string {
   return chains.find(record => record.chainId === chainId)?.name || 'Unknown'
+}
+
+export function ethAddressString(address: EthAddress | string): string {
+  return typeof address === 'string' ? getAddress(address) : getAddress(address.toHex())
+}
+
+export function newGnosisProvider(url: string): JsonRpcProvider {
+  return new JsonRpcProvider(url, GnosisNetwork, { staticNetwork: true })
 }

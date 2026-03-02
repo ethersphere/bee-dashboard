@@ -1,6 +1,7 @@
-import CircularProgress from '@material-ui/core/CircularProgress'
+import CircularProgress from '@mui/material/CircularProgress'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext } from 'react'
+
 import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItemInput from '../../components/ExpandableListItemInput'
 import { Context as BeeContext } from '../../providers/Bee'
@@ -44,7 +45,8 @@ export default function SettingsPage(): ReactElement {
 
       await refresh()
     } catch (e) {
-      console.error(e) //eslint-disable-line
+      // eslint-disable-next-line no-console
+      console.error(e)
       enqueueSnackbar(`Failed to change RPC endpoint. ${e}`, { variant: 'error' })
     }
   }

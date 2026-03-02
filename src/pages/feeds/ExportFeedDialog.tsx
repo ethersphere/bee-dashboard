@@ -1,33 +1,33 @@
-import { Box, createStyles, makeStyles, Typography } from '@material-ui/core'
+import { Box, Typography } from '@mui/material'
 import { saveAs } from 'file-saver'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import Download from 'remixicon-react/DownloadLineIcon'
 import Clipboard from 'remixicon-react/ClipboardLineIcon'
+import Download from 'remixicon-react/DownloadLineIcon'
+import { makeStyles } from 'tss-react/mui'
+
 import { Code } from '../../components/Code'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmDialog } from '../../components/SwarmDialog'
 import { TitleWithClose } from '../../components/TitleWithClose'
-import { Identity } from '../../providers/Feeds'
+import { Identity, IdentityType } from '../../providers/Feeds'
 
 interface Props {
   identity: Identity
   onClose: () => void
 }
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    wrapper: {
-      maxWidth: '100%',
-    },
-  }),
-)
+const useStyles = makeStyles()(() => ({
+  wrapper: {
+    maxWidth: '100%',
+  },
+}))
 
 export function ExportFeedDialog({ identity, onClose }: Props): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
 
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   function onDownload() {
     saveAs(
@@ -39,7 +39,7 @@ export function ExportFeedDialog({ identity, onClose }: Props): ReactElement {
   }
 
   function getExportText() {
-    return identity.type === 'V3' ? 'JSON file' : 'the private key string'
+    return identity.type === IdentityType.V3 ? 'JSON file' : 'the private key string'
   }
 
   function onCopy() {

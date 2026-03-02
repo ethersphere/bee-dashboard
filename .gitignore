@@ -26,5 +26,9 @@ yarn-error.log*
 
 
 settings.json
+*.tsbuildinfo
 
 **.tgz
+
+api-key.txt
+tmp/

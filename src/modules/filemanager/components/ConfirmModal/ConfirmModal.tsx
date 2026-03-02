@@ -1,8 +1,10 @@
-import { ReactElement } from 'react'
+import React, { ReactElement } from 'react'
+import { createPortal } from 'react-dom'
+
+import { Button } from '../Button/Button'
+
 import '../../styles/global.scss'
 import './ConfirmModal.scss'
-import { Button } from '../Button/Button'
-import { createPortal } from 'react-dom'
 
 interface ConfirmModalProps {
   title?: React.ReactNode

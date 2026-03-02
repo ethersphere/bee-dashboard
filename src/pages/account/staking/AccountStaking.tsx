@@ -1,11 +1,12 @@
 import { ReactElement, useContext, useState } from 'react'
+
 import ExpandableList from '../../../components/ExpandableList'
 import ExpandableListItem from '../../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../../components/ExpandableListItemActions'
 import { Loading } from '../../../components/Loading'
 import TroubleshootConnectionCard from '../../../components/TroubleshootConnectionCard'
 import StakeModal from '../../../containers/StakeModal'
-import { Context as BeeContext, CheckState } from '../../../providers/Bee'
+import { CheckState, Context as BeeContext } from '../../../providers/Bee'
 import { AccountNavigation } from '../AccountNavigation'
 import { Header } from '../Header'
 

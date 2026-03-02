@@ -1,5 +1,6 @@
-import { Box, Grid, Typography } from '@material-ui/core'
+import { Box, Grid, Typography } from '@mui/material'
 import { ReactElement } from 'react'
+
 import { Capacity } from '../../components/Capacity'
 import { EnrichedPostageBatch } from '../../providers/Stamps'
 

@@ -1,40 +1,39 @@
-import { Button, Grid, Link as MuiLink, Typography } from '@material-ui/core/'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import { Button, Grid, Link as MuiLink, Typography } from '@mui/material'
 import type { ReactElement } from 'react'
-import Activity from 'remixicon-react/PulseLineIcon'
 import { Link } from 'react-router-dom'
-import { ROUTES } from '../routes'
-import { BEE_DISCORD_HOST, BEE_DOCS_HOST } from '../constants'
+import Activity from 'remixicon-react/PulseLineIcon'
+import { makeStyles } from 'tss-react/mui'
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      height: '100%',
+import { BEE_DISCORD_HOST, BEE_DOCS_HOST } from '../constants'
+import { ROUTES } from '../routes'
+
+const useStyles = makeStyles()(theme => ({
+  root: {
+    height: '100%',
+  },
+  content: {
+    maxWidth: 500,
+    marginBottom: theme.spacing(4),
+    '&:last-child': {
+      marginBottom: 0,
     },
-    content: {
-      maxWidth: 500,
-      marginBottom: theme.spacing(4),
-      '&:last-child': {
-        marginBottom: 0,
-      },
-    },
-    icon: {
-      height: '1rem',
-    },
-  }),
-)
+  },
+  icon: {
+    height: '1rem',
+  },
+}))
 
 export default function TroubleshootConnectionCard(): ReactElement {
-  const classes = useStyles()
+  const { classes } = useStyles()
 
   return (
     <Grid container direction="column" justifyContent="center" alignItems="center" className={classes.root}>
-      <Grid item className={classes.content}>
+      <Grid className={classes.content}>
         <Typography variant="h1" align="center">
           Uh oh, it looks like your node is not connected.
         </Typography>
       </Grid>
-      <Grid item className={classes.content}>
+      <Grid className={classes.content}>
         <Typography align="center">
           Please check your node status to fix the problem. You can also check out the{' '}
           <MuiLink href={BEE_DOCS_HOST} target="_blank" rel="noreferrer">
@@ -47,7 +46,7 @@ export default function TroubleshootConnectionCard(): ReactElement {
           .
         </Typography>
       </Grid>
-      <Grid item className={classes.content}>
+      <Grid className={classes.content}>
         <Typography align="center">
           <Button
             component={Link}

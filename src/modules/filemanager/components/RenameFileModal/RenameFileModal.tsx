@@ -1,11 +1,12 @@
-import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
+import React, { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import EditIcon from 'remixicon-react/EditLineIcon'
+
+import { safeSetState } from '../../utils/common'
+import { Button } from '../Button/Button'
+
 import '../../styles/global.scss'
 import './RenameFileModal.scss'
-
-import { Button } from '../Button/Button'
-import EditIcon from 'remixicon-react/EditLineIcon'
-import { createPortal } from 'react-dom'
-import { safeSetState } from '../../utils/common'
 
 const maxFileNameLength = 60
 

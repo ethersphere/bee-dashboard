@@ -1,10 +1,12 @@
-import { ReactElement, useMemo, useState, useEffect, useRef, useContext } from 'react'
-import SearchIcon from 'remixicon-react/SearchLineIcon'
+import { ReactElement, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import FileIcon from 'remixicon-react/File2LineIcon'
 import FilterIcon from 'remixicon-react/FilterLineIcon'
-import './Header.scss'
+import SearchIcon from 'remixicon-react/SearchLineIcon'
+
 import { useSearch } from '../../../../pages/filemanager/SearchContext'
 import { Context as FMContext } from '../../../../providers/FileManager'
+
+import './Header.scss'
 
 // Defaults used to determine “active filters”
 const DEFAULT_FILTERS = {

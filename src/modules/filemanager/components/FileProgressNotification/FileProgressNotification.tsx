@@ -1,9 +1,11 @@
 import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
-import './FileProgressNotification.scss'
-import UpIcon from 'remixicon-react/ArrowUpSLineIcon'
 import DownIcon from 'remixicon-react/ArrowDownSLineIcon'
+import UpIcon from 'remixicon-react/ArrowUpSLineIcon'
+
+import { FileTransferType, ProgressItem, TransferStatus } from '../../constants/transfers'
 import { FileProgressWindow } from '../FileProgressWindow/FileProgressWindow'
-import { FileTransferType, TransferStatus, ProgressItem } from '../../constants/transfers'
+
+import './FileProgressNotification.scss'
 
 interface FileProgressNotificationProps {
   label?: string
@@ -13,6 +15,8 @@ interface FileProgressNotificationProps {
   onRowClose?: (uuid: string) => void
   onCloseAll?: () => void
 }
+
+const HIDER_TIMEOUT_MS = 3000
 
 export function FileProgressNotification({
   label,
@@ -49,7 +53,7 @@ export function FileProgressNotification({
       autoHideTimer.current = window.setTimeout(() => {
         setShowFileProgressWindow(false)
         autoHideTimer.current = null
-      }, 3000) as unknown as number
+      }, HIDER_TIMEOUT_MS) as unknown as number
     }
 
     return () => {

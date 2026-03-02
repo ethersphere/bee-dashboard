@@ -1,11 +1,12 @@
-import { Box, Grid, Typography } from '@material-ui/core'
 import { NULL_TOPIC } from '@ethersphere/bee-js'
+import { Box, Grid, Typography } from '@mui/material'
 import { Form, Formik } from 'formik'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
 import { useNavigate } from 'react-router'
 import Check from 'remixicon-react/CheckLineIcon'
 import X from 'remixicon-react/CloseLineIcon'
+
 import { DocumentationText } from '../../components/DocumentationText'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
@@ -26,7 +27,7 @@ interface FormValues {
 
 const initialValues: FormValues = {
   identityName: '',
-  type: 'PRIVATE_KEY',
+  type: IdentityType.PrivateKey,
   password: '',
 }
 
@@ -102,12 +103,12 @@ export default function CreateNewFeed(): ReactElement {
                 formik
                 name="type"
                 options={[
-                  { label: 'Keypair Only', value: 'PRIVATE_KEY' },
-                  { label: 'Password Protected', value: 'V3' },
+                  { label: 'Keypair Only', value: IdentityType.PrivateKey },
+                  { label: 'Password Protected', value: IdentityType.V3 },
                 ]}
               />
             </Box>
-            {values.type === 'V3' && <SwarmTextInput name="password" label="Password" password formik />}
+            {values.type === IdentityType.V3 && <SwarmTextInput name="password" label="Password" password formik />}
             <Box mt={2}>
               <ExpandableListItemKey label="Topic" value={NULL_TOPIC.toHex()} />
             </Box>

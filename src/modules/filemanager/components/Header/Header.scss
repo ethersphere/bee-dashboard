@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 $bg-900: #212121;
 $bg-800: #262626;
 $bg-700: #3e3e3e;
@@ -13,7 +15,7 @@ $accent: #ed8131;
   height: 60px;
   padding: 10px 16px;
   background: $bg-900;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .fm-header-left {
@@ -22,51 +24,73 @@ $accent: #ed8131;
   gap: 12px;
 }
 .fm-header-logo {
-  width: 40px; height: 40px;
+  width: 40px;
+  height: 40px;
   border-radius: 6px;
   background: $accent;
   color: $text-100;
-  display: grid; place-items: center;
+  display: grid;
+  place-items: center;
   font-weight: 700;
-  svg { width: 18px; height: 18px; }
+  svg {
+    width: 18px;
+    height: 18px;
+  }
 }
 .fm-header-title {
   color: $text-100;
   font-weight: 600;
-  letter-spacing: .2px;
+  letter-spacing: 0.2px;
 }
 
 .fm-header-search {
   flex: 1 1 auto;
   max-width: 900px;
-  display: flex; align-items: center; gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   background: $bg-700;
   border: 1px solid $border-400;
   color: $text-300;
-  height: 36px; padding: 0 10px;
+  height: 36px;
+  padding: 0 10px;
   border-radius: 8px;
 
   &:focus-within {
     border-color: $accent;
-    box-shadow: 0 0 0 2px rgba(237,129,49,0.25);
+    box-shadow: 0 0 0 2px rgba(237, 129, 49, 0.25);
   }
 
-  .fm-header-search-icon { flex: 0 0 auto; }
+  .fm-header-search-icon {
+    flex: 0 0 auto;
+  }
 
   input {
     flex: 1 1 auto;
-    background: transparent; border: none; outline: none;
+    background: transparent;
+    border: none;
+    outline: none;
     height: 100%;
-    color: $text-100; font-size: 14px;
+    color: $text-100;
+    font-size: 14px;
 
-    &::placeholder { color: $text-300; }
+    &::placeholder {
+      color: $text-300;
+    }
   }
 
   .fm-header-search-clear {
-    appearance: none; border: none; background: transparent;
-    color: $text-300; font-size: 18px; line-height: 1;
-    padding: 0 2px; cursor: pointer;
-    &:hover { color: $text-100; }
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: $text-300;
+    font-size: 18px;
+    line-height: 1;
+    padding: 0 2px;
+    cursor: pointer;
+    &:hover {
+      color: $text-100;
+    }
   }
 }
 
@@ -76,7 +100,9 @@ $accent: #ed8131;
 }
 
 .fm-filter-btn {
-  display: inline-flex; align-items: center; gap: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 6px 10px;
   border-radius: 8px;
   border: 1px solid $border-400;
@@ -85,59 +111,83 @@ $accent: #ed8131;
   font-size: 13px;
   cursor: pointer;
 
-  &:hover { background: mix($bg-800, #fff, 92%); }
-  &:focus-visible { outline: 2px solid rgba(237,129,49,0.4); outline-offset: 2px; }
+  &:hover {
+    background: color.mix($bg-800, #fff, 92%);
+  }
+  &:focus-visible {
+    outline: 2px solid rgba(237, 129, 49, 0.4);
+    outline-offset: 2px;
+  }
 
-  &[aria-expanded="true"] {
+  &[aria-expanded='true'] {
     border-color: $accent;
-    box-shadow: 0 0 0 2px rgba(237,129,49,0.25);
+    box-shadow: 0 0 0 2px rgba(237, 129, 49, 0.25);
   }
 }
 
 .fm-filter-menu {
   position: absolute;
-  right: 0; top: calc(100% + 6px);
+  right: 0;
+  top: calc(100% + 6px);
   min-width: 260px;
   background: $bg-800;
   border: 1px solid $border-400;
   border-radius: 10px;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
   padding: 10px;
   z-index: 2000;
   color: $text-100;
 }
 
-.fm-filter-group + .fm-filter-group { margin-top: 10px; }
+.fm-filter-group + .fm-filter-group {
+  margin-top: 10px;
+}
 
 .fm-filter-group-title {
   font-size: 12px;
   color: $text-300;
   margin-bottom: 6px;
   text-transform: uppercase;
-  letter-spacing: .04em;
+  letter-spacing: 0.04em;
 }
 
 .fm-filter-row {
-  display: flex; align-items: center; gap: 8px;
-  padding: 6px 4px; border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  border-radius: 6px;
   cursor: default;
   color: $text-100;
 
-  input[type="checkbox"], input[type="radio"] {
-    width: 14px; height: 14px; margin: 0;
+  input[type='checkbox'],
+  input[type='radio'] {
+    width: 14px;
+    height: 14px;
+    margin: 0;
     accent-color: $accent;
   }
 
-  &:hover { background: rgba(255,255,255,0.05); }
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
 }
 
 .fm-filter-sep {
   height: 1px;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   margin: 8px 0;
 }
 
-.fm-header-filters { display: none; }
-.fm-header-filters-label { display: none; }
-.fm-header-chip-group { display: none; }
-.fm-chip { display: none; }
+.fm-header-filters {
+  display: none;
+}
+.fm-header-filters-label {
+  display: none;
+}
+.fm-header-chip-group {
+  display: none;
+}
+.fm-chip {
+  display: none;
+}

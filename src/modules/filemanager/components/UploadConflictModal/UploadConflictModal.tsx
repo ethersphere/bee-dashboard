@@ -1,8 +1,10 @@
 import { ReactElement, useMemo, useState } from 'react'
+import WarningIcon from 'remixicon-react/ErrorWarningLineIcon'
+
+import { Button } from '../Button/Button'
+
 import './UploadConflictModal.scss'
 import '../../styles/global.scss'
-import { Button } from '../Button/Button'
-import WarningIcon from 'remixicon-react/ErrorWarningLineIcon'
 
 interface Props {
   filename: string

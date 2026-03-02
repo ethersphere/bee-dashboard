@@ -1,11 +1,12 @@
+import type { DriveInfo, FileInfo } from '@solarpunkltd/file-manager-lib'
 import { ReactElement } from 'react'
-import type { FileInfo, DriveInfo } from '@solarpunkltd/file-manager-lib'
+
+import { TOOLTIPS } from '../../constants/tooltips'
+import { FileAction } from '../../constants/transfers'
 import { ConfirmModal } from '../ConfirmModal/ConfirmModal'
-import { Tooltip } from '../Tooltip/Tooltip'
 import { DeleteFileModal } from '../DeleteFileModal/DeleteFileModal'
 import { DestroyDriveModal } from '../DestroyDriveModal/DestroyDriveModal'
-import { FileAction } from '../../constants/transfers'
-import { TOOLTIPS } from '../../constants/tooltips'
+import { Tooltip } from '../Tooltip/Tooltip'
 
 interface FileBrowserModalsProps {
   showDeleteModal: boolean

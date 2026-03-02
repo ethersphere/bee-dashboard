@@ -1,9 +1,10 @@
-import type { DriveInfo, FileInfo } from '@solarpunkltd/file-manager-lib'
-import type { FileManagerBase } from '@solarpunkltd/file-manager-lib'
 import type { PostageBatch, RedundancyLevel } from '@ethersphere/bee-js'
+import type { DriveInfo, FileInfo, FileManagerBase } from '@solarpunkltd/file-manager-lib'
+
+import { ActionTag } from '../constants/transfers'
+
 import { verifyDriveSpace } from './bee'
 import { capitalizeFirstLetter } from './common'
-import { ActionTag } from '../constants/transfers'
 
 export enum FileOperation {
   Trash = 'trash',

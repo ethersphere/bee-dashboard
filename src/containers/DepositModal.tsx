@@ -1,6 +1,7 @@
 import { BZZ } from '@ethersphere/bee-js'
 import { ReactElement, useContext } from 'react'
 import Download from 'remixicon-react/DownloadLineIcon'
+
 import WithdrawDepositModal from '../components/WithdrawDepositModal'
 import { Context as BeeContext } from '../providers/Bee'
 import { Context as SettingsContext } from '../providers/Settings'
@@ -22,7 +23,7 @@ export default function DepositModal(): ReactElement {
           throw new Error('Bee URL is not valid')
         }
 
-        const transactionHash = await beeApi.depositTokens(amount)
+        const transactionHash = await beeApi.depositBZZToChequebook(amount)
         refresh()
 
         return transactionHash

@@ -1,13 +1,14 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
+import { createContext, ReactElement, ReactNode, useEffect, useState } from 'react'
 
-import { createContext, ReactChild, ReactElement, useState, useEffect } from 'react'
+import { PREVIEW_DIMENSIONS } from '../constants'
 import { getMetadata } from '../utils/file'
 import { resize } from '../utils/image'
-import { PREVIEW_DIMENSIONS } from '../constants'
 
-export type UploadOrigin = { origin: 'UPLOAD' | 'FEED'; uuid?: string }
+import { FileOrigin } from '@/pages/files/FileNavigation'
 
-export const defaultUploadOrigin: UploadOrigin = { origin: 'UPLOAD' }
+export type UploadOrigin = { origin: FileOrigin.Upload | FileOrigin.Feed; uuid?: string }
+
+export const defaultUploadOrigin: UploadOrigin = { origin: FileOrigin.Upload }
 
 interface ContextInterface {
   files: FilePath[]
@@ -30,7 +31,7 @@ export const Context = createContext<ContextInterface>(initialValues)
 export const Consumer = Context.Consumer
 
 interface Props {
-  children: ReactChild
+  children: ReactNode
 }
 
 export function Provider({ children }: Props): ReactElement {

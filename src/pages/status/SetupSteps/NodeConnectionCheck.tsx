@@ -1,13 +1,13 @@
 import { ReactElement, useContext } from 'react'
 
 import CodeBlockTabs from '../../../components/CodeBlockTabs'
-import { Context as SettingsContext } from '../../../providers/Settings'
 import ExpandableList from '../../../components/ExpandableList'
 import ExpandableListItem from '../../../components/ExpandableListItem'
-import ExpandableListItemNote from '../../../components/ExpandableListItemNote'
 import ExpandableListItemInput from '../../../components/ExpandableListItemInput'
+import ExpandableListItemNote from '../../../components/ExpandableListItemNote'
 import StatusIcon from '../../../components/StatusIcon'
 import { CheckState, Context } from '../../../providers/Bee'
+import { Context as SettingsContext } from '../../../providers/Settings'
 
 export default function NodeConnectionCheck(): ReactElement | null {
   const { setApiUrl, apiUrl, isDesktop } = useContext(SettingsContext)

@@ -14,44 +14,57 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [24.x]
 
     env:
-      REACT_APP_BEE_HOST: https://api.test-node.staging.ethswarm.org/
-      REACT_APP_FORMBRICKS_ENV_ID: ${{ secrets.REACT_APP_FORMBRICKS_ENV_ID }}
-      REACT_APP_FORMBRICKS_APP_URL: ${{ secrets.REACT_APP_FORMBRICKS_APP_URL }}
+      VITE_BEE_HOST: https://api.test-node.staging.ethswarm.org/
+      VITE_FORMBRICKS_ENV_ID: ${{ secrets.VITE_FORMBRICKS_ENV_ID }}
+      VITE_FORMBRICKS_APP_URL: ${{ secrets.VITE_FORMBRICKS_APP_URL }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install npm deps
-        run: npm ci
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Commit linting
-        uses: wagoid/commitlint-github-action@v2
+        uses: wagoid/commitlint-github-action@v6
+        with:
+          configFile: ./commitlint.config.cjs
 
       - name: Code linting
-        run: npm run lint:check
+        run: pnpm run lint
         env:
           CI: true
 
       - name: Dependency check
-        run: npm run depcheck
+        run: pnpm run depcheck
 
       - name: Types check
-        run: npm run check:types
+        run: pnpm run check:types
 
       - name: Build
-        run: npm run build
+        run: pnpm run build
 
       - name: Build Component
-        run: npm run build:component
+        run: pnpm run build:component
 
       - name: Create preview
         uses: ethersphere/swarm-actions/pr-preview@v1

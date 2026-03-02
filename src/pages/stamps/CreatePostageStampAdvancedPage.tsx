@@ -1,7 +1,9 @@
 import { ReactElement } from 'react'
 import { useNavigate } from 'react-router'
+
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { ROUTES } from '../../routes'
+
 import { PostageStampAdvancedCreation } from './PostageStampAdvancedCreation'
 
 export function CreatePostageStampPage(): ReactElement {

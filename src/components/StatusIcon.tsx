@@ -1,5 +1,6 @@
-import { CircularProgress } from '@material-ui/core'
+import { CircularProgress } from '@mui/material'
 import type { ReactElement } from 'react'
+
 import { CheckState } from '../providers/Bee'
 
 interface Props {

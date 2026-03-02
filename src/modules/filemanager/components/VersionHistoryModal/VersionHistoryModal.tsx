@@ -1,24 +1,24 @@
-import { ReactElement, useEffect, useMemo, useState, useCallback, useContext } from 'react'
-import './VersionHistoryModal.scss'
-import '../../styles/global.scss'
-
-import { Button } from '../Button/Button'
+import { FeedIndex } from '@ethersphere/bee-js'
+import { FileInfo } from '@solarpunkltd/file-manager-lib'
+import { ReactElement, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import HistoryIcon from 'remixicon-react/HistoryLineIcon'
 
 import { Context as FMContext } from '../../../../providers/FileManager'
-import { FileInfo } from '@solarpunkltd/file-manager-lib'
-import { FeedIndex } from '@ethersphere/bee-js'
-import { ConflictAction, useUploadConflictDialog } from '../../hooks/useUploadConflictDialog'
-import { ConfirmModal } from '../ConfirmModal/ConfirmModal'
-import { Tooltip } from '../Tooltip/Tooltip'
 import { TOOLTIPS } from '../../constants/tooltips'
-
-import { verifyDriveSpace } from '../../utils/bee'
-import { indexStrToBigint, truncateNameMiddle } from '../../utils/common'
-import { VersionsList } from './VersionList/VersionList'
 import { ActionTag, DownloadProgress, TrackDownloadProps } from '../../constants/transfers'
 import { useTransfers } from '../../hooks/useTransfers'
+import { ConflictAction, useUploadConflictDialog } from '../../hooks/useUploadConflictDialog'
+import { verifyDriveSpace } from '../../utils/bee'
+import { indexStrToBigint, truncateNameMiddle } from '../../utils/common'
+import { Button } from '../Button/Button'
+import { ConfirmModal } from '../ConfirmModal/ConfirmModal'
+import { Tooltip } from '../Tooltip/Tooltip'
+
+import { VersionsList } from './VersionList/VersionList'
+
+import './VersionHistoryModal.scss'
+import '../../styles/global.scss'
 
 const VERSION_HISTORY_PAGE_SIZE = 5
 
