@@ -14,6 +14,7 @@ interface Props {
   onDownload: () => void
   onUpdateFeed: () => void
   hasIndexDocument: boolean
+  isImage: boolean
   loading: boolean
 }
 
@@ -23,6 +24,7 @@ export function DownloadActionBar({
   onDownload,
   onUpdateFeed,
   hasIndexDocument,
+  isImage,
   loading,
 }: Props): ReactElement {
   return (
@@ -31,6 +33,11 @@ export function DownloadActionBar({
         {hasIndexDocument && (
           <SwarmButton onClick={onOpen} iconType={Link} disabled={loading}>
             View Website
+          </SwarmButton>
+        )}
+        {isImage && (
+          <SwarmButton onClick={onOpen} iconType={Link} disabled={loading}>
+            Open Image
           </SwarmButton>
         )}
         <SwarmButton onClick={onDownload} iconType={Download} disabled={loading} loading={loading}>

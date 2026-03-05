@@ -104,7 +104,7 @@ export function Share(): ReactElement {
   }
 
   function onOpen() {
-    window.open(`${apiUrl}/bzz/${hash}/`, '_blank')
+    window.open(`${apiUrl}/bzz/${hash}/`, '_blank', 'noopener,noreferrer')
   }
 
   function onClose() {
@@ -239,6 +239,7 @@ export function Share(): ReactElement {
         onDownload={onDownload}
         onUpdateFeed={onUpdateFeed}
         hasIndexDocument={Boolean(metadata?.isWebsite)}
+        isImage={Boolean(metadata?.isImage)}
         loading={downloading}
       />
     </>
