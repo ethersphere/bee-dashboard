@@ -160,6 +160,14 @@ export function UpgradeDriveModal({
   )
 
   useEffect(() => {
+    isMountedRef.current = true
+
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
+
+  useEffect(() => {
     const fetchSizes = () => {
       const sizes = Array.from(Utils.getStampEffectiveBytesBreakpoints(false, defaultErasureCodeLevel).values())
 
@@ -206,12 +214,6 @@ export function UpgradeDriveModal({
   useEffect(() => {
     setValidityEndDate(getExpiryDateByLifetime(lifetimeIndex, stamp.duration.toEndDate()))
   }, [lifetimeIndex, stamp.duration])
-
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false
-    }
-  }, [])
 
   const batchIdStr = stamp.batchID.toString()
   const shortBatchId = batchIdStr.length > 12 ? `${batchIdStr.slice(0, 4)}...${batchIdStr.slice(-4)}` : batchIdStr
