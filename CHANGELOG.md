@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.34.0](https://github.com/ethersphere/bee-dashboard/compare/v0.33.5...v0.34.0) (2026-03-05)
+
+
+### Features
+
+* add image opening functionality to DownloadActionBar ([#725](https://github.com/ethersphere/bee-dashboard/issues/725)) ([3ff645c](https://github.com/ethersphere/bee-dashboard/commit/3ff645cab1b4e9fba0c42ed99e7c3fac7b0ed0ca))
+* sync and update with all changes from fork ([#720](https://github.com/ethersphere/bee-dashboard/issues/720)) ([519c411](https://github.com/ethersphere/bee-dashboard/commit/519c411db0b37f3d4004366ca267013e2268f8eb))
+
+
+### Bug Fixes
+
+* **rpc:** ensure 0x prefix for recipient in sendBzzTransaction and add tests ([#722](https://github.com/ethersphere/bee-dashboard/issues/722)) ([fff94d9](https://github.com/ethersphere/bee-dashboard/commit/fff94d907157d0cd4f6e490c450cdc58cefeec31))
+* **sidebar:** use swarm-desktop GitHub link when running in desktop mode ([#724](https://github.com/ethersphere/bee-dashboard/issues/724)) ([7382da8](https://github.com/ethersphere/bee-dashboard/commit/7382da8595e86230c03dab93aec726cd02cc91ec))
+
 ## [0.33.5](https://github.com/ethersphere/bee-dashboard/compare/v0.33.4...v0.33.5) (2026-02-17)
 
 
