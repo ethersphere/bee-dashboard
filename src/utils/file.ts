@@ -117,6 +117,7 @@ export function sanitizeDisplayPath(path: string): string {
     .replaceAll('\\', '/')
     .replace(/^\/+/, '')
     .replace(/(?:\.\.\/)+|[?#].*/g, '')
+    .replace(/^\/+/, '')
 }
 
 /**

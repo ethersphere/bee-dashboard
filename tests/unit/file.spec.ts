@@ -16,6 +16,7 @@ describe('file utils', () => {
   it('sanitizeDisplayPath should remove traversal and URL fragments', () => {
     expect(sanitizeDisplayPath('/folder/../image.png')).toBe('folder/image.png')
     expect(sanitizeDisplayPath('..\\secret\\image.png')).toBe('secret/image.png')
+    expect(sanitizeDisplayPath('../..//secret/image.png')).toBe('secret/image.png')
     expect(sanitizeDisplayPath('image.png?download=1#preview')).toBe('image.png')
     expect(sanitizeDisplayPath('/nested/path/image.png')).toBe('nested/path/image.png')
   })
