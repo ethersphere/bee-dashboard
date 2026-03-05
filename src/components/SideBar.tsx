@@ -14,7 +14,7 @@ import { makeStyles } from 'tss-react/mui'
 
 import DashboardLogo from '../assets/dashboard-logo.svg'
 import DesktopLogo from '../assets/desktop-logo.svg'
-import { BEE_DOCS_HOST, GITHUB_BEE_DASHBOARD_URL } from '../constants'
+import { BEE_DOCS_HOST, GITHUB_BEE_DASHBOARD_URL, GITHUB_BEE_DESKTOP_URL } from '../constants'
 import { Context as BeeContext } from '../providers/Bee'
 import { Context as SettingsContext } from '../providers/Settings'
 import { ROUTES } from '../routes'
@@ -136,7 +136,11 @@ export default function SideBar(): ReactElement {
           </List>
           <Divider className={classes.divider} />
           <List>
-            <MUILink href={GITHUB_BEE_DASHBOARD_URL} target="_blank" className={classes.link}>
+            <MUILink
+              href={isDesktop ? GITHUB_BEE_DESKTOP_URL : GITHUB_BEE_DASHBOARD_URL}
+              target="_blank"
+              className={classes.link}
+            >
               <SideBarItem
                 iconStart={<GithubIcon className={classes.icon} />}
                 iconEnd={<ExternalLinkIcon className={classes.icon} color="#595959" />}
