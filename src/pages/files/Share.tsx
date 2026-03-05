@@ -118,7 +118,7 @@ export function Share(): ReactElement {
       }
     }
 
-    window.open(`${apiUrl}/bzz/${hash}/${targetPath}`, '_blank')
+    window.open(`${apiUrl}/bzz/${hash}/${targetPath}`, '_blank', 'noopener,noreferrer')
   }
 
   function onClose() {
