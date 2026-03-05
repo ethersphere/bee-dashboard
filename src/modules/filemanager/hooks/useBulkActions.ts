@@ -8,7 +8,7 @@ import { uuidV4 } from '../../../utils'
 import { DownloadProgress, TrackDownloadProps } from '../constants/transfers'
 import { getUsableStamps } from '../utils/bee'
 import { formatBytes, getFileId, safeSetState } from '../utils/common'
-import { startDownloadingQueue } from '../utils/download'
+import { FileInfoWithUUID, startDownloadingQueue } from '../utils/download'
 import { FileOperation, performBulkFileOperation } from '../utils/fileOperations'
 
 interface BulkOptions {
@@ -77,23 +77,28 @@ export function useBulkActions({ listToRender, setErrorMessage, trackDownload }:
     async (list: FileInfo[]) => {
       if (!fm || !list?.length) return
 
-      const trackers: Array<(progress: DownloadProgress) => void> = []
-      for (const fi of list) {
+      const trackers = new Array<(progress: DownloadProgress) => void>(list.length)
+      const infoListWitIDs: FileInfoWithUUID[] = new Array<FileInfoWithUUID>(list.length)
+
+      for (let i = 0; i < list.length; i++) {
+        const fi = list[i]
         const rawSize = fi.customMetadata?.size as string | number | undefined
         const prettySize = formatBytes(rawSize)
         const expected = rawSize ? Number(rawSize) : undefined
         const driveName = drives.find(d => d.id.toString() === fi.driveId.toString())?.name
-        const tracker = trackDownload({
-          uuid: uuidV4(),
+        const uuid = uuidV4()
+
+        infoListWitIDs[i] = { uuid, info: fi }
+        trackers[i] = trackDownload({
+          uuid,
           name: fi.name,
           size: prettySize,
           expectedSize: expected,
           driveName,
         })
-        trackers.push(tracker)
       }
 
-      await startDownloadingQueue(fm, list, trackers)
+      await startDownloadingQueue(fm, infoListWitIDs, trackers)
     },
     [fm, trackDownload, drives],
   )

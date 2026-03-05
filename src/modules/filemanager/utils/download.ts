@@ -13,12 +13,12 @@ enum Errors {
   SecurityError = 'SecurityError',
 }
 
-export function createDownloadAbort(name: string): void {
-  downloadAborts.create(name)
+export function createDownloadAbort(id: string): void {
+  downloadAborts.create(id)
 }
 
-export function abortDownload(name: string): void {
-  downloadAborts.abort(name)
+export function abortDownload(id: string): void {
+  downloadAborts.abort(id)
 }
 
 const processStream = async (
@@ -130,8 +130,13 @@ const streamToBlob = async (
   return new Blob([combined], { type: mimeType })
 }
 
-interface FileInfoWithHandle {
+export interface FileInfoWithUUID {
+  uuid: string
   info: FileInfo
+}
+
+interface FileInfoWithHandle {
+  infoWithId: FileInfoWithUUID
   handle?: FileSystemFileHandle
   cancelled?: boolean
 }
@@ -149,17 +154,17 @@ const isUserCancellation = (error: unknown): boolean => {
 }
 
 const getSingleFileHandle = async (
-  info: FileInfo,
+  infoWithId: FileInfoWithUUID,
   defaultDownloadFolder: string,
 ): Promise<FileInfoWithHandle[] | undefined> => {
-  const { mime, ext } = guessMime(info.name, info.customMetadata)
+  const { mime, ext } = guessMime(infoWithId.info.name, infoWithId.info.customMetadata)
 
   const pickerOptions: {
     suggestedName: string
     startIn: string
     types?: Array<{ accept: Record<string, string[]> }>
   } = {
-    suggestedName: info.name,
+    suggestedName: infoWithId.info.name,
     startIn: defaultDownloadFolder,
   }
 
@@ -171,20 +176,20 @@ const getSingleFileHandle = async (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handle = (await (window as any).showSaveFilePicker(pickerOptions)) as FileSystemFileHandle
 
-    return [{ info, handle }]
+    return [{ infoWithId, handle }]
   } catch (error: unknown) {
-    return isUserCancellation(error) ? [{ info, cancelled: true }] : undefined
+    return isUserCancellation(error) ? [{ infoWithId, cancelled: true }] : undefined
   }
 }
 
 const getMultipleFileHandles = async (
-  infoList: FileInfo[],
+  infoWithIdList: FileInfoWithUUID[],
   defaultDownloadFolder: string,
 ): Promise<FileInfoWithHandle[] | undefined> => {
   if (!isDirectoryPickerSupported()) {
     const handles: FileInfoWithHandle[] = []
 
-    for (const info of infoList) {
+    for (const info of infoWithIdList) {
       const result = await getSingleFileHandle(info, defaultDownloadFolder)
 
       if (!result) return undefined
@@ -203,37 +208,37 @@ const getMultipleFileHandles = async (
 
     const handles: FileInfoWithHandle[] = []
 
-    for (const info of infoList) {
+    for (const infoWithId of infoWithIdList) {
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const fileHandle = (await (dirHandle as any).getFileHandle(info.name, {
+        const fileHandle = (await (dirHandle as any).getFileHandle(infoWithId.info.name, {
           create: true,
         })) as FileSystemFileHandle
 
-        handles.push({ info, handle: fileHandle })
+        handles.push({ infoWithId, handle: fileHandle })
       } catch (error: unknown) {
         // eslint-disable-next-line no-console
-        console.error(`Failed to create file handle for ${info.name}:`, error)
-        handles.push({ info, cancelled: true })
+        console.error(`Failed to create file handle for ${infoWithId.info.name}:`, error)
+        handles.push({ infoWithId, cancelled: true })
       }
     }
 
     return handles
   } catch (error: unknown) {
-    return isUserCancellation(error) ? infoList.map(info => ({ info, cancelled: true })) : undefined
+    return isUserCancellation(error) ? infoWithIdList.map(infoWithId => ({ infoWithId, cancelled: true })) : undefined
   }
 }
 
-const getFileHandles = (infoList: FileInfo[]): Promise<FileInfoWithHandle[] | undefined> => {
+const getFileHandles = (infoWithIdList: FileInfoWithUUID[]): Promise<FileInfoWithHandle[] | undefined> => {
   const defaultDownloadFolder = 'downloads'
 
-  if (!isPickerSupported()) return Promise.resolve(infoList.map(info => ({ info })))
+  if (!isPickerSupported()) return Promise.resolve(infoWithIdList.map(infoWithId => ({ infoWithId })))
 
-  if (infoList.length === 1) {
-    return getSingleFileHandle(infoList[0], defaultDownloadFolder)
+  if (infoWithIdList.length === 1) {
+    return getSingleFileHandle(infoWithIdList[0], defaultDownloadFolder)
   }
 
-  return getMultipleFileHandles(infoList, defaultDownloadFolder)
+  return getMultipleFileHandles(infoWithIdList, defaultDownloadFolder)
 }
 
 const downloadToDisk = async (
@@ -324,26 +329,26 @@ const downloadFromUrl = (url: string, fileName: string): void => {
 
 export const startDownloadingQueue = async (
   fm: FileManager,
-  infoList: FileInfo[],
+  infoListWithIds: FileInfoWithUUID[],
   trackers?: Array<(progress: DownloadProgress) => void>,
   isOpenWindow?: boolean,
 ): Promise<void> => {
-  if (!infoList.length || (trackers && trackers.length !== infoList.length)) return
+  if (!infoListWithIds.length || (trackers && trackers.length !== infoListWithIds.length)) return
 
   try {
     const fileHandles: FileInfoWithHandle[] | undefined = isOpenWindow
-      ? infoList.map(info => ({ info }))
-      : await getFileHandles(infoList)
+      ? infoListWithIds.map(infoWithId => ({ infoWithId }))
+      : await getFileHandles(infoListWithIds)
 
     if (!fileHandles) return
 
     await Promise.all(
       fileHandles.map(async (fh, i) => {
-        const name = fh.info.name
         const tracker = trackers ? trackers[i] : undefined
 
-        createDownloadAbort(name)
-        const signal = downloadAborts.getSignal(name)
+        const uuid = fh.infoWithId.uuid
+        createDownloadAbort(uuid)
+        const signal = downloadAborts.getSignal(uuid)
 
         try {
           if (fh.cancelled) {
@@ -352,11 +357,13 @@ export const startDownloadingQueue = async (
             return
           }
 
-          const dataStreams = (await fm.download(fh.info)) as ReadableStream<Uint8Array>[]
+          const dataStreams = (await fm.download(fh.infoWithId.info, undefined, undefined, {
+            signal,
+          })) as ReadableStream<Uint8Array>[]
 
           if (!dataStreams || dataStreams.length === 0) {
             // eslint-disable-next-line no-console
-            console.error(`No data streams returned for ${name}`)
+            console.error(`No data streams returned for ${fh.infoWithId.info.name}`)
             tracker?.({ progress: 0, isDownloading: false, state: DownloadState.Error })
 
             return
@@ -365,7 +372,7 @@ export const startDownloadingQueue = async (
           let success = false
 
           if (isOpenWindow || !fh.handle) {
-            success = await downloadToBlob(dataStreams, fh.info, tracker, isOpenWindow, signal)
+            success = await downloadToBlob(dataStreams, fh.infoWithId.info, tracker, isOpenWindow, signal)
           } else {
             success = await downloadToDisk(dataStreams, fh.handle, tracker, signal)
           }
@@ -375,7 +382,7 @@ export const startDownloadingQueue = async (
           }
 
           if (success) {
-            const size = fh.info.customMetadata?.size
+            const size = fh.infoWithId.info.customMetadata?.size
             const finalProgress = size ? Number(size) : 0
             tracker({ progress: finalProgress, isDownloading: false })
 
@@ -397,7 +404,7 @@ export const startDownloadingQueue = async (
             tracker?.({ progress: 0, isDownloading: false, state: DownloadState.Cancelled })
           }
         } finally {
-          downloadAborts.abort(name)
+          downloadAborts.abort(uuid)
         }
       }),
     )

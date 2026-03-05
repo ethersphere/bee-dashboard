@@ -74,6 +74,7 @@ export default defineConfig(({ mode }) => {
       extensions: ['.ts', '.tsx', '.js', '.jsx', '.css', '.scss'],
     },
     optimizeDeps: {
+      // include: [],
       // exclude: [], // add libs for local development, if needed, e.g.: @solarpunkltd/file-manager-lib
     },
     build: {

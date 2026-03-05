@@ -62,6 +62,8 @@ export function CreateDriveModal({
   const validationError = duplicate && nameExists ? 'Drive already exists. Please choose another name.' : ''
 
   useEffect(() => {
+    isMountedRef.current = true
+
     return () => {
       isMountedRef.current = false
     }

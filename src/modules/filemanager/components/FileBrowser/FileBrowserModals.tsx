@@ -17,6 +17,7 @@ interface FileBrowserModalsProps {
   confirmBulkRestore: boolean
   showDestroyDriveModal: boolean
   pendingCancelUpload: string | null
+  pendingCancelDownload: string | null
   onDeleteCancel: () => void
   onDeleteProceed: (action: FileAction) => void
   onForgetConfirm: () => Promise<void>
@@ -27,6 +28,8 @@ interface FileBrowserModalsProps {
   onDestroyConfirm: () => Promise<void>
   onCancelUploadConfirm: () => void
   onCancelUploadCancel: () => void
+  onCancelDownloadConfirm: () => void
+  onCancelDownloadCancel: () => void
 }
 
 export function FileBrowserModals({
@@ -38,6 +41,7 @@ export function FileBrowserModals({
   confirmBulkRestore,
   showDestroyDriveModal,
   pendingCancelUpload,
+  pendingCancelDownload,
   onDeleteCancel,
   onDeleteProceed,
   onForgetConfirm,
@@ -48,6 +52,8 @@ export function FileBrowserModals({
   onDestroyConfirm,
   onCancelUploadConfirm,
   onCancelUploadCancel,
+  onCancelDownloadCancel,
+  onCancelDownloadConfirm,
 }: FileBrowserModalsProps): ReactElement {
   return (
     <>
@@ -122,6 +128,17 @@ export function FileBrowserModals({
           cancelLabel="Keep uploading"
           onConfirm={onCancelUploadConfirm}
           onCancel={onCancelUploadCancel}
+        />
+      )}
+
+      {pendingCancelDownload && (
+        <ConfirmModal
+          title="Cancel download?"
+          message="Are you sure you want to cancel this download?"
+          confirmLabel="Cancel download"
+          cancelLabel="Keep downloading"
+          onConfirm={onCancelDownloadConfirm}
+          onCancel={onCancelDownloadCancel}
         />
       )}
     </>
