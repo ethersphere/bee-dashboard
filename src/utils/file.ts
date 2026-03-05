@@ -112,6 +112,13 @@ export function getPath(file: FilePath): string {
   return (file.path || file.webkitRelativePath || file.name).replace(/^\//g, '') // remove the starting slash
 }
 
+export function sanitizeDisplayPath(path: string): string {
+  return path
+    .replaceAll('\\', '/')
+    .replace(/^\/+/, '')
+    .replace(/(?:\.\.\/)+|[?#].*/g, '')
+}
+
 /**
  * Utility function that is needed to have correct directory structure as webkitRelativePath is read only
  */

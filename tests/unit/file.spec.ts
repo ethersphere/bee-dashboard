@@ -1,4 +1,4 @@
-const { detectIndexHtml } = require('@/utils/file')
+const { detectIndexHtml, sanitizeDisplayPath } = require('@/utils/file')
 
 const mockFileParams = {
   lastModified: 0,
@@ -13,6 +13,13 @@ const mockFileParams = {
 }
 
 describe('file utils', () => {
+  it('sanitizeDisplayPath should remove traversal and URL fragments', () => {
+    expect(sanitizeDisplayPath('/folder/../image.png')).toBe('folder/image.png')
+    expect(sanitizeDisplayPath('..\\secret\\image.png')).toBe('secret/image.png')
+    expect(sanitizeDisplayPath('image.png?download=1#preview')).toBe('image.png')
+    expect(sanitizeDisplayPath('/nested/path/image.png')).toBe('nested/path/image.png')
+  })
+
   it('detectIndexHtml should find index.html with multiple files', () => {
     expect(
       detectIndexHtml([

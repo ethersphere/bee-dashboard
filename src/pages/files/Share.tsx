@@ -13,6 +13,7 @@ import { META_FILE_NAME } from '../../constants'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
+import { sanitizeDisplayPath } from '../../utils/file'
 import { determineHistoryName, LocalStorageKeys, putHistory } from '../../utils/localStorage'
 import { loadManifest } from '../../utils/manifest'
 
@@ -105,20 +106,19 @@ export function Share(): ReactElement {
 
   function onOpen() {
     const isImage = Boolean(metadata?.isImage)
+    let targetPath = ''
 
     if (isImage) {
       const imagePath = Object.keys(swarmEntries).find(path => /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(path))
       const candidatePath = imagePath || metadata?.name
-      const normalizedPath = candidatePath?.replace(/^\/+/, '')
+      const normalizedPath = candidatePath ? sanitizeDisplayPath(candidatePath) : undefined
 
       if (normalizedPath) {
-        window.open(`${apiUrl}/bzz/${hash}/${encodeURI(normalizedPath)}`, '_blank')
-
-        return
+        targetPath = encodeURI(normalizedPath)
       }
     }
 
-    window.open(`${apiUrl}/bzz/${hash}/`, '_blank')
+    window.open(`${apiUrl}/bzz/${hash}/${targetPath}`, '_blank')
   }
 
   function onClose() {
