@@ -248,6 +248,7 @@ export function Provider({ children }: Props) {
         }
 
         setFm(manager)
+        syncDrives(manager)
         syncFiles(manager)
       }
     }
