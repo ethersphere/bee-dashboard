@@ -218,19 +218,19 @@ export interface DestroyDriveOptions {
 export const handleDestroyAndForgetDrive = async (options: DestroyDriveOptions): Promise<void> => {
   const { beeApi, fm, adminDrive, drive, isDestroy, onSuccess, onError } = { ...options }
 
-  if (!beeApi || !fm || !fm.adminStamp || !adminDrive) {
-    onError?.('Error destroying drive: Admin Drive, Bee API or FM is invalid!')
+  if (!beeApi) {
+    onError?.('Bee API is invalid!')
+
+    return
+  }
+
+  if (!fm || !fm.adminStamp || !adminDrive) {
+    onError?.('FM is invalid!')
 
     return
   }
 
   try {
-    const stamp = (await getUsableStamps(beeApi)).find(s => s.batchID.toString() === drive.batchId.toString())
-
-    if (!stamp) {
-      throw new Error(`Postage stamp (${drive.batchId}) for the current drive (${drive.name}) not found`)
-    }
-
     verifyDriveSpace({
       fm,
       driveId: drive.id.toString(),
@@ -243,21 +243,27 @@ export const handleDestroyAndForgetDrive = async (options: DestroyDriveOptions):
       },
     })
 
-    const ttlDays = stamp.duration.toDays()
-
-    if (ttlDays <= 2 || !isDestroy) {
-      if (isDestroy) {
-        // eslint-disable-next-line no-console
-        console.warn(`Stamp TTL ${ttlDays} <= 2 days, skipping drive destruction: forgetting the drive.`)
-      }
-
+    if (!isDestroy) {
       await fm.forgetDrive(drive)
+      onSuccess?.()
 
       return
     }
 
-    await fm.destroyDrive(drive, stamp)
+    const driveStamp = (await getUsableStamps(beeApi)).find(s => s.batchID.toString() === drive.batchId.toString())
 
+    const ttlDays = driveStamp?.duration.toDays() ?? 0
+
+    if (!driveStamp || ttlDays <= 2) {
+      // eslint-disable-next-line no-console
+      console.warn(`Stamp not found or TTL ${ttlDays} <= 2 days, skipping drive destruction: forgetting the drive.`)
+      await fm.forgetDrive(drive)
+      onSuccess?.()
+
+      return
+    }
+
+    await fm.destroyDrive(drive, driveStamp)
     onSuccess?.()
   } catch (e) {
     onError?.(e)

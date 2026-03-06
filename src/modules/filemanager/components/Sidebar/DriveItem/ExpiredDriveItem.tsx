@@ -6,6 +6,7 @@ import Drive from 'remixicon-react/HardDrive2LineIcon'
 import MoreFill from 'remixicon-react/MoreFillIcon'
 
 import { Context as FMContext } from '../../../../../providers/FileManager'
+import { Context as SettingsContext } from '../../../../../providers/Settings'
 import { useContextMenu } from '../../../hooks/useContextMenu'
 import { handleDestroyAndForgetDrive } from '../../../utils/bee'
 import { truncateNameMiddle } from '../../../utils/common'
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export function ExpiredDriveItem({ drive, onForgot, setErrorMessage }: Props): ReactElement {
+  const { beeApi } = useContext(SettingsContext)
   const { fm, adminDrive, setShowError } = useContext(FMContext)
   const [isHovered, setIsHovered] = useState(false)
   const [showForgetConfirm, setShowForgetConfirm] = useState(false)
@@ -93,6 +95,7 @@ export function ExpiredDriveItem({ drive, onForgot, setErrorMessage }: Props): R
           onCancel={() => setShowForgetConfirm(false)}
           onConfirm={async () => {
             await handleDestroyAndForgetDrive({
+              beeApi,
               fm,
               drive,
               isDestroy: false,
@@ -101,9 +104,9 @@ export function ExpiredDriveItem({ drive, onForgot, setErrorMessage }: Props): R
                 setShowForgetConfirm(false)
                 await onForgot?.()
               },
-              onError: () => {
+              onError: (err: unknown) => {
                 setShowForgetConfirm(false)
-                setErrorMessage?.(`Failed to forget drive ${drive.name}`)
+                setErrorMessage?.(`Failed to forget drive ${drive.name}: ${err}`)
                 setShowError(true)
               },
             })
