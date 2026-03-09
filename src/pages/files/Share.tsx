@@ -145,6 +145,12 @@ export function Share(): ReactElement {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hash])
 
+  function downloadFailedWithError(err: unknown) {
+    const msg = <span>Error: {err instanceof Error ? err.message : String(err)}</span>
+    enqueueSnackbar(msg, { variant: 'error' })
+    setDownloading(false)
+  }
+
   async function onDownload() {
     if (!beeApi || !hash) {
       // eslint-disable-next-line no-console
@@ -166,6 +172,7 @@ export function Share(): ReactElement {
       } catch (err) {
         // eslint-disable-next-line no-console
         console.error('Failed to download file: ', err)
+        downloadFailedWithError(err)
 
         return
       }
@@ -184,6 +191,7 @@ export function Share(): ReactElement {
         } catch (err) {
           // eslint-disable-next-line no-console
           console.error('Failed to download files: ', err)
+          downloadFailedWithError(err)
 
           return
         }
@@ -195,6 +203,7 @@ export function Share(): ReactElement {
       } catch (err) {
         // eslint-disable-next-line no-console
         console.error('Failed to compress file: ', err)
+        downloadFailedWithError(err)
 
         return
       }
