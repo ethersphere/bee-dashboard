@@ -48,7 +48,7 @@ const Dashboard = (props: Props): ReactElement => {
     }
 
     if (newBeeDesktopVersion !== '') {
-      enqueueSnackbar(`There is new Swarm Dashboard version ${newBeeDesktopVersion}!`, {
+      enqueueSnackbar(`There is new Swarm Desktop version ${newBeeDesktopVersion}!`, {
         variant: 'warning',
         preventDuplicate: true,
         key: 'desktopNewVersion',
