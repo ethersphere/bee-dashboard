@@ -1,5 +1,5 @@
-import type { FileInfo, FileInfoOptions, UploadProgress } from '@solarpunkltd/file-manager-lib'
-import { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import type { DriveInfo, FileInfo, FileInfoOptions, UploadProgress } from '@solarpunkltd/file-manager-lib'
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Context as FMContext } from '../../../providers/FileManager'
 import { Context as SettingsContext } from '../../../providers/Settings'
@@ -27,7 +27,7 @@ const ABORT_EVENT = 'abort'
 type ResolveResult = {
   cancelled: boolean
   finalName?: string
-  isReplace?: boolean
+  isReplace: boolean
   replaceTopic?: string
   replaceHistory?: string
 }
@@ -63,6 +63,18 @@ type UploadTask = {
   replaceHistory?: string
   driveId: string
   driveName: string
+}
+
+const isNameInvalid = (
+  finalName: string,
+  isReplace: boolean,
+  replaceHistory?: string,
+  replaceTopic?: string,
+): boolean => {
+  const invalidCombo = isReplace && (!replaceHistory || !replaceTopic)
+  const invalidName = !finalName || finalName.trim().length === 0
+
+  return invalidCombo || invalidName
 }
 
 const normalizeCustomMetadata = (meta: UploadMeta): Record<string, string> => {
@@ -175,7 +187,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
 
   const isMountedRef = useRef(true)
   const uploadAbortsRef = useRef<AbortManager>(new AbortManager())
-  const queueRef = useRef<UploadTask[]>([])
+  const uploadTaskQueueRef = useRef<UploadTask[]>([])
   const runningRef = useRef(false)
   const cancelledQueuedRef = useRef<Set<string>>(new Set())
   const cancelledUploadingRef = useRef<Set<string>>(new Set())
@@ -195,7 +207,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
     cancelledQueuedRef.current.delete(uuid)
     cancelledUploadingRef.current.delete(uuid)
     uploadAbortsRef.current.abort(uuid)
-    queueRef.current = queueRef.current.filter(t => {
+    uploadTaskQueueRef.current = uploadTaskQueueRef.current.filter(t => {
       return t.uuid !== uuid
     })
   }, [])
@@ -250,7 +262,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
       })
 
       if (choice.action === ConflictAction.Cancel) {
-        return { cancelled: true }
+        return { cancelled: true, isReplace: false }
       }
 
       if (choice.action === ConflictAction.KeepBoth) {
@@ -347,7 +359,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
     [],
   )
 
-  const processUploadTask = useCallback(
+  const executeUploadTask = useCallback(
     async (task: UploadTask) => {
       if (!fm) return
 
@@ -447,107 +459,258 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
     [fm, files, currentStamp, trackUpload, refreshStamp, setShowError, setErrorMessage],
   )
 
-  const trackDownload = useCallback(
-    (props: TrackDownloadProps) => {
-      if (!isMountedRef.current) {
-        return () => {
-          // No-op function for unmounted component
-        }
+  const trackDownload = useCallback((props: TrackDownloadProps) => {
+    if (!isMountedRef.current) {
+      return () => {
+        // No-op function for unmounted component
+      }
+    }
+
+    let startedAt: number | undefined
+    let etaState: ETAState = {
+      lastTs: undefined,
+      lastProcessed: 0,
+      lastEta: undefined,
+    }
+
+    setDownloadItems(prev => {
+      const row = createTransferItem(
+        props.uuid,
+        props.name,
+        props.size,
+        FileTransferType.Download,
+        props.driveName,
+        TransferStatus.Downloading,
+      )
+      row.startedAt = undefined
+      const idx = prev.findIndex(p => p.uuid === props.uuid)
+
+      if (idx === -1) return [...prev, row]
+      const out = [...prev]
+      out[idx] = { ...row, startedAt: prev[idx].startedAt ?? row.startedAt }
+
+      return out
+    })
+
+    const onProgress = (dp: DownloadProgress) => {
+      if (!isMountedRef.current) return
+
+      const now = Date.now()
+
+      if (!startedAt) {
+        startedAt = now
+        etaState.lastTs = now
       }
 
-      const driveName = props.driveName ?? currentDrive?.name
+      let percent = 0
+      let etaSec: number | undefined
 
-      let startedAt: number | undefined
-      let etaState: ETAState = {
-        lastTs: undefined,
-        lastProcessed: 0,
-        lastEta: undefined,
+      if (props.expectedSize && props.expectedSize > 0 && dp.progress >= 0) {
+        percent = Math.floor((dp.progress / props.expectedSize) * 100)
+        const result = calculateETA(etaState, { processed: dp.progress, total: props.expectedSize }, startedAt, now)
+        etaSec = result.etaSec
+        etaState = result.updatedState
       }
 
-      setDownloadItems(prev => {
-        const row = createTransferItem(
-          props.uuid,
-          props.name,
-          props.size,
-          FileTransferType.Download,
-          driveName,
-          TransferStatus.Downloading,
-        )
-        row.startedAt = undefined
-        const idx = prev.findIndex(p => p.uuid === props.uuid)
+      setDownloadItems(prev =>
+        updateTransferItems(prev, props.uuid, {
+          percent: Math.max(prev.find(it => it.uuid === props.uuid)?.percent || 0, percent),
+          etaSec,
+          startedAt: prev.find(it => it.uuid === props.uuid)?.startedAt ?? startedAt,
+        }),
+      )
 
-        if (idx === -1) return [...prev, row]
-        const out = [...prev]
-        out[idx] = { ...row, startedAt: prev[idx].startedAt ?? row.startedAt }
+      if (!dp.isDownloading) {
+        const finishedAt = Date.now()
 
-        return out
-      })
+        setDownloadItems(prev => {
+          const currentItem = prev.find(it => it.uuid === props.uuid)
+          const elapsedSec = currentItem?.startedAt ? Math.round((finishedAt - currentItem.startedAt) / 1000) : 0
 
-      const onProgress = (dp: DownloadProgress) => {
-        if (!isMountedRef.current) return
+          if (dp.state === DownloadState.Cancelled || dp.state === DownloadState.Error) {
+            const wasCancelled = dp.state === DownloadState.Cancelled || cancelledDownloadingRef.current.has(props.uuid)
 
-        const now = Date.now()
-
-        if (!startedAt) {
-          startedAt = now
-          etaState.lastTs = now
-        }
-
-        let percent = 0
-        let etaSec: number | undefined
-
-        if (props.expectedSize && props.expectedSize > 0 && dp.progress >= 0) {
-          percent = Math.floor((dp.progress / props.expectedSize) * 100)
-          const result = calculateETA(etaState, { processed: dp.progress, total: props.expectedSize }, startedAt, now)
-          etaSec = result.etaSec
-          etaState = result.updatedState
-        }
-
-        setDownloadItems(prev =>
-          updateTransferItems(prev, props.uuid, {
-            percent: Math.max(prev.find(it => it.uuid === props.uuid)?.percent || 0, percent),
-            etaSec,
-            startedAt: prev.find(it => it.uuid === props.uuid)?.startedAt ?? startedAt,
-          }),
-        )
-
-        if (!dp.isDownloading) {
-          const finishedAt = Date.now()
-
-          setDownloadItems(prev => {
-            const currentItem = prev.find(it => it.uuid === props.uuid)
-            const elapsedSec = currentItem?.startedAt ? Math.round((finishedAt - currentItem.startedAt) / 1000) : 0
-
-            if (dp.state === DownloadState.Cancelled || dp.state === DownloadState.Error) {
-              const wasCancelled =
-                dp.state === DownloadState.Cancelled || cancelledDownloadingRef.current.has(props.uuid)
-
-              cancelledDownloadingRef.current.delete(props.uuid)
-
-              return updateTransferItems(prev, props.uuid, {
-                status: wasCancelled ? TransferStatus.Cancelled : TransferStatus.Error,
-                etaSec: undefined,
-                elapsedSec: 0,
-                percent: currentItem?.percent ?? 0,
-              })
-            }
+            cancelledDownloadingRef.current.delete(props.uuid)
 
             return updateTransferItems(prev, props.uuid, {
-              percent: 100,
-              status: TransferStatus.Done,
-              etaSec: 0,
-              elapsedSec,
+              status: wasCancelled ? TransferStatus.Cancelled : TransferStatus.Error,
+              etaSec: undefined,
+              elapsedSec: 0,
+              percent: currentItem?.percent ?? 0,
             })
+          }
+
+          return updateTransferItems(prev, props.uuid, {
+            percent: 100,
+            status: TransferStatus.Done,
+            etaSec: 0,
+            elapsedSec,
           })
-        }
+        })
+      }
+    }
+
+    return onProgress
+  }, [])
+
+  const { allTaken, reserved, sameDrive } = useMemo(() => {
+    if (!currentDrive) {
+      return { allTaken: new Set(''), reserved: new Set(''), sameDrive: [] }
+    }
+
+    const progressNames = new Set<string>(uploadItems.filter(u => u.driveName === currentDrive.name).map(u => u.name))
+    const sameDrive = collectSameDrive(currentDrive.id.toString())
+    const onDiskNames = new Set<string>(sameDrive.map((fi: FileInfo) => fi.name))
+    const reserved = new Set<string>()
+
+    const allTaken = new Set<string>([
+      ...Array.from(onDiskNames),
+      ...Array.from(reserved),
+      ...Array.from(progressNames),
+    ])
+
+    return {
+      allTaken,
+      reserved,
+      sameDrive,
+    }
+  }, [currentDrive, collectSameDrive, uploadItems])
+
+  const createUploadTask = useCallback(
+    async (file: File, drive: DriveInfo): Promise<UploadTask | null> => {
+      const uuid = uuidV4()
+
+      const meta = buildUploadMeta([file])
+      const prettySize = formatBytes(meta.size)
+
+      let { finalName, isReplace, replaceTopic, replaceHistory } = await resolveConflict(file.name, sameDrive, allTaken)
+      finalName = finalName ?? ''
+
+      if (isNameInvalid(finalName, isReplace, replaceHistory, replaceTopic)) {
+        return null
       }
 
-      return onProgress
+      if (reserved.has(finalName)) {
+        const retryTaken = new Set<string>([...Array.from(allTaken), finalName])
+        const retry = await resolveConflict(finalName, sameDrive, retryTaken)
+        finalName = retry.finalName ?? ''
+        isReplace = retry.isReplace
+        replaceTopic = retry.replaceTopic
+        replaceHistory = retry.replaceHistory
+      }
+
+      if (isNameInvalid(finalName, isReplace, replaceHistory, replaceTopic)) {
+        return null
+      }
+
+      reserved.add(finalName)
+
+      ensureQueuedRow(
+        uuid,
+        finalName,
+        isReplace ? FileTransferType.Update : FileTransferType.Upload,
+        prettySize,
+        drive.name,
+      )
+
+      return {
+        uuid,
+        file,
+        finalName,
+        prettySize,
+        isReplace: Boolean(isReplace),
+        replaceTopic,
+        replaceHistory,
+        driveId: drive.id.toString(),
+        driveName: drive.name,
+      }
     },
-    // currentDrive casues rerenders and flickering during the progress tracking
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [allTaken, ensureQueuedRow, reserved, resolveConflict, sameDrive],
   )
+
+  const preflight = useCallback(
+    async (filesArr: File[]): Promise<UploadTask[]> => {
+      if (!currentDrive || !fm) return []
+
+      if (!currentStamp || !currentStamp.usable) {
+        setErrorMessage?.('Stamp is not usable.')
+        setShowError(true)
+
+        return []
+      }
+
+      const tasks: UploadTask[] = []
+      const inFlightSize = uploadTaskQueueRef.current.reduce((sum, t) => sum + t.file.size, 0)
+      const inFlightCount = uploadTaskQueueRef.current.length
+      let currentFileSizeSum = inFlightSize
+
+      for (let i = 0; i < filesArr.length; i++) {
+        const file = filesArr[i]
+        currentFileSizeSum += file.size
+        const fileCount = inFlightCount + i + 1
+
+        const { ok } = verifyDriveSpace({
+          fm,
+          redundancyLevel: currentDrive.redundancyLevel,
+          stamp: currentStamp,
+          useInfoSize: true,
+          driveId: currentDrive.id.toString(),
+          adminRedundancy: adminDrive?.redundancyLevel,
+          fileSize: currentFileSizeSum,
+          fileCount,
+          cb: err => {
+            setErrorMessage?.(err + ' (' + truncateNameMiddle(file.name) + ')')
+            setShowError(true)
+          },
+        })
+
+        if (!ok) {
+          break
+        }
+
+        const task = await createUploadTask(file, currentDrive)
+
+        if (!task) {
+          break
+        }
+
+        tasks.push(task)
+      }
+
+      return tasks
+    },
+    [fm, currentDrive, currentStamp, adminDrive, createUploadTask, setErrorMessage, setShowError],
+  )
+
+  const runUploadQueue = useCallback(async () => {
+    if (runningRef.current) return
+    runningRef.current = true
+
+    while (uploadTaskQueueRef.current.length > 0) {
+      const task = uploadTaskQueueRef.current[0]
+
+      if (!task) break
+
+      if (cancelledQueuedRef.current.has(task.uuid)) {
+        safeSetState(
+          isMountedRef,
+          setUploadItems,
+        )(prev => updateTransferItems(prev, task.uuid, { status: TransferStatus.Cancelled }))
+        cancelledQueuedRef.current.delete(task.uuid)
+      } else {
+        await executeUploadTask(task)
+      }
+
+      uploadTaskQueueRef.current.shift()
+    }
+
+    runningRef.current = false
+
+    // Race guard: uploadFiles may have appended tasks and called runUploadQueue() again
+    if (uploadTaskQueueRef.current.length > 0) {
+      runUploadQueue()
+    }
+  }, [executeUploadTask])
 
   const uploadFiles = useCallback(
     (picked: FileList | File[]): void => {
@@ -555,7 +718,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
 
       if (filesArr.length === 0 || !fm || !currentDrive || !currentStamp) return
 
-      const currentlyQueued = queueRef.current.length
+      const currentlyQueued = uploadTaskQueueRef.current.length
       const newFilesCount = filesArr.length
       const totalAfterAdd = currentlyQueued + newFilesCount
 
@@ -566,158 +729,6 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
         setShowError(true)
 
         return
-      }
-      // TODO: move out this function from the cb and use as a util for better readaility
-      const preflight = async (): Promise<UploadTask[]> => {
-        const progressNames = new Set<string>(
-          uploadItems.filter(u => u.driveName === currentDrive.name).map(u => u.name),
-        )
-        const sameDrive = collectSameDrive(currentDrive.id.toString())
-        const onDiskNames = new Set<string>(sameDrive.map((fi: FileInfo) => fi.name))
-        const reserved = new Set<string>()
-        const tasks: UploadTask[] = []
-
-        const allTaken = new Set<string>([
-          ...Array.from(onDiskNames),
-          ...Array.from(reserved),
-          ...Array.from(progressNames),
-        ])
-
-        // Track cumulative file sizes for capacity verification
-        let fileSizeSum = 0
-        let fileCount = 0
-
-        const processFile = async (file: File): Promise<UploadTask | null> => {
-          if (!currentStamp || !currentStamp.usable) {
-            setErrorMessage?.('Stamp is not usable.')
-            setShowError(true)
-
-            return null
-          }
-
-          const uuid = uuidV4()
-
-          const meta = buildUploadMeta([file])
-          const prettySize = formatBytes(meta.size)
-
-          fileSizeSum += file.size
-          fileCount += 1
-
-          const { ok } = verifyDriveSpace({
-            fm,
-            redundancyLevel: currentDrive.redundancyLevel,
-            stamp: currentStamp,
-            useInfoSize: true,
-            driveId: currentDrive.id.toString(),
-            adminRedundancy: adminDrive?.redundancyLevel,
-            fileSize: fileSizeSum,
-            fileCount,
-            cb: err => {
-              setErrorMessage?.(err + ' (' + truncateNameMiddle(file.name) + ')')
-              setShowError(true)
-            },
-          })
-
-          if (!ok) {
-            return null
-          }
-
-          let { finalName, isReplace, replaceTopic, replaceHistory } = await resolveConflict(
-            file.name,
-            sameDrive,
-            allTaken,
-          )
-          finalName = finalName ?? ''
-
-          const invalidCombo = Boolean(isReplace) && (!replaceHistory || !replaceTopic)
-          const invalidName = !finalName || finalName.trim().length === 0
-
-          if (!invalidCombo && !invalidName) {
-            if (reserved.has(finalName)) {
-              const retryTaken = new Set<string>([...Array.from(allTaken), finalName])
-              const retry = await resolveConflict(finalName, sameDrive, retryTaken)
-              finalName = retry.finalName ?? ''
-              isReplace = retry.isReplace
-              replaceTopic = retry.replaceTopic
-              replaceHistory = retry.replaceHistory
-            }
-
-            const retryInvalidCombo = Boolean(isReplace) && (!replaceHistory || !replaceTopic)
-            const retryInvalidName = !finalName || finalName.trim().length === 0
-
-            if (!retryInvalidCombo && !retryInvalidName) {
-              reserved.add(finalName)
-
-              ensureQueuedRow(
-                uuid,
-                finalName,
-                isReplace ? FileTransferType.Update : FileTransferType.Upload,
-                prettySize,
-                currentDrive.name,
-              )
-
-              return {
-                uuid,
-                file,
-                finalName,
-                prettySize,
-                isReplace: Boolean(isReplace),
-                replaceTopic,
-                replaceHistory,
-                driveId: currentDrive.id.toString(),
-                driveName: currentDrive.name,
-              }
-            }
-          }
-
-          return null
-        }
-
-        for (const file of filesArr) {
-          const task = await processFile(file)
-
-          if (task) {
-            tasks.push(task)
-          } else {
-            // Stop processing remaining files if capacity check failed
-            break
-          }
-        }
-
-        return tasks
-      }
-
-      const runQueue = async () => {
-        if (runningRef.current) return
-        runningRef.current = true
-
-        try {
-          while (queueRef.current.length > 0) {
-            const task = queueRef.current[0]
-
-            if (!task) break
-
-            const isCancelled = cancelledQueuedRef.current.has(task.uuid)
-
-            if (isCancelled) {
-              safeSetState(
-                isMountedRef,
-                setUploadItems,
-              )(prev => updateTransferItems(prev, task.uuid, { status: TransferStatus.Cancelled }))
-              cancelledQueuedRef.current.delete(task.uuid)
-              queueRef.current.shift()
-            } else {
-              await processUploadTask(task)
-              queueRef.current.shift()
-            }
-          }
-        } finally {
-          runningRef.current = false
-
-          if (queueRef.current.length > 0) {
-            runQueue()
-          }
-        }
       }
 
       void (async () => {
@@ -741,25 +752,12 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
           }
         }
 
-        const tasks = await preflight()
-        queueRef.current = queueRef.current.concat(tasks)
-        runQueue()
+        const tasks = await preflight(filesArr)
+        uploadTaskQueueRef.current = uploadTaskQueueRef.current.concat(tasks)
+        runUploadQueue()
       })()
     },
-    [
-      fm,
-      currentDrive,
-      currentStamp,
-      collectSameDrive,
-      resolveConflict,
-      ensureQueuedRow,
-      processUploadTask,
-      uploadItems,
-      adminDrive,
-      setShowError,
-      setErrorMessage,
-      beeApi,
-    ],
+    [fm, currentStamp, currentDrive, beeApi, setShowError, setErrorMessage, preflight, runUploadQueue],
   )
 
   const cancelOrDismissUpload = useCallback(
@@ -774,7 +772,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
 
         if (row.status === TransferStatus.Queued) {
           cancelledQueuedRef.current.add(row.uuid)
-          queueRef.current = queueRef.current.filter(t => t.uuid !== row.uuid)
+          uploadTaskQueueRef.current = uploadTaskQueueRef.current.filter(t => t.uuid !== row.uuid)
 
           return prev.map(r => (r.uuid === row.uuid ? { ...r, status: TransferStatus.Cancelled } : r))
         }
@@ -818,7 +816,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
 
   const dismissAllUploads = useCallback(() => {
     uploadAbortsRef.current.clear()
-    queueRef.current = []
+    uploadTaskQueueRef.current = []
     cancelledQueuedRef.current.clear()
     cancelledUploadingRef.current.clear()
     setUploadItems([])
