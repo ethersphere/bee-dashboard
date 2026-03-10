@@ -1,14 +1,14 @@
 import { ReactElement } from 'react'
 import DownIcon from 'remixicon-react/ArrowDownSLineIcon'
 
-import { useBulkActions } from '../../../hooks/useBulkActions'
+import { BulkActionsResult } from '../../../hooks/useBulkActions'
 import { SortDir, SortKey } from '../../../hooks/useSorting'
 
 import { capitalizeFirstLetter } from '@/modules/filemanager/utils/common'
 
 interface FileBrowserHeaderProps {
   isSearchMode: boolean
-  bulk: ReturnType<typeof useBulkActions>
+  bulk: BulkActionsResult
   sortKey: SortKey
   sortDir: SortDir
   onSortName: () => void

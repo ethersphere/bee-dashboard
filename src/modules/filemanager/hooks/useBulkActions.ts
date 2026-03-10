@@ -1,6 +1,6 @@
 import { PostageBatch } from '@ethersphere/bee-js'
 import type { FileInfo } from '@solarpunkltd/file-manager-lib'
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { type RefObject, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Context as FMContext } from '../../../providers/FileManager'
 import { Context as SettingsContext } from '../../../providers/Settings'
@@ -9,16 +9,33 @@ import { DownloadProgress, TrackDownloadProps } from '../constants/transfers'
 import { getUsableStamps } from '../utils/bee'
 import { formatBytes, getFileId, safeSetState } from '../utils/common'
 import { FileInfoWithUUID, startDownloadingQueue } from '../utils/download'
-import { FileOperation, performBulkFileOperation } from '../utils/fileOperations'
+import { FileOperation, isElementPickerSupported, performBulkFileOperation } from '../utils/fileOperations'
 
-interface BulkOptions {
+export interface BulkOptions {
   listToRender: FileInfo[]
   trackDownload: (props: TrackDownloadProps) => (dp: DownloadProgress) => void
   setErrorMessage?: (error: string) => void
 }
 
-export function useBulkActions({ listToRender, setErrorMessage, trackDownload }: BulkOptions) {
-  const { fm, adminDrive, drives, refreshStamp, setShowError } = useContext(FMContext)
+export interface BulkActionsResult {
+  selectedIds: Set<string>
+  selectedFiles: FileInfo[]
+  selectedCount: number
+  allChecked: boolean
+  someChecked: boolean
+  fileInputRef: RefObject<HTMLInputElement | null>
+  toggleOne: (fi: FileInfo, checked: boolean) => void
+  selectAll: () => void
+  clearAll: () => void
+  uploadFromPicker: () => void
+  download: (list: FileInfo[]) => Promise<void>
+  trash: (list: FileInfo[]) => Promise<void>
+  restore: (list: FileInfo[]) => Promise<void>
+  forget: (list: FileInfo[]) => Promise<void>
+}
+
+export function useBulkActions({ listToRender, trackDownload, setErrorMessage }: BulkOptions): BulkActionsResult {
+  const { fm, adminDrive, currentDrive, drives, refreshStamp, setShowError } = useContext(FMContext)
   const { beeApi } = useContext(SettingsContext)
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
@@ -69,11 +86,23 @@ export function useBulkActions({ listToRender, setErrorMessage, trackDownload }:
   const selectAll = useCallback(() => setSelectedIds(new Set(allIds)), [allIds])
   const clearAll = useCallback(() => setSelectedIds(new Set()), [])
 
-  const bulkUploadFromPicker = useCallback(() => {
-    fileInputRef.current?.click()
+  const uploadFromPicker = useCallback(() => {
+    const el = fileInputRef.current
+
+    if (!el) return
+
+    try {
+      if (isElementPickerSupported(el)) {
+        el.showPicker()
+      } else {
+        el.click()
+      }
+    } catch {
+      el.click()
+    }
   }, [])
 
-  const bulkDownload = useCallback(
+  const download = useCallback(
     async (list: FileInfo[]) => {
       if (!fm || !list?.length) return
 
@@ -85,7 +114,7 @@ export function useBulkActions({ listToRender, setErrorMessage, trackDownload }:
         const rawSize = fi.customMetadata?.size as string | number | undefined
         const prettySize = formatBytes(rawSize)
         const expected = rawSize ? Number(rawSize) : undefined
-        const driveName = drives.find(d => d.id.toString() === fi.driveId.toString())?.name
+        const driveName = drives.find(d => d.id.toString() === fi.driveId.toString())?.name ?? currentDrive?.name
         const uuid = uuidV4()
 
         infoListWitIDs[i] = { uuid, info: fi }
@@ -94,16 +123,16 @@ export function useBulkActions({ listToRender, setErrorMessage, trackDownload }:
           name: fi.name,
           size: prettySize,
           expectedSize: expected,
-          driveName,
+          driveName: driveName ?? 'unknown',
         })
       }
 
       await startDownloadingQueue(fm, infoListWitIDs, trackers)
     },
-    [fm, trackDownload, drives],
+    [fm, currentDrive, trackDownload, drives],
   )
 
-  const bulkTrash = useCallback(
+  const trash = useCallback(
     async (list: FileInfo[]) => {
       if (!fm || !list?.length) return
 
@@ -126,7 +155,7 @@ export function useBulkActions({ listToRender, setErrorMessage, trackDownload }:
     [fm, driveStamps, clearAll, refreshStamp, setErrorMessage, setShowError],
   )
 
-  const bulkRestore = useCallback(
+  const restore = useCallback(
     async (list: FileInfo[]) => {
       if (!fm || !list?.length) return
 
@@ -149,7 +178,7 @@ export function useBulkActions({ listToRender, setErrorMessage, trackDownload }:
     [fm, driveStamps, refreshStamp, clearAll, setErrorMessage, setShowError],
   )
 
-  const bulkForget = useCallback(
+  const forget = useCallback(
     async (list: FileInfo[]) => {
       if (!fm || !fm.adminStamp || !adminDrive || !list?.length) return
 
@@ -176,26 +205,22 @@ export function useBulkActions({ listToRender, setErrorMessage, trackDownload }:
     [fm, adminDrive, driveStamps, clearAll, refreshStamp, setErrorMessage, setShowError],
   )
 
-  return useMemo(
+  return useMemo<BulkActionsResult>(
     () => ({
-      // selection
       selectedIds,
-      setSelectedIds,
       selectedFiles,
       selectedCount,
       allChecked,
       someChecked,
+      fileInputRef,
       toggleOne,
       selectAll,
       clearAll,
-      // file input (for bulk upload)
-      fileInputRef,
-      bulkUploadFromPicker,
-      // actions
-      bulkDownload,
-      bulkTrash,
-      bulkRestore,
-      bulkForget,
+      uploadFromPicker,
+      download,
+      trash,
+      restore,
+      forget,
     }),
     [
       selectedIds,
@@ -206,11 +231,11 @@ export function useBulkActions({ listToRender, setErrorMessage, trackDownload }:
       toggleOne,
       selectAll,
       clearAll,
-      bulkUploadFromPicker,
-      bulkDownload,
-      bulkTrash,
-      bulkRestore,
-      bulkForget,
+      uploadFromPicker,
+      download,
+      trash,
+      restore,
+      forget,
     ],
   )
 }

@@ -3,6 +3,7 @@ import { FileInfo, FileManager } from '@solarpunkltd/file-manager-lib'
 import { DownloadProgress, DownloadState } from '../constants/transfers'
 
 import { AbortManager } from './abortManager'
+import { isDirectoryPickerSupported, isPickerSupported } from './fileOperations'
 import { guessMime, VIEWERS } from './view'
 
 const downloadAborts = new AbortManager()
@@ -140,12 +141,6 @@ interface FileInfoWithHandle {
   handle?: FileSystemFileHandle
   cancelled?: boolean
 }
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const isPickerSupported = (): boolean => typeof (window as any).showSaveFilePicker === 'function'
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const isDirectoryPickerSupported = (): boolean => typeof (window as any).showDirectoryPicker === 'function'
 
 const isUserCancellation = (error: unknown): boolean => {
   const errName = (error as { name?: string })?.name
