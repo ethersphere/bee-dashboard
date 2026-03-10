@@ -435,7 +435,15 @@ export function VersionsList({ versions, headFi, restoreVersion, onDownload }: V
       await startDownloadingQueue(
         fm,
         [{ uuid, info: fileInfo }],
-        [onDownload({ uuid, name: fileInfo.name, size: formatBytes(rawSize), expectedSize, driveName })],
+        [
+          onDownload({
+            uuid,
+            name: fileInfo.name,
+            size: formatBytes(rawSize),
+            expectedSize,
+            driveName: driveName ?? 'unknown',
+          }),
+        ],
       )
     },
     [handleCloseContext, fm, beeApi, onDownload, drives, currentDrive],

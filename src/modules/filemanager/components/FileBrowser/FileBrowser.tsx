@@ -16,7 +16,7 @@ import { useView } from '../../../../pages/filemanager/ViewContext'
 import { Context as FMContext } from '../../../../providers/FileManager'
 import { Context as SettingsContext } from '../../../../providers/Settings'
 import { FileAction, FileTransferType, TransferStatus, ViewType } from '../../constants/transfers'
-import { useBulkActions } from '../../hooks/useBulkActions'
+import { BulkActionsResult, useBulkActions } from '../../hooks/useBulkActions'
 import { useContextMenu } from '../../hooks/useContextMenu'
 import { useDragAndDrop } from '../../hooks/useDragAndDrop'
 import { useFileFiltering } from '../../hooks/useFileFiltering'
@@ -118,7 +118,7 @@ type FileBrowserContextMenuBlockProps = {
   dropDir: Dir
   drives: DriveInfo[]
   view: ViewType
-  bulk: ReturnType<typeof useBulkActions>
+  bulk: BulkActionsResult
   adminStamp: PostageBatch | undefined
   doRefresh: () => void
   onContextUploadFile: () => void
@@ -162,11 +162,11 @@ function FileBrowserContextMenuBlock({
         onRefresh={doRefresh}
         enableRefresh={Boolean(adminStamp)}
         onUploadFile={onContextUploadFile}
-        onBulkDownload={() => bulk.bulkDownload(bulk.selectedFiles)}
+        onBulkDownload={() => bulk.download(bulk.selectedFiles)}
         onBulkRestore={() => setConfirmBulkRestore(true)}
         onBulkDelete={() => setShowBulkDeleteModal(true)}
         onBulkDestroy={() => setShowDestroyDriveModal(true)}
-        onBulkForget={() => bulk.bulkForget(bulk.selectedFiles)}
+        onBulkForget={() => bulk.forget(bulk.selectedFiles)}
       />
     </div>
   )
@@ -196,7 +196,6 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
   const [safePos, setSafePos] = useState<Point>(pos)
   const [dropDir, setDropDir] = useState<Dir>(Dir.Down)
 
-  const legacyUploadRef = useRef<HTMLInputElement | null>(null)
   const contentRef = useRef<HTMLDivElement | null>(null)
   const bodyRef = useRef<HTMLDivElement | null>(null)
   const isMountedRef = useRef(true)
@@ -281,20 +280,7 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
   }
 
   const onContextUploadFile = () => {
-    const el = legacyUploadRef.current
-
-    if (!el) return
-
-    try {
-      if (typeof (el as HTMLInputElement).showPicker === 'function') {
-        ;(el as HTMLInputElement).showPicker()
-      } else {
-        el.click()
-      }
-    } catch {
-      el.click()
-    }
-
+    bulk.uploadFromPicker()
     requestAnimationFrame(() => handleCloseContext())
   }
 
@@ -323,7 +309,7 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
     setShowBulkDeleteModal(false)
 
     if (action === FileAction.Trash) {
-      return await bulk.bulkTrash(bulk.selectedFiles)
+      return await bulk.trash(bulk.selectedFiles)
     }
 
     if (action === FileAction.Forget) {
@@ -489,9 +475,9 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
 
   const onBulk = useMemo(
     () => ({
-      download: () => bulk.bulkDownload(bulk.selectedFiles),
+      download: () => bulk.download(bulk.selectedFiles),
       restore: () => setConfirmBulkRestore(true),
-      forget: () => bulk.bulkForget(bulk.selectedFiles),
+      forget: () => bulk.forget(bulk.selectedFiles),
       destroy: () => setShowDestroyDriveModal(true),
       delete: () => setShowBulkDeleteModal(true),
     }),
@@ -502,7 +488,6 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
     <>
       {conflictPortal}
 
-      <input type="file" ref={legacyUploadRef} style={{ display: 'none' }} onChange={onFileSelected} multiple />
       <input type="file" ref={bulk.fileInputRef} style={{ display: 'none' }} onChange={onFileSelected} multiple />
 
       <div className="fm-file-browser-container" data-search-mode={isSearchMode ? 'true' : 'false'}>
@@ -605,12 +590,12 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
             onDeleteCancel={() => setShowBulkDeleteModal(false)}
             onDeleteProceed={handleDeleteModalProceed}
             onForgetConfirm={async () => {
-              await bulk.bulkForget(bulk.selectedFiles)
+              await bulk.forget(bulk.selectedFiles)
               setConfirmBulkForget(false)
             }}
             onForgetCancel={() => setConfirmBulkForget(false)}
             onRestoreConfirm={async () => {
-              await bulk.bulkRestore(bulk.selectedFiles)
+              await bulk.restore(bulk.selectedFiles)
               setConfirmBulkRestore(false)
             }}
             onRestoreCancel={() => setConfirmBulkRestore(false)}

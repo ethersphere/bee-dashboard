@@ -151,3 +151,12 @@ export async function performBulkFileOperation({
     }
   }
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isPickerSupported = (): boolean => typeof (window as any).showSaveFilePicker === 'function'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isDirectoryPickerSupported = (): boolean => typeof (window as any).showDirectoryPicker === 'function'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isElementPickerSupported = (el: any): boolean => typeof (el as HTMLInputElement).showPicker === 'function'
