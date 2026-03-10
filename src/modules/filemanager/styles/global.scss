@@ -1,3 +1,5 @@
+$fm-modal-vertical-offset: 48px;
+
 .fm-modal-container {
   position: absolute;
   top: 0;
@@ -25,6 +27,7 @@
   flex-direction: column;
   gap: 24px;
   justify-content: center;
+  max-height: calc(100vh - #{$fm-modal-vertical-offset});
 }
 
 .fm-modal-window-header {
@@ -36,6 +39,15 @@
   font-size: 18px;
   color: rgb(237, 129, 49);
   font-weight: 700;
+}
+
+.fm-modal-window-scrollable {
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
 }
 
 .fm-modal-window-body {

@@ -293,60 +293,61 @@ export function VersionHistoryModal({ fileInfo, onCancelClick, onDownload }: Ver
             </>
           </span>
         </div>
+        <div className="fm-modal-window-scrollable">
+          <div className="fm-modal-window-body fm-expiring-notification-modal-body">
+            {error && <div className="fm-modal-white-section fm-soft-text">{error}</div>}
 
-        <div className="fm-modal-window-body fm-expiring-notification-modal-body">
-          {error && <div className="fm-modal-white-section fm-soft-text">{error}</div>}
+            {loading && <div className="fm-loading">Loading…</div>}
+            {!error && !loading && pageVersions.length === 0 && (
+              <div className="fm-empty">No versions found for this file.</div>
+            )}
+            {conflictWarning && (
+              <div
+                className="fm-modal-white-section fm-soft-text"
+                style={{ borderLeft: '3px solid var(--fm-accent, #6aa7ff)' }}
+              >
+                {conflictWarning}
+              </div>
+            )}
 
-          {loading && <div className="fm-loading">Loading…</div>}
-          {!error && !loading && pageVersions.length === 0 && (
-            <div className="fm-empty">No versions found for this file.</div>
-          )}
-          {conflictWarning && (
-            <div
-              className="fm-modal-white-section fm-soft-text"
-              style={{ borderLeft: '3px solid var(--fm-accent, #6aa7ff)' }}
-            >
-              {conflictWarning}
-            </div>
-          )}
+            {renameConfirm && (
+              <ConfirmModal
+                title={
+                  <>
+                    Restore this version?
+                    <Tooltip label={TOOLTIPS.FILE_OPERATION_RESTORE_VERSION} />
+                  </>
+                }
+                message={
+                  <>
+                    Restoring will rename:&nbsp;
+                    <b className="vh-name" title={renameConfirm.headName}>
+                      {truncateNameMiddle(renameConfirm.headName)}
+                    </b>{' '}
+                    →{' '}
+                    <b className="vh-name" title={renameConfirm.targetName}>
+                      {truncateNameMiddle(renameConfirm.targetName)}
+                    </b>
+                    .
+                  </>
+                }
+                confirmLabel="Restore"
+                cancelLabel="Cancel"
+                onConfirm={async () => {
+                  await doRestore(renameConfirm.version)
+                  setRenameConfirm(null)
+                }}
+                onCancel={() => setRenameConfirm(null)}
+              />
+            )}
 
-          {renameConfirm && (
-            <ConfirmModal
-              title={
-                <>
-                  Restore this version?
-                  <Tooltip label={TOOLTIPS.FILE_OPERATION_RESTORE_VERSION} />
-                </>
-              }
-              message={
-                <>
-                  Restoring will rename:&nbsp;
-                  <b className="vh-name" title={renameConfirm.headName}>
-                    {truncateNameMiddle(renameConfirm.headName)}
-                  </b>{' '}
-                  →{' '}
-                  <b className="vh-name" title={renameConfirm.targetName}>
-                    {truncateNameMiddle(renameConfirm.targetName)}
-                  </b>
-                  .
-                </>
-              }
-              confirmLabel="Restore"
-              cancelLabel="Cancel"
-              onConfirm={async () => {
-                await doRestore(renameConfirm.version)
-                setRenameConfirm(null)
-              }}
-              onCancel={() => setRenameConfirm(null)}
+            <VersionsList
+              versions={!error && !loading ? pageVersions : []}
+              headFi={fileInfo}
+              restoreVersion={restoreVersion}
+              onDownload={trackDownload}
             />
-          )}
-
-          <VersionsList
-            versions={!error && !loading ? pageVersions : []}
-            headFi={fileInfo}
-            restoreVersion={restoreVersion}
-            onDownload={trackDownload}
-          />
+          </div>
         </div>
 
         <div className="fm-modal-window-footer vh-footer">

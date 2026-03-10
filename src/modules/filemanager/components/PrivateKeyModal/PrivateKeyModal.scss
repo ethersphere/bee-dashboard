@@ -116,16 +116,6 @@
   flex-shrink: 0;
 }
 
-.fm-initialization-modal-container .fm-modal-window-scrollable {
-  overflow-y: auto;
-  overflow-x: hidden;
-  flex: 1 1 auto;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
 .fm-main:has(.fm-initialization-modal-container) {
   border-left: none;
 }

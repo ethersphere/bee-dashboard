@@ -20,7 +20,9 @@ const useStyles = makeStyles()(theme => ({
   },
 
   fileManagerOn: {
-    padding: '0px',
+    padding: '0px !important',
+    margin: '0px !important',
+    maxWidth: '100% !important',
   },
 }))
 

@@ -228,8 +228,8 @@ export function UpgradeDriveModal({
         <div className="fm-modal-window-header">
           <DriveIcon size="18px" /> Upgrade {truncateNameMiddle(drive.name || stamp.label || shortBatchId, 35)}
         </div>
+        <div>Choose extension period and additional storage for your drive.</div>
         <div className="fm-modal-window-scrollable">
-          <div>Choose extension period and additional storage for your drive.</div>
           <div className="fm-modal-window-body">
             <div className="fm-upgrade-drive-modal-wallet">
               <div className="fm-upgrade-drive-modal-wallet-header fm-emphasized-text">

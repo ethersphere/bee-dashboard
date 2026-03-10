@@ -9,16 +9,6 @@
   flex-direction: column;
 }
 
-.fm-modal-window-scrollable {
-  overflow-y: auto;
-  overflow-x: hidden;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding-right: 4px;
-}
-
 .fm-upgrade-drive-modal-wallet {
   display: flex;
   flex-direction: column;
