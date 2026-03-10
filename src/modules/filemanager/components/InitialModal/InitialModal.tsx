@@ -294,71 +294,73 @@ export function InitialModal({
       <div className="fm-modal-window">
         <div className="fm-modal-window-header">Welcome to your Swarm File Manager</div>
         <div>{initText} the File Manager</div>
-        {nonFullStamps.length > 0 && (
-          <div className="fm-modal-window-body">
-            <div className="fm-modal-window-input-container">
-              <CustomDropdown
-                id="batch-id-selector"
-                options={createBatchIdOptions(nonFullStamps)}
-                value={selectedBatchIndex}
-                label="Link an existing Admin Drive (optional)"
-                onChange={(index: number) => {
-                  setSelectedBatchIndex(index)
+        <div className="fm-modal-window-scrollable">
+          {nonFullStamps.length > 0 && (
+            <div className="fm-modal-window-body">
+              <div className="fm-modal-window-input-container">
+                <CustomDropdown
+                  id="batch-id-selector"
+                  options={createBatchIdOptions(nonFullStamps)}
+                  value={selectedBatchIndex}
+                  label="Link an existing Admin Drive (optional)"
+                  onChange={(index: number) => {
+                    setSelectedBatchIndex(index)
 
-                  if (index === -1) {
-                    setSelectedBatch(null)
-                  }
-                }}
-                placeholder={BATCH_ID_PLACEHOLDER}
-              />
-              {selectedBatch && (
-                <div className="fm-drive-item-content">
-                  <div className="fm-drive-item-capacity">
-                    Capacity <ProgressBar value={capacityPct} width="64px" /> {usedSize} / {stampSize}
+                    if (index === -1) {
+                      setSelectedBatch(null)
+                    }
+                  }}
+                  placeholder={BATCH_ID_PLACEHOLDER}
+                />
+                {selectedBatch && (
+                  <div className="fm-drive-item-content">
+                    <div className="fm-drive-item-capacity">
+                      Capacity <ProgressBar value={capacityPct} width="64px" /> {usedSize} / {stampSize}
+                    </div>
+                    <div className="fm-drive-item-capacity">
+                      Expiry date: {selectedBatch.duration.toEndDate().toLocaleDateString()}
+                    </div>
                   </div>
-                  <div className="fm-drive-item-capacity">
-                    Expiry date: {selectedBatch.duration.toEndDate().toLocaleDateString()}
-                  </div>
-                </div>
-              )}
-              {selectedBatch && setSecurityLevel(setErasureCodeLevel)}
-            </div>
-          </div>
-        )}
-        {!selectedBatch && (
-          <div className="fm-modal-window-body">
-            <div className="fm-modal-window-input-container">
-              <label htmlFor="admin-desired-lifetime" className="fm-input-label">
-                Create a new Admin Drive with desired lifetime: <Tooltip label={TOOLTIPS.ADMIN_DESIRED_LIFETIME} />
-              </label>
-              <CustomDropdown
-                id="admin-desired-lifetime"
-                options={desiredLifetimeOptions}
-                value={lifetimeIndex}
-                onChange={setLifetimeIndex}
-                placeholder="Select a value"
-              />
-            </div>
-            {setSecurityLevel(setErasureCodeLevel)}
-            <div className="fm-modal-window-input-container">
-              <div className="fm-modal-estimated-cost-container">
-                <div className="fm-emphasized-text">Estimated Cost:</div>
-                <div>
-                  {cost} BZZ {isBalanceSufficient ? '' : '(Insufficient balance)'}
-                  {isxDaiBalanceSufficient ? '' : ' (Insufficient xDAI balance)'}
-                </div>
-                <Tooltip label={TOOLTIPS.ADMIN_ESTIMATED_COST} />
+                )}
+                {selectedBatch && setSecurityLevel(setErasureCodeLevel)}
               </div>
-              <div>(Based on current network conditions)</div>
-              {renderUltraLightNodeWarning()}
-              {isNodeSyncing && !selectedBatch && (
-                <div className="fm-modal-info-warning" style={{ marginBottom: '16px' }}>
-                  Node is syncing. Please wait until sync completes before purchasing a stamp.
-                </div>
-              )}
             </div>
-          </div>
-        )}
+          )}
+          {!selectedBatch && (
+            <div className="fm-modal-window-body">
+              <div className="fm-modal-window-input-container">
+                <label htmlFor="admin-desired-lifetime" className="fm-input-label">
+                  Create a new Admin Drive with desired lifetime: <Tooltip label={TOOLTIPS.ADMIN_DESIRED_LIFETIME} />
+                </label>
+                <CustomDropdown
+                  id="admin-desired-lifetime"
+                  options={desiredLifetimeOptions}
+                  value={lifetimeIndex}
+                  onChange={setLifetimeIndex}
+                  placeholder="Select a value"
+                />
+              </div>
+              {setSecurityLevel(setErasureCodeLevel)}
+              <div className="fm-modal-window-input-container">
+                <div className="fm-modal-estimated-cost-container">
+                  <div className="fm-emphasized-text">Estimated Cost:</div>
+                  <div>
+                    {cost} BZZ {isBalanceSufficient ? '' : '(Insufficient balance)'}
+                    {isxDaiBalanceSufficient ? '' : ' (Insufficient xDAI balance)'}
+                  </div>
+                  <Tooltip label={TOOLTIPS.ADMIN_ESTIMATED_COST} />
+                </div>
+                <div>(Based on current network conditions)</div>
+                {renderUltraLightNodeWarning()}
+                {isNodeSyncing && !selectedBatch && (
+                  <div className="fm-modal-info-warning" style={{ marginBottom: '16px' }}>
+                    Node is syncing. Please wait until sync completes before purchasing a stamp.
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
         <div className="fm-modal-window-footer">
           <Button
             label={selectedBatch ? `${createText} Drive` : `Purchase Stamp & ${createText} Drive`}

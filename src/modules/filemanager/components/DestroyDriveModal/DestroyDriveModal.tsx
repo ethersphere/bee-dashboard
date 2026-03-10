@@ -23,20 +23,22 @@ export function ProgressDestroyModal({ drive, onMinimize }: ProgressDestroyModal
 
   return createPortal(
     <div className="fm-modal-container">
-      <div className="fm-modal-window">
-        <div className="fm-modal-window-header fm-red-font">Destroying Drive</div>
-        <div className="fm-modal-window-body">
-          <div className="fm-modal-body-destroy">
-            <div className="fm-emphasized-text">Drive &quot;{drive.name}&quot; is being destroyed</div>
-            <div>Please wait while the operation completes...</div>
-            <div style={{ marginTop: '20px', textAlign: 'center' }}>
-              <div className="fm-mini-spinner" style={{ display: 'inline-block', marginRight: '10px' }} />
-              <span>Destroying drive...</span>
+      <div className="fm-modal-window-scrollable">
+        <div className="fm-modal-window">
+          <div className="fm-modal-window-header fm-red-font">Destroying Drive</div>
+          <div className="fm-modal-window-body">
+            <div className="fm-modal-body-destroy">
+              <div className="fm-emphasized-text">Drive &quot;{drive.name}&quot; is being destroyed</div>
+              <div>Please wait while the operation completes...</div>
+              <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                <div className="fm-mini-spinner" style={{ display: 'inline-block', marginRight: '10px' }} />
+                <span>Destroying drive...</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="fm-modal-window-footer">
-          <Button label="Minimize" variant="secondary" onClick={onMinimize} />
+          <div className="fm-modal-window-footer">
+            <Button label="Minimize" variant="secondary" onClick={onMinimize} />
+          </div>
         </div>
       </div>
     </div>,
@@ -57,28 +59,32 @@ export function DestroyDriveModal({ drive, onCancelClick, doDestroy }: DestroyDr
     <div className="fm-modal-container">
       <div className="fm-modal-window">
         <div className="fm-modal-window-header fm-red-font">Destroy entire drive</div>
-        <div className="fm-modal-window-body">
-          <div className="fm-modal-body-destroy">
-            <div className="fm-emphasized-text">Destroy Drive? This Action Is Permanent</div>
-            <div>All files stored only on this drive will become inaccessible.</div>
-            <div>
-              While the data may still temporarily persist on Swarm, it will be permanently removed once the storage
-              expires and the data is garbage collected by the network. The File Manager will no longer recognise or
-              recover these files.
-            </div>
-            <div>Confirmation:</div>
-            <div>Requires typing a fixed expression to prevent accidental deletion. This action cannot be undone.</div>
-            <div>
-              Type: <span className="fm-emphasized-text">{destroyDriveText}</span>
-            </div>
-            <div className="fm-modal-window-input-container">
-              <input
-                type="text"
-                id="drive-name"
-                placeholder={destroyDriveText}
-                value={driveNameInput}
-                onChange={e => setDriveNameInput(e.target.value)}
-              />
+        <div className="fm-modal-window-scrollable">
+          <div className="fm-modal-window-body">
+            <div className="fm-modal-body-destroy">
+              <div className="fm-emphasized-text">Destroy Drive? This Action Is Permanent</div>
+              <div>All files stored only on this drive will become inaccessible.</div>
+              <div>
+                While the data may still temporarily persist on Swarm, it will be permanently removed once the storage
+                expires and the data is garbage collected by the network. The File Manager will no longer recognise or
+                recover these files.
+              </div>
+              <div>Confirmation:</div>
+              <div>
+                Requires typing a fixed expression to prevent accidental deletion. This action cannot be undone.
+              </div>
+              <div>
+                Type: <span className="fm-emphasized-text">{destroyDriveText}</span>
+              </div>
+              <div className="fm-modal-window-input-container">
+                <input
+                  type="text"
+                  id="drive-name"
+                  placeholder={destroyDriveText}
+                  value={driveNameInput}
+                  onChange={e => setDriveNameInput(e.target.value)}
+                />
+              </div>
             </div>
           </div>
         </div>
