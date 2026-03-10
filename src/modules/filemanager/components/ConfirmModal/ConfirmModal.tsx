@@ -41,19 +41,20 @@ export function ConfirmModal({
     <div className={`fm-modal-container fm-confirm-modal ${background ? '' : 'fm-modal-no-background'}`}>
       <div className="fm-modal-window">
         <div className="fm-modal-window-header">{title}</div>
-
-        <div className="fm-modal-window-body">
-          {isProgress ? (
-            <div className="fm-spinner-center">
-              <div className="fm-spinner-message">
-                <div>{spinnerMessage || 'Working…'}</div>
-                <div className="fm-mini-spinner" />
+        <div className="fm-modal-window-scrollable">
+          <div className="fm-modal-window-body">
+            {isProgress ? (
+              <div className="fm-spinner-center">
+                <div className="fm-spinner-message">
+                  <div>{spinnerMessage || 'Working…'}</div>
+                  <div className="fm-mini-spinner" />
+                </div>
+                {showMinimize && <Button label="Minimize" variant="secondary" onClick={onMinimize} />}
               </div>
-              {showMinimize && <Button label="Minimize" variant="secondary" onClick={onMinimize} />}
-            </div>
-          ) : (
-            <div className="fm-modal-white-section">{message}</div>
-          )}
+            ) : (
+              <div className="fm-modal-white-section">{message}</div>
+            )}
+          </div>
         </div>
 
         {showFooter && (onCancel || onConfirm) && (
