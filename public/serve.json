@@ -1,12 +1,15 @@
 {
-    "trailingSlash": false,
-    "headers": [
+  "rewrites": [{ "source": "**", "destination": "/index.html" }],
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "*",
+      "headers": [
         {
-          "source" : "*",
-          "headers" : [{
-            "key" : "Cache-Control",
-            "value" : "max-age=3600"
-          }]
+          "key": "Cache-Control",
+          "value": "max-age=3600"
         }
-    ]    
+      ]
+    }
+  ]
 }

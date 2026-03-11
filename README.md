@@ -79,6 +79,12 @@ docker build . -t bee-dashboard
 docker run --rm -p 127.0.0.1:8080:8080 bee-dashboard
 ```
 
+Alternatively, use Docker Compose:
+
+```sh
+docker compose up
+```
+
 Bee dashboard is now available on [`http://localhost:8080`](http://localhost:8080)
 
 ### Development
