@@ -7,7 +7,6 @@ import HistoryIcon from 'remixicon-react/HistoryLineIcon'
 import { Context as FMContext } from '../../../../providers/FileManager'
 import { TOOLTIPS } from '../../constants/tooltips'
 import { ActionTag, DownloadProgress, TrackDownloadProps } from '../../constants/transfers'
-import { useTransfers } from '../../hooks/useTransfers'
 import { ConflictAction, useUploadConflictDialog } from '../../hooks/useUploadConflictDialog'
 import { verifyDriveSpace } from '../../utils/bee'
 import { indexStrToBigint, truncateNameMiddle } from '../../utils/common'
@@ -31,14 +30,11 @@ type RenameConfirmState = {
 interface VersionHistoryModalProps {
   fileInfo: FileInfo
   onCancelClick: () => void
-  onDownload?: (props: TrackDownloadProps) => (dp: DownloadProgress) => void
+  onDownload: (props: TrackDownloadProps) => (dp: DownloadProgress) => void
 }
 
 export function VersionHistoryModal({ fileInfo, onCancelClick, onDownload }: VersionHistoryModalProps): ReactElement {
   const { fm, files, currentDrive, currentStamp, refreshStamp } = useContext(FMContext)
-
-  const localTransfers = useTransfers({})
-  const trackDownload = onDownload ?? localTransfers.trackDownload
 
   const [openConflict, conflictPortal] = useUploadConflictDialog()
   const modalRoot = document.querySelector('.fm-main') || document.body
@@ -345,7 +341,7 @@ export function VersionHistoryModal({ fileInfo, onCancelClick, onDownload }: Ver
               versions={!error && !loading ? pageVersions : []}
               headFi={fileInfo}
               restoreVersion={restoreVersion}
-              onDownload={trackDownload}
+              onDownload={onDownload}
             />
           </div>
         </div>
