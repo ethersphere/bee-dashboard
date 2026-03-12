@@ -86,8 +86,9 @@ const findDrives = (
 
 export function Provider({ children }: Props) {
   const initInProgressRef = useRef(false)
+  const beeInstanceRef = useRef<Bee | null>(null)
 
-  const { apiUrl, beeApi } = useContext(SettingsContext)
+  const { apiUrl } = useContext(SettingsContext)
 
   const [fm, setFm] = useState<FileManagerBase | null>(null)
   const [shallReset, setShallReset] = useState<boolean>(false)
@@ -128,69 +129,70 @@ export function Provider({ children }: Props) {
     setFiles([...manager.fileInfoList])
   }, [])
 
-  const syncDrives = useCallback(
-    async (manager: FileManagerBase, di?: DriveInfo, remove?: boolean): Promise<void> => {
-      const usableStamps = await getUsableStamps(beeApi)
+  const syncDrives = useCallback(async (manager: FileManagerBase, di?: DriveInfo, remove?: boolean): Promise<void> => {
+    if (!beeInstanceRef.current) {
+      return
+    }
 
-      if (di) {
-        const isNotExpired = usableStamps.some(s => s.batchID.toString() === di.batchId.toString())
+    const usableStamps = await getUsableStamps(beeInstanceRef.current)
 
-        if (isNotExpired) {
-          if (remove) {
-            setDrives(prev => prev.filter(d => d.id.toString() !== di.id.toString()))
+    if (di) {
+      const isNotExpired = usableStamps.some(s => s.batchID.toString() === di.batchId.toString())
 
-            return
-          }
-
-          if (di.isAdmin) {
-            setAdminDrive(di)
-
-            return
-          }
-
-          setDrives(prev => {
-            const existingIndex = prev.findIndex(d => d.id.toString() === di.id.toString())
-
-            if (existingIndex >= 0) {
-              const updated = [...prev]
-              updated[existingIndex] = di
-
-              return updated
-            }
-
-            return [...prev, di]
-          })
-
-          return
-        }
-
+      if (isNotExpired) {
         if (remove) {
-          setExpiredDrives(prev => prev.filter(d => d.id.toString() !== di.id.toString()))
+          setDrives(prev => prev.filter(d => d.id.toString() !== di.id.toString()))
 
           return
         }
 
-        if (!di.isAdmin) {
-          setExpiredDrives(prev => {
-            const exists = prev.some(d => d.id.toString() === di.id.toString())
-
-            return exists ? prev : [...prev, di]
-          })
+        if (di.isAdmin) {
+          setAdminDrive(di)
 
           return
         }
 
-        // TODO: handle admin drive expiration!
+        setDrives(prev => {
+          const existingIndex = prev.findIndex(d => d.id.toString() === di.id.toString())
+
+          if (existingIndex >= 0) {
+            const updated = [...prev]
+            updated[existingIndex] = di
+
+            return updated
+          }
+
+          return [...prev, di]
+        })
+
         return
       }
 
-      const { adminDrive: tmpAdminDrive, userDrives, expiredDrives } = findDrives(manager.driveList, usableStamps)
-      setAdminDrive(tmpAdminDrive)
-      setDrives(userDrives)
-      setExpiredDrives(expiredDrives)
-    },
-    [beeApi],
-  )
+      if (remove) {
+        setExpiredDrives(prev => prev.filter(d => d.id.toString() !== di.id.toString()))
+
+        return
+      }
+
+      if (!di.isAdmin) {
+        setExpiredDrives(prev => {
+          const exists = prev.some(d => d.id.toString() === di.id.toString())
+
+          return exists ? prev : [...prev, di]
+        })
+
+        return
+      }
+
+      // TODO: handle admin drive expiration!
+      return
+    }
+
+    const { adminDrive: tmpAdminDrive, userDrives, expiredDrives } = findDrives(manager.driveList, usableStamps)
+    setAdminDrive(tmpAdminDrive)
+    setDrives(userDrives)
+    setExpiredDrives(expiredDrives)
+  }, [])
 
   const syncDrivesPublic = useCallback(async () => {
     if (fm) {
@@ -198,23 +200,24 @@ export function Provider({ children }: Props) {
     }
   }, [fm, syncDrives])
 
-  const refreshStamp = useCallback(
-    async (batchId: string): Promise<PostageBatch | undefined> => {
-      const usableStamps = await getUsableStamps(beeApi)
-      const refreshedStamp = usableStamps.find(s => s.batchID.toString() === batchId)
+  const refreshStamp = useCallback(async (batchId: string): Promise<PostageBatch | undefined> => {
+    if (!beeInstanceRef.current) {
+      return
+    }
 
-      setCurrentStamp(prev => {
-        if (prev && prev.batchID.toString() === batchId && refreshedStamp) {
-          return refreshedStamp
-        }
+    const usableStamps = await getUsableStamps(beeInstanceRef.current)
+    const refreshedStamp = usableStamps.find(s => s.batchID.toString() === batchId)
 
-        return prev
-      })
+    setCurrentStamp(prev => {
+      if (prev && prev.batchID.toString() === batchId && refreshedStamp) {
+        return refreshedStamp
+      }
 
-      return refreshedStamp
-    },
-    [beeApi],
-  )
+      return prev
+    })
+
+    return refreshedStamp
+  }, [])
 
   const init = useCallback(async (): Promise<FileManagerBase | null> => {
     const pk = getSignerPk()
@@ -231,8 +234,11 @@ export function Provider({ children }: Props) {
     setCurrentDrive(undefined)
     setCurrentStamp(undefined)
 
-    const bee = new Bee(apiUrl, { signer: pk })
-    const manager = new FileManagerBase(bee)
+    if (!beeInstanceRef.current) {
+      beeInstanceRef.current = new Bee(apiUrl, { signer: pk })
+    }
+
+    const manager = new FileManagerBase(beeInstanceRef.current)
 
     const handleInitialized = (success: boolean) => {
       setInitializationError(!success)
@@ -316,28 +322,28 @@ export function Provider({ children }: Props) {
 
     const manager = await init()
 
-    if (prevDriveId && manager) {
+    if (prevDriveId && manager && beeInstanceRef.current) {
       const refreshedDrive = manager.driveList.find(d => d.id.toString() === prevDriveId)
       setCurrentDrive(refreshedDrive)
 
-      const uStamps: PostageBatch[] = await getUsableStamps(beeApi)
+      const uStamps: PostageBatch[] = await getUsableStamps(beeInstanceRef.current)
       const isValidCurrentStamp = uStamps.find(s => s.batchID.toString() === prevStamp?.batchID.toString())
 
       setCurrentStamp(isValidCurrentStamp)
     }
-  }, [currentDrive?.id, currentStamp, init, beeApi])
+  }, [currentDrive?.id, currentStamp, init])
 
   useEffect(() => {
-    const pk = getSignerPk()
-
-    if (!pk || fm || initInProgressRef.current) return
+    if (!apiUrl || initInProgressRef.current) {
+      return
+    }
 
     const initFromLocalState = async () => {
       await init()
     }
 
     initFromLocalState()
-  }, [fm, init])
+  }, [apiUrl, init])
 
   useEffect(() => {
     if (fm && drives.length === 0 && !adminDrive) {

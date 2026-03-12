@@ -59,6 +59,10 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
     let isMounted = true
 
     const getStamps = async () => {
+      if (!beeApi) {
+        return
+      }
+
       const stamps = await getUsableStamps(beeApi)
 
       if (isMounted) {

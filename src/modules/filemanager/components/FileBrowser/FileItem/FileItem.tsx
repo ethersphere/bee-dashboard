@@ -121,6 +121,10 @@ export function FileItem({
     isMountedRef.current = true
 
     const getStamps = async () => {
+      if (!beeApi) {
+        return
+      }
+
       const stamps = await getUsableStamps(beeApi)
       const driveStamp = stamps.find(s =>
         drives.some(d => d.batchId.toString() === s.batchID.toString() && d.id === fileInfo.driveId),
