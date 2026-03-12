@@ -1,0 +1,47 @@
+# Dependencies and build outputs
+node_modules
+build
+lib
+
+# Git
+.git
+.gitignore
+
+# CI/CD and tooling
+.github
+.husky
+tests
+
+# Documentation
+docs
+*.md
+LICENSE
+CODE_OF_CONDUCT.md
+CODEOWNERS
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Environment files
+.env
+.env.local
+.env.development
+
+# OS files
+.DS_Store
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Coverage
+coverage
+
+# Dev scripts
+desktop.mjs
+utils
