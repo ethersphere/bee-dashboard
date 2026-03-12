@@ -38,6 +38,10 @@ export function NotificationBar({ setErrorMessage }: NotificationBarProps): Reac
     let isMounted = true
 
     const getStamps = async () => {
+      if (!beeApi) {
+        return
+      }
+
       const allStamps = await getUsableStamps(beeApi)
       const expiringStamps: PostageBatch[] = []
       const expiringDrives: DriveInfo[] = []

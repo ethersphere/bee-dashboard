@@ -172,6 +172,10 @@ export function InitialModal({
 
   useEffect(() => {
     const getStamps = async () => {
+      if (!beeApi) {
+        return
+      }
+
       const stamps = await getUsableStamps(beeApi)
 
       safeSetState(isMountedRef, setUsableStamps)([...stamps])

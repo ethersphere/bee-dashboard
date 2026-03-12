@@ -11,11 +11,7 @@ import React from 'react'
 import { getHumanReadableFileSize } from '../../../utils/file'
 import { ActionTag } from '../constants/transfers'
 
-export const getUsableStamps = async (bee: Bee | null): Promise<PostageBatch[]> => {
-  if (!bee) {
-    return []
-  }
-
+export const getUsableStamps = async (bee: Bee): Promise<PostageBatch[]> => {
   try {
     return (await bee.getPostageBatches())
       .filter(s => s.usable)
