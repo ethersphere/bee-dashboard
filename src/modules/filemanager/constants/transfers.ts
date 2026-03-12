@@ -39,7 +39,6 @@ export enum FileAction {
 
 export enum DownloadState {
   InProgress = 'in-progress',
-  Completed = 'completed',
   Cancelled = 'cancelled',
   Error = 'error',
 }
