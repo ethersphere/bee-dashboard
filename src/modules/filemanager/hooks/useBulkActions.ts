@@ -55,6 +55,10 @@ export function useBulkActions({ listToRender, trackDownload, setErrorMessage }:
     isMountedRef.current = true
 
     const getStamps = async () => {
+      if (!beeApi) {
+        return
+      }
+
       const stamps = await getUsableStamps(beeApi)
       const stampList = stamps.filter(s => drives.some(d => d.batchId.toString() === s.batchID.toString()))
 
