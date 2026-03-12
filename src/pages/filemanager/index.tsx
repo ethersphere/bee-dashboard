@@ -186,12 +186,9 @@ export function FileManagerPage(): ReactElement {
   }, [])
 
   useEffect(() => {
-    if (status.all !== CheckState.OK) {
-      setShowConnectionError(true)
-    } else {
-      setShowConnectionError(false)
-    }
-  }, [status.all])
+    const isApiError = status.apiConnection.checkState !== CheckState.OK || !status.apiConnection.isEnabled
+    setShowConnectionError(isApiError)
+  }, [status.apiConnection])
 
   useEffect(() => {
     if (!beeApi) {

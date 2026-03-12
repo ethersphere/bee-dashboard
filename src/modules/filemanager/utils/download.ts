@@ -6,6 +6,8 @@ import { AbortManager } from './abortManager'
 import { isDirectoryPickerSupported, isPickerSupported } from './fileOperations'
 import { guessMime, VIEWERS } from './view'
 
+const DefaultDownloadFolder = 'downloads'
+
 const downloadAborts = new AbortManager()
 
 enum Errors {
@@ -148,10 +150,7 @@ const isUserCancellation = (error: unknown): boolean => {
   return errName === Errors.AbortError || errName === Errors.NotAllowedError || errName === Errors.SecurityError
 }
 
-const getSingleFileHandle = async (
-  infoWithId: FileInfoWithUUID,
-  defaultDownloadFolder: string,
-): Promise<FileInfoWithHandle[] | undefined> => {
+const getSingleFileHandle = async (infoWithId: FileInfoWithUUID): Promise<FileInfoWithHandle | undefined> => {
   const { mime, ext } = guessMime(infoWithId.info.name, infoWithId.info.customMetadata)
 
   const pickerOptions: {
@@ -160,7 +159,7 @@ const getSingleFileHandle = async (
     types?: Array<{ accept: Record<string, string[]> }>
   } = {
     suggestedName: infoWithId.info.name,
-    startIn: defaultDownloadFolder,
+    startIn: DefaultDownloadFolder,
   }
 
   if (ext) {
@@ -171,24 +170,24 @@ const getSingleFileHandle = async (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handle = (await (window as any).showSaveFilePicker(pickerOptions)) as FileSystemFileHandle
 
-    return [{ infoWithId, handle }]
+    return { infoWithId, handle }
   } catch (error: unknown) {
-    return isUserCancellation(error) ? [{ infoWithId, cancelled: true }] : undefined
+    return isUserCancellation(error) ? { infoWithId, cancelled: true } : undefined
   }
 }
 
 const getMultipleFileHandles = async (
   infoWithIdList: FileInfoWithUUID[],
-  defaultDownloadFolder: string,
 ): Promise<FileInfoWithHandle[] | undefined> => {
   if (!isDirectoryPickerSupported()) {
     const handles: FileInfoWithHandle[] = []
 
     for (const info of infoWithIdList) {
-      const result = await getSingleFileHandle(info, defaultDownloadFolder)
+      const result = await getSingleFileHandle(info)
 
       if (!result) return undefined
-      handles.push(result[0])
+
+      handles.push(result)
     }
 
     return handles
@@ -198,7 +197,7 @@ const getMultipleFileHandles = async (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const dirHandle = (await (window as any).showDirectoryPicker({
       mode: 'readwrite',
-      startIn: defaultDownloadFolder,
+      startIn: DefaultDownloadFolder,
     })) as FileSystemDirectoryHandle
 
     const handles: FileInfoWithHandle[] = []
@@ -224,16 +223,16 @@ const getMultipleFileHandles = async (
   }
 }
 
-const getFileHandles = (infoWithIdList: FileInfoWithUUID[]): Promise<FileInfoWithHandle[] | undefined> => {
-  const defaultDownloadFolder = 'downloads'
-
+const getFileHandles = async (infoWithIdList: FileInfoWithUUID[]): Promise<FileInfoWithHandle[] | undefined> => {
   if (!isPickerSupported()) return Promise.resolve(infoWithIdList.map(infoWithId => ({ infoWithId })))
 
   if (infoWithIdList.length === 1) {
-    return getSingleFileHandle(infoWithIdList[0], defaultDownloadFolder)
+    const fh = await getSingleFileHandle(infoWithIdList[0])
+
+    return fh ? [fh] : undefined
   }
 
-  return getMultipleFileHandles(infoWithIdList, defaultDownloadFolder)
+  return getMultipleFileHandles(infoWithIdList)
 }
 
 const downloadToDisk = async (
@@ -258,20 +257,25 @@ const downloadToDisk = async (
   }
 }
 
+interface BlobDownloadResult {
+  success: boolean
+  cancelled: boolean
+}
+
 const downloadToBlob = async (
   streams: ReadableStream<Uint8Array>[],
   info: FileInfo,
   onDownloadProgress?: (progress: DownloadProgress) => void,
   isOpenWindow?: boolean,
   signal?: AbortSignal,
-): Promise<boolean> => {
+): Promise<BlobDownloadResult> => {
   try {
     for (const stream of streams) {
       const { mime } = guessMime(info.name, info.customMetadata)
       const blob = await streamToBlob(stream, mime, onDownloadProgress, signal)
 
       if (!blob) {
-        return false
+        return { success: false, cancelled: false }
       }
 
       const url = URL.createObjectURL(blob)
@@ -282,35 +286,89 @@ const downloadToBlob = async (
       }
 
       if (!opened) {
+        if (isOpenWindow && isPickerSupported()) {
+          const result = await saveBlobWithPicker(blob, info, onDownloadProgress, signal)
+          URL.revokeObjectURL(url)
+
+          return result
+        }
+
         downloadFromUrl(url, info.name)
       }
     }
 
-    return true
+    return { success: true, cancelled: false }
   } catch (error: unknown) {
     if ((error as { name?: string }).name !== Errors.AbortError) {
       // eslint-disable-next-line no-console
       console.error('Error during download and open: ', error)
     }
 
-    return false
+    return { success: false, cancelled: false }
   }
 }
 
 const openNewWindow = (name: string, mime: string, url: string): boolean => {
   const viewer = VIEWERS.find(v => v.test(mime))
+
+  if (!viewer) return false
+
   const win = window.open('', '_blank')
 
-  if (viewer && win) {
-    viewer.render(win, url, mime, name)
+  if (!win) return false
 
-    return true
+  try {
+    viewer.render(win, url, mime, name)
+  } catch (err: unknown) {
+    win.close()
+    // eslint-disable-next-line no-console
+    console.error('Failed to render file in a new window: ', err)
+
+    return false
   }
 
-  win?.close()
-
-  return false
+  return true
 }
+
+const saveBlobWithPicker = async (
+  blob: Blob,
+  info: FileInfo,
+  onDownloadProgress?: (progress: DownloadProgress) => void,
+  signal?: AbortSignal,
+): Promise<BlobDownloadResult> => {
+  const infoWithId: FileInfoWithUUID = { uuid: '', info }
+
+  try {
+    if (signal?.aborted) {
+      throw new DOMException('Aborted', Errors.AbortError)
+    }
+
+    const fh = await getSingleFileHandle(infoWithId)
+
+    if (!fh || !fh.handle) {
+      return { success: false, cancelled: false }
+    }
+
+    if (fh.cancelled) {
+      return { success: false, cancelled: true }
+    }
+
+    await processStream(blob.stream(), fh.handle, onDownloadProgress, signal)
+
+    return { success: true, cancelled: false }
+  } catch (err: unknown) {
+    if (isUserCancellation(err)) {
+      return { success: false, cancelled: true }
+    }
+
+    // eslint-disable-next-line no-console
+    console.error('Failed to save blob using file picker: ', err)
+
+    return { success: false, cancelled: false }
+  }
+}
+
+const RevokeUrlTimeout = 1000
 
 const downloadFromUrl = (url: string, fileName: string): void => {
   const a = document.createElement('a')
@@ -318,14 +376,14 @@ const downloadFromUrl = (url: string, fileName: string): void => {
   a.download = fileName
   document.body.appendChild(a)
   a.click()
-  window.URL.revokeObjectURL(url)
+  window.setTimeout(() => window.URL.revokeObjectURL(url), RevokeUrlTimeout)
   document.body.removeChild(a)
 }
 
 export const startDownloadingQueue = async (
   fm: FileManager,
   infoListWithIds: FileInfoWithUUID[],
-  trackers?: Array<(progress: DownloadProgress) => void>,
+  trackers: Array<(progress: DownloadProgress) => void>,
   isOpenWindow?: boolean,
 ): Promise<void> => {
   if (!infoListWithIds.length || (trackers && trackers.length !== infoListWithIds.length)) return
@@ -339,7 +397,7 @@ export const startDownloadingQueue = async (
 
     await Promise.all(
       fileHandles.map(async (fh, i) => {
-        const tracker = trackers ? trackers[i] : undefined
+        const tracker = trackers[i]
 
         const uuid = fh.infoWithId.uuid
         createDownloadAbort(uuid)
@@ -347,7 +405,7 @@ export const startDownloadingQueue = async (
 
         try {
           if (fh.cancelled) {
-            tracker?.({ progress: 0, isDownloading: false, state: DownloadState.Cancelled })
+            tracker({ progress: 0, isDownloading: false, state: DownloadState.Cancelled })
 
             return
           }
@@ -359,21 +417,27 @@ export const startDownloadingQueue = async (
           if (!dataStreams || dataStreams.length === 0) {
             // eslint-disable-next-line no-console
             console.error(`No data streams returned for ${fh.infoWithId.info.name}`)
-            tracker?.({ progress: 0, isDownloading: false, state: DownloadState.Error })
+            tracker({ progress: 0, isDownloading: false, state: DownloadState.Error })
 
             return
           }
 
           let success = false
+          let userCancelled = false
 
           if (isOpenWindow || !fh.handle) {
-            success = await downloadToBlob(dataStreams, fh.infoWithId.info, tracker, isOpenWindow, signal)
+            const { success: saved, cancelled } = await downloadToBlob(
+              dataStreams,
+              fh.infoWithId.info,
+              tracker,
+              isOpenWindow,
+              signal,
+            )
+
+            success = saved
+            userCancelled = cancelled
           } else {
             success = await downloadToDisk(dataStreams, fh.handle, tracker, signal)
-          }
-
-          if (!tracker) {
-            return
           }
 
           if (success) {
@@ -385,18 +449,22 @@ export const startDownloadingQueue = async (
           }
 
           if (!signal?.aborted) {
-            tracker({ progress: 0, isDownloading: false, state: DownloadState.Error })
+            tracker({
+              progress: 0,
+              isDownloading: false,
+              state: userCancelled ? DownloadState.Cancelled : DownloadState.Error,
+            })
           }
         } catch (error: unknown) {
           const isAbortError = (error as { name?: string }).name === Errors.AbortError
 
           if (!isAbortError) {
-            tracker?.({ progress: 0, isDownloading: false, state: DownloadState.Error })
+            tracker({ progress: 0, isDownloading: false, state: DownloadState.Error })
 
             // eslint-disable-next-line no-console
             console.error('download queue error: ', error)
           } else {
-            tracker?.({ progress: 0, isDownloading: false, state: DownloadState.Cancelled })
+            tracker({ progress: 0, isDownloading: false, state: DownloadState.Cancelled })
           }
         } finally {
           downloadAborts.abort(uuid)

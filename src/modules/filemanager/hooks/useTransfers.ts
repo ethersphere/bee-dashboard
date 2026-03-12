@@ -22,6 +22,7 @@ import { ConflictAction, useUploadConflictDialog } from './useUploadConflictDial
 const SAMPLE_WINDOW_MS = 500
 const ETA_SMOOTHING = 0.3
 const MAX_UPLOAD_FILES = 10
+const MAX_PARALLEL_UPLOAD_FILES = 2
 const ABORT_EVENT = 'abort'
 
 type ResolveResult = {
@@ -156,6 +157,19 @@ const updateTransferItems = <T extends TransferItem>(items: T[], uuid: string, u
   })
 }
 
+const getUploadCancelPromise = (signal: AbortSignal | undefined): { promise: Promise<never>; cleanup: () => void } => {
+  let reject: (reason?: Error) => void
+  const abortHandler = () => {
+    reject(new Error('Upload cancelled'))
+  }
+  const promise = new Promise<never>((_, rej) => {
+    reject = rej
+    signal?.addEventListener(ABORT_EVENT, abortHandler)
+  })
+
+  return { promise, cleanup: () => signal?.removeEventListener(ABORT_EVENT, abortHandler) }
+}
+
 const createTransferItem = (
   uuid: string,
   name: string,
@@ -185,10 +199,10 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
   const { beeApi } = useContext(SettingsContext)
   const [openConflict, conflictPortal] = useUploadConflictDialog()
 
-  const isMountedRef = useRef(true)
+  const isMountedRef = useRef<boolean>(true)
   const uploadAbortsRef = useRef<AbortManager>(new AbortManager())
   const uploadTaskQueueRef = useRef<UploadTask[]>([])
-  const runningRef = useRef(false)
+  const runningRef = useRef<boolean>(false)
   const cancelledQueuedRef = useRef<Set<string>>(new Set())
   const cancelledUploadingRef = useRef<Set<string>>(new Set())
   const cancelledDownloadingRef = useRef<Set<string>>(new Set())
@@ -221,11 +235,10 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
         const idx = prev.findIndex(p => p.uuid === uuid && p.status !== TransferStatus.Done)
         const base = createTransferItem(uuid, name, size, kind, driveName, TransferStatus.Queued)
 
-        if (idx !== -1) {
-          clearAllFlagsFor(uuid)
-        }
-
         if (idx === -1) return [...prev, base]
+
+        clearAllFlagsFor(uuid)
+
         const copy = [...prev]
         copy[idx] = base
 
@@ -378,14 +391,6 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
         topic: task.isReplace ? task.replaceTopic : undefined,
       }
 
-      const progressCb = trackUpload(
-        task.uuid,
-        task.finalName,
-        task.prettySize,
-        task.isReplace ? FileTransferType.Update : FileTransferType.Upload,
-        taskDrive.name,
-      )
-
       safeSetState(
         isMountedRef,
         setUploadItems,
@@ -400,33 +405,29 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
       uploadAbortsRef.current.create(task.uuid)
       const signal = uploadAbortsRef.current.getSignal(task.uuid)
 
-      let reject: (reason?: Error) => void
-      const abortHandler = () => {
-        reject(new Error('Upload cancelled'))
-      }
-
-      const checkCancellation = new Promise<never>((_, rej) => {
-        reject = rej
-        signal?.addEventListener(ABORT_EVENT, abortHandler)
-      })
+      const { promise: checkCancellation, cleanup: cleanupCancelPromise } = getUploadCancelPromise(signal)
 
       try {
         if (signal?.aborted) {
           throw new Error('Upload cancelled')
         }
 
+        const onUploadProgress = trackUpload(
+          task.uuid,
+          task.finalName,
+          task.prettySize,
+          task.isReplace ? FileTransferType.Update : FileTransferType.Upload,
+          taskDrive.name,
+        )
+
         const uploadPromise = fm.upload(
           taskDrive,
-          { ...info, onUploadProgress: progressCb },
+          { ...info, onUploadProgress },
           { actHistoryAddress: task.isReplace ? task.replaceHistory : undefined },
           { signal },
         )
 
         await Promise.race([uploadPromise, checkCancellation])
-
-        if (currentStamp) {
-          await refreshStamp(currentStamp.batchID.toString())
-        }
       } catch (error) {
         const wasCancelled = cancelledUploadingRef.current.has(task.uuid) || signal?.aborted
 
@@ -445,7 +446,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
           }),
         )
       } finally {
-        signal?.removeEventListener(ABORT_EVENT, abortHandler)
+        cleanupCancelPromise()
 
         const wasCancelled = cancelledUploadingRef.current.has(task.uuid) || signal?.aborted
 
@@ -456,7 +457,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
         }
       }
     },
-    [fm, files, currentStamp, trackUpload, refreshStamp, setShowError, setErrorMessage],
+    [fm, files, trackUpload, setShowError, setErrorMessage],
   )
 
   const trackDownload = useCallback((props: TrackDownloadProps) => {
@@ -686,37 +687,65 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
     if (runningRef.current) return
     runningRef.current = true
 
-    while (uploadTaskQueueRef.current.length > 0) {
-      const task = uploadTaskQueueRef.current[0]
+    const processNextTask = async (): Promise<void> => {
+      while (uploadTaskQueueRef.current.length > 0) {
+        const task = uploadTaskQueueRef.current.shift()
 
-      if (!task) break
+        if (!task) break
 
-      if (cancelledQueuedRef.current.has(task.uuid)) {
-        safeSetState(
-          isMountedRef,
-          setUploadItems,
-        )(prev => updateTransferItems(prev, task.uuid, { status: TransferStatus.Cancelled }))
-        cancelledQueuedRef.current.delete(task.uuid)
-      } else {
-        await executeUploadTask(task)
+        if (cancelledQueuedRef.current.has(task.uuid)) {
+          safeSetState(
+            isMountedRef,
+            setUploadItems,
+          )(prev => updateTransferItems(prev, task.uuid, { status: TransferStatus.Cancelled }))
+          cancelledQueuedRef.current.delete(task.uuid)
+        } else {
+          await executeUploadTask(task)
+        }
       }
-
-      uploadTaskQueueRef.current.shift()
     }
+
+    const workers: Promise<void>[] = []
+    for (let i = 0; i < MAX_PARALLEL_UPLOAD_FILES; i++) {
+      workers.push(processNextTask())
+    }
+
+    await Promise.all(workers)
 
     runningRef.current = false
 
     // Race guard: uploadFiles may have appended tasks and called runUploadQueue() again
     if (uploadTaskQueueRef.current.length > 0) {
-      runUploadQueue()
+      void runUploadQueue()
     }
-  }, [executeUploadTask])
 
-  const uploadFiles = useCallback(
-    (picked: FileList | File[]): void => {
-      const filesArr = Array.from(picked)
+    if (currentStamp) {
+      await refreshStamp(currentStamp.batchID.toString())
+    }
+  }, [currentStamp, executeUploadTask, refreshStamp])
 
-      if (filesArr.length === 0 || !fm || !currentDrive || !currentStamp) return
+  const verifyUploadConditions = useCallback(
+    async (filesArr: File[]): Promise<boolean> => {
+      if (filesArr.length === 0) {
+        setErrorMessage?.('Nothing to upload.')
+        setShowError(true)
+
+        return false
+      }
+
+      if (!fm || !currentDrive) {
+        setErrorMessage?.('File manager is not ready or no drive is selected.')
+        setShowError(true)
+
+        return false
+      }
+
+      if (!currentStamp || !currentStamp.usable) {
+        setErrorMessage?.('Stamp is not usable.')
+        setShowError(true)
+
+        return false
+      }
 
       const currentlyQueued = uploadTaskQueueRef.current.length
       const newFilesCount = filesArr.length
@@ -728,36 +757,41 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
         )
         setShowError(true)
 
+        return false
+      }
+
+      if (beeApi) {
+        const batchID = currentStamp.batchID
+        const stampValid = await validateStampStillExists(beeApi, batchID)
+
+        if (!stampValid) {
+          setErrorMessage?.(
+            `The selected stamp ${batchID.toString().slice(0, 4)} is no longer valid or has been deleted. Please select a different stamp.`,
+          )
+          setShowError(true)
+
+          return false
+        }
+      }
+
+      return true
+    },
+    [fm, currentStamp, currentDrive, beeApi, setShowError, setErrorMessage],
+  )
+
+  const uploadFiles = useCallback(
+    async (picked: FileList | File[]): Promise<void> => {
+      const filesArr = Array.from(picked)
+
+      if (!(await verifyUploadConditions(filesArr))) {
         return
       }
 
-      void (async () => {
-        if (!currentStamp || !currentStamp.usable) {
-          setErrorMessage?.('Stamp is not usable.')
-          setShowError(true)
-
-          return
-        }
-
-        if (beeApi) {
-          const stampValid = await validateStampStillExists(beeApi, currentStamp.batchID)
-
-          if (!stampValid) {
-            setErrorMessage?.(
-              'The selected stamp is no longer valid or has been deleted. Please select a different stamp.',
-            )
-            setShowError(true)
-
-            return
-          }
-        }
-
-        const tasks = await preflight(filesArr)
-        uploadTaskQueueRef.current = uploadTaskQueueRef.current.concat(tasks)
-        runUploadQueue()
-      })()
+      const tasks = await preflight(filesArr)
+      uploadTaskQueueRef.current = uploadTaskQueueRef.current.concat(tasks)
+      runUploadQueue()
     },
-    [fm, currentStamp, currentDrive, beeApi, setShowError, setErrorMessage, preflight, runUploadQueue],
+    [verifyUploadConditions, preflight, runUploadQueue],
   )
 
   const cancelOrDismissUpload = useCallback(
@@ -865,13 +899,13 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
   }, [])
 
   return {
-    uploadFiles,
     isUploading,
     uploadItems,
-    trackDownload,
     isDownloading,
     downloadItems,
     conflictPortal,
+    uploadFiles,
+    trackDownload,
     cancelOrDismissUpload,
     cancelOrDismissDownload,
     dismissAllUploads,
