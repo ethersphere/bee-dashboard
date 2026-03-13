@@ -20,11 +20,7 @@ export function AssetSummary({ reference }: Props): ReactElement {
         {isHash && <ExpandableListItemKey label="Swarm hash" value={reference || ''} />}
         {!isHash && <ExpandableListItemLink label="ENS" value={reference || ''} />}
       </Box>
-      <DocumentationText>
-        The Swarm Gateway is graciously provided by the Swarm Foundation. This service is under development and provided
-        for testing purposes only. Learn more at{' '}
-        <a href="https://gateway.ethswarm.org/">https://gateway.ethswarm.org/</a>.
-      </DocumentationText>
+      <DocumentationText>Files are accessed through your configured Bee API endpoint.</DocumentationText>
     </>
   )
 }
