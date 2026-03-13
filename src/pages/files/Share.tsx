@@ -4,7 +4,7 @@ import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { Loading } from '../../components/Loading'
@@ -26,6 +26,8 @@ export function Share(): ReactElement {
   const { status } = useContext(BeeContext)
 
   const { hash } = useParams()
+  const location = useLocation()
+  const fromUpload = Boolean(location.state?.fromUpload)
 
   const navigate = useNavigate()
   const { enqueueSnackbar } = useSnackbar()
@@ -239,9 +241,11 @@ export function Share(): ReactElement {
       <Box mb={4}>
         <AssetSummary isWebsite={metadata?.isWebsite} reference={hash} />
       </Box>
-      <Box mb={4}>
-        <AssetSyncing reference={hash} />
-      </Box>
+      {fromUpload && (
+        <Box mb={4}>
+          <AssetSyncing reference={hash} />
+        </Box>
+      )}
       <DownloadActionBar
         onOpen={onOpen}
         onCancel={onClose}
