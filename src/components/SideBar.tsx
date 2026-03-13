@@ -1,6 +1,6 @@
 import { BeeModes } from '@ethersphere/bee-js'
-import { Box, Divider, Drawer, Grid, Link as MUILink, List, Typography } from '@mui/material'
-import { ReactElement, useContext } from 'react'
+import { Box, Divider, Drawer, Grid, IconButton, Link as MUILink, List, Tooltip, Typography } from '@mui/material'
+import { ReactElement, useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import FilesIcon from 'remixicon-react/ArrowUpDownLineIcon'
 import DocsIcon from 'remixicon-react/BookOpenLineIcon'
@@ -8,6 +8,8 @@ import ExternalLinkIcon from 'remixicon-react/ExternalLinkLineIcon'
 import FileManagerIcon from 'remixicon-react/FolderOpenLineIcon'
 import GithubIcon from 'remixicon-react/GithubFillIcon'
 import HomeIcon from 'remixicon-react/Home3LineIcon'
+import MenuFoldIcon from 'remixicon-react/MenuFoldLineIcon'
+import MenuUnfoldIcon from 'remixicon-react/MenuUnfoldLineIcon'
 import SettingsIcon from 'remixicon-react/Settings2LineIcon'
 import AccountIcon from 'remixicon-react/Wallet3LineIcon'
 import { makeStyles } from 'tss-react/mui'
@@ -23,26 +25,75 @@ import SideBarItem from './SideBarItem'
 import SideBarStatus from './SideBarStatus'
 
 const drawerWidth = 300
+const drawerWidthCollapsed = 72
+const drawerHeaderHeight = 56
 
 const useStyles = makeStyles()(theme => ({
   root: {
     flexWrap: 'nowrap',
-    minHeight: '100vh',
-    paddingTop: theme.spacing(8),
+    minHeight: `calc(100vh - ${drawerHeaderHeight}px)`,
     paddingBottom: theme.spacing(8),
   },
   drawer: {
     width: drawerWidth,
     flexShrink: 0,
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  },
+  drawerCollapsed: {
+    width: drawerWidthCollapsed,
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
   },
   drawerPaper: {
     width: drawerWidth,
     backgroundColor: '#212121',
     zIndex: 988,
+    overflowX: 'hidden',
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  },
+  drawerPaperCollapsed: {
+    width: drawerWidthCollapsed,
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+  },
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    height: drawerHeaderHeight,
+    borderBottom: '1px solid #2c2c2c',
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    flexShrink: 0,
   },
   logo: {
-    marginLeft: theme.spacing(8),
-    marginRight: theme.spacing(8),
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  logoImg: {
+    maxWidth: '100%',
+    display: 'block',
+  },
+  toggleButton: {
+    color: '#9f9f9f',
+    '&:hover': {
+      color: '#f9f9f9',
+      backgroundColor: '#2c2c2c',
+    },
+  },
+  toggleButtonCollapsed: {
+    marginLeft: 'auto',
   },
   icon: {
     height: theme.spacing(4),
@@ -70,6 +121,7 @@ export default function SideBar(): ReactElement {
   const { classes } = useStyles()
   const { isDesktop } = useContext(SettingsContext)
   const { nodeInfo } = useContext(BeeContext)
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   const navBarItems = [
     {
@@ -103,13 +155,28 @@ export default function SideBar(): ReactElement {
   ]
 
   return (
-    <Drawer className={classes.drawer} variant="permanent" anchor="left" classes={{ paper: classes.drawerPaper }}>
-      <Grid container direction="column" justifyContent="space-between" className={classes.root}>
-        <Grid className={classes.logo}>
-          <Link to={ROUTES.INFO}>
-            <img alt="swarm" src={isDesktop ? DesktopLogo : DashboardLogo} />
+    <Drawer
+      className={`${classes.drawer} ${isCollapsed ? classes.drawerCollapsed : ''}`}
+      variant="permanent"
+      anchor="left"
+      classes={{ paper: `${classes.drawerPaper} ${isCollapsed ? classes.drawerPaperCollapsed : ''}` }}
+    >
+      <div className={classes.header}>
+        {!isCollapsed && (
+          <Link to={ROUTES.INFO} className={classes.logo}>
+            <img alt="swarm" className={classes.logoImg} src={isDesktop ? DesktopLogo : DashboardLogo} />
           </Link>
-        </Grid>
+        )}
+        <Tooltip title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'} placement="right">
+          <IconButton
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className={`${classes.toggleButton} ${isCollapsed ? classes.toggleButtonCollapsed : ''}`}
+          >
+            {isCollapsed ? <MenuUnfoldIcon /> : <MenuFoldIcon />}
+          </IconButton>
+        </Tooltip>
+      </div>
+      <Grid container direction="column" justifyContent="space-between" className={classes.root}>
         <Grid>
           <List>
             {navBarItems.map(p => (
@@ -120,6 +187,7 @@ export default function SideBar(): ReactElement {
                   path={p.path}
                   pathMatcherSubstring={p.pathMatcherSubstring}
                   label={p.label}
+                  isCollapsed={isCollapsed}
                 />
               </Link>
             ))}
@@ -129,8 +197,9 @@ export default function SideBar(): ReactElement {
             <MUILink href={BEE_DOCS_HOST} target="_blank" className={classes.link}>
               <SideBarItem
                 iconStart={<DocsIcon className={classes.icon} />}
-                iconEnd={<ExternalLinkIcon className={classes.icon} color="#595959" />}
+                iconEnd={!isCollapsed ? <ExternalLinkIcon className={classes.icon} color="#595959" /> : undefined}
                 label={<span>Docs</span>}
+                isCollapsed={isCollapsed}
               />
             </MUILink>
           </List>
@@ -143,22 +212,25 @@ export default function SideBar(): ReactElement {
             >
               <SideBarItem
                 iconStart={<GithubIcon className={classes.icon} />}
-                iconEnd={<ExternalLinkIcon className={classes.icon} color="#595959" />}
+                iconEnd={!isCollapsed ? <ExternalLinkIcon className={classes.icon} color="#595959" /> : undefined}
                 label={<span>GitHub</span>}
+                isCollapsed={isCollapsed}
               />
             </MUILink>
           </List>
           <Divider className={classes.divider} />
-          <Box mt={4}>
-            <Link to={ROUTES.TOP_UP_GIFT_CODE}>
-              <Typography align="center">Redeem gift code</Typography>
-            </Link>
-          </Box>
+          {!isCollapsed && (
+            <Box mt={4}>
+              <Link to={ROUTES.TOP_UP_GIFT_CODE}>
+                <Typography align="center">Redeem gift code</Typography>
+              </Link>
+            </Box>
+          )}
         </Grid>
         <Grid>
           <List>
             <Link to={ROUTES.STATUS} className={classes.link}>
-              <SideBarStatus path={ROUTES.STATUS} />
+              <SideBarStatus path={ROUTES.STATUS} isCollapsed={isCollapsed} />
             </Link>
           </List>
         </Grid>

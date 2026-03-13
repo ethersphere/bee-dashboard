@@ -1,4 +1,4 @@
-import { ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material'
+import { ListItemButton, ListItemIcon, ListItemText, Tooltip, Typography } from '@mui/material'
 import { ReactElement, useContext } from 'react'
 import { matchPath, useLocation } from 'react-router-dom'
 import ArrowRight from 'remixicon-react/ArrowRightLineIcon'
@@ -18,8 +18,8 @@ const useStyles = makeStyles()(theme => ({
 
   root: {
     height: theme.spacing(4),
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(4),
+    paddingLeft: theme.spacing(0),
+    paddingRight: theme.spacing(0),
     color: '#f9f9f9',
     borderLeft: '0px solid rgba(0,0,0,0)',
     '&.Mui-selected, &.Mui-selected:hover': {
@@ -46,31 +46,62 @@ const useStyles = makeStyles()(theme => ({
     fontSize: '0.9rem',
     whiteSpace: 'nowrap',
   },
+  rootCollapsed: {
+    justifyContent: 'center',
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+  },
+  statusIcon: {
+    marginLeft: '30px',
+    minWidth: 0,
+  },
+  statusIconCollapsed: {
+    marginLeft: 0,
+    minWidth: 0,
+  },
+  statusText: {
+    marginLeft: theme.spacing(2),
+  },
 }))
 
 interface Props {
   path?: string
+  isCollapsed?: boolean
 }
 
-export default function SideBarItem({ path }: Props): ReactElement {
+export default function SideBarItem({ path, isCollapsed }: Props): ReactElement {
   const { status, isLoading } = useContext(Context)
   const { classes } = useStyles()
   const location = useLocation()
   const isSelected = Boolean(path && matchPath(location.pathname, path))
 
   return (
-    <ListItemButton
-      classes={{ root: `${classes.root} ${status.all ? '' : classes.rootError}` }}
-      selected={isSelected}
-      disableRipple
-    >
-      <ListItemIcon style={{ marginLeft: '30px' }}>
-        <StatusIcon checkState={status.all} isLoading={isLoading} />
-      </ListItemIcon>
-      <ListItemText primary={<Typography className={classes.smallerText}>{`Node ${status.all}`}</Typography>} />
-      <ListItemIcon className={classes.icon}>
-        {status.all ? null : <ArrowRight className={classes.iconSmall} />}
-      </ListItemIcon>
-    </ListItemButton>
+    <Tooltip title={isCollapsed ? `Node ${status.all}` : ''} placement="right">
+      <ListItemButton
+        classes={{
+          root: `${classes.root} ${status.all ? '' : classes.rootError} ${isCollapsed ? classes.rootCollapsed : ''}`,
+        }}
+        selected={isSelected}
+        disableRipple
+      >
+        <ListItemIcon className={isCollapsed ? classes.statusIconCollapsed : classes.statusIcon}>
+          <StatusIcon checkState={status.all} isLoading={isLoading} />
+        </ListItemIcon>
+        {!isCollapsed && (
+          <>
+            <ListItemText
+              primary={
+                <Typography
+                  className={`${classes.smallerText} ${classes.statusText}`}
+                >{`Node ${status.all}`}</Typography>
+              }
+            />
+            <ListItemIcon className={classes.icon}>
+              {status.all ? null : <ArrowRight className={classes.iconSmall} />}
+            </ListItemIcon>
+          </>
+        )}
+      </ListItemButton>
+    </Tooltip>
   )
 }
