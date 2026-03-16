@@ -103,6 +103,7 @@ export function Upload(): ReactElement {
     }
 
     const lastModified = files[0].lastModified
+    const isSingleFile = files.length === 1
 
     const metafile = new File([JSON.stringify(metadata)], META_FILE_NAME, {
       type: 'application/json',
@@ -114,8 +115,11 @@ export function Upload(): ReactElement {
 
     await waitUntilStampUsable(stamp.batchID, beeApi)
 
-    beeApi
-      .uploadFiles(stamp.batchID, fls, { indexDocument, deferred: true })
+    const uploadPromise = isSingleFile
+      ? beeApi.uploadFile(stamp.batchID, fls[0], fls[0].name, { deferred: true })
+      : beeApi.uploadFiles(stamp.batchID, fls, { indexDocument, deferred: true })
+
+    uploadPromise
       .then(hash => {
         putHistory(LocalStorageKeys.uploadHistory, hash.reference.toHex(), getAssetNameFromFiles(files))
 
