@@ -42,6 +42,28 @@ export function Share(): ReactElement {
 
   const isMountedRef = useRef(true)
 
+  function applyFallbackMetadata(entries: Record<string, string>, indexDocument: string | null) {
+    const count = Object.keys(entries).length
+    const isVideo = Boolean(indexDocument && /.*\.(mp4|webm|ogv)$/i.test(indexDocument))
+    const isAudio = Boolean(indexDocument && /.*\.(mp3|ogg|oga|wav|webm|m4a|aac|flac)$/i.test(indexDocument))
+    const isImage = Boolean(indexDocument && /.*\.(jpg|jpeg|png|gif|webp|svg)$/i.test(indexDocument))
+
+    if (isImage || isVideo || isAudio) {
+      setPreview(`${apiUrl}/bzz/${hash}`)
+    }
+
+    setMetadata({
+      hash,
+      type: count > 1 ? 'folder' : 'unknown',
+      name: indexDocument || hash || '',
+      count,
+      isWebsite: Boolean(indexDocument && /.*\.html?$/i.test(indexDocument)),
+      isVideo,
+      isAudio,
+      isImage,
+    })
+  }
+
   async function prepare() {
     if (!beeApi || !status.all || !hash) {
       return
@@ -79,21 +101,8 @@ export function Share(): ReactElement {
         setMetadata({ ...formattedMetadata, hash })
       } catch {
         // if metadata is not available or invalid go with the default one
-        const count = Object.keys(entries).length
-
         if (!isMountedRef.current) return
-
-        setMetadata({
-          hash,
-          type: count > 1 ? 'folder' : 'unknown',
-          name: hash,
-          count,
-          isWebsite: Boolean(indexDocument && /.*\.html?$/i.test(indexDocument)),
-          isVideo: Boolean(indexDocument && /.*\.(mp4|webm|ogv)$/i.test(indexDocument)),
-          isAudio: Boolean(indexDocument && /.*\.(mp3|ogg|oga|wav|webm|m4a|aac|flac)$/i.test(indexDocument)),
-          isImage: Boolean(indexDocument && /.*\.(jpg|jpeg|png|gif|webp|svg)$/i.test(indexDocument)),
-          // naive assumption based on indexDocument, we don't want to download the whole manifest
-        })
+        applyFallbackMetadata(entries, indexDocument)
       }
     } catch {
       if (!isMountedRef.current) return
@@ -106,7 +115,16 @@ export function Share(): ReactElement {
   }
 
   function onOpen() {
-    window.open(`${apiUrl}/bzz/${hash}/`, '_blank', 'noopener,noreferrer')
+    if (metadata?.isImage) {
+      const imgUrl = `${apiUrl}/bzz/${hash}`
+      const safeName = (metadata?.name ?? hash).replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`)
+      const html = `<!DOCTYPE html><html><head><title>${safeName}</title></head><body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center"><img src="${imgUrl}" alt="${safeName}" style="max-width:100%;max-height:100vh;object-fit:contain"></body></html>`
+      const blob = new Blob([html], { type: 'text/html' })
+      const blobUrl = URL.createObjectURL(blob)
+      window.open(blobUrl, '_blank', 'noopener,noreferrer')
+    } else {
+      window.open(`${apiUrl}/bzz/${hash}/`, '_blank', 'noopener,noreferrer')
+    }
   }
 
   function onClose() {
