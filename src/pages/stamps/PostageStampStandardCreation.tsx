@@ -33,6 +33,10 @@ const useStyles = makeStyles()(theme => ({
     color: 'white',
     backgroundColor: theme.palette.primary.main,
   },
+  buttonUnselected: {
+    color: theme.palette.secondary.main,
+    backgroundColor: 'white',
+  },
 }))
 
 const marks = [
@@ -50,6 +54,21 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
   const [labelInput, setLabelInput] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [buttonValue, setButtonValue] = useState(4)
+
+  const getBatchValue = (value: number) => {
+    return (
+      <Box sx={{ flex: 1 }}>
+        <Button
+          variant="contained"
+          fullWidth
+          onClick={() => handleBatchSize(value)}
+          className={buttonValue === value ? classes.buttonSelected : classes.buttonUnselected}
+        >
+          {value} GB
+        </Button>
+      </Box>
+    )
+  }
 
   function sliderValueChange(_: unknown, newValue: number | number[]) {
     if (typeof newValue !== 'number') {
@@ -138,38 +157,11 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
         <Typography variant="h2">Batch size</Typography>
       </Box>
       <Box mb={2}>
-        <Grid container justifyContent="space-between" spacing={2}>
-          <Grid sx={{ width: { xs: '100%', sm: '33.333%' } }}>
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={() => handleBatchSize(4)}
-              className={buttonValue === 4 ? classes.buttonSelected : ''}
-            >
-              4 GB
-            </Button>
-          </Grid>
-          <Grid sx={{ width: { xs: '100%', sm: '33.333%' } }}>
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={() => handleBatchSize(32)}
-              className={buttonValue === 32 ? classes.buttonSelected : ''}
-            >
-              32 GB
-            </Button>
-          </Grid>
-          <Grid sx={{ width: { xs: '100%', sm: '33.333%' } }}>
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={() => handleBatchSize(256)}
-              className={buttonValue === 256 ? classes.buttonSelected : ''}
-            >
-              256 GB
-            </Button>
-          </Grid>
-        </Grid>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          {getBatchValue(4)}
+          {getBatchValue(32)}
+          {getBatchValue(256)}
+        </Box>
       </Box>
       <Box mb={1}>
         <Typography variant="h2">Data persistence</Typography>

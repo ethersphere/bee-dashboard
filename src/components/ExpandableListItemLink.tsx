@@ -1,5 +1,5 @@
 import { ArrowForward, OpenInNewSharp } from '@mui/icons-material'
-import { Grid, IconButton, ListItemButton, Tooltip, Typography } from '@mui/material'
+import { Box, IconButton, ListItemButton, Tooltip, Typography } from '@mui/material'
 import { ReactElement } from 'react'
 import { useNavigate } from 'react-router'
 import { makeStyles } from 'tss-react/mui'
@@ -43,11 +43,16 @@ const useStyles = makeStyles()(theme => ({
   },
 }))
 
+export enum NavigationType {
+  NEW_WINDOW = 'NEW_WINDOW',
+  HISTORY_PUSH = 'HISTORY_PUSH',
+}
+
 interface Props {
   label: string
   value: string
   link?: string
-  navigationType?: 'NEW_WINDOW' | 'HISTORY_PUSH'
+  navigationType?: NavigationType
   allowClipboard?: boolean
 }
 
@@ -55,7 +60,7 @@ export default function ExpandableListItemLink({
   label,
   value,
   link,
-  navigationType = 'NEW_WINDOW',
+  navigationType = NavigationType.NEW_WINDOW,
   allowClipboard = true,
 }: Props): ReactElement | null {
   const { classes } = useStyles()
@@ -65,7 +70,7 @@ export default function ExpandableListItemLink({
   const displayValue = value.length > 22 ? value.slice(0, 19) + '...' : value
 
   function onNavigation() {
-    if (navigationType === 'NEW_WINDOW') {
+    if (navigationType === NavigationType.NEW_WINDOW) {
       window.open(link || value)
     } else {
       navigate(link || value)
@@ -73,10 +78,10 @@ export default function ExpandableListItemLink({
   }
 
   return (
-    <ListItemButton className={classes.header}>
-      <Grid container direction="column" justifyContent="space-between" alignItems="stretch">
-        <Grid container direction="row" justifyContent="space-between" alignItems="center">
-          {label && <Typography variant="body1">{label}</Typography>}
+    <ListItemButton className={classes.header} sx={{ width: '100%' }}>
+      <Box display="flex" flexDirection="row" justifyContent="space-between" alignItems="center" width="100%">
+        {label && <Typography variant="body1">{label}</Typography>}
+        <Box display="flex" alignItems="center">
           <Typography variant="body2">
             {allowClipboard && (
               <span className={classes.copyValue}>
@@ -86,13 +91,13 @@ export default function ExpandableListItemLink({
               </span>
             )}
             {!allowClipboard && <span onClick={onNavigation}>{displayValue}</span>}
-            <IconButton size="small" className={classes.openLinkIcon} onClick={onNavigation}>
-              {navigationType === 'NEW_WINDOW' && <OpenInNewSharp strokeWidth={1} />}
-              {navigationType === 'HISTORY_PUSH' && <ArrowForward strokeWidth={1} />}
-            </IconButton>
           </Typography>
-        </Grid>
-      </Grid>
+          <IconButton size="small" className={classes.openLinkIcon} onClick={onNavigation}>
+            {navigationType === NavigationType.NEW_WINDOW && <OpenInNewSharp strokeWidth={1} />}
+            {navigationType === NavigationType.HISTORY_PUSH && <ArrowForward strokeWidth={1} />}
+          </IconButton>
+        </Box>
+      </Box>
     </ListItemButton>
   )
 }
