@@ -257,7 +257,7 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
 
   const sortedKey = sorted.map(f => getFileId(f)).join('|')
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const stableSorted = useMemo(() => sorted, [sortedKey])
+  const stableSorted = useMemo(() => sorted, [sortedKey, files])
 
   const bulk = useBulkActions({
     listToRender,
