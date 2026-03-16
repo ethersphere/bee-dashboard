@@ -9,6 +9,37 @@ import FormHelperText from '@mui/material/FormHelperText'
 import Input from '@mui/material/Input'
 import { useSnackbar } from 'notistack'
 import React, { ReactElement, ReactNode, useState } from 'react'
+import { makeStyles } from 'tss-react/mui'
+
+const useStyles = makeStyles()(theme => ({
+  link: {
+    color: '#dd7700',
+    textDecoration: 'underline',
+    '&:hover': {
+      textDecoration: 'none',
+
+      '@media (hover: none)': {
+        textDecoration: 'none',
+      },
+    },
+  },
+  buttonSelected: {
+    color: 'white',
+    backgroundColor: theme.palette.primary.main,
+    '&:hover': {
+      color: theme.palette.secondary.main,
+      backgroundColor: 'white',
+      '@media (hover: none)': {
+        color: 'white',
+        backgroundColor: theme.palette.primary.main,
+      },
+    },
+  },
+  buttonUnselected: {
+    color: theme.palette.secondary.main,
+    backgroundColor: 'white',
+  },
+}))
 
 interface Props {
   successMessage: string
@@ -31,6 +62,8 @@ export default function WithdrawDepositModal({
   action,
   icon,
 }: Props): ReactElement {
+  const { classes } = useStyles()
+
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState('')
   const [amountToken, setAmountToken] = useState<BZZ | null>(null)
@@ -78,7 +111,7 @@ export default function WithdrawDepositModal({
 
   return (
     <div>
-      <Button variant="text" onClick={handleClickOpen} startIcon={icon}>
+      <Button variant="contained" onClick={handleClickOpen} startIcon={icon} className={classes.buttonSelected}>
         {label}
       </Button>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">

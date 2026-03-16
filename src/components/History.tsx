@@ -4,7 +4,7 @@ import { getPrettyDateString } from '../utils/date'
 import { getHistorySafe, HISTORY_KEYS, HistoryItem } from '../utils/localStorage'
 
 import ExpandableList from './ExpandableList'
-import ExpandableListItemLink from './ExpandableListItemLink'
+import ExpandableListItemLink, { NavigationType } from './ExpandableListItemLink'
 
 interface Props {
   title: string
@@ -30,7 +30,7 @@ export function History({ title, localStorageKey }: Props): ReactElement | null 
           value={x.name}
           link={'/files/hash/' + x.hash}
           key={i}
-          navigationType="HISTORY_PUSH"
+          navigationType={NavigationType.HISTORY_PUSH}
           allowClipboard={false}
         />
       ))}

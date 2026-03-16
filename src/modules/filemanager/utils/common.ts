@@ -13,7 +13,7 @@ export function getDaysLeft(expiryDate: Date): number {
   return Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)))
 }
 
-export const fromBytesConversion = (size: number, metric: string) => {
+export const fromBytesConversion = (size: number, metric: string): number => {
   switch (metric) {
     case 'GB':
       return size / 1000 / 1000 / 1000
