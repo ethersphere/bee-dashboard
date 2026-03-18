@@ -3,11 +3,12 @@ import { DriveInfo, estimateDriveListMetadataSize } from '@solarpunkltd/file-man
 import { ReactElement, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 
 import { Context as FMContext } from '../../../../providers/FileManager'
+import { Context as SettingsContext } from '../../../../providers/Settings'
 import { getHumanReadableFileSize } from '../../../../utils/file'
 import { FILE_MANAGER_EVENTS, POLLING_TIMEOUT_MS } from '../../constants/common'
 import { TOOLTIPS } from '../../constants/tooltips'
 import { useStampPolling } from '../../hooks/useStampPolling'
-import { calculateStampCapacityMetrics } from '../../utils/bee'
+import { calculateStampCapacityMetrics, validateStampStillExists } from '../../utils/bee'
 import { ConfirmModal } from '../ConfirmModal/ConfirmModal'
 import { ProgressBar } from '../ProgressBar/ProgressBar'
 import { Tooltip } from '../Tooltip/Tooltip'
@@ -32,6 +33,7 @@ export function AdminStatusBar({
   setErrorMessage,
 }: AdminStatusBarProps): ReactElement {
   const { drives, setShowError, refreshStamp } = useContext(FMContext)
+  const { beeApi } = useContext(SettingsContext)
 
   const [isUpgradeDriveModalOpen, setIsUpgradeDriveModalOpen] = useState(false)
   const [isUpgradeTimeoutModalOpen, setIsUpgradeTimeoutModalOpen] = useState(false)
@@ -236,7 +238,20 @@ export function AdminStatusBar({
 
         <div
           className="fm-admin-status-bar-upgrade-button"
-          onClick={() => !isBusy && actualStamp && adminDrive && setIsUpgradeDriveModalOpen(true)}
+          onClick={async () => {
+            if (!isBusy && actualStamp && adminDrive && beeApi) {
+              const isStampValid = await validateStampStillExists(beeApi, actualStamp.batchID)
+
+              if (!isStampValid) {
+                setErrorMessage?.('The admin drive has expired. Please clear the browser cache and reload the page.')
+                setShowError(true)
+
+                return
+              }
+
+              setIsUpgradeDriveModalOpen(true)
+            }
+          }}
           aria-disabled={isBusy ? 'true' : 'false'}
         >
           {isBusy ? 'Working…' : 'Manage'}

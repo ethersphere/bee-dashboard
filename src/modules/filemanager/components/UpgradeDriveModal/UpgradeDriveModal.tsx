@@ -26,6 +26,7 @@ import { getHumanReadableFileSize } from '../../../../utils/file'
 import { FILE_MANAGER_EVENTS, POLLING_TIMEOUT_MS } from '../../constants/common'
 import { desiredLifetimeOptions } from '../../constants/stamps'
 import { useStampPolling } from '../../hooks/useStampPolling'
+import { validateStampStillExists } from '../../utils/bee'
 import { fromBytesConversion, getExpiryDateByLifetime, truncateNameMiddle } from '../../utils/common'
 import { Button } from '../Button/Button'
 import { CustomDropdown } from '../CustomDropdown/CustomDropdown'
@@ -333,6 +334,16 @@ export function UpgradeDriveModal({
             disabled={isSubmitting || !isBalanceSufficient || !walletBalance || !beeApi}
             onClick={async () => {
               if (!beeApi || !walletBalance) return
+
+              const isStampValid = await validateStampStillExists(beeApi, stamp.batchID)
+
+              if (!isStampValid) {
+                setErrorMessage?.('The admin drive has expired. Please clear the browser cache and reload the page.')
+                setShowError(true)
+                onCancelClick()
+
+                return
+              }
 
               try {
                 setIsSubmitting(true)
