@@ -29,7 +29,7 @@ import { useLatestBeeRelease } from '../hooks/apiHooks'
 
 import { Context as SettingsContext } from './Settings'
 
-const LAUNCH_GRACE_PERIOD = 15_000
+const LAUNCH_GRACE_PERIOD = 35_000
 const REFRESH_WHEN_OK = 30_000
 const REFRESH_WHEN_ERROR = 5_000
 const TIMEOUT = 3_000
@@ -116,15 +116,22 @@ interface Props {
   children: ReactNode
 }
 
-function getStatus(
-  nodeInfo: NodeInfo | null,
-  apiHealth: boolean,
-  topology: Topology | null,
-  chequebookAddress: ChequebookAddressResponse | null,
-  chequebookBalance: ChequebookBalanceResponse | null,
-  error: Error | null,
-  startedAt: number,
-): Status {
+interface StatusProps {
+  nodeInfo: NodeInfo | null
+  apiHealth: boolean
+  topology: Topology | null
+  isWarmingUp: boolean
+  chequebookAddress: ChequebookAddressResponse | null
+  chequebookBalance: ChequebookBalanceResponse | null
+  error: Error | null
+  startedAt: number
+}
+
+function getStatus(props: StatusProps): Status {
+  const { nodeInfo, apiHealth, topology, isWarmingUp, chequebookAddress, chequebookBalance, error, startedAt } = {
+    ...props,
+  }
+
   const status: Status = { ...initialValues.status }
 
   // API connection check
@@ -143,15 +150,17 @@ function getStatus(
 
     if (chequebookAddress?.chequebookAddress && chequebookBalance !== null) {
       status.chequebook.checkState = CheckState.OK
-    } else status.chequebook.checkState = CheckState.OK
+    } else {
+      status.chequebook.checkState = CheckState.WARNING
+    }
   }
 
-  status.all = determineOverallStatus(status, startedAt)
+  status.all = determineOverallStatus(status, isWarmingUp, startedAt)
 
   return status
 }
 
-function determineOverallStatus(status: Status, startedAt: number): CheckState {
+function determineOverallStatus(status: Status, isWarmingUp: boolean, startedAt: number): CheckState {
   const hasErrors = Object.values(status).some(
     ({ isEnabled, checkState }) => isEnabled && checkState === CheckState.ERROR,
   )
@@ -160,15 +169,23 @@ function determineOverallStatus(status: Status, startedAt: number): CheckState {
   )
   const isInGracePeriod = Date.now() - startedAt < LAUNCH_GRACE_PERIOD
 
-  if (hasErrors && isInGracePeriod) {
+  if (isWarmingUp || isInGracePeriod) {
     return CheckState.CONNECTING
-  } else if (hasErrors) {
-    return CheckState.ERROR
-  } else if (hasWarnings) {
-    return CheckState.WARNING
-  } else {
-    return CheckState.OK
   }
+
+  if (hasErrors) {
+    return CheckState.ERROR
+  }
+
+  if (hasWarnings) {
+    return CheckState.WARNING
+  }
+
+  return CheckState.OK
+}
+
+function getFulfilledValue<T>(result: PromiseSettledResult<T>): T | null {
+  return result.status === 'fulfilled' ? result.value : null
 }
 
 // This does not need to be exposed and works much better as variable than state variable which may trigger some unnecessary re-renders
@@ -179,6 +196,7 @@ export function Provider({ children }: Props): ReactElement {
 
   const [beeVersion, setBeeVersion] = useState<string | null>(null)
   const [apiHealth, setApiHealth] = useState<boolean>(false)
+  const [isWarmingUp, setIsWarmingUp] = useState<boolean>(true)
   const [nodeAddresses, setNodeAddresses] = useState<NodeAddresses | null>(null)
   const [nodeInfo, setNodeInfo] = useState<NodeInfo | null>(null)
   const [topology, setNodeTopology] = useState<Topology | null>(null)
@@ -191,7 +209,7 @@ export function Provider({ children }: Props): ReactElement {
   const [settlements, setSettlements] = useState<AllSettlements | null>(null)
   const [chainState, setChainState] = useState<ChainState | null>(null)
   const [walletBalance, setWalletBalance] = useState<WalletBalance | null>(null)
-  const [startedAt] = useState(() => Date.now())
+  const [startedAt, setStartedAt] = useState(() => Date.now())
 
   const { latestBeeRelease } = useLatestBeeRelease()
 
@@ -201,6 +219,15 @@ export function Provider({ children }: Props): ReactElement {
   const [frequency, setFrequency] = useState<number | null>(REFRESH_WHEN_OK)
 
   const frequencyRef = useRef<number | null>(frequency)
+
+  useEffect(() => {
+    if (isWarmingUp) return
+
+    setStartedAt(Date.now())
+    const timer = setTimeout(() => setStartedAt(0), LAUNCH_GRACE_PERIOD)
+
+    return () => clearTimeout(timer)
+  }, [isWarmingUp])
 
   const refresh = useCallback(async () => {
     // Don't want to refresh when already refreshing
@@ -215,101 +242,63 @@ export function Provider({ children }: Props): ReactElement {
       return
     }
 
-    try {
-      isRefreshing = true
-      setError(null)
+    isRefreshing = true
 
-      const promises = [
-        // API health
-        beeApi
-          .getHealth({ timeout: TIMEOUT })
-          .then(response => setBeeVersion(response.version))
-          .then(() => setApiHealth(true))
-          .catch(() => {
-            setBeeVersion(null)
-            setApiHealth(false)
-          }),
+    const [
+      healthResult,
+      statusResult,
+      nodeAddressesResult,
+      nodeInfoResult,
+      topologyResult,
+      peersResult,
+      chequebookAddressResult,
+      peerChequesResult,
+      chainStateResult,
+      walletResult,
+      chequebookBalanceResult,
+      stakeResult,
+      peerBalancesResult,
+      settlementsResult,
+    ] = await Promise.allSettled([
+      beeApi.getHealth({ timeout: TIMEOUT }),
+      beeApi.getStatus({ timeout: TIMEOUT }),
+      beeApi.getNodeAddresses({ timeout: TIMEOUT }),
+      beeApi.getNodeInfo({ timeout: TIMEOUT }),
+      beeApi.getTopology({ timeout: TIMEOUT }),
+      beeApi.getPeers({ timeout: TIMEOUT }),
+      beeApi.getChequebookAddress({ timeout: TIMEOUT }),
+      beeApi.getLastCheques({ timeout: TIMEOUT }),
+      beeApi.getChainState({ timeout: TIMEOUT }),
+      beeApi.getWalletBalance({ timeout: TIMEOUT }),
+      beeApi.getChequebookBalance({ timeout: TIMEOUT }),
+      beeApi.getStake({ timeout: TIMEOUT }),
+      beeApi.getAllBalances({ timeout: TIMEOUT }),
+      beeApi.getAllSettlements(),
+    ])
 
-        // Node Addresses
-        beeApi
-          .getNodeAddresses({ timeout: TIMEOUT })
-          .then(setNodeAddresses)
-          .catch(() => setNodeAddresses(null)),
+    // All setters called synchronously — React 18 batches them into one render.
+    const health = getFulfilledValue(healthResult)
+    setBeeVersion(health?.version ?? null)
+    setApiHealth(Boolean(health))
 
-        // NodeInfo
-        beeApi
-          .getNodeInfo({ timeout: TIMEOUT })
-          .then(setNodeInfo)
-          .catch(() => setNodeInfo(null)),
-
-        // Network Topology
-        beeApi
-          .getTopology({ timeout: TIMEOUT })
-          .then(setNodeTopology)
-          .catch(() => setNodeTopology(null)),
-
-        // Peers
-        beeApi
-          .getPeers({ timeout: TIMEOUT })
-          .then(setPeers)
-          .catch(() => setPeers(null)),
-
-        // Chequebook address
-        beeApi
-          .getChequebookAddress({ timeout: TIMEOUT })
-          .then(setChequebookAddress)
-          .catch(() => setChequebookAddress(null)),
-
-        // Cheques
-        beeApi
-          .getLastCheques({ timeout: TIMEOUT })
-          .then(setPeerCheques)
-          .catch(() => setPeerCheques(null)),
-
-        // Chain state
-        beeApi
-          .getChainState({ timeout: TIMEOUT })
-          .then(setChainState)
-          .catch(() => setChainState(null)),
-
-        // Wallet
-        beeApi
-          .getWalletBalance({ timeout: TIMEOUT })
-          .then(setWalletBalance)
-          .catch(() => setWalletBalance(null)),
-
-        // Chequebook balance
-        beeApi
-          .getChequebookBalance({ timeout: TIMEOUT })
-          .then(setChequebookBalance)
-          .catch(() => setChequebookBalance(null)),
-
-        beeApi
-          .getStake({ timeout: TIMEOUT })
-          .then(stake => setStake(stake))
-          .catch(() => setStake(null)),
-
-        // Peer balances
-        beeApi
-          .getAllBalances({ timeout: TIMEOUT })
-          .then(x => setPeerBalances(x.balances))
-          .catch(() => setPeerBalances(null)),
-
-        // Settlements
-        beeApi
-          .getAllSettlements()
-          .then(setSettlements)
-          .catch(() => setSettlements(null)),
-      ]
-
-      await Promise.allSettled(promises)
-    } catch (e) {
-      setError(e as Error)
-    }
-
+    setIsWarmingUp(getFulfilledValue(statusResult)?.isWarmingUp ?? false)
+    setNodeAddresses(getFulfilledValue(nodeAddressesResult))
+    setNodeInfo(getFulfilledValue(nodeInfoResult))
+    setNodeTopology(getFulfilledValue(topologyResult))
+    setPeers(getFulfilledValue(peersResult))
+    setChequebookAddress(getFulfilledValue(chequebookAddressResult))
+    setPeerCheques(getFulfilledValue(peerChequesResult))
+    setChainState(getFulfilledValue(chainStateResult))
+    setWalletBalance(getFulfilledValue(walletResult))
+    setChequebookBalance(getFulfilledValue(chequebookBalanceResult))
+    setStake(getFulfilledValue(stakeResult))
+    setPeerBalances(getFulfilledValue(peerBalancesResult)?.balances ?? null)
+    setSettlements(getFulfilledValue(settlementsResult))
+    setError(null)
     setIsLoading(false)
-    isRefreshing = false
     setLastUpdate(Date.now())
+
+    isRefreshing = false
   }, [beeApi])
 
   const start = useCallback(
@@ -322,8 +311,18 @@ export function Provider({ children }: Props): ReactElement {
   const stop = useCallback(() => setFrequency(null), [])
 
   const status = useMemo(
-    () => getStatus(nodeInfo, apiHealth, topology, chequebookAddress, chequebookBalance, error, startedAt),
-    [nodeInfo, apiHealth, topology, chequebookAddress, chequebookBalance, error, startedAt],
+    () =>
+      getStatus({
+        nodeInfo,
+        apiHealth,
+        topology,
+        isWarmingUp,
+        chequebookAddress,
+        chequebookBalance,
+        error,
+        startedAt,
+      }),
+    [nodeInfo, apiHealth, topology, chequebookAddress, chequebookBalance, error, startedAt, isWarmingUp],
   )
 
   useEffect(() => {

@@ -20,7 +20,6 @@ import { getSignerPk, removeSignerPk } from '@/modules/filemanager/utils/common'
 import { CheckState, Context as BeeContext } from '@/providers/Bee'
 import { Context as FMContext } from '@/providers/FileManager'
 import { BrowserPlatform, cacheClearUrls, detectBrowser } from '@/providers/Platform'
-import { Context as SettingsContext } from '@/providers/Settings'
 
 function PrivateKeyModalBlock({ onSaved }: { onSaved: () => void }) {
   return (
@@ -74,7 +73,6 @@ function ResetModalBlock({ cacheHelpUrl, onConfirm }: { cacheHelpUrl: string; on
 
 function InitialModalBlock(props: {
   resetState: boolean
-  handleVisibility: (isVisible: boolean) => void
   handleShowError: (flag: boolean, error?: string) => void
   setIsCreationInProgress: (isCreating: boolean) => void
 }) {
@@ -153,22 +151,29 @@ function FileManagerMainContent(props: {
   )
 }
 
+enum PageState {
+  Connecting = 'connecting', // still warming up — show nothing / loader
+  NoPrivateKey = 'no-pk', // private key not set
+  Loading = 'loading', // bee ready, pk present, FM init in progress
+  Reset = 'reset', // STATE_INVALID emitted and user has not yet acknowledged
+  InitError = 'init-error', // FM init completed with an error (non-reset case)
+  Initial = 'initial', // FM ready but no admin stamp/drive → show InitialModal
+  AdminError = 'admin-error', // drive creation failed
+  Ready = 'ready', // fully operational
+}
+
 export function FileManagerPage(): ReactElement {
   const isMountedRef = useRef(true)
-  const [showInitialModal, setShowInitialModal] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [hasAdminDrive, setHasAdminDrive] = useState(false)
   const [hasPk, setHasPk] = useState<boolean>(getSignerPk() !== undefined)
-  const [showErrorModal, setShowErrorModal] = useState<boolean>(false)
+  const [showAdminErrorModal, setAdminShowErrorModal] = useState<boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
-  const [showResetModal, setShowResetModal] = useState<boolean>(false)
+  const [resetAcknowledged, setResetAcknowledged] = useState<boolean>(false)
   const [isCreationInProgress, setIsCreationInProgress] = useState<boolean>(false)
-  const [showConnectionError, setShowConnectionError] = useState<boolean>(false)
+  const [connectionErrorDismissed, setConnectionErrorDismissed] = useState<boolean>(false)
   const [cacheHelpUrl, setCacheHelpUrl] = useState<string>(cacheClearUrls[BrowserPlatform.Chrome])
 
   const { status } = useContext(BeeContext)
-  const { beeApi } = useContext(SettingsContext)
-  const { fm, shallReset, adminDrive, initializationError, init } = useContext(FMContext)
+  const { fm, initDone, shallReset, adminDrive, initializationError, notifyPkSaved } = useContext(FMContext)
 
   useEffect(() => {
     isMountedRef.current = true
@@ -185,93 +190,76 @@ export function FileManagerPage(): ReactElement {
     }
   }, [])
 
+  const { isBeeReady, isConnectionError } = useMemo(() => {
+    const isConnecting = status.all === CheckState.CONNECTING
+    const isApiOk = status.apiConnection.isEnabled && status.apiConnection.checkState === CheckState.OK
+
+    return {
+      isBeeReady: !isConnecting && isApiOk,
+      isConnectionError: !isConnecting && !isApiOk && Boolean(fm),
+    }
+  }, [status, fm])
+
   useEffect(() => {
-    const isApiError = status.apiConnection.checkState !== CheckState.OK || !status.apiConnection.isEnabled
-    setShowConnectionError(isApiError)
-  }, [status.apiConnection])
-
-  useEffect(() => {
-    if (!beeApi) {
-      return
+    if (!isConnectionError) {
+      setConnectionErrorDismissed(false)
     }
+  }, [isConnectionError])
 
-    if (!hasPk) {
-      setIsLoading(false)
+  const pageState = useMemo((): PageState => {
+    if (!isBeeReady && !initDone) return PageState.Connecting
 
-      return
-    }
+    if (!hasPk) return PageState.NoPrivateKey
 
-    setShowResetModal(shallReset)
+    if (!initDone) return PageState.Loading
 
-    if (shallReset) {
-      setShowInitialModal(true)
+    if (shallReset && !resetAcknowledged) return PageState.Reset
 
-      return
-    }
+    if (initializationError && !shallReset) return PageState.InitError
 
-    if (initializationError) {
-      setIsLoading(false)
+    if (showAdminErrorModal) return PageState.AdminError
 
-      return
-    }
+    const hasAdminStamp = Boolean(fm?.adminStamp)
+    const hasAdminDrive = Boolean(adminDrive)
 
-    if (fm) {
-      const hasAdminStamp = Boolean(fm.adminStamp)
-      const tmpHasAdminDrive = Boolean(adminDrive)
-      setHasAdminDrive(hasAdminStamp || tmpHasAdminDrive)
-      setIsLoading(false)
+    if (!hasAdminStamp && !hasAdminDrive && !isCreationInProgress) return PageState.Initial
 
-      setShowInitialModal(!(hasAdminStamp || tmpHasAdminDrive))
+    return PageState.Ready
+  }, [
+    isBeeReady,
+    hasPk,
+    initDone,
+    shallReset,
+    resetAcknowledged,
+    initializationError,
+    showAdminErrorModal,
+    fm,
+    adminDrive,
+    isCreationInProgress,
+  ])
 
-      return
-    }
-
-    setIsLoading(true)
-  }, [fm, beeApi, hasPk, initializationError, adminDrive, shallReset])
-
-  const handlePrivateKeySaved = useCallback(async () => {
+  const handlePrivateKeySaved = useCallback(() => {
     if (!isMountedRef.current) return
 
     setHasPk(true)
 
-    if (fm) {
-      if (!isMountedRef.current) return
+    if (fm) return
 
-      setIsLoading(false)
-
-      return
-    }
-
-    setIsLoading(true)
-    const manager = await init()
-
-    if (!isMountedRef.current) return
-
-    setIsLoading(false)
-
-    const hasAdminStamp = Boolean(manager?.adminStamp)
-    const tmpHasAdminDrive = Boolean(adminDrive)
-
-    setShowInitialModal(!(hasAdminStamp || tmpHasAdminDrive))
-  }, [fm, adminDrive, init])
-
-  const isEmptyState = useMemo(() => {
-    return showInitialModal && !isLoading && !hasAdminDrive && !isCreationInProgress
-  }, [showInitialModal, isLoading, hasAdminDrive, isCreationInProgress])
-  const isInvalidState = useMemo(
-    () => shallReset && fm && !isCreationInProgress,
-    [shallReset, fm, isCreationInProgress],
-  )
+    notifyPkSaved()
+  }, [fm, notifyPkSaved])
 
   const loading = !fm?.adminStamp || !adminDrive
+  const isFormbricksActive = Boolean(fm && fm.adminStamp && adminDrive && !loading)
 
-  const isFormbricksActive = Boolean(fm && fm.adminStamp && adminDrive && !showInitialModal && !loading)
+  if (pageState === PageState.Connecting || pageState === PageState.Loading) {
+    return <LoadingBlock />
+  }
 
-  if (!hasPk) {
+  if (pageState === PageState.NoPrivateKey) {
     return <PrivateKeyModalBlock onSaved={handlePrivateKeySaved} />
   }
 
-  if (initializationError && !isLoading && !shallReset) {
+  if (pageState === PageState.InitError) {
     return (
       <InitializationErrorBlock
         onOk={() => {
@@ -282,17 +270,16 @@ export function FileManagerPage(): ReactElement {
     )
   }
 
-  if (showResetModal) {
-    return <ResetModalBlock cacheHelpUrl={cacheHelpUrl} onConfirm={() => setShowResetModal(false)} />
+  if (pageState === PageState.Reset) {
+    return <ResetModalBlock cacheHelpUrl={cacheHelpUrl} onConfirm={() => setResetAcknowledged(true)} />
   }
 
-  if (!showErrorModal && (isEmptyState || isInvalidState)) {
+  if (pageState === PageState.Initial) {
     return (
       <InitialModalBlock
         resetState={shallReset}
-        handleVisibility={(isVisible: boolean) => setShowInitialModal(isVisible)}
         handleShowError={(flag: boolean, error?: string) => {
-          setShowErrorModal(flag)
+          setAdminShowErrorModal(flag)
 
           if (error) setErrorMessage(error)
         }}
@@ -301,19 +288,15 @@ export function FileManagerPage(): ReactElement {
     )
   }
 
-  if (!fm) {
-    return <LoadingBlock />
-  }
-
-  if (showErrorModal) {
+  if (pageState === PageState.AdminError) {
     return (
       <ErrorModalBlock
         label={
+          errorMessage ||
           'Error creating Admin Drive. Please try again. Possible causes include insufficient xDAI balance or a lost connection to the RPC.'
         }
         onClick={() => {
-          setShowErrorModal(false)
-          setShowInitialModal(true)
+          setAdminShowErrorModal(false)
           setErrorMessage('')
         }}
       />
@@ -323,8 +306,8 @@ export function FileManagerPage(): ReactElement {
   return (
     <FileManagerMainContent
       fm={fm}
-      showConnectionError={showConnectionError}
-      setShowConnectionError={() => setShowConnectionError(false)}
+      showConnectionError={isConnectionError && !connectionErrorDismissed}
+      setShowConnectionError={(show: boolean) => setConnectionErrorDismissed(!show)}
       isFormbricksActive={isFormbricksActive}
       errorMessage={errorMessage}
       setErrorMessage={setErrorMessage}
