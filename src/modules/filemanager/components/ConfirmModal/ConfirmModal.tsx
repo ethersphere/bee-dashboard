@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useLayoutEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import { Button } from '../Button/Button'
@@ -35,7 +35,11 @@ export function ConfirmModal({
   onMinimize,
   background = true,
 }: ConfirmModalProps): ReactElement {
-  const modalRoot = document.querySelector('.fm-main') || document.body
+  const [modalRoot, setModalRoot] = useState<Element>(() => document.querySelector('.fm-main') || document.body)
+
+  useLayoutEffect(() => {
+    setModalRoot(document.querySelector('.fm-main') || document.body)
+  }, [])
 
   return createPortal(
     <div className={`fm-modal-container fm-confirm-modal ${background ? '' : 'fm-modal-no-background'}`}>

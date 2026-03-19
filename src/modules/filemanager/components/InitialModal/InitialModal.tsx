@@ -20,7 +20,6 @@ import './InitialModal.scss'
 
 interface InitialModalProps {
   resetState: boolean
-  handleVisibility: (isVisible: boolean) => void
   handleShowError: (flag: boolean, errorMessage?: string) => void
   setIsCreationInProgress: (isCreating: boolean) => void
 }
@@ -65,7 +64,6 @@ const setSecurityLevel = (setter: (value: RedundancyLevel) => void) => {
 export function InitialModal({
   resetState,
   setIsCreationInProgress,
-  handleVisibility,
   handleShowError,
 }: InitialModalProps): ReactElement {
   const [isCreateEnabled, setIsCreateEnabled] = useState(false)
@@ -133,7 +131,6 @@ export function InitialModal({
 
   const createAdminDrive = useCallback(async () => {
     setIsCreationInProgress?.(true)
-    handleVisibility(false)
 
     await handleCreateDrive({
       beeApi,
@@ -148,7 +145,6 @@ export function InitialModal({
       resetState,
       existingBatch: selectedBatch,
       onSuccess: () => {
-        handleVisibility(false)
         setIsCreationInProgress(false)
       },
       onError: err => {
@@ -164,7 +160,6 @@ export function InitialModal({
     validityEndDate,
     erasureCodeLevel,
     selectedBatch,
-    handleVisibility,
     handleShowError,
     setIsCreationInProgress,
     resetState,
