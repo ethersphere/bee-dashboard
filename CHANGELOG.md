@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.34.1](https://github.com/ethersphere/bee-dashboard/compare/v0.34.0...v0.34.1) (2026-03-20)
+
+
+### Bug Fixes
+
+* add --no-git-checks to pnpm publish command ([37ab8fe](https://github.com/ethersphere/bee-dashboard/commit/37ab8fedaa9fa2f941b84746ec83fe87cf61b014))
+* add workflow_dispatch trigger to npm publish workflow ([becb873](https://github.com/ethersphere/bee-dashboard/commit/becb87377e506aca0c429439d70e43151025d755))
+* remove cross-env from prepublishOnly script ([4848b5b](https://github.com/ethersphere/bee-dashboard/commit/4848b5be97a827abeb0ca8156ef53cab0d2f315e))
+
 ## [0.34.0](https://github.com/ethersphere/bee-dashboard/compare/v0.33.5...v0.34.0) (2026-03-20)
 
 ### Features
