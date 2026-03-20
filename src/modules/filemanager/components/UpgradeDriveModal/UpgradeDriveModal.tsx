@@ -11,7 +11,7 @@ import {
 } from '@ethersphere/bee-js'
 import { Warning } from '@mui/icons-material'
 import { DriveInfo } from '@solarpunkltd/file-manager-lib'
-import { ReactElement, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { ReactElement, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import CalendarIcon from 'remixicon-react/CalendarLineIcon'
 import DatabaseIcon from 'remixicon-react/Database2LineIcon'
@@ -62,7 +62,10 @@ export function UpgradeDriveModal({
   const [capacityIndex, setCapacityIndex] = useState(0)
   const [durationExtensionCost, setDurationExtensionCost] = useState('')
   const [lifetimeIndex, setLifetimeIndex] = useState(0)
-  const [validityEndDate, setValidityEndDate] = useState(new Date())
+  const validityEndDate = useMemo(
+    () => getExpiryDateByLifetime(lifetimeIndex, stamp.duration.toEndDate()),
+    [lifetimeIndex, stamp.duration],
+  )
   const [sizeMarks, setSizeMarks] = useState<{ value: number; label: string }[]>([])
   const [extensionCost, setExtensionCost] = useState('0')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -113,7 +116,6 @@ export function UpgradeDriveModal({
       encryption: boolean,
       erasureCodeLevel: RedundancyLevel,
       isCapacityExtensionSet: boolean,
-      isDurationExtensionSet: boolean,
     ) => {
       let cost: BZZ | undefined
 
@@ -136,26 +138,15 @@ export function UpgradeDriveModal({
         setIsBalanceSufficient(true)
       }
 
-      const bothExtensions = isCapacityExtensionSet && isDurationExtensionSet
-      const capacityOnly = isCapacityExtensionSet && !isDurationExtensionSet
-      const durationOnly = !isCapacityExtensionSet && isDurationExtensionSet
-      const noExtensions = !isCapacityExtensionSet && !isDurationExtensionSet
-
-      if (bothExtensions) {
+      if (isCapacityExtensionSet) {
         setCapacityExtensionCost('')
         setDurationExtensionCost('')
-      } else if (capacityOnly) {
-        setCapacityExtensionCost(costText)
-        setDurationExtensionCost('0')
-      } else if (durationOnly) {
-        setCapacityExtensionCost('0')
-        setDurationExtensionCost(costText)
       } else {
         setCapacityExtensionCost('0')
-        setDurationExtensionCost('0')
+        setDurationExtensionCost(costText)
       }
 
-      setExtensionCost(noExtensions ? '0' : costText)
+      setExtensionCost(costText)
     },
     [beeApi, walletBalance, isMountedRef, setErrorMessage, setShowError],
   )
@@ -193,9 +184,7 @@ export function UpgradeDriveModal({
   useEffect(() => {
     const fetchExtensionCost = () => {
       const isCapacitySet = capacityIndex > 0
-      const isDurationSet = lifetimeIndex >= 0
-      const extendDuration =
-        lifetimeIndex >= 0 ? Duration.fromEndDate(validityEndDate, stamp.duration.toEndDate()) : Duration.ZERO
+      const extendDuration = Duration.fromEndDate(validityEndDate, stamp.duration.toEndDate())
 
       handleCostCalculation(
         stamp.batchID,
@@ -205,16 +194,11 @@ export function UpgradeDriveModal({
         false,
         defaultErasureCodeLevel,
         isCapacitySet,
-        isDurationSet,
       )
     }
 
     fetchExtensionCost()
-  }, [capacity, validityEndDate, capacityIndex, handleCostCalculation, lifetimeIndex, stamp.batchID, stamp.duration])
-
-  useEffect(() => {
-    setValidityEndDate(getExpiryDateByLifetime(lifetimeIndex, stamp.duration.toEndDate()))
-  }, [lifetimeIndex, stamp.duration])
+  }, [capacity, validityEndDate, capacityIndex, handleCostCalculation, stamp.batchID, stamp.duration])
 
   const batchIdStr = stamp.batchID.toString()
   const shortBatchId = batchIdStr.length > 12 ? `${batchIdStr.slice(0, 4)}...${batchIdStr.slice(-4)}` : batchIdStr
