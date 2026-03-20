@@ -27,7 +27,7 @@
     "url": "https://github.com/ethersphere/bee-dashboard.git"
   },
   "scripts": {
-    "prepublishOnly": "cross-env NODE_ENV=production pnpm run prepare",
+    "prepublishOnly": "NODE_ENV=production pnpm run prepare",
     "prepare": "pnpm run build && pnpm run build:component",
     "start": "vite",
     "desktop": "node ./desktop.mjs",
