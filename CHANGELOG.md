@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.34.1](https://github.com/ethersphere/bee-dashboard/compare/v0.34.0...v0.34.1) (2026-03-20)
+
+
+### Bug Fixes
+
+* add --no-git-checks to pnpm publish command ([37ab8fe](https://github.com/ethersphere/bee-dashboard/commit/37ab8fedaa9fa2f941b84746ec83fe87cf61b014))
+
 ## [0.34.0](https://github.com/ethersphere/bee-dashboard/compare/v0.33.5...v0.34.0) (2026-03-20)
 
 
