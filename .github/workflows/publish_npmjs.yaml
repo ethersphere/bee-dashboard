@@ -35,4 +35,4 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm publish --provenance --access public
+      - run: pnpm publish --provenance --access public --no-git-checks
