@@ -1,10 +1,9 @@
 import { createContext, ReactElement, ReactNode, useEffect, useState } from 'react'
 
 import { PREVIEW_DIMENSIONS } from '../constants'
+import { FileOrigin } from '../pages/files/FileNavigation'
 import { getMetadata } from '../utils/file'
 import { resize } from '../utils/image'
-
-import { FileOrigin } from '@/pages/files/FileNavigation'
 
 export type UploadOrigin = { origin: FileOrigin.Upload | FileOrigin.Feed; uuid?: string }
 
