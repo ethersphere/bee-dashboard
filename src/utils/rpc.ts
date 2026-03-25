@@ -3,10 +3,10 @@ import { debounce } from '@mui/material'
 import { Contract, JsonRpcProvider, TransactionReceipt, TransactionResponse, Wallet } from 'ethers'
 
 import { BZZ_TOKEN_ADDRESS, bzzABI } from './bzzAbi'
-import { ethAddressString, newGnosisProvider } from './chain'
+import { ethAddressString, newGnosisProvider, newGnosisProviderForValidation } from './chain'
 
 async function getNetworkChainId(url: string): Promise<bigint> {
-  const provider = newGnosisProvider(url)
+  const provider = newGnosisProviderForValidation(url)
   const network = await provider.getNetwork()
 
   return network.chainId

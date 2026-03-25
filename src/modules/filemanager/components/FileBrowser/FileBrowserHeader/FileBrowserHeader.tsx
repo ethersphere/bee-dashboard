@@ -3,8 +3,7 @@ import DownIcon from 'remixicon-react/ArrowDownSLineIcon'
 
 import { BulkActionsResult } from '../../../hooks/useBulkActions'
 import { SortDir, SortKey } from '../../../hooks/useSorting'
-
-import { capitalizeFirstLetter } from '@/modules/filemanager/utils/common'
+import { capitalizeFirstLetter } from '../../../utils/common'
 
 interface FileBrowserHeaderProps {
   isSearchMode: boolean
