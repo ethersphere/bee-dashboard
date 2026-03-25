@@ -40,7 +40,7 @@ export default function ExpandableListItem({ label, value, tooltip }: Props): Re
         )}
         {value && (
           <Box flex={1} textAlign="right">
-            <Typography variant="body2">
+            <Typography variant="body2" component="div">
               {value}
               {tooltip && (
                 <Tooltip title={tooltip} placement="top" arrow>
