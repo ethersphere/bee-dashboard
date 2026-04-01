@@ -8,7 +8,7 @@ import { FitAudio } from '../../components/FitAudio'
 import { FitImage } from '../../components/FitImage'
 import { FitVideo } from '../../components/FitVideo'
 import { shortenText } from '../../utils'
-import { getHumanReadableFileSize } from '../../utils/file'
+import { getHumanReadableFileSize, guessMime } from '../../utils/file'
 import { shortenHash } from '../../utils/hash'
 
 import { AssetIcon } from './AssetIcon'
@@ -18,16 +18,20 @@ interface Props {
   metadata?: Metadata
 }
 
-const getPreviewElement = (previewUri?: string, metadata?: Metadata) => {
-  if (metadata?.isVideo) {
+const getPreviewElement = (previewUri?: string, metadata?: Metadata, type?: string) => {
+  const isVideoType = Boolean(type && /.*\.(mp4|webm|ogv)$/i.test(type))
+  const isAudioType = Boolean(type && /.*\.(mp3|ogg|oga|wav|webm|m4a|aac|flac)$/i.test(type))
+  const isImageType = Boolean(type && /.*\.(jpg|jpeg|png|gif|webp|svg|ico)$/i.test(type))
+
+  if (metadata?.isVideo || isVideoType) {
     return <FitVideo src={previewUri} maxWidth="250px" maxHeight="175px" />
   }
 
-  if (metadata?.isAudio) {
+  if (metadata?.isAudio || isAudioType) {
     return <FitAudio src={previewUri} maxWidth="250px" />
   }
 
-  if (metadata?.isImage) {
+  if (metadata?.isImage || isImageType) {
     return <FitImage maxWidth="250px" maxHeight="175px" alt="Upload Preview" src={previewUri} />
   }
 
@@ -42,18 +46,26 @@ const getPreviewElement = (previewUri?: string, metadata?: Metadata) => {
   return <AssetIcon icon={<File />} />
 }
 
-const getType = (metadata?: Metadata) => {
+export const getType = (metadata?: Metadata): string => {
   if (metadata?.isWebsite) return 'Website'
 
   if (metadata?.type === 'folder') return 'Folder'
 
-  return metadata?.type
+  let metadataType = metadata?.type || 'unknown'
+  let typeFromExtension: string | undefined
+
+  if (metadataType === 'unknown' && metadata?.name) {
+    const { mime } = guessMime(metadata.name)
+    typeFromExtension = mime === 'application/octet-stream' ? 'file' : mime
+  }
+
+  return typeFromExtension || metadataType
 }
 
 // TODO: add optional prop for indexDocument when it is already known (e.g. downloading a manifest)
 export function AssetPreview({ metadata, previewUri }: Props): ReactElement | null {
-  const previewElement = useMemo(() => getPreviewElement(previewUri, metadata), [metadata, previewUri])
   const type = useMemo(() => getType(metadata), [metadata])
+  const previewElement = useMemo(() => getPreviewElement(previewUri, metadata, type), [metadata, type, previewUri])
 
   return (
     <Box mb={4}>

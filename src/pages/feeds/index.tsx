@@ -104,7 +104,7 @@ export default function Feeds(): ReactElement {
           {x.feedHash && <ExpandableListItemKey label="Feed hash" value={x.feedHash} />}
           <Box mt={0.75}>
             <ExpandableListItemActions>
-              <SwarmButton onClick={() => viewFeed(x.uuid)} iconType={Info}>
+              <SwarmButton onClick={() => viewFeed(x.uuid)} iconType={Info} disabled={Boolean(!x.feedHash)}>
                 View Feed Page
               </SwarmButton>
               <SwarmButton onClick={() => onShowExport(x)} iconType={Download}>

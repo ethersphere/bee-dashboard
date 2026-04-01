@@ -26,8 +26,8 @@ export default function UpdateFeed(): ReactElement {
   const { status } = useContext(BeeContext)
   const { hash } = useParams()
 
-  const [selectedStamp, setSelectedStamp] = useState<string | null>(null)
-  const [selectedIdentity, setSelectedIdentity] = useState<Identity | null>(null)
+  const [selectedStamp, setSelectedStamp] = useState<string | null>(stamps ? stamps[0]?.batchID.toHex() : null)
+  const [selectedIdentity, setSelectedIdentity] = useState<Identity | null>(identities[0] ?? null)
   const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
@@ -119,19 +119,28 @@ export default function UpdateFeed(): ReactElement {
       <HistoryHeader>Update feed</HistoryHeader>
       <Box mb={2}>
         <Grid container>
-          <SwarmSelect
-            options={identities.map(x => ({ value: x.uuid, label: `${x.name} Website` }))}
-            onChange={onFeedChange}
-            label="Feed"
-          />
+          {identities && identities.length ? (
+            <SwarmSelect
+              value={selectedIdentity?.uuid ?? ''}
+              options={identities.map(x => ({ value: x.uuid, label: `${x.name} Website` }))}
+              onChange={onFeedChange}
+              label="Feed"
+            />
+          ) : (
+            <Typography>You need to create an identiy first to be able to update its feed.</Typography>
+          )}
         </Grid>
       </Box>
 
       <Box mb={4}>
         <Grid container>
-          {stamps ? (
+          {stamps && stamps.length ? (
             <SwarmSelect
-              options={stamps.map(x => ({ value: x.batchID.toHex(), label: x.batchID.toHex().slice(0, 8) }))}
+              value={selectedStamp ?? ''}
+              options={stamps.map(x => ({
+                value: x.batchID.toHex(),
+                label: x.label ? x.batchID.toHex().slice(0, 8) + ` (${x.label})` : x.batchID.toHex().slice(0, 8),
+              }))}
               onChange={onStampChange}
               label="Stamp"
             />
