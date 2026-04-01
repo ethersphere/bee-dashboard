@@ -16,11 +16,17 @@ const useStyles = makeStyles()(theme => ({
   header: {
     backgroundColor: theme.palette.background.paper,
     marginBottom: theme.spacing(0.25),
-    borderLeft: `${theme.spacing(0.25)}px solid rgba(0,0,0,0)`,
+    borderLeft: `${theme.spacing(0.25)} solid rgba(0,0,0,0)`,
     wordBreak: 'break-word',
+    '&:hover': {
+      backgroundColor: theme.palette.background.paper,
+    },
+    '&:focus-within': {
+      backgroundColor: theme.palette.background.paper,
+    },
   },
   headerOpen: {
-    borderLeft: `${theme.spacing(0.25)}px solid ${theme.palette.primary.main}`,
+    borderLeft: `${theme.spacing(0.25)} solid ${theme.palette.primary.main}`,
   },
   copyValue: {
     cursor: 'pointer',
@@ -95,35 +101,35 @@ export default function ExpandableListItemInput({
   }
 
   return (
-    <ListItemButton className={`${classes.header} ${open ? classes.headerOpen : ''}`}>
-      <Box display="flex" flexDirection="column" width="100%">
-        <Box display="flex" flexDirection="row" alignItems="center" width="100%">
-          {label && (
-            <Box flex={1} minWidth={0}>
-              <Typography variant="body1" className={classes.unselectableLabel} component="span">
-                {label}
-              </Typography>
+    <>
+      <ListItemButton className={`${classes.header} ${open ? classes.headerOpen : ''}`}>
+        <Box display="flex" flexDirection="column" width="100%">
+          <Box display="flex" flexDirection="row" alignItems="center" width="100%">
+            {label && (
+              <Box flex={1} minWidth={0}>
+                <Typography variant="body1" className={classes.unselectableLabel} component="span">
+                  {label}
+                </Typography>
+              </Box>
+            )}
+            <Box flex={3} display="flex" alignItems="center" justifyContent="flex-end" minWidth={0} gap={1}>
+              {!open && value && (
+                <Typography
+                  variant="body2"
+                  component="span"
+                  sx={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                >
+                  {value}
+                </Typography>
+              )}
+              {!expandedOnly && !locked && (
+                <IconButton size="small" className={classes.copyValue} onClick={toggleOpen}>
+                  {open ? <Minus strokeWidth={1} /> : <Edit strokeWidth={1} />}
+                </IconButton>
+              )}
             </Box>
-          )}
-          <Box flex={3} display="flex" alignItems="center" justifyContent="flex-end" minWidth={0} gap={1}>
-            {!open && value && (
-              <Typography
-                variant="body2"
-                component="span"
-                sx={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-              >
-                {value}
-              </Typography>
-            )}
-            {!expandedOnly && !locked && (
-              <IconButton size="small" className={classes.copyValue} onClick={toggleOpen}>
-                {open ? <Minus strokeWidth={1} /> : <Edit strokeWidth={1} />}
-              </IconButton>
-            )}
           </Box>
-        </Box>
-        <Collapse in={open} timeout="auto" unmountOnExit>
-          <Box display="flex" flexDirection="column" width="100%">
+          <Collapse in={open} timeout="auto" unmountOnExit>
             <Box display="flex" alignItems="center" width="100%" minWidth={0}>
               <InputBase
                 value={inputValue}
@@ -146,36 +152,38 @@ export default function ExpandableListItemInput({
               />
             </Box>
             {helperText && <ExpandableListItemNote>{helperText}</ExpandableListItemNote>}
-            <Box mt={2}>
-              <ExpandableListItemActions>
-                <SwarmButton
-                  disabled={
-                    loading ||
-                    inputValue === value ||
-                    Boolean(confirmLabelDisabled) ||
-                    (inputValue === '' && value === undefined)
-                  }
-                  loading={loading}
-                  iconType={confirmIcon ?? Check}
-                  onClick={() => {
-                    onConfirm?.(inputValue.trim())
-                  }}
-                >
-                  {confirmLabel || 'Save'}
-                </SwarmButton>
-                <SwarmButton
-                  disabled={loading || inputValue === value || inputValue === ''}
-                  iconType={X}
-                  onClick={() => setInputValue(value || '')}
-                  cancel
-                >
-                  Cancel
-                </SwarmButton>
-              </ExpandableListItemActions>
-            </Box>
-          </Box>
-        </Collapse>
-      </Box>
-    </ListItemButton>
+          </Collapse>
+        </Box>
+      </ListItemButton>
+      <Collapse in={open} timeout="auto" unmountOnExit>
+        <Box mt={2}>
+          <ExpandableListItemActions>
+            <SwarmButton
+              disabled={
+                loading ||
+                inputValue === value ||
+                Boolean(confirmLabelDisabled) ||
+                (inputValue === '' && value === undefined)
+              }
+              loading={loading}
+              iconType={confirmIcon ?? Check}
+              onClick={() => {
+                onConfirm?.(inputValue.trim())
+              }}
+            >
+              {confirmLabel || 'Save'}
+            </SwarmButton>
+            <SwarmButton
+              disabled={loading || inputValue === value || inputValue === ''}
+              iconType={X}
+              onClick={() => setInputValue(value || '')}
+              cancel
+            >
+              Cancel
+            </SwarmButton>
+          </ExpandableListItemActions>
+        </Box>
+      </Collapse>
+    </>
   )
 }

@@ -24,14 +24,14 @@ const useStyles = makeStyles()(theme => ({
     },
   },
   buttonSelected: {
-    color: 'white',
-    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.secondary.main,
+    backgroundColor: 'white',
     '&:hover': {
-      color: theme.palette.secondary.main,
-      backgroundColor: 'white',
+      color: 'white',
+      backgroundColor: theme.palette.primary.main,
       '@media (hover: none)': {
-        color: 'white',
-        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.secondary.main,
+        backgroundColor: 'white',
       },
     },
   },
