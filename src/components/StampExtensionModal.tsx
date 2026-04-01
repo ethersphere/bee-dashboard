@@ -8,6 +8,22 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Input from '@mui/material/Input'
 import { useSnackbar } from 'notistack'
 import React, { ReactElement, ReactNode, useState } from 'react'
+import { makeStyles } from 'tss-react/mui'
+
+const useStyles = makeStyles()(() => ({
+  button: {
+    color: '#333333',
+    backgroundColor: 'white',
+    '&:hover': {
+      backgroundColor: '#dd7700',
+      color: 'white',
+      '@media (hover: none)': {
+        backgroundColor: '#dd7700',
+        color: 'white',
+      },
+    },
+  },
+}))
 
 interface Props {
   type: 'Topup' | 'Dilute'
@@ -17,6 +33,7 @@ interface Props {
 }
 
 export default function StampExtensionModal({ type, icon, bee, stamp }: Props): ReactElement {
+  const { classes } = useStyles()
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState('')
   const { enqueueSnackbar } = useSnackbar()
@@ -57,7 +74,7 @@ export default function StampExtensionModal({ type, icon, bee, stamp }: Props): 
 
   return (
     <Box mb={2}>
-      <Button variant="contained" onClick={handleClickOpen} startIcon={icon}>
+      <Button variant="contained" onClick={handleClickOpen} startIcon={icon} className={classes.button}>
         {type}
       </Button>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">

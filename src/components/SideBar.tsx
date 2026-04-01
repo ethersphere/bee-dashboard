@@ -139,7 +139,7 @@ export default function SideBar(): ReactElement {
       label: 'File Manager',
       path: ROUTES.FILEMANAGER,
       icon: FileManagerIcon,
-      pathMatcherSubstring: '/filemanager/',
+      pathMatcherSubstring: '/filemanager',
     },
     {
       label: 'Account',
