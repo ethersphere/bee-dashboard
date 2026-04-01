@@ -57,7 +57,7 @@ export function SwarmTextInput({
         variant="filled"
         className={classes.field}
         defaultValue={defaultValue || ''}
-        InputProps={{ disableUnderline: true }}
+        slotProps={{ input: { disableUnderline: true } }}
         placeholder={placeholder}
       />
     )
@@ -73,7 +73,7 @@ export function SwarmTextInput({
       className={classes.field}
       defaultValue={defaultValue || ''}
       onChange={onChange}
-      InputProps={{ disableUnderline: true }}
+      slotProps={{ input: { disableUnderline: true } }}
       placeholder={placeholder}
     />
   )
