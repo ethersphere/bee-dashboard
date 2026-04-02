@@ -39,8 +39,8 @@ function StampsTable({ postageStamps }: Props): ReactElement | null {
               <ExpandableListItem label="Depth" value={String(stamp.depth)} />
               <ExpandableListItem
                 label="Capacity"
-                value={`${getHumanReadableFileSize(2 ** stamp.depth * 4096 * stamp.usage)} / ${getHumanReadableFileSize(
-                  2 ** stamp.depth * 4096,
+                value={`${getHumanReadableFileSize(stamp.size.toBytes() - stamp.remainingSize.toBytes())} / ${getHumanReadableFileSize(
+                  stamp.size.toBytes(),
                 )}`}
               />
               <ExpandableListItem label="Amount" value={parseInt(stamp.amount, 10).toLocaleString()} />
