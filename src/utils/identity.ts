@@ -4,7 +4,8 @@ import { randomBytes, Wallet } from 'ethers'
 import { Identity, IdentityType } from '../providers/Feeds'
 
 import { LocalStorageKeys } from './localStorage'
-import { uuidV4, waitUntilStampUsable } from '.'
+import { waitUntilStampUsable } from './stamp'
+import { uuidV4 } from '.'
 
 export function generateWallet(): Wallet {
   const privateKey = new Bytes(randomBytes(PrivateKey.LENGTH)).toString()
