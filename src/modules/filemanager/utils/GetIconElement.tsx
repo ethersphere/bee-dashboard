@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import FileIcon from 'remixicon-react/FileTextLineIcon'
 import ImageIcon from 'remixicon-react/Image2LineIcon'
 
-import { guessMime } from './view'
+import { guessMime } from '../../../utils/file'
 
 interface ContextMenuProps {
   name: string

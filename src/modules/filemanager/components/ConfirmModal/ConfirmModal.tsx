@@ -15,7 +15,7 @@ interface ConfirmModalProps {
   onCancel?: () => void
   showFooter?: boolean
   isProgress?: boolean
-  spinnerMessage?: string
+  spinnerMessage?: React.ReactNode
   showMinimize?: boolean
   onMinimize?: () => void
   background?: boolean

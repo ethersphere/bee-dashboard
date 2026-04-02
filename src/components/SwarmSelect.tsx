@@ -75,6 +75,7 @@ export function SwarmSelect({
           value={value}
           className={classes.select}
           displayEmpty
+          onChange={onChange}
           renderValue={(value: unknown) => (value ? renderValue(value) : placeholder)}
           MenuProps={{ MenuListProps: { disablePadding: true }, PaperProps: { square: true } }}
         >

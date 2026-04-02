@@ -305,7 +305,11 @@ export function Sidebar({ setErrorMessage, loading }: SidebarProps): ReactElemen
       </div>
 
       {isDriveCreationInProgress && (
-        <div className="fm-sidebar-drive-creation">Creating drive, please do not reload</div>
+        <div className="fm-sidebar-drive-creation">
+          Creating drive — please do not reload the page.
+          <br />
+          This may take a few minutes.
+        </div>
       )}
     </div>
   )

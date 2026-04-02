@@ -3,14 +3,13 @@ import { ReactElement, useState } from 'react'
 import CheckDoubleLineIcon from 'remixicon-react/CheckDoubleLineIcon'
 import ClipboardIcon from 'remixicon-react/FileCopyLineIcon'
 
+import { uuidV4 } from '../../../../utils'
 import { TOOLTIPS } from '../../constants/tooltips'
 import { getSigner, setSignerPk } from '../../utils/common'
 import { Button } from '../Button/Button'
 import { Tooltip } from '../Tooltip/Tooltip'
 
 import './PrivateKeyModal.scss'
-
-import { uuidV4 } from '@/utils'
 
 type Props = { onSaved: () => void }
 

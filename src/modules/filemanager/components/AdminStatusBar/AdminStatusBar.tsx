@@ -179,7 +179,13 @@ export function AdminStatusBar({
   const isBusy = loading || isUpgrading || isCreationInProgress
   const blurCls = isBusy ? ' is-loading' : ''
   const statusVerb = isCreationInProgress ? 'Creating' : 'Loading'
-  const statusText = statusVerb + '  admin drive, please do not reload'
+  const statusText = (
+    <>
+      {statusVerb} admin drive — please do not reload the page.
+      <br />
+      This may take a few minutes.
+    </>
+  )
 
   const renderModalsAndOverlays = () => {
     return (

@@ -1,3 +1,4 @@
+import { BeeModes } from '@ethersphere/bee-js'
 import { useContext } from 'react'
 import { useNavigate } from 'react-router'
 import Upload from 'remixicon-react/UploadLineIcon'
@@ -19,7 +20,7 @@ export function WalletInfoCard() {
     )} xBZZ | ${walletBalance.nativeTokenBalance.toSignificantDigits(4)} xDAI`
   }
 
-  if (nodeInfo?.beeMode && ['light', 'full', 'dev'].includes(nodeInfo.beeMode)) {
+  if (nodeInfo?.beeMode && [BeeModes.LIGHT, BeeModes.FULL, BeeModes.DEV].includes(nodeInfo.beeMode)) {
     return (
       <Card
         buttonProps={{
