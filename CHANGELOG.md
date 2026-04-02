@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.35.0](https://github.com/ethersphere/bee-dashboard/compare/v0.34.0...v0.35.0) (2026-04-02)
+
+
+### Features
+
+* sync and update with all changes from solar-punk-ltd fork ([#730](https://github.com/ethersphere/bee-dashboard/issues/730)) ([cb5adfe](https://github.com/ethersphere/bee-dashboard/commit/cb5adfe0310b94297c6c695b045b38d313c9bd78))
+
+
+### Bug Fixes
+
+* add --no-git-checks to pnpm publish command ([37ab8fe](https://github.com/ethersphere/bee-dashboard/commit/37ab8fedaa9fa2f941b84746ec83fe87cf61b014))
+* add workflow_dispatch trigger to npm publish workflow ([becb873](https://github.com/ethersphere/bee-dashboard/commit/becb87377e506aca0c429439d70e43151025d755))
+* remove cross-env from prepublishOnly script ([4848b5b](https://github.com/ethersphere/bee-dashboard/commit/4848b5be97a827abeb0ca8156ef53cab0d2f315e))
+
 ## [0.34.0](https://github.com/ethersphere/bee-dashboard/compare/v0.33.5...v0.34.0) (2026-03-20)
 
 ### Features
