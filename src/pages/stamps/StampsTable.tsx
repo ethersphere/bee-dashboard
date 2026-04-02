@@ -7,8 +7,9 @@ import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
-import StampExtensionModal from '../../components/StampExtensionModal'
-import { Context } from '../../providers/Settings'
+import StampExtensionModal, { StampExtensionType } from '../../components/StampExtensionModal'
+import { Context as BeeContext } from '../../providers/Bee'
+import { Context as SettingsContext } from '../../providers/Settings'
 import { EnrichedPostageBatch } from '../../providers/Stamps'
 import { secondsToTimeString } from '../../utils'
 import { getHumanReadableFileSize } from '../../utils/file'
@@ -20,7 +21,8 @@ interface Props {
 }
 
 function StampsTable({ postageStamps }: Props): ReactElement | null {
-  const { beeApi } = useContext(Context)
+  const { beeApi } = useContext(SettingsContext)
+  const { status } = useContext(BeeContext)
 
   if (!postageStamps || !beeApi) {
     return null
@@ -37,8 +39,8 @@ function StampsTable({ postageStamps }: Props): ReactElement | null {
               <ExpandableListItem label="Depth" value={String(stamp.depth)} />
               <ExpandableListItem
                 label="Capacity"
-                value={`${getHumanReadableFileSize(2 ** stamp.depth * 4096 * stamp.usage)} / ${getHumanReadableFileSize(
-                  2 ** stamp.depth * 4096,
+                value={`${getHumanReadableFileSize(stamp.size.toBytes() - stamp.remainingSize.toBytes())} / ${getHumanReadableFileSize(
+                  stamp.size.toBytes(),
                 )}`}
               />
               <ExpandableListItem label="Amount" value={parseInt(stamp.amount, 10).toLocaleString()} />
@@ -49,16 +51,18 @@ function StampsTable({ postageStamps }: Props): ReactElement | null {
               <ExpandableListItem label="Purchase Block Number" value={stamp.blockNumber} />
               <ExpandableListItemActions>
                 <StampExtensionModal
-                  type="Topup"
+                  type={StampExtensionType.Topup}
                   icon={<TimerFlashFill size="1rem" />}
                   bee={beeApi}
-                  stamp={stamp.batchID}
+                  stamp={stamp}
+                  status={status.all}
                 />
                 <StampExtensionModal
-                  type="Dilute"
+                  type={StampExtensionType.Dilute}
                   icon={<TimerFlashLine size="1rem" />}
                   bee={beeApi}
-                  stamp={stamp.batchID}
+                  stamp={stamp}
+                  status={status.all}
                 />
               </ExpandableListItemActions>
             </>

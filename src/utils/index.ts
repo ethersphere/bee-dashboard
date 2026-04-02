@@ -1,4 +1,4 @@
-import { BatchId, Bee, PostageBatch, Reference } from '@ethersphere/bee-js'
+import { Reference } from '@ethersphere/bee-js'
 import { BigNumber } from 'bignumber.js'
 
 import { BZZ_LINK_DOMAIN } from '../constants'
@@ -206,37 +206,4 @@ export function shortenText(text: string, length = 20, separator = '[…]'): str
   }
 
   return `${text.slice(0, length)}${separator}${text.slice(-length)}`
-}
-
-const DEFAULT_POLLING_FREQUENCY = 1_000
-const DEFAULT_STAMP_USABLE_TIMEOUT = 5 * 60_000
-
-interface Options {
-  pollingFrequency?: number
-  timeout?: number
-}
-
-export function waitUntilStampUsable(batchId: BatchId | string, bee: Bee, options?: Options): Promise<PostageBatch> {
-  return waitForStamp(batchId, bee, options)
-}
-
-async function waitForStamp(batchId: BatchId | string, bee: Bee, options?: Options): Promise<PostageBatch> {
-  const timeout = options?.timeout || DEFAULT_STAMP_USABLE_TIMEOUT
-  const pollingFrequency = options?.pollingFrequency || DEFAULT_POLLING_FREQUENCY
-
-  for (let i = 0; i < timeout; i += pollingFrequency) {
-    try {
-      const stamp = await bee.getPostageBatch(batchId)
-
-      if (stamp.usable) {
-        return stamp
-      }
-    } catch {
-      // ignore
-    }
-
-    await sleepMs(pollingFrequency)
-  }
-
-  throw new Error('Wait until stamp usable timeout has been reached')
 }

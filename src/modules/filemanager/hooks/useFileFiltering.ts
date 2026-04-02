@@ -26,7 +26,7 @@ interface UseFileFilteringReturn {
 export function useFileFiltering(props: UseFileFilteringProps): UseFileFilteringReturn {
   const { files, currentDrive, view, isSearchMode, query, scope, includeActive, includeTrashed } = props
 
-  const q = query.trim().toLowerCase()
+  const q = query.trim().toLowerCase().normalize('NFC')
 
   const statusIncluded = useCallback(
     (fi: FileInfo): boolean => {
@@ -44,9 +44,11 @@ export function useFileFiltering(props: UseFileFilteringProps): UseFileFiltering
   const matchesQuery = useCallback(
     (fi: FileInfo): boolean => {
       if (!q) return true
-      const name = fi.name.toLowerCase()
-      const mime = (fi.customMetadata?.mime || '').toLowerCase()
-      const topic = String(fi.topic ?? '').toLowerCase()
+      const name = fi.name.toLowerCase().normalize('NFC')
+      const mime = (fi.customMetadata?.mime || '').toLowerCase().normalize('NFC')
+      const topic = String(fi.topic ?? '')
+        .toLowerCase()
+        .normalize('NFC')
 
       return name.includes(q) || mime.includes(q) || topic.includes(q)
     },

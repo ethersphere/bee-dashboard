@@ -1,13 +1,14 @@
-import { BatchId, Bee, NULL_TOPIC, PrivateKey, Reference } from '@ethersphere/bee-js'
+import { BatchId, Bee, Bytes, NULL_TOPIC, PrivateKey, Reference } from '@ethersphere/bee-js'
 import { randomBytes, Wallet } from 'ethers'
 
 import { Identity, IdentityType } from '../providers/Feeds'
 
 import { LocalStorageKeys } from './localStorage'
-import { uuidV4, waitUntilStampUsable } from '.'
+import { waitUntilStampUsable } from './stamp'
+import { uuidV4 } from '.'
 
 export function generateWallet(): Wallet {
-  const privateKey = randomBytes(PrivateKey.LENGTH).toString()
+  const privateKey = new Bytes(randomBytes(PrivateKey.LENGTH)).toString()
 
   return new Wallet(privateKey)
 }

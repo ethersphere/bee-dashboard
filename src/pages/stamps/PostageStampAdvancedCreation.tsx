@@ -1,4 +1,4 @@
-import { PostageBatchOptions, Utils } from '@ethersphere/bee-js'
+import { PostageBatchOptions, RedundancyLevel, Utils } from '@ethersphere/bee-js'
 import { Box, Grid, IconButton, Typography } from '@mui/material'
 import BigNumber from 'bignumber.js'
 import { useSnackbar } from 'notistack'
@@ -11,12 +11,14 @@ import { makeStyles } from 'tss-react/mui'
 import { SwarmButton } from '../../components/SwarmButton'
 import { SwarmSelect } from '../../components/SwarmSelect'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
+import { MAX_STAMP_DEPTH, MIN_STAMP_DEPTH } from '../../constants'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as StampsContext } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
 import { secondsToTimeString } from '../../utils'
 import { getHumanReadableFileSize } from '../../utils/file'
+import { validateDepthInput } from '../../utils/stamp'
 
 interface Props {
   onFinished: () => void
@@ -80,7 +82,7 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
   }
 
   function getPrice(depth: number, amount: bigint): string {
-    const hasInvalidInput = amount <= 0 || isNaN(depth) || depth < 17 || depth > 255
+    const hasInvalidInput = amount <= 0 || isNaN(depth) || depth < MIN_STAMP_DEPTH || depth > MAX_STAMP_DEPTH
 
     if (hasInvalidInput) {
       return '-'
@@ -147,38 +149,15 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
     setAmountInput(validAmountInput)
   }
 
-  function validateDepthInput(depthInput: string) {
-    let validDepthInput = '0'
-
-    if (!depthInput) {
-      setDepthError('Required field')
-    } else {
-      const depth = new BigNumber(depthInput)
-
-      if (!depth.isInteger()) {
-        setDepthError('Depth must be an integer')
-      } else if (depth.isLessThan(17)) {
-        setDepthError('Minimal depth is 17')
-      } else if (depth.isGreaterThan(255)) {
-        setDepthError('Depth has to be at most 255')
-      } else {
-        setDepthError('')
-        validDepthInput = depthInput
-      }
-    }
-
-    setDepthInput(validDepthInput)
-  }
-
   function renderStampVolumesInfo() {
     const depth = parseInt(depthInput, 10)
 
-    if (depthError || isNaN(depth) || depth < 17 || depth > 255) {
+    if (depthError || isNaN(depth) || depth < MIN_STAMP_DEPTH || depth > MAX_STAMP_DEPTH) {
       return '-'
     }
 
     const theoreticalMaximumVolume = getHumanReadableFileSize(Utils.getStampTheoreticalBytes(depth))
-    const effectiveVolume = getHumanReadableFileSize(Utils.getStampEffectiveBytes(depth))
+    const effectiveVolume = getHumanReadableFileSize(Utils.getStampEffectiveBytes(depth, false, RedundancyLevel.OFF))
 
     return (
       <Grid container alignItems="center" className={classes.stampVolumeWrapper}>
@@ -217,7 +196,11 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
         </Typography>
       </Box>
       <Box mb={2}>
-        <SwarmTextInput name="depth" label="Depth" onChange={event => validateDepthInput(event.target.value)} />
+        <SwarmTextInput
+          name="depth"
+          label="Depth"
+          onChange={event => validateDepthInput(event.target.value, setDepthError, setDepthInput)}
+        />
         <Box mt={0.25} sx={{ bgcolor: '#f6f6f6' }} p={2}>
           <Grid container justifyContent="space-between" alignItems="center">
             <Typography>Corresponding file size</Typography>
@@ -242,7 +225,7 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
       <Box mb={2}>
         <SwarmSelect
           label="Immutable"
-          value="No"
+          value={immutable ? 'Yes' : 'No'}
           onChange={event => setImmutable(event.target.value === 'Yes')}
           options={[
             { value: 'Yes', label: 'Yes' },

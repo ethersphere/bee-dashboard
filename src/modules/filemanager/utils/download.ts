@@ -1,10 +1,10 @@
 import { FileInfo, FileManager } from '@solarpunkltd/file-manager-lib'
 
+import { guessMime, VIEWERS } from '../../../utils/file'
 import { DownloadProgress, DownloadState } from '../constants/transfers'
 
 import { AbortManager } from './abortManager'
 import { isDirectoryPickerSupported, isPickerSupported } from './fileOperations'
-import { guessMime, VIEWERS } from './view'
 
 const DefaultDownloadFolder = 'downloads'
 

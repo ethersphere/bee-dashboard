@@ -1,5 +1,6 @@
-import { NULL_TOPIC } from '@ethersphere/bee-js'
+import { NULL_TOPIC, PostageBatch } from '@ethersphere/bee-js'
 import { Box, Grid, Typography } from '@mui/material'
+import { Wallet } from 'ethers'
 import { Form, Formik } from 'formik'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useState } from 'react'
@@ -12,7 +13,7 @@ import ExpandableListItemActions from '../../components/ExpandableListItemAction
 import ExpandableListItemKey from '../../components/ExpandableListItemKey'
 import { HistoryHeader } from '../../components/HistoryHeader'
 import { SwarmButton } from '../../components/SwarmButton'
-import { SwarmSelect } from '../../components/SwarmSelect'
+import { SelectEvent, SwarmSelect } from '../../components/SwarmSelect'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
 import { Context as FeedsContext, IdentityType } from '../../providers/Feeds'
 import { Context as SettingsContext } from '../../providers/Settings'
@@ -34,7 +35,8 @@ const initialValues: FormValues = {
 export default function CreateNewFeed(): ReactElement {
   const { beeApi } = useContext(SettingsContext)
   const { identities, setIdentities } = useContext(FeedsContext)
-  const [loading, setLoading] = useState(false)
+  const [identityType, setIdentityType] = useState<IdentityType>(IdentityType.PrivateKey)
+  const [loading, setLoading] = useState<boolean>(false)
   const { enqueueSnackbar } = useSnackbar()
 
   const navigate = useNavigate()
@@ -48,11 +50,24 @@ export default function CreateNewFeed(): ReactElement {
 
       return
     }
-    const wallet = generateWallet()
-    const stamps = await beeApi.getPostageBatches()
+
+    let stamps: PostageBatch[] = []
+    let wallet: Wallet
+
+    try {
+      wallet = generateWallet()
+      stamps = (await beeApi.getPostageBatches()).filter(s => s.usable)
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.log(err)
+      enqueueSnackbar(<span>Error during wallet generation or postage stamp retrieval!</span>, { variant: 'error' })
+      setLoading(false)
+
+      return
+    }
 
     if (!stamps || !stamps.length) {
-      enqueueSnackbar(<span>No stamp available</span>, { variant: 'error' })
+      enqueueSnackbar(<span>No usable stamp available</span>, { variant: 'error' })
       setLoading(false)
 
       return
@@ -65,15 +80,27 @@ export default function CreateNewFeed(): ReactElement {
       return
     }
 
-    const identity = await convertWalletToIdentity(wallet, values.type, values.identityName, values.password)
-    persistIdentity(identities, identity)
-    setIdentities(identities)
-    navigate(ROUTES.ACCOUNT_FEEDS)
-    setLoading(false)
+    try {
+      const identity = await convertWalletToIdentity(wallet, values.type, values.identityName, values.password)
+      persistIdentity(identities, identity)
+      setIdentities(identities)
+      navigate(ROUTES.ACCOUNT_FEEDS)
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.log(err)
+      enqueueSnackbar(<span>Error identity creation!</span>, { variant: 'error' })
+    } finally {
+      setLoading(false)
+    }
   }
 
   function cancel() {
     navigate(-1)
+  }
+
+  function onIdentityTypeChange(event: SelectEvent) {
+    const type = event.target.value as IdentityType
+    setIdentityType(type)
   }
 
   return (
@@ -102,10 +129,13 @@ export default function CreateNewFeed(): ReactElement {
               <SwarmSelect
                 formik
                 name="type"
+                label={'type'}
+                value={identityType}
                 options={[
                   { label: 'Keypair Only', value: IdentityType.PrivateKey },
                   { label: 'Password Protected', value: IdentityType.V3 },
                 ]}
+                onChange={onIdentityTypeChange}
               />
             </Box>
             {values.type === IdentityType.V3 && <SwarmTextInput name="password" label="Password" password formik />}

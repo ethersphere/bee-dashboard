@@ -10,11 +10,17 @@ const useStyles = makeStyles()(theme => ({
   header: {
     backgroundColor: theme.palette.background.paper,
     marginBottom: theme.spacing(0.25),
-    borderLeft: `${theme.spacing(0.25)}px solid rgba(0,0,0,0)`,
+    borderLeft: `${theme.spacing(0.25)} solid rgba(0,0,0,0)`,
     wordBreak: 'break-word',
+    '&:hover': {
+      backgroundColor: theme.palette.background.paper,
+    },
+    '&:focus-within': {
+      backgroundColor: theme.palette.background.paper,
+    },
   },
   headerOpen: {
-    borderLeft: `${theme.spacing(0.25)}px solid ${theme.palette.primary.main}`,
+    borderLeft: `${theme.spacing(0.25)} solid ${theme.palette.primary.main}`,
   },
   copyValue: {
     cursor: 'pointer',
@@ -69,7 +75,7 @@ export default function ExpandableListItemKey({ label, value, expanded }: Props)
 
   return (
     <ListItemButton className={`${classes.header} ${open ? classes.headerOpen : ''}`}>
-      <Grid container direction="column" justifyContent="space-between" alignItems="stretch">
+      <Grid container direction="column" justifyContent="space-between" alignItems="stretch" style={{ width: '100%' }}>
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
           {label && (
             <Typography variant="body1" component="span">
