@@ -95,6 +95,22 @@ function LoadingBlock() {
   )
 }
 
+function ChainSyncingBlock() {
+  return (
+    <div className="fm-main">
+      <div className="fm-loading" aria-live="polite">
+        <div className="fm-spinner" aria-hidden="true" />
+        <div className="fm-loading-title">Bee node is syncing…</div>
+        <div className="fm-loading-subtitle">
+          Your Bee node is still syncing the postage batch state from the chain.
+          <br />
+          File Manager will be available once the sync is complete.
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function ErrorModalBlock({ onClick, label }: { onClick: () => void; label: string }) {
   return <ErrorModal label={label} onClick={onClick} />
 }
@@ -157,6 +173,7 @@ enum PageState {
   Loading = 'loading', // bee ready, pk present, FM init in progress
   Reset = 'reset', // STATE_INVALID emitted and user has not yet acknowledged
   InitError = 'init-error', // FM init completed with an error (non-reset case)
+  ChainSyncing = 'chain-syncing', // bee node is still syncing postage batch state from chain
   Initial = 'initial', // FM ready but no admin stamp/drive → show InitialModal
   AdminError = 'admin-error', // drive creation failed
   Ready = 'ready', // fully operational
@@ -172,7 +189,7 @@ export function FileManagerPage(): ReactElement {
   const [connectionErrorDismissed, setConnectionErrorDismissed] = useState<boolean>(false)
   const [cacheHelpUrl, setCacheHelpUrl] = useState<string>(cacheClearUrls[BrowserPlatform.Chrome])
 
-  const { status } = useContext(BeeContext)
+  const { status, chainState } = useContext(BeeContext)
   const { fm, initDone, shallReset, adminDrive, initializationError, notifyPkSaved } = useContext(FMContext)
 
   useEffect(() => {
@@ -207,6 +224,8 @@ export function FileManagerPage(): ReactElement {
   }, [isConnectionError])
 
   const pageState = useMemo((): PageState => {
+    const isChainSyncing = chainState === null
+
     if (!isBeeReady && !initDone) return PageState.Connecting
 
     if (!hasPk) return PageState.NoPrivateKey
@@ -217,12 +236,15 @@ export function FileManagerPage(): ReactElement {
 
     if (initializationError && !shallReset) return PageState.InitError
 
-    if (showAdminErrorModal) return PageState.AdminError
-
     const hasAdminStamp = Boolean(fm?.adminStamp)
     const hasAdminDrive = Boolean(adminDrive)
+    const setupIncomplete = !hasAdminStamp && !hasAdminDrive
 
-    if (!hasAdminStamp && !hasAdminDrive && !isCreationInProgress) return PageState.Initial
+    if (setupIncomplete && isChainSyncing) return PageState.ChainSyncing
+
+    if (showAdminErrorModal) return PageState.AdminError
+
+    if (setupIncomplete && !isCreationInProgress) return PageState.Initial
 
     return PageState.Ready
   }, [
@@ -236,6 +258,7 @@ export function FileManagerPage(): ReactElement {
     fm,
     adminDrive,
     isCreationInProgress,
+    chainState,
   ])
 
   const handlePrivateKeySaved = useCallback(() => {
@@ -253,6 +276,10 @@ export function FileManagerPage(): ReactElement {
 
   if (pageState === PageState.Connecting || pageState === PageState.Loading) {
     return <LoadingBlock />
+  }
+
+  if (pageState === PageState.ChainSyncing) {
+    return <ChainSyncingBlock />
   }
 
   if (pageState === PageState.NoPrivateKey) {
@@ -289,12 +316,15 @@ export function FileManagerPage(): ReactElement {
   }
 
   if (pageState === PageState.AdminError) {
+    const adminErrorLabel =
+      chainState === null
+        ? 'Your Bee node is still syncing the postage batch state from the chain. Please wait for the sync to complete and try again.'
+        : errorMessage ||
+          'Error creating Admin Drive. Please try again. Possible causes include insufficient xDAI balance or a lost connection to the RPC.'
+
     return (
       <ErrorModalBlock
-        label={
-          errorMessage ||
-          'Error creating Admin Drive. Please try again. Possible causes include insufficient xDAI balance or a lost connection to the RPC.'
-        }
+        label={adminErrorLabel}
         onClick={() => {
           setAdminShowErrorModal(false)
           setErrorMessage('')
