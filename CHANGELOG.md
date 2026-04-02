@@ -5,11 +5,25 @@
 
 ### Features
 
-* sync and update with all changes from solar-punk-ltd fork ([#730](https://github.com/ethersphere/bee-dashboard/issues/730)) ([cb5adfe](https://github.com/ethersphere/bee-dashboard/commit/cb5adfe0310b94297c6c695b045b38d313c9bd78))
+* add image opening functionality to DownloadActionBar ([3ff645c](https://github.com/ethersphere/bee-dashboard/commit/3ff645cab1b4e9fba0c42ed99e7c3fac7b0ed0ca))
+* the dashboard sidebar should be collapsible ([fa8a26e](https://github.com/ethersphere/bee-dashboard/commit/fa8a26e80d83d5c794a9d572cf716f0cb484e642))
+* sync and update with all changes from fork ([519c411](https://github.com/ethersphere/bee-dashboard/commit/519c411db0b37f3d4004366ca267013e2268f8eb))
 
 
 ### Bug Fixes
 
+* swap error caused by invalid id and batchcount
+* enhance creation messages for admin drive and user drives
+* identity and wallet creation
+* asset preview types
+* fm search unicode text
+* feed identity and stamp usage
+* ui display changes
+* stamp buy and dilute
+* vite polyfill warning for stream
+* standard mode postage stamp purchase reserves incorrect size and duration
+* add syncing message for Bee node and update page state handling
+* stamp depth and amount validation
 * add --no-git-checks to pnpm publish command ([37ab8fe](https://github.com/ethersphere/bee-dashboard/commit/37ab8fedaa9fa2f941b84746ec83fe87cf61b014))
 * add workflow_dispatch trigger to npm publish workflow ([becb873](https://github.com/ethersphere/bee-dashboard/commit/becb87377e506aca0c429439d70e43151025d755))
 * remove cross-env from prepublishOnly script ([4848b5b](https://github.com/ethersphere/bee-dashboard/commit/4848b5be97a827abeb0ca8156ef53cab0d2f315e))
