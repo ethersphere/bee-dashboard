@@ -191,7 +191,6 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
           <Grid container justifyContent="space-between">
             <Typography>Corresponding TTL (Time to live)</Typography>
             <Typography>{amountInput ? getTtl(amountInput) : '-'}</Typography>
-            <Typography>{amountInput ? getTtl(amountInput) : '-'}</Typography>
           </Grid>
         </Box>
         <Box display="flex" justifyContent={'right'} mt={0.5}>
