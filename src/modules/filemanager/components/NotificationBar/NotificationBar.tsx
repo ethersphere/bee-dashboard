@@ -30,7 +30,7 @@ export function NotificationBar({ setErrorMessage }: NotificationBarProps): Reac
   const [stampsToExpire, setStampsToExpire] = useState<PostageBatch[]>([])
   const [drivesToExpire, setDrivesToExpire] = useState<DriveInfo[]>([])
   const { beeApi } = useContext(SettingsContext)
-  const { drives, files, adminDrive } = useContext(FMContext)
+  const { drives, files, adminDrive, setShowError } = useContext(FMContext)
 
   const showExpiration = stampsToExpire.length > 0
 
@@ -109,8 +109,9 @@ export function NotificationBar({ setErrorMessage }: NotificationBarProps): Reac
       <div className="fm-notification-bar fm-red-font" onClick={() => setShowExpiringModal(true)}>
         {stampsToExpire.length} drive{stampsToExpire.length > 1 ? 's' : ''} expiring soon <UpIcon size="16px" />
       </div>
-      {showExpiringModal && (
+      {showExpiringModal && beeApi && (
         <ExpiringNotificationModal
+          bee={beeApi}
           stamps={stampsToExpire}
           drives={drivesToExpire}
           files={files}
@@ -118,6 +119,7 @@ export function NotificationBar({ setErrorMessage }: NotificationBarProps): Reac
             setShowExpiringModal(false)
           }}
           setErrorMessage={setErrorMessage}
+          setShowError={setShowError}
         />
       )}
     </>

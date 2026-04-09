@@ -1,9 +1,10 @@
-import { PostageBatch } from '@ethersphere/bee-js'
+import { Bee, PostageBatch } from '@ethersphere/bee-js'
 import { DriveInfo, FileInfo } from '@solarpunkltd/file-manager-lib'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import AlertIcon from 'remixicon-react/AlertLineIcon'
 
+import { validateStampStillExists } from '../../utils/bee'
 import { getDaysLeft } from '../../utils/common'
 import { Button } from '../Button/Button'
 import { UpgradeDriveModal } from '../UpgradeDriveModal/UpgradeDriveModal'
@@ -16,19 +17,23 @@ import '../../styles/global.scss'
 const EXPIRING_ITEMS_PAGE_SIZE = 3
 
 interface ExpiringNotificationModalProps {
+  bee: Bee
   stamps: PostageBatch[]
   drives: DriveInfo[]
   files: FileInfo[]
   onCancelClick: () => void
   setErrorMessage?: (error: string) => void
+  setShowError: (show: boolean) => void
 }
 
 export function ExpiringNotificationModal({
+  bee,
   stamps,
   drives,
   files,
   onCancelClick,
   setErrorMessage,
+  setShowError,
 }: ExpiringNotificationModalProps): ReactElement {
   const [showUpgradeDriveModal, setShowUpgradeDriveModal] = useState(false)
   const [actualStamp, setActualStamp] = useState<PostageBatch | undefined>(undefined)
@@ -75,7 +80,18 @@ export function ExpiringNotificationModal({
                 files={files}
                 currentPage={currentPage}
                 index={index}
-                onUpgradeClick={(stamp, drive) => {
+                onUpgradeClick={async (stamp, drive) => {
+                  const isStampValid = await validateStampStillExists(bee, stamp.batchID)
+
+                  if (!isStampValid) {
+                    setErrorMessage?.(
+                      `Drive ${drive.name} has expired. Please clear the browser cache and reload the page.`,
+                    )
+                    setShowError(true)
+
+                    return
+                  }
+
                   setActualStamp(stamp)
                   setActualDrive(drive)
                   setShowUpgradeDriveModal(true)
