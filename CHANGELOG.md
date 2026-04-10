@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.35.1](https://github.com/ethersphere/bee-dashboard/compare/v0.35.0...v0.35.1) (2026-04-10)
+
+
+### Bug Fixes
+
+- [`cb6854e`](https://github.com/ethersphere/bee-dashboard/commit/cb6854eb68ffe3064a39a171bc1e23f628ee93bb) fix: swap error caused by invalid id and batchcount
+- [`bb93d5c`](https://github.com/ethersphere/bee-dashboard/commit/bb93d5c26fa5414c6423b87a3992e0f2e410e515) fix: enhance creation messages for admin drive and user drives [(#238)](https://github.com/ethersphere/bee-dashboard/issues/238)
+- [`c08bf8a`](https://github.com/ethersphere/bee-dashboard/commit/d65da143d2200db653fe7a80a7891dacf4c2937e) fix: identity and wallet creation [(#240)](https://github.com/ethersphere/bee-dashboard/pull/240)
+- [`d65da14`](https://github.com/ethersphere/bee-dashboard/commit/d65da143d2200db653fe7a80a7891dacf4c2937e) fix: ui display changes [(#239)](https://github.com/ethersphere/bee-dashboard/issues/239)
+- [`c890f7c`](https://github.com/ethersphere/bee-dashboard/commit/c890f7c1e8e4d21f8d252b3e1a9c783982459adf) fix: stamp buy and dilute [(#242)](https://github.com/ethersphere/bee-dashboard/issues/242)
+- [`b33b663`](https://github.com/ethersphere/bee-dashboard/commit/b33b6630c2b5830b0fdbfbcf14cadc3fa1225190) fix: standard mode postage stamp purchase [(#243)](https://github.com/ethersphere/bee-dashboard/issues/243)
+- [`f943f7a`](https://github.com/ethersphere/bee-dashboard/commit/f943f7ad666de15ef780cb5adf736b533902eef7) fix: add syncing message for bee node and update page state [(#244)](https://github.com/ethersphere/bee-dashboard/pull/244)
+- [`056188a`](https://github.com/ethersphere/bee-dashboard/commit/056188abedf3a8ac828b8eb10a71a3b823cd5e6e) fix: duplicated ttl (time to live) information [(#245)](https://github.com/ethersphere/bee-dashboard/issues/245)
+- [`8b36556`](https://github.com/ethersphere/bee-dashboard/commit/8b36556502d316ac5bd7dba49ce34b594857d449) fix: misleading "bee node is syncing" message for ultra-light nodes in file manager [(#246)](https://github.com/ethersphere/bee-dashboard/pull/246)
+- [`9732170`](https://github.com/ethersphere/bee-dashboard/commit/97321706c33fb02abe7e067e6d865a046051d68b) fix: validate stamp before every upgrade click [(#247)](https://github.com/ethersphere/bee-dashboard/issues/247)
+- [`f52ed4a`](https://github.com/ethersphere/bee-dashboard/commit/f52ed4abb2bb5274b33430c1e8efadae6b3fa795) fix: use tochecksum() and toplurbigint for ethers v6 compatibility [(#248)](https://github.com/ethersphere/bee-dashboard/pull/248)
+
+
 ## [0.35.0](https://github.com/ethersphere/bee-dashboard/compare/v0.34.0...v0.35.0) (2026-04-02)
 
 
