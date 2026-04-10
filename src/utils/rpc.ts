@@ -84,7 +84,7 @@ export async function sendNativeTransaction(
   const feedData = await signer.provider.getFeeData()
   const gasPrice = externalGasPrice ?? DAI.fromWei(feedData.gasPrice?.toString() || '0')
   const transaction = await signer.sendTransaction({
-    to: to.toHex(),
+    to: to.toChecksum(),
     value: BigInt(value.toWeiString()),
     gasPrice: BigInt(gasPrice.toWeiString()),
     gasLimit: BigInt(21000),
@@ -117,7 +117,7 @@ export async function sendBzzTransaction(
   const feeData = await signer.provider.getFeeData()
   const gasPrice = feeData.gasPrice || BigInt(0)
   const bzz = new Contract(BZZ_TOKEN_ADDRESS, bzzABI, signer)
-  const transaction = await bzz.transfer(to.toChecksum(), value, { gasPrice })
+  const transaction = await bzz.transfer(to.toChecksum(), value.toPLURBigInt(), { gasPrice })
   const receipt = await transaction.wait(1)
 
   if (!receipt) {

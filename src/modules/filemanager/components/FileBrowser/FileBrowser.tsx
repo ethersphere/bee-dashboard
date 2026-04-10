@@ -10,6 +10,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
+import { createPortal } from 'react-dom'
 
 import { useSearch } from '../../../../pages/filemanager/SearchContext'
 import { useView } from '../../../../pages/filemanager/ViewContext'
@@ -87,7 +88,9 @@ function ErrorModalBlock({
     return null
   }
 
-  return <ErrorModal label={label} onClick={onOk} />
+  const modalRoot = document.querySelector('.fm-main') || document.body
+
+  return createPortal(<ErrorModal label={label} onClick={onOk} />, modalRoot)
 }
 
 const extractFilesFromClipboardEvent = (e: React.ClipboardEvent): File[] => {
@@ -431,8 +434,10 @@ export function FileBrowser({ errorMessage, setErrorMessage }: FileBrowserProps)
       if (rafIdRef.current) {
         cancelAnimationFrame(rafIdRef.current)
       }
+
+      setShowError(false)
     }
-  }, [])
+  }, [setShowError])
 
   useEffect(() => {
     let title = currentDrive?.name || ''
