@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.35.1](https://github.com/ethersphere/bee-dashboard/compare/v0.35.0...v0.35.1) (2026-04-10)
+
+
+### Bug Fixes
+
+* for upcoming v0.53.1 ([#731](https://github.com/ethersphere/bee-dashboard/issues/731)) ([e6f882d](https://github.com/ethersphere/bee-dashboard/commit/e6f882d7e15b8e81d2cc86630de050d991524f83))
+
 ## [0.35.0](https://github.com/ethersphere/bee-dashboard/compare/v0.34.0...v0.35.0) (2026-04-02)
 
 
