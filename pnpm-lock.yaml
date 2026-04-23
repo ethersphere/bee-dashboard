@@ -15,8 +15,8 @@ importers:
         specifier: ^11.14.1
         version: 11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.4))(@types/react@19.2.14)(react@19.2.4)
       '@ethersphere/bee-js':
-        specifier: ^11.1.1
-        version: 11.1.1
+        specifier: ^12.0.0
+        version: 12.0.0
       '@formbricks/js':
         specifier: ^4.3.0
         version: 4.3.0
@@ -30,8 +30,8 @@ importers:
         specifier: ^1.0.8
         version: 1.0.8
       axios:
-        specifier: ^0.30.2
-        version: 0.30.2(debug@4.4.3)
+        specifier: ^1.15.1
+        version: 1.15.2(debug@4.4.3)
       bignumber.js:
         specifier: ^9.3.1
         version: 9.3.1
@@ -1260,6 +1260,10 @@ packages:
     resolution: {integrity: sha512-s2IpuVpy74cJyhj5yugO3+c9eR/r9TZsVJABk2iHWtTVkoA1qZdvgUjzV0w962o1gXrmYdxX4NOmlyIEpY11iQ==}
     engines: {bee: 2.4.0-390a402e, beeApiVersion: 7.2.0}
 
+  '@ethersphere/bee-js@12.0.0':
+    resolution: {integrity: sha512-q65S5+R+++NopFQRCn73CA71XF9pas88nEhTOZyE0rmk7dJC9fKDJRnlWQnKxJboht0ysj+ozbSd+PycsIkNSw==}
+    engines: {bee: 2.4.0-390a402e, beeApiVersion: 7.2.0}
+
   '@formbricks/js@4.3.0':
     resolution: {integrity: sha512-IR1SAdHsthC3js7O3BjW14EbpAy/u3/8R0Jekzrkglt+b0LGFrFL/vUcK6IypG4HbopTlDcpU9A45i1YPJ8jrA==}
 
@@ -2418,6 +2422,9 @@ packages:
 
   axios@0.30.2:
     resolution: {integrity: sha512-0pE4RQ4UQi1jKY6p7u6i1Tkzqmu+d+/tHS7Q7rKunWLB9WyilBTpHHpXzPNMDj5hTbK0B0PTLSz07yqMBiF6xg==}
+
+  axios@1.15.2:
+    resolution: {integrity: sha512-wLrXxPtcrPTsNlJmKjkPnNPK2Ihe0hn0wGSaTEiHRPxwjvJwT3hKmXF4dpqxmPO9SoNb2FsYXj/xEo0gHN+D5A==}
 
   axobject-query@4.1.0:
     resolution: {integrity: sha512-qIj0G9wZbMGNLjLmg1PT6v2mE9AH2zlnADJD/2tC6E00hgmhUOfEB6greHPAfLRSufHqROIUTkw6E+M3lH0PTQ==}
@@ -4746,6 +4753,10 @@ packages:
   proxy-from-env@1.1.0:
     resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
 
+  proxy-from-env@2.1.0:
+    resolution: {integrity: sha512-cJ+oHTW1VAEa8cJslgmUZrc+sjRKgAKl3Zyse6+PV38hZe/V6Z14TbCuXcan9F9ghlz4QrFr2c92TNF82UkYHA==}
+    engines: {node: '>=10'}
+
   public-encrypt@4.0.3:
     resolution: {integrity: sha512-zVpa8oKZSz5bTMTFClc1fQOnyyEzpl5ozpi1B5YcvBrdohMjH2rfsBtyXcuNuwjsDIXmBYlF2N5FlJYhR29t8Q==}
 
@@ -6922,6 +6933,19 @@ snapshots:
       - supports-color
       - utf-8-validate
 
+  '@ethersphere/bee-js@12.0.0':
+    dependencies:
+      axios: 1.15.2(debug@4.4.3)
+      cafe-utility: 33.8.0
+      debug: 4.4.3
+      isomorphic-ws: 4.0.1(ws@8.19.0)
+      semver: 7.7.4
+      ws: 8.19.0
+    transitivePeerDependencies:
+      - bufferutil
+      - supports-color
+      - utf-8-validate
+
   '@formbricks/js@4.3.0': {}
 
   '@humanfs/core@0.19.1': {}
@@ -8196,6 +8220,14 @@ snapshots:
       follow-redirects: 1.15.11(debug@4.4.3)
       form-data: 4.0.5
       proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+
+  axios@1.15.2(debug@4.4.3):
+    dependencies:
+      follow-redirects: 1.15.11(debug@4.4.3)
+      form-data: 4.0.5
+      proxy-from-env: 2.1.0
     transitivePeerDependencies:
       - debug
 
@@ -11012,6 +11044,8 @@ snapshots:
       - supports-color
 
   proxy-from-env@1.1.0: {}
+
+  proxy-from-env@2.1.0: {}
 
   public-encrypt@4.0.3:
     dependencies:
