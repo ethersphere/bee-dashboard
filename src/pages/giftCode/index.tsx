@@ -53,8 +53,8 @@ export default function Index(): ReactElement {
     setLoading(true)
     try {
       const wallet = generateWallet()
-      addGiftWallet(wallet)
       await createGiftWallet(desktopUrl, wallet.address)
+      addGiftWallet(wallet)
       enqueueSnackbar('Succesfully funded gift wallet', { variant: 'success' })
     } catch (error) {
       // eslint-disable-next-line no-console
