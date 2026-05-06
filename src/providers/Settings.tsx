@@ -14,6 +14,7 @@ interface ContextInterface {
   desktopApiKey: string
   isDesktop: boolean
   desktopUrl: string
+  giftWalletFees?: { bzz: string; dai: string }
   rpcProviderUrl: string
   rpcProvider: JsonRpcProvider | null
   cors: string | null
@@ -52,6 +53,7 @@ interface InitialSettings {
   isDesktop?: boolean
   desktopUrl?: string
   defaultRpcUrl?: string
+  giftWalletFees?: { bzz: string; dai: string }
 }
 
 interface Props extends InitialSettings {
@@ -126,6 +128,7 @@ export function Provider({ children, ...propsSettings }: Props): ReactElement {
       desktopApiKey,
       isDesktop,
       desktopUrl,
+      giftWalletFees: propsSettings.giftWalletFees,
       rpcProvider,
       rpcProviderUrl,
       cors: config?.['cors-allowed-origins'] ?? null,
@@ -143,6 +146,7 @@ export function Provider({ children, ...propsSettings }: Props): ReactElement {
       desktopApiKey,
       isDesktop,
       desktopUrl,
+      propsSettings.giftWalletFees,
       rpcProvider,
       rpcProviderUrl,
       config,
