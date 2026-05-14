@@ -101,6 +101,15 @@ export function Provider({ children, ...propsSettings }: Props): ReactElement {
     setBeeApiState()
   }, [config, apiUrl])
 
+  useEffect(() => {
+    if (!isDesktop || !config?.['blockchain-rpc-endpoint']) return
+
+    const daemonRpcUrl = config['blockchain-rpc-endpoint']
+    localStorage.setItem(LocalStorageKeys.providerUrl, daemonRpcUrl)
+    setRpcProviderUrl(daemonRpcUrl)
+    setRpcProvider(newGnosisProvider(daemonRpcUrl))
+  }, [isDesktop, config])
+
   const updateApiUrl = useCallback((url: string) => {
     const userProvidedUrl = makeHttpUrl(url)
 
