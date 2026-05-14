@@ -13,6 +13,7 @@ import { META_FILE_NAME } from '../../constants'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
+import { tryCatch } from '../../utils/common'
 import { determineHistoryName, LocalStorageKeys, putHistory } from '../../utils/localStorage'
 import { loadManifest } from '../../utils/manifest'
 
@@ -39,6 +40,7 @@ export function Share(): ReactElement {
   const [notFound, setNotFound] = useState(false)
   const [preview, setPreview] = useState<string | undefined>(undefined)
   const [metadata, setMetadata] = useState<Metadata | undefined>()
+  const [rawBytesData, setRawBytesData] = useState<Uint8Array | null>(null)
 
   const isMountedRef = useRef(true)
 
@@ -69,8 +71,9 @@ export function Share(): ReactElement {
       return
     }
 
-    try {
-      const manifest = await loadManifest(beeApi, hash)
+    const [manifest] = await tryCatch(() => loadManifest(beeApi, hash))
+
+    if (manifest) {
       const entries = manifest.collectAndMap()
       delete entries[META_FILE_NAME]
 
@@ -79,16 +82,17 @@ export function Share(): ReactElement {
       setSwarmEntries(entries)
 
       const docsMetadata = manifest.getDocsMetadata()
-
-      // needed in catch block, shadows the outer variable
       const indexDocument = docsMetadata.indexDocument
 
       if (!isMountedRef.current) return
 
       setIndexDocument(indexDocument)
 
-      try {
-        const remoteMetadata = await beeApi.downloadFile(hash, META_FILE_NAME)
+      const [remoteMetadata] = await tryCatch(() => beeApi.downloadFile(hash, META_FILE_NAME))
+
+      if (!isMountedRef.current) return
+
+      if (remoteMetadata) {
         const formattedMetadata = remoteMetadata.data.toJSON() as Metadata
 
         if (formattedMetadata.isVideo || formattedMetadata.isAudio || formattedMetadata.isImage) {
@@ -99,18 +103,34 @@ export function Share(): ReactElement {
         if (!isMountedRef.current) return
 
         setMetadata({ ...formattedMetadata, hash })
-      } catch {
-        // if metadata is not available or invalid go with the default one
-        if (!isMountedRef.current) return
+      } else {
         applyFallbackMetadata(entries, indexDocument)
       }
-    } catch {
-      if (!isMountedRef.current) return
-
-      setNotFound(true)
-      enqueueSnackbar('The specified hash does not contain valid content.', { variant: 'error' })
 
       return
+    }
+
+    const [data] = await tryCatch(() => beeApi.downloadData(hash))
+
+    if (!isMountedRef.current) return
+
+    if (data) {
+      setRawBytesData(data.toUint8Array())
+      setSwarmEntries({ [hash]: hash })
+      setIndexDocument(null)
+      setMetadata({
+        hash,
+        type: 'application/octet-stream',
+        name: hash,
+        count: 1,
+        isWebsite: false,
+        isVideo: false,
+        isAudio: false,
+        isImage: false,
+      })
+    } else {
+      setNotFound(true)
+      enqueueSnackbar('The specified hash does not contain valid content.', { variant: 'error' })
     }
   }
 
@@ -181,6 +201,16 @@ export function Share(): ReactElement {
 
     putHistory(LocalStorageKeys.downloadHistory, hash, determineHistoryName(hash, indexDocument))
     setDownloading(true)
+
+    if (rawBytesData) {
+      const arrayBuffer = new ArrayBuffer(rawBytesData.length)
+      new Uint8Array(arrayBuffer).set(rawBytesData)
+      const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' })
+      saveAs(blob, hash)
+      setDownloading(false)
+
+      return
+    }
 
     if (Object.keys(swarmEntries).length === 1) {
       const singleFileName = Object.keys(swarmEntries)[0]
