@@ -1,6 +1,6 @@
 import { BZZ, DAI, EthAddress, PrivateKey } from '@ethersphere/bee-js'
 import { debounce } from '@mui/material'
-import { Contract, JsonRpcProvider, TransactionReceipt, TransactionResponse, Wallet } from 'ethers'
+import { Contract, FeeData, JsonRpcProvider, TransactionReceipt, TransactionResponse, Wallet } from 'ethers'
 
 import { BZZ_TOKEN_ADDRESS, bzzABI } from './bzzAbi'
 import { ethAddressString, newGnosisProvider, newGnosisProviderForValidation } from './chain'
@@ -43,6 +43,12 @@ interface TransferResponse {
   receipt: TransactionReceipt
 }
 
+function resolveFeeOverrides(feeData: FeeData, legacyGasPrice?: bigint) {
+  return feeData.maxFeePerGas && feeData.maxPriorityFeePerGas
+    ? { maxFeePerGas: feeData.maxFeePerGas, maxPriorityFeePerGas: feeData.maxPriorityFeePerGas, type: 2 as const }
+    : { gasPrice: legacyGasPrice ?? feeData.gasPrice ?? BigInt(0), type: 0 as const }
+}
+
 export async function estimateNativeTransferTransactionCost(
   privateKey: PrivateKey | string,
   jsonRpcProviderUrl: string,
@@ -57,11 +63,11 @@ export async function estimateNativeTransferTransactionCost(
 
   const gasLimit = BigInt(21000)
   const feeData = await signer.provider.getFeeData()
-  const gasPrice = feeData.gasPrice || BigInt(0)
+  const effectiveGasPrice = feeData.maxFeePerGas ?? feeData.gasPrice ?? BigInt(0)
 
   return {
-    gasPrice: DAI.fromWei(gasPrice.toString()),
-    totalCost: DAI.fromWei((gasPrice * gasLimit).toString()),
+    gasPrice: DAI.fromWei(effectiveGasPrice.toString()),
+    totalCost: DAI.fromWei((effectiveGasPrice * gasLimit).toString()),
   }
 }
 
@@ -82,13 +88,12 @@ export async function sendNativeTransaction(
   }
 
   const feedData = await signer.provider.getFeeData()
-  const gasPrice = externalGasPrice ?? DAI.fromWei(feedData.gasPrice?.toString() || '0')
+  const legacyGasPrice = BigInt((externalGasPrice ?? DAI.fromWei(feedData.gasPrice?.toString() || '0')).toWeiString())
   const transaction = await signer.sendTransaction({
     to: to.toChecksum(),
     value: BigInt(value.toWeiString()),
-    gasPrice: BigInt(gasPrice.toWeiString()),
     gasLimit: BigInt(21000),
-    type: 0,
+    ...resolveFeeOverrides(feedData, legacyGasPrice),
   })
   const receipt = await transaction.wait(1)
 
@@ -115,9 +120,8 @@ export async function sendBzzTransaction(
   }
 
   const feeData = await signer.provider.getFeeData()
-  const gasPrice = feeData.gasPrice || BigInt(0)
   const bzz = new Contract(BZZ_TOKEN_ADDRESS, bzzABI, signer)
-  const transaction = await bzz.transfer(to.toChecksum(), value.toPLURBigInt(), { gasPrice })
+  const transaction = await bzz.transfer(to.toChecksum(), value.toPLURBigInt(), resolveFeeOverrides(feeData))
   const receipt = await transaction.wait(1)
 
   if (!receipt) {
