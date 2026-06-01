@@ -181,7 +181,7 @@ export function Upload(): ReactElement {
             <DocumentationText>
               Please refer to the{' '}
               <a
-                href="https://docs.ethswarm.org/debug-api/#tag/Postage-Stamps/paths/~1stamps~1{amount}~1{depth}/post"
+                href="https://docs.ethswarm.org/api/#tag/Postage-Stamps/paths/~1stamps~1{amount}~1{depth}/post"
                 target="_blank"
                 rel="noreferrer"
               >
