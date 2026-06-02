@@ -7,6 +7,7 @@ import Trash from 'remixicon-react/DeleteBin7LineIcon'
 import Download from 'remixicon-react/DownloadLineIcon'
 import Info from 'remixicon-react/InformationLineIcon'
 
+import { DocumentationText } from '../../components/DocumentationText'
 import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../components/ExpandableListItemActions'
@@ -15,6 +16,7 @@ import { SwarmButton } from '../../components/SwarmButton'
 import TroubleshootConnectionCard from '../../components/TroubleshootConnectionCard'
 import { CheckState, Context as BeeContext } from '../../providers/Bee'
 import { Context as IdentityContext, Identity } from '../../providers/Feeds'
+import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
 import { formatEnum } from '../../utils'
 import { persistIdentitiesWithoutUpdate } from '../../utils/identity'
@@ -26,6 +28,7 @@ import { ImportFeedDialog } from './ImportFeedDialog'
 export default function Feeds(): ReactElement {
   const { identities, setIdentities } = useContext(IdentityContext)
   const { status } = useContext(BeeContext)
+  const { apiUrl } = useContext(SettingsContext)
 
   const navigate = useNavigate()
 
@@ -101,10 +104,26 @@ export default function Feeds(): ReactElement {
             </ExpandableList>
           </Box>
           <ExpandableListItemKey label="Topic" value={NULL_TOPIC.toHex()} />
-          {x.feedHash && <ExpandableListItemKey label="Feed hash" value={x.feedHash} />}
+          {x.feedHash ? (
+            <>
+              <ExpandableListItemKey label="Feed hash" value={x.feedHash} />
+              <Box mt={0.5} mb={0.5}>
+                <DocumentationText>
+                  Access via:{' '}
+                  <a href={`${apiUrl}/bzz/${x.feedHash}`} target="_blank" rel="noreferrer">
+                    {apiUrl}/bzz/{x.feedHash}
+                  </a>
+                </DocumentationText>
+              </Box>
+            </>
+          ) : (
+            <Box mt={0.5} mb={0.5}>
+              <DocumentationText>No content yet. Open the feed page to upload content.</DocumentationText>
+            </Box>
+          )}
           <Box mt={0.75}>
             <ExpandableListItemActions>
-              <SwarmButton onClick={() => viewFeed(x.uuid)} iconType={Info} disabled={Boolean(!x.feedHash)}>
+              <SwarmButton onClick={() => viewFeed(x.uuid)} iconType={Info}>
                 View Feed Page
               </SwarmButton>
               <SwarmButton onClick={() => onShowExport(x)} iconType={Download}>
