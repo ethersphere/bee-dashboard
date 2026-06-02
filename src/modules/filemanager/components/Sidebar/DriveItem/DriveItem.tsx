@@ -382,7 +382,7 @@ function DriveItemComponent({ drive, stamp, isSelected, setErrorMessage }: Drive
         <div className="fm-drive-item-content">
           <div className={capacityClassName}>
             <span>
-              Capacity <ProgressBar value={capacityPct} width="64px" /> {usedSize} / {stampSize}
+              Capacity (Used / Total) <ProgressBar value={capacityPct} width="64px" /> {usedSize} / {stampSize}
             </span>
             <Tooltip
               label={
