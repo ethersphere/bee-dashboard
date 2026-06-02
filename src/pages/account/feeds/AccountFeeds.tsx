@@ -7,6 +7,7 @@ import Trash from 'remixicon-react/DeleteBin7LineIcon'
 import Download from 'remixicon-react/Download2LineIcon'
 import Info from 'remixicon-react/InformationLineIcon'
 
+import { DocumentationText } from '../../../components/DocumentationText'
 import ExpandableList from '../../../components/ExpandableList'
 import ExpandableListItem from '../../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../../components/ExpandableListItemActions'
@@ -101,10 +102,16 @@ export function AccountFeeds(): ReactElement {
             </ExpandableList>
           </Box>
           <ExpandableListItemKey label="Topic" value={NULL_TOPIC.toHex()} />
-          {x.feedHash && <ExpandableListItemKey label="Feed hash" value={x.feedHash} />}
+          {x.feedHash ? (
+            <ExpandableListItemKey label="Feed hash" value={x.feedHash} />
+          ) : (
+            <Box mt={0.5} mb={0.5}>
+              <DocumentationText>No content yet. Open the feed page to upload content.</DocumentationText>
+            </Box>
+          )}
           <Box mt={0.75}>
             <ExpandableListItemActions>
-              <SwarmButton onClick={() => viewFeed(x.uuid)} iconType={Info} disabled={Boolean(!x.feedHash)}>
+              <SwarmButton onClick={() => viewFeed(x.uuid)} iconType={Info}>
                 View Feed Page
               </SwarmButton>
               <SwarmButton onClick={() => onShowExport(x)} iconType={Download}>
