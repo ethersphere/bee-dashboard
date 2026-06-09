@@ -14,7 +14,7 @@ import { Context as FileContext } from '../../providers/File'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as StampsContext, EnrichedPostageBatch } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
-import { detectIndexHtml, getAssetNameFromFiles, packageFile } from '../../utils/file'
+import { detectIndexHtml, getAssetNameFromFiles, guessMime, packageFile } from '../../utils/file'
 import { persistIdentity, updateFeed } from '../../utils/identity'
 import { LocalStorageKeys, putHistory } from '../../utils/localStorage'
 import { waitUntilStampUsable } from '../../utils/stamp'
@@ -116,7 +116,10 @@ export function Upload(): ReactElement {
     await waitUntilStampUsable(stamp.batchID, beeApi)
 
     const uploadPromise = isSingleFile
-      ? beeApi.uploadFile(stamp.batchID, fls[0], fls[0].name, { deferred: true })
+      ? beeApi.uploadFile(stamp.batchID, fls[0], fls[0].name, {
+          deferred: true,
+          contentType: fls[0].type || guessMime(fls[0].name).mime,
+        })
       : beeApi.uploadFiles(stamp.batchID, fls, { indexDocument, deferred: true })
 
     uploadPromise
