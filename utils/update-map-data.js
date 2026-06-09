@@ -18,6 +18,12 @@ async function getData(url) {
 }
 
 function processData(data) {
+  if (!data || !Array.isArray(data.nodes) || data.nodes.length === 0) {
+    throw new Error(
+      `Invalid API response: expected a non-empty nodes array, got ${JSON.stringify(data)?.slice(0, 200)}`,
+    )
+  }
+
   const db = new Map()
   data.nodes.forEach(node => {
     if (node.location) {
@@ -25,11 +31,15 @@ function processData(data) {
     }
   })
 
+  console.log(`Nodes with location: ${db.size} / ${data.nodes.length} total`)
+
   return Object.fromEntries([...db.entries()].sort())
 }
 
 function saveFile(db, path) {
-  return fs.writeFileSync(path, JSON.stringify(db, null, 2))
+  const tmp = `${path}.tmp`
+  fs.writeFileSync(tmp, JSON.stringify(db, null, 2))
+  fs.renameSync(tmp, path)
 }
 
 function preComputeMap() {
@@ -43,6 +53,16 @@ async function main() {
   console.log('Processing DB data')
   const db = processData(dataDump)
 
+  const existingCount = Object.keys(JSON.parse(fs.readFileSync(DATA_DESTINATION, 'utf8'))).length
+  const fetchedCount = Object.keys(db).length
+  console.log(`Committed nodes: ${existingCount}, fetched nodes: ${fetchedCount}`)
+
+  if (fetchedCount < existingCount) {
+    console.warn(
+      `WARNING: fetched node count (${fetchedCount}) is less than committed (${existingCount}). Consider whether this data is safe to commit.`,
+    )
+  }
+
   console.log('Saving DB data')
   saveFile(db, DATA_DESTINATION)
 
@@ -55,4 +75,7 @@ async function main() {
   console.log('Done')
 }
 
-main()
+main().catch(err => {
+  console.error('update-map-data failed:', err.message)
+  process.exit(1)
+})
