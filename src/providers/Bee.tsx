@@ -79,14 +79,18 @@ interface ContextInterface {
   refresh: () => Promise<void>
 }
 
-const initialValues: ContextInterface = {
-  beeVersion: null,
-  status: {
+function makeInitialStatus(): Status {
+  return {
     all: CheckState.ERROR,
     apiConnection: { isEnabled: false, checkState: CheckState.ERROR },
     topology: { isEnabled: false, checkState: CheckState.ERROR },
     chequebook: { isEnabled: false, checkState: CheckState.ERROR },
-  },
+  }
+}
+
+const initialValues: ContextInterface = {
+  beeVersion: null,
+  status: makeInitialStatus(),
   error: null,
   apiHealth: false,
   nodeAddresses: null,
@@ -132,7 +136,7 @@ function getStatus(props: StatusProps): Status {
     ...props,
   }
 
-  const status: Status = { ...initialValues.status }
+  const status: Status = makeInitialStatus()
 
   // API connection check
   status.apiConnection.isEnabled = true
