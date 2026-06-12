@@ -52,8 +52,8 @@ export default function Index(): ReactElement | null {
     )
   }
 
-  const GIFT_WALLET_FUND_DAI_AMOUNT = DAI.fromWei(giftWalletFees.dai)
-  const GIFT_WALLET_FUND_BZZ_AMOUNT = BZZ.fromPLUR(giftWalletFees.bzz)
+  const GIFT_WALLET_FUND_DAI_AMOUNT = DAI.fromDecimalString(giftWalletFees.dai)
+  const GIFT_WALLET_FUND_BZZ_AMOUNT = BZZ.fromDecimalString(giftWalletFees.bzz)
 
   async function onCreate() {
     enqueueSnackbar('Sending funds to gift wallet...')
