@@ -1,4 +1,5 @@
 import type { Peer } from '@ethersphere/bee-js'
+import { CircularProgress } from '@mui/material'
 import DottedMap, { DottedMapWithoutCountriesLib } from 'dotted-map/without-countries'
 import { CSSProperties, ReactElement, useContext, useEffect, useState } from 'react'
 
@@ -101,21 +102,15 @@ export default function Card({ style, error }: Props): ReactElement {
         style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', flex: 1 }}
       />
       {error && (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="60"
-          height="60"
-          viewBox="0 0 24 24"
-          fill="#f44336"
-          strokeWidth="0"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', opacity: 0.25 }}
-        >
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-          <line stroke="#f3f3f3" strokeWidth="2" x1="12" y1="9" x2="12" y2="13"></line>
-          <line stroke="#f3f3f3" strokeWidth="2" x1="12" y1="17" x2="12.01" y2="17"></line>
-        </svg>
+        <CircularProgress
+          size={60}
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            m: 'auto',
+            opacity: 0.25,
+          }}
+        />
       )}
     </div>
   )
