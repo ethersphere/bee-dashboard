@@ -94,16 +94,14 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
   }
 
   async function submit() {
+    // This is really just a typeguard, the validation pretty much guarantees these will have the right values
+    if (!depthInput || !amountInput || !beeApi) {
+      return
+    }
+
+    let success = false
+
     try {
-      // This is really just a typeguard, the validation pretty much guarantees these will have the right values
-      if (!depthInput || !amountInput) {
-        return
-      }
-
-      if (!beeApi) {
-        return
-      }
-
       setSubmitting(true)
       const amount = BigInt(amountInput)
       const depth = Number.parseInt(depthInput)
@@ -115,13 +113,19 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
 
       await beeApi.createPostageBatch(amount.toString(), depth, options)
       await refresh()
-      onFinished()
+      success = true
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e)
       enqueueSnackbar(`Error: ${(e as Error).message}`, { variant: 'error' })
+    } finally {
+      setSubmitting(false)
     }
-    setSubmitting(false)
+
+    if (success) {
+      enqueueSnackbar('Purchase initiated. Wait a few seconds, stamp will appear soon.', { variant: 'success' })
+      onFinished()
+    }
   }
 
   function validateAmountInput(amountInput: string) {
