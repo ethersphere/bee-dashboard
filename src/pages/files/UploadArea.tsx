@@ -3,7 +3,7 @@ import { Box } from '@mui/material'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import PlusCircle from 'remixicon-react/AddCircleLineIcon'
 import FilePlus from 'remixicon-react/FileAddLineIcon'
 import FolderPlus from 'remixicon-react/FolderAddLineIcon'
@@ -150,6 +150,10 @@ export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
         <DocumentationText>
           You can click the buttons above or simply drag and drop to add a file or folder. To upload a website to Swarm,
           make sure that your folder contains an “index.html” file.
+          <br />
+          <br />
+          Files uploaded here are public and unencrypted — anyone with the reference can download them. Use the{' '}
+          <Link to={ROUTES.FILEMANAGER}>File Manager&apos;s encrypted drive</Link> for private storage.
         </DocumentationText>
       )}
       {!isUploadEnabled && (
