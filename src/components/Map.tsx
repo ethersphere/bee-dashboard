@@ -43,15 +43,15 @@ function addPins(map: DottedMap, pins: MapRecord[], color: string) {
 }
 
 enum PeerColors {
-  Black = '#303030',
-  Green = '#09CA6C',
+  NetworkNodes = '#303030',
+  ConnectedPeers = '#09CA6C',
   LightGrey = '#dadada',
   White = '#eaeaea',
 }
 
 const mapPrecomputed = new DottedMap({ map: JSON.parse(mapData) })
 const mapNoPins = new DottedMap({ map: JSON.parse(mapData) })
-addPins(mapPrecomputed, deduplicatedRecords, PeerColors.Black)
+addPins(mapPrecomputed, deduplicatedRecords, PeerColors.NetworkNodes)
 
 const mapSvgOptions: DottedMapWithoutCountriesLib.SvgSettings = {
   shape: 'hexagon',
@@ -71,7 +71,7 @@ export default function Card({ style, error }: Props): ReactElement {
     } else if (peers) {
       const points = findIntersection(fullMapDb, peers)
       const mapNew = Object.create(mapPrecomputed)
-      addPins(mapNew, points, PeerColors.Green)
+      addPins(mapNew, points, PeerColors.ConnectedPeers)
       newSvg = mapNew.getSVG(mapSvgOptions)
     } else {
       return
@@ -101,6 +101,25 @@ export default function Card({ style, error }: Props): ReactElement {
         src={`data:image/svg+xml;utf8,${encodeURIComponent(map)}`}
         style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', flex: 1 }}
       />
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 8,
+          display: 'flex',
+          justifyContent: 'center',
+          gap: 16,
+        }}
+      >
+        {[
+          { color: PeerColors.NetworkNodes, label: 'Network nodes' },
+          { color: PeerColors.ConnectedPeers, label: 'Your connected peers' },
+        ].map(({ color, label }) => (
+          <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: color, flexShrink: 0 }} />
+            <span style={{ fontSize: '0.75rem', color: '#606060' }}>{label}</span>
+          </div>
+        ))}
+      </div>
       {error && (
         <CircularProgress
           size={60}
