@@ -16,6 +16,7 @@ export interface BeeConfig {
   'resolver-options': string
   'use-postage-snapshot': boolean
   'data-dir': string
+  'config-file-path'?: string
   'blockchain-rpc-endpoint'?: string
 }
 
