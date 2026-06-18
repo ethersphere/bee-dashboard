@@ -19,6 +19,7 @@ interface ContextInterface {
   rpcProvider: JsonRpcProvider | null
   cors: string | null
   dataDir: string | null
+  configFile: string | null
   ensResolver: string | null
   setApiUrl: (url: string) => void
   setAndPersistJsonRpcProvider: (url: string) => void
@@ -39,6 +40,7 @@ const initialValues: ContextInterface = {
   rpcProvider: null,
   cors: null,
   dataDir: null,
+  configFile: null,
   ensResolver: null,
   isLoading: true,
   error: null,
@@ -142,6 +144,7 @@ export function Provider({ children, ...propsSettings }: Props): ReactElement {
       rpcProviderUrl,
       cors: config?.['cors-allowed-origins'] ?? null,
       dataDir: config?.['data-dir'] ?? null,
+      configFile: config?.['config-file-path'] ?? null,
       ensResolver: config?.['resolver-options'] ?? null,
       setAndPersistJsonRpcProvider,
       isLoading,

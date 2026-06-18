@@ -15,6 +15,7 @@ export default function SettingsPage(): ReactElement {
     lockedApiSettings,
     cors,
     dataDir,
+    configFile,
     ensResolver,
     rpcProviderUrl,
     isLoading,
@@ -80,6 +81,7 @@ export default function SettingsPage(): ReactElement {
         <ExpandableList label="Desktop Settings" defaultOpen>
           <ExpandableListItemInput label="CORS" value={cors ?? '-'} locked />
           <ExpandableListItemInput label="Data DIR" value={dataDir ?? '-'} locked />
+          <ExpandableListItemInput label="Config file" value={configFile ?? '-'} locked />
           <ExpandableListItemInput label="ENS resolver URL" value={ensResolver ?? '-'} locked />
         </ExpandableList>
       )}
