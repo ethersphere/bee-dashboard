@@ -57,11 +57,7 @@ export function UploadActionBar({
         </Box>
         <DocumentationText>
           You need a postage stamp to upload. Find out more in{' '}
-          <a
-            href="https://medium.com/ethereum-swarm/how-to-upload-data-to-the-swarm-network-c0766c3ae381"
-            target="_blank"
-            rel="noreferrer"
-          >
+          <a href="https://docs.ethswarm.org/docs/desktop/postage-stamps/" target="_blank" rel="noreferrer">
             this guide
           </a>
           .
