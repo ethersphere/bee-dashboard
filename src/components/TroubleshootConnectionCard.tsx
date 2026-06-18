@@ -21,6 +21,9 @@ const useStyles = makeStyles()(theme => ({
   icon: {
     height: '1rem',
   },
+  statusButton: {
+    color: theme.palette.secondary.main,
+  },
 }))
 
 export default function TroubleshootConnectionCard(): ReactElement {
@@ -49,6 +52,7 @@ export default function TroubleshootConnectionCard(): ReactElement {
       <Grid className={classes.content}>
         <Typography align="center">
           <Button
+            className={classes.statusButton}
             component={Link}
             variant="contained"
             startIcon={<Activity className={classes.icon} />}
