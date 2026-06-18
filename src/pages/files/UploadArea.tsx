@@ -1,5 +1,5 @@
 import { BeeModes } from '@ethersphere/bee-js'
-import { Box } from '@mui/material'
+import { Box, Tooltip } from '@mui/material'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useContext, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
@@ -136,20 +136,26 @@ export function UploadArea({ uploadOrigin, showHelp }: Props): ReactElement {
               <SwarmButton className={classes.button} onClick={onUploadFileClick} iconType={FilePlus}>
                 Add File
               </SwarmButton>
-              <SwarmButton className={classes.button} onClick={onUploadFolderClick} iconType={FolderPlus}>
-                Add Folder
-              </SwarmButton>
-              <SwarmButton className={classes.button} onClick={onUploadWebsiteClick} iconType={PlusCircle}>
-                Add Website
-              </SwarmButton>
+              <Tooltip title="Upload any folder as a Swarm collection. No index.html file required." arrow>
+                <SwarmButton className={classes.button} onClick={onUploadFolderClick} iconType={FolderPlus}>
+                  Add Folder
+                </SwarmButton>
+              </Tooltip>
+              <Tooltip title="Upload a folder as a website. Must contain an index.html file." arrow>
+                <SwarmButton className={classes.button} onClick={onUploadWebsiteClick} iconType={PlusCircle}>
+                  Add Website
+                </SwarmButton>
+              </Tooltip>
             </Box>
           </Box>
         </Box>
       )}
       {isUploadEnabled && showHelp && (
         <DocumentationText>
-          You can click the buttons above or simply drag and drop to add a file or folder. To upload a website to Swarm,
-          make sure that your folder contains an “index.html” file.
+          <strong>Add File</strong> — Upload a single file. <br />
+          <strong>Add Folder</strong> — Upload a directory as a collection. No index.html required. <br />
+          <strong>Add Website</strong> — Upload a folder as a website. Requires an index.html in your folder. <br />
+          You can also drag and drop files or folders directly onto this area.
           <br />
           <br />
           Files uploaded here are public and unencrypted — anyone with the reference can download them. Use the{' '}
