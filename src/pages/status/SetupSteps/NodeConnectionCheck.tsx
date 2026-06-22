@@ -51,7 +51,7 @@ export default function NodeConnectionCheck(): ReactElement | null {
                 <CodeBlockTabs
                   showLineNumbers
                   linux={`sudo systemctl status bee \njournalctl --lines=100 --follow --unit bee`}
-                  mac={`brew services list \ntail -f /usr/local/var/log/swarm-bee/bee.log`}
+                  mac={`brew services list \ntail -f $(brew --prefix)/var/log/swarm-bee/bee.log`}
                 />
               </ol>
             }
