@@ -168,6 +168,18 @@ export function formatEnum(string: string): string {
   return (string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()).replaceAll('_', ' ')
 }
 
+export function preciseTimeString(seconds: number): string {
+  const totalDays = Math.floor(seconds / 86400)
+
+  if (totalDays < 14) return secondsToTimeString(seconds)
+
+  const weeks = Math.floor(totalDays / 7)
+  const days = totalDays % 7
+  const weekLabel = `${weeks} week${weeks !== 1 ? 's' : ''}`
+
+  return days === 0 ? weekLabel : `${weekLabel} ${days} day${days !== 1 ? 's' : ''}`
+}
+
 export function secondsToTimeString(seconds: number | bigint): string {
   seconds = BigInt(seconds)
   let unit = seconds
