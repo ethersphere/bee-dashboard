@@ -1,5 +1,14 @@
-import { Bee, PostageBatch } from '@ethersphere/bee-js'
-import { Box } from '@mui/material'
+import {
+  Bee,
+  BZZ,
+  capacityBreakpoints,
+  Duration,
+  PostageBatch,
+  RedundancyLevel,
+  Size,
+  Utils,
+} from '@ethersphere/bee-js'
+import { Box, CircularProgress, Divider, MenuItem, Select, Typography } from '@mui/material'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
@@ -7,10 +16,12 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Input from '@mui/material/Input'
 import { useSnackbar } from 'notistack'
-import React, { ReactElement, ReactNode, useState } from 'react'
+import React, { ReactElement, ReactNode, useContext, useEffect, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
 
-import { CheckState } from '../providers/Bee'
+import { CheckState, Context as BeeContext } from '../providers/Bee'
+import { preciseTimeString } from '../utils'
+import { getHumanReadableFileSize } from '../utils/file'
 
 const useStyles = makeStyles()(theme => ({
   buttonSelected: {
@@ -29,6 +40,16 @@ const useStyles = makeStyles()(theme => ({
     color: '#dd7700',
     backgroundColor: 'white',
   },
+  infoRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  depthButton: {
+    marginRight: 8,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
 }))
 
 export enum StampExtensionType {
@@ -44,12 +65,112 @@ interface Props {
   status: CheckState
 }
 
+const DILUTE_MAX_STEPS = 5
+const DILUTE_ENCRYPTION_KEY = 'ENCRYPTION_OFF'
+
+function getAvailableSizes(stampDepth: number): number[] {
+  const depthEntries = capacityBreakpoints[DILUTE_ENCRYPTION_KEY][RedundancyLevel.OFF]
+  const currentDepthIndex = depthEntries.findIndex(entry => entry.batchDepth === stampDepth)
+
+  if (currentDepthIndex === -1) return []
+
+  return depthEntries
+    .slice(currentDepthIndex + 1, currentDepthIndex + 1 + DILUTE_MAX_STEPS)
+    .map(entry => Utils.getStampEffectiveBytes(entry.batchDepth, false, RedundancyLevel.OFF))
+}
+
+function getProjectedActualBytes(
+  newEffectiveBytes: number,
+  currentEffectiveBytes: number,
+  currentActualBytes: number,
+): number {
+  if (currentEffectiveBytes === 0) return newEffectiveBytes
+
+  return Math.round(currentActualBytes * (newEffectiveBytes / currentEffectiveBytes))
+}
+
+function isBalanceInsufficient(cost: BZZ | null, bzzBalance: BZZ | null | undefined): boolean {
+  return Boolean(cost && bzzBalance && cost.gte(bzzBalance))
+}
+
+function formatCost(cost: BZZ | null, insufficient: boolean): string {
+  if (!cost) return '-'
+
+  return `${cost.toSignificantDigits(4)} xBZZ${insufficient ? ' (insufficient balance)' : ''}`
+}
+
 export default function StampExtensionModal({ type, icon, bee, stamp, status }: Props): ReactElement {
   const { classes } = useStyles()
   const [open, setOpen] = useState<boolean>(false)
-  const [amount, setAmount] = useState<string>('')
+  const [daysInput, setDaysInput] = useState<string>('1')
+  const [selectedNewSizeBytes, setSelectedNewSizeBytes] = useState<number | null>(null)
+  const [topupCostBzz, setTopupCostBzz] = useState<BZZ | null>(null)
+  const [diluteCostBzz, setDiluteCostBzz] = useState<BZZ | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
-  const label = `${type} ${stamp.batchID.toHex().substring(0, 8)}`
+  const { walletBalance } = useContext(BeeContext)
+
+  // Topup calculations
+  const parsedDays = parseInt(daysInput, 10)
+  const topupValid = !isNaN(parsedDays) && parsedDays >= 1
+  const newTtlAfterTopup = topupValid ? Number(stamp.duration.toSeconds()) + parsedDays * 86400 : null
+
+  useEffect(() => {
+    if (!topupValid) {
+      setTopupCostBzz(null)
+
+      return
+    }
+
+    let cancelled = false
+
+    bee
+      .getDurationExtensionCost(stamp.batchID, Duration.fromDays(parsedDays))
+      .then(cost => {
+        if (!cancelled) setTopupCostBzz(cost)
+      })
+      .catch(() => {
+        if (!cancelled) setTopupCostBzz(null)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [parsedDays, topupValid, bee, stamp.batchID])
+
+  // Dilute calculations
+  const currentCapacityBytes = stamp.size.toBytes()
+  const currentEffectiveBytes = Utils.getStampEffectiveBytes(stamp.depth, false, RedundancyLevel.OFF)
+  const availableSizes = getAvailableSizes(stamp.depth)
+
+  useEffect(() => {
+    if (selectedNewSizeBytes === null) {
+      setDiluteCostBzz(null)
+
+      return
+    }
+
+    let cancelled = false
+
+    bee
+      .getSizeExtensionCost(stamp.batchID, Size.fromBytes(selectedNewSizeBytes), undefined, false, RedundancyLevel.OFF)
+      .then(cost => {
+        if (!cancelled) setDiluteCostBzz(cost)
+      })
+      .catch(() => {
+        if (!cancelled) setDiluteCostBzz(null)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [selectedNewSizeBytes, bee, stamp.batchID])
+
+  const bzzBalance = walletBalance?.bzzBalance
+  const topupInsufficient = isBalanceInsufficient(topupCostBzz, bzzBalance)
+  const diluteInsufficient = isBalanceInsufficient(diluteCostBzz, bzzBalance)
+  const topupCostDisplay = formatCost(topupCostBzz, topupInsufficient)
+  const diluteCostDisplay = formatCost(diluteCostBzz, diluteInsufficient)
 
   const handleClickOpen = (e: React.MouseEvent<HTMLButtonElement>) => {
     setOpen(true)
@@ -58,6 +179,8 @@ export default function StampExtensionModal({ type, icon, bee, stamp, status }: 
 
   const handleClose = () => {
     setOpen(false)
+    setDaysInput('1')
+    setSelectedNewSizeBytes(null)
   }
 
   const handleAction = async () => {
@@ -67,97 +190,188 @@ export default function StampExtensionModal({ type, icon, bee, stamp, status }: 
       return
     }
 
-    if (type === StampExtensionType.Topup) {
-      const isAmountInvalid = BigInt(amount) <= BigInt(0)
+    setIsSubmitting(true)
 
-      if (isAmountInvalid) {
-        enqueueSnackbar(`Invalid amount: ${amount}, it must be greate than 0`, { variant: 'error' })
+    try {
+      if (type === StampExtensionType.Topup) {
+        if (!topupValid) {
+          enqueueSnackbar('Please enter a valid number of days', { variant: 'error' })
 
-        return
+          return
+        }
+
+        await bee.extendStorageDuration(stamp.batchID, Duration.fromDays(parsedDays))
+        enqueueSnackbar('Lifetime extended successfully. Your changes will appear soon.', { variant: 'success' })
       }
 
-      try {
-        await bee.topUpBatch(stamp.batchID, amount)
-        enqueueSnackbar(`Successfully topped up stamp, your changes will appear soon`, { variant: 'success' })
-      } catch (error) {
-        enqueueSnackbar(`Failed to topup stamp: ${error || 'Unknown reason'}`, { variant: 'error' })
-      }
+      if (type === StampExtensionType.Dilute) {
+        if (selectedNewSizeBytes === null) return
 
-      return
+        await bee.extendStorageSize(
+          stamp.batchID,
+          Size.fromBytes(selectedNewSizeBytes),
+          undefined,
+          false,
+          RedundancyLevel.OFF,
+        )
+        enqueueSnackbar('Capacity increased successfully. Your changes will appear soon.', { variant: 'success' })
+      }
+    } catch (error) {
+      enqueueSnackbar(`Failed: ${error || 'Unknown reason'}`, { variant: 'error' })
+    } finally {
+      setIsSubmitting(false)
     }
-
-    if (type === StampExtensionType.Dilute) {
-      const newDepth = parseInt(amount, 10)
-      const ttlDays = stamp.duration.toDays()
-      const currentDepth = stamp.depth
-      const maxHalvings = Math.floor(Math.log2(ttlDays)) + currentDepth
-      const isDepthInvalid = newDepth > maxHalvings || newDepth <= currentDepth
-
-      if (isDepthInvalid) {
-        enqueueSnackbar(`Invalid depth: ${newDepth} (${currentDepth} < new depth < ${maxHalvings})`, {
-          variant: 'error',
-        })
-
-        return
-      }
-
-      if (ttlDays <= 2) {
-        enqueueSnackbar(`TTL: ${ttlDays} <= 2 days, cannot dilute stamp (min. TTL is 1 day)`, {
-          variant: 'warning',
-        })
-
-        return
-      }
-
-      try {
-        await bee.diluteBatch(stamp.batchID, newDepth)
-        enqueueSnackbar(`Successfully diluted stamp, your changes will appear soon`, { variant: 'success' })
-      } catch (error) {
-        enqueueSnackbar(`Failed to dilute stamp: ${error || 'Unknown reason'}`, { variant: 'error' })
-      }
-
-      return
-    }
-
-    enqueueSnackbar(`Failed to extend stamp, unknown operation: ${type}`, { variant: 'error' })
   }
 
-  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-    setAmount(event.target.value)
-  }
+  const buttonLabel = type === StampExtensionType.Topup ? 'Extend Lifetime' : 'Increase Capacity'
 
   return (
     <Box mb={2}>
       <Button className={classes.buttonSelected} variant="contained" onClick={handleClickOpen} startIcon={icon}>
-        {type}
+        {buttonLabel}
       </Button>
-      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">{label}</DialogTitle>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="form-dialog-title"
+        maxWidth={false}
+        slotProps={{ paper: { style: { width: 400, minHeight: 320 } } }}
+      >
+        <DialogTitle id="form-dialog-title">{buttonLabel}</DialogTitle>
         <DialogContent>
-          <Input
-            autoFocus
-            margin="dense"
-            id="name"
-            type="text"
-            placeholder={type === StampExtensionType.Topup ? 'Amount to add' : 'New depth to dilute'}
-            fullWidth
-            value={amount}
-            onChange={handleChange}
-          />
+          {type === StampExtensionType.Topup ? (
+            <Box>
+              <Box className={classes.infoRow}>
+                <Typography variant="body2" color="textSecondary">
+                  Current lifetime
+                </Typography>
+                <Typography variant="body2">{preciseTimeString(stamp.duration.toSeconds())}</Typography>
+              </Box>
+              <Box className={classes.infoRow} alignItems="center" mt={1}>
+                <Typography variant="body2" color="textSecondary">
+                  Days to add
+                </Typography>
+                <Input
+                  autoFocus
+                  type="number"
+                  value={daysInput}
+                  onChange={e => {
+                    const v = parseInt(e.target.value, 10)
+
+                    if (!isNaN(v) && v >= 1) setDaysInput(String(v))
+                  }}
+                  inputProps={{ min: 1 }}
+                  style={{ width: 60 }}
+                  sx={{
+                    '& input[type=number]': { direction: 'rtl' },
+                    '& input[type=number]::-webkit-inner-spin-button': { opacity: 1 },
+                    '& input[type=number]::-webkit-outer-spin-button': { opacity: 1 },
+                  }}
+                />
+              </Box>
+              <Divider style={{ margin: '16px 0' }} />
+              <Box>
+                <Box className={classes.infoRow}>
+                  <Typography variant="body2" color="textSecondary">
+                    New lifetime
+                  </Typography>
+                  <Typography variant="body2">
+                    {newTtlAfterTopup !== null ? preciseTimeString(newTtlAfterTopup) : '-'}
+                  </Typography>
+                </Box>
+                <Box className={classes.infoRow}>
+                  <Typography variant="body2" color="textSecondary">
+                    Cost
+                  </Typography>
+                  <Typography variant="body2" color={topupInsufficient ? 'error' : 'inherit'}>
+                    {topupCostDisplay}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          ) : (
+            <Box>
+              <Box className={classes.infoRow}>
+                <Typography variant="body2" color="textSecondary">
+                  Current capacity
+                </Typography>
+                <Typography variant="body2">{getHumanReadableFileSize(currentCapacityBytes)}</Typography>
+              </Box>
+              <Box className={classes.infoRow} alignItems="center" mt={1}>
+                <Typography variant="body2" color="textSecondary">
+                  Select new capacity
+                </Typography>
+                <Select
+                  size="small"
+                  displayEmpty
+                  value={selectedNewSizeBytes ?? ''}
+                  onChange={e => setSelectedNewSizeBytes((e.target.value as number) || null)}
+                  style={{ minWidth: 140 }}
+                >
+                  <MenuItem value="" disabled>
+                    Select capacity
+                  </MenuItem>
+                  {availableSizes.map(size => (
+                    <MenuItem key={size} value={size}>
+                      {getHumanReadableFileSize(
+                        getProjectedActualBytes(size, currentEffectiveBytes, currentCapacityBytes) -
+                          currentCapacityBytes,
+                      )}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Box>
+              <Divider style={{ margin: '16px 0' }} />
+              <Box>
+                <Box className={classes.infoRow}>
+                  <Typography variant="body2" color="textSecondary">
+                    New capacity
+                  </Typography>
+                  <Typography variant="body2">
+                    {selectedNewSizeBytes !== null
+                      ? getHumanReadableFileSize(
+                          getProjectedActualBytes(selectedNewSizeBytes, currentEffectiveBytes, currentCapacityBytes),
+                        )
+                      : '-'}
+                  </Typography>
+                </Box>
+                <Box className={classes.infoRow}>
+                  <Typography variant="body2" color="textSecondary">
+                    Cost
+                  </Typography>
+                  <Typography variant="body2" color={diluteInsufficient ? 'error' : 'inherit'}>
+                    {diluteCostDisplay}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose} color="primary" disabled={isSubmitting}>
             Cancel
           </Button>
           <Button
-            disabled={amount === ''}
+            disabled={
+              isSubmitting ||
+              (type === StampExtensionType.Topup
+                ? !topupValid || topupInsufficient
+                : selectedNewSizeBytes === null || diluteInsufficient)
+            }
             onClick={async () => {
               await handleAction()
               handleClose()
             }}
             color="primary"
           >
-            {type}
+            {isSubmitting ? (
+              <Box display="flex" alignItems="center" gap={1}>
+                Processing…
+                <CircularProgress size={14} color="inherit" />
+              </Box>
+            ) : (
+              buttonLabel
+            )}
           </Button>
         </DialogActions>
       </Dialog>
