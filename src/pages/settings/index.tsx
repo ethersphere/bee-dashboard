@@ -6,6 +6,7 @@ import ExpandableList from '../../components/ExpandableList'
 import ExpandableListItemInput from '../../components/ExpandableListItemInput'
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
+import { extractBeeApiErrorMessage } from '../../utils/bee-error'
 import { getDesktopConfiguration, restartBeeNode, setJsonRpcInDesktop } from '../../utils/desktop'
 
 export default function SettingsPage(): ReactElement {
@@ -48,7 +49,7 @@ export default function SettingsPage(): ReactElement {
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e)
-      enqueueSnackbar(`Failed to change RPC endpoint. ${e}`, { variant: 'error' })
+      enqueueSnackbar(`Failed to change RPC endpoint. ${extractBeeApiErrorMessage(e)}`, { variant: 'error' })
     }
   }
 

@@ -15,6 +15,7 @@ import { SwarmButton } from '../../components/SwarmButton'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as TopUpContext } from '../../providers/TopUp'
 import { Context as BalanceProvider } from '../../providers/WalletBalance'
+import { extractBeeApiErrorMessage } from '../../utils/bee-error'
 import { createGiftWallet } from '../../utils/desktop'
 import { generateWallet } from '../../utils/identity'
 import { ResolvedWallet } from '../../utils/wallet'
@@ -66,7 +67,7 @@ export default function Index(): ReactElement | null {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error)
-      enqueueSnackbar(`Failed to fund gift wallet: ${error}`, { variant: 'error' })
+      enqueueSnackbar(`Failed to fund gift wallet: ${extractBeeApiErrorMessage(error)}`, { variant: 'error' })
     } finally {
       setLoading(false)
     }

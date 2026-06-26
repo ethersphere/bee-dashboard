@@ -21,6 +21,16 @@ export function extractBeeApiErrorMessage(error: unknown): string {
     }
   }
 
+  // ethers v6 errors carry a shortMessage that is cleaner than .message
+  if (
+    error instanceof Error &&
+    'shortMessage' in error &&
+    typeof error.shortMessage === 'string' &&
+    error.shortMessage
+  ) {
+    return error.shortMessage
+  }
+
   if (error instanceof Error) {
     return error.message
   }
