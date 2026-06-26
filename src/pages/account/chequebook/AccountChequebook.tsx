@@ -1,6 +1,7 @@
 import { Box } from '@mui/material'
 import { ReactElement, useContext } from 'react'
 
+import ErrorBoundary from '../../../components/ErrorBoundary'
 import ExpandableList from '../../../components/ExpandableList'
 import ExpandableListItem from '../../../components/ExpandableListItem'
 import ExpandableListItemActions from '../../../components/ExpandableListItemActions'
@@ -27,48 +28,50 @@ export function AccountChequebook(): ReactElement {
   const showChequebook = chequebookBalance?.totalBalance !== undefined
 
   return (
-    <>
-      <Header />
-      <AccountNavigation active="CHEQUEBOOK" />
-      <div>
-        {showChequebook && (
-          <ExpandableList label="Chequebook" defaultOpen>
-            <ExpandableListItem
-              label="Total Balance"
-              value={`${chequebookBalance?.totalBalance.toSignificantDigits(4)} xBZZ`}
-            />
-            <ExpandableListItem
-              label="Available Uncommitted Balance"
-              value={`${chequebookBalance?.availableBalance.toSignificantDigits(4)} xBZZ`}
-            />
-            <ExpandableListItem
-              label="Total Cheques Amount Sent"
-              value={`${settlements?.totalSent.toSignificantDigits(4)} xBZZ`}
-            />
-            <Box mb={2}>
+    <ErrorBoundary>
+      <>
+        <Header />
+        <AccountNavigation active="CHEQUEBOOK" />
+        <div>
+          {showChequebook && (
+            <ExpandableList label="Chequebook" defaultOpen>
               <ExpandableListItem
-                label="Total Cheques Amount Received"
-                value={`${settlements?.totalReceived.toSignificantDigits(4)} xBZZ`}
+                label="Total Balance"
+                value={`${chequebookBalance?.totalBalance?.toSignificantDigits(4) ?? '—'} xBZZ`}
               />
-            </Box>
-            <ExpandableListItemActions>
-              <WithdrawModal />
-              <DepositModal />
-            </ExpandableListItemActions>
+              <ExpandableListItem
+                label="Available Uncommitted Balance"
+                value={`${chequebookBalance?.availableBalance?.toSignificantDigits(4) ?? '—'} xBZZ`}
+              />
+              <ExpandableListItem
+                label="Total Cheques Amount Sent"
+                value={`${settlements?.totalSent?.toSignificantDigits(4) ?? '—'} xBZZ`}
+              />
+              <Box mb={2}>
+                <ExpandableListItem
+                  label="Total Cheques Amount Received"
+                  value={`${settlements?.totalReceived?.toSignificantDigits(4) ?? '—'} xBZZ`}
+                />
+              </Box>
+              <ExpandableListItemActions>
+                <WithdrawModal />
+                <DepositModal />
+              </ExpandableListItemActions>
+            </ExpandableList>
+          )}
+          <ExpandableList label="Blockchain" defaultOpen>
+            <ExpandableListItemKey
+              label="Ethereum address"
+              value={nodeAddresses?.ethereum ? nodeAddresses.ethereum.toChecksum() : ''}
+            />
+            <ExpandableListItemKey
+              label="Chequebook contract address"
+              value={chequebookAddress?.chequebookAddress.toString() || ''}
+            />
           </ExpandableList>
-        )}
-        <ExpandableList label="Blockchain" defaultOpen>
-          <ExpandableListItemKey
-            label="Ethereum address"
-            value={nodeAddresses?.ethereum ? nodeAddresses.ethereum.toChecksum() : ''}
-          />
-          <ExpandableListItemKey
-            label="Chequebook contract address"
-            value={chequebookAddress?.chequebookAddress.toString() || ''}
-          />
-        </ExpandableList>
-        <PeerBalances accounting={accounting} isLoadingUncashed={isLoadingUncashed} totalUncashed={totalUncashed} />
-      </div>
-    </>
+          <PeerBalances accounting={accounting} isLoadingUncashed={isLoadingUncashed} totalUncashed={totalUncashed} />
+        </div>
+      </>
+    </ErrorBoundary>
   )
 }
