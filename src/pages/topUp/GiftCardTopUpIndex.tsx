@@ -13,6 +13,7 @@ import { SwarmDivider } from '../../components/SwarmDivider'
 import { SwarmTextInput } from '../../components/SwarmTextInput'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { ROUTES } from '../../routes'
+import { extractBeeApiErrorMessage } from '../../utils/bee-error'
 import { RPC } from '../../utils/rpc'
 
 export function GiftCardTopUpIndex(): ReactElement {
@@ -40,7 +41,7 @@ export function GiftCardTopUpIndex(): ReactElement {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error)
-      enqueueSnackbar(`Gift wallet could not be verified: ${error}`, { variant: 'error' })
+      enqueueSnackbar(`Gift wallet could not be verified: ${extractBeeApiErrorMessage(error)}`, { variant: 'error' })
     } finally {
       setLoading(false)
     }

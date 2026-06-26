@@ -11,6 +11,8 @@ import { useSnackbar } from 'notistack'
 import React, { ReactElement, ReactNode, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
 
+import { extractBeeApiErrorMessage } from '../utils/bee-error'
+
 const useStyles = makeStyles()(theme => ({
   link: {
     color: '#dd7700',
@@ -89,7 +91,7 @@ export default function WithdrawDepositModal({
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e)
-      enqueueSnackbar(`${errorMessage} Error: ${(e as Error).message}`, { variant: 'error' })
+      enqueueSnackbar(`${errorMessage} ${extractBeeApiErrorMessage(e)}`, { variant: 'error' })
     }
   }
 
