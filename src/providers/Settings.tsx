@@ -5,6 +5,7 @@ import { createContext, ReactElement, ReactNode, useCallback, useEffect, useMemo
 import { DEFAULT_BEE_API_HOST, DEFAULT_RPC_URL } from '../constants'
 import { useGetBeeConfig } from '../hooks/apiHooks'
 import { newGnosisProvider } from '../utils/chain'
+import { resolveBlockchainRpcEndpoint } from '../utils/desktop'
 import { LocalStorageKeys } from '../utils/localStorage'
 
 interface ContextInterface {
@@ -104,9 +105,10 @@ export function Provider({ children, ...propsSettings }: Props): ReactElement {
   }, [config, apiUrl])
 
   useEffect(() => {
-    if (!isDesktop || !config?.['blockchain-rpc-endpoint']) return
+    const daemonRpcUrl = config ? resolveBlockchainRpcEndpoint(config) : undefined
 
-    const daemonRpcUrl = config['blockchain-rpc-endpoint']
+    if (!isDesktop || !daemonRpcUrl) return
+
     localStorage.setItem(LocalStorageKeys.providerUrl, daemonRpcUrl)
     setRpcProviderUrl(daemonRpcUrl)
     setRpcProvider(newGnosisProvider(daemonRpcUrl))
