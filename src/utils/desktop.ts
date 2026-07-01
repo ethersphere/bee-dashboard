@@ -18,6 +18,11 @@ export interface BeeConfig {
   'data-dir': string
   'config-file-path'?: string
   'blockchain-rpc-endpoint'?: string
+  'swap-endpoint'?: string // deprecated: returned by pre-migration Swarm Desktop
+}
+
+export function resolveBlockchainRpcEndpoint(config: BeeConfig): string | undefined {
+  return config['blockchain-rpc-endpoint'] ?? config['swap-endpoint']
 }
 
 export async function getBzzPriceAsDai(desktopUrl: string): Promise<DAI> {
