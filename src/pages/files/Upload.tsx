@@ -117,10 +117,10 @@ export function Upload(): ReactElement {
 
     const uploadPromise = isSingleFile
       ? beeApi.uploadFile(stamp.batchID, fls[0], fls[0].name, {
-          deferred: true,
+          deferred: false,
           contentType: fls[0].type || guessMime(fls[0].name).mime,
         })
-      : beeApi.uploadFiles(stamp.batchID, fls, { indexDocument, deferred: true })
+      : beeApi.uploadFiles(stamp.batchID, fls, { indexDocument, deferred: false })
 
     uploadPromise
       .then(hash => {
@@ -200,7 +200,7 @@ export function Upload(): ReactElement {
           <StampPreview stamp={stamp} />
           <Box mb={4}>
             <DocumentationText>
-              Please do not close the application until your file is uploaded to your local node!
+              Please do not close the application until your file is uploaded to the Swarm network!
             </DocumentationText>
           </Box>
         </>
