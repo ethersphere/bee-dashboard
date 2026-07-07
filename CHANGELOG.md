@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.35.2](https://github.com/ethersphere/bee-dashboard/compare/v0.35.1...v0.35.2) (2026-07-07)
+
+
+### Bug Fixes
+
+* support Bee v2.8.1 (API 8.1.0) via bee-js 12.3.1 ([#738](https://github.com/ethersphere/bee-dashboard/issues/738)) ([e4fcf7d](https://github.com/ethersphere/bee-dashboard/commit/e4fcf7d53b162c195fdc44697d349cd31c63dff9))
+
 ## [0.35.1](https://github.com/ethersphere/bee-dashboard/compare/v0.35.0...v0.35.1) (2026-04-10)
 
 
