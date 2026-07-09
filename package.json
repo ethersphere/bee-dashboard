@@ -1,6 +1,6 @@
 {
   "name": "@ethersphere/bee-dashboard",
-  "version": "0.35.1",
+  "version": "0.35.2",
   "description": "An app which helps users to setup their Bee node and do actions like cash out cheques",
   "homepage": ".",
   "bin": {
@@ -56,7 +56,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
-    "@ethersphere/bee-js": "^12.2.1",
+    "@ethersphere/bee-js": "^12.3.1",
     "@formbricks/js": "^4.3.0",
     "@mui/icons-material": "^7.3.7",
     "@mui/material": "^7.3.7",
@@ -168,6 +168,6 @@
     "node": ">=24.0.0",
     "npm": ">=11.0.0",
     "pnpm": ">=10.0.0",
-    "bee": "2.8.0"
+    "bee": "2.8.1"
   }
 }
