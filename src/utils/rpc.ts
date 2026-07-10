@@ -5,9 +5,15 @@ import { Contract, FeeData, JsonRpcProvider, TransactionReceipt, TransactionResp
 import { BZZ_TOKEN_ADDRESS, bzzABI } from './bzzAbi'
 import { ethAddressString, newGnosisProvider, newGnosisProviderForValidation } from './chain'
 
+const chainIdCache = new Map<string, bigint>()
+
 async function getNetworkChainId(url: string): Promise<bigint> {
+  const cached = chainIdCache.get(url)
+
+  if (cached !== undefined) return cached
   const provider = newGnosisProviderForValidation(url)
   const network = await provider.getNetwork()
+  chainIdCache.set(url, network.chainId)
 
   return network.chainId
 }
