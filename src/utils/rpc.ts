@@ -121,7 +121,10 @@ export async function sendBzzTransaction(
 
   const feeData = await signer.provider.getFeeData()
   const bzz = new Contract(BZZ_TOKEN_ADDRESS, bzzABI, signer)
-  const transaction = await bzz.transfer(to.toChecksum(), value.toPLURBigInt(), resolveFeeOverrides(feeData))
+  const transaction = await bzz.transfer(to.toChecksum(), value.toPLURBigInt(), {
+    ...resolveFeeOverrides(feeData),
+    gasLimit: BigInt(100_000),
+  })
   const receipt = await transaction.wait(1)
 
   if (!receipt) {

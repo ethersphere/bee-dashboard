@@ -78,6 +78,11 @@ describe('sendBzzTransaction', () => {
     expect(typeof transferredValue).toBe('bigint')
     expect(transferredValue).toBe(bzzValue.toPLURBigInt())
   })
+
+  it('passes a fixed gasLimit so gas estimation is skipped', async () => {
+    await sendBzzTransaction(privateKey, '0x52908400098527886e0f7030069857d2e4169ee7', bzzValue, jsonRpcProvider)
+    expect(mockTransfer.mock.calls[0][2].gasLimit).toBe(BigInt(100_000))
+  })
 })
 
 describe('sendNativeTransaction', () => {
