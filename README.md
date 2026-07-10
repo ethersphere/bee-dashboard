@@ -133,6 +133,22 @@ pnpm start
 pnpm run desktop # This will inject the API key to the Dashboard
 ```
 
+#### Mock Bee proxy
+
+To manually test error handling without breaking a real node, `utils/mock-bee-proxy.js` proxies all requests to a local
+Bee node (`http://localhost:1633`) and can override selected endpoints with failure responses:
+
+- `pnpm mock:bee` — base script; pass-through by default, configurable via env variables
+- `pnpm mock:bee:nofunds` — preset: `POST /stamps/*` fails with `400 "out of funds"`
+- `pnpm mock:bee:poor` — preset: `GET /wallet` reports near-zero xBZZ/xDAI balances
+
+The proxy listens on `http://localhost:11633` — point the dashboard's Bee API endpoint (Settings page) there.
+For cases not covered by the presets, set the env variables (`STATUS`, `MESSAGE`, `POOR_WALLET`, `PLUR`, `WEI`) directly:
+
+```sh
+STATUS=507 MESSAGE='batch too large' pnpm mock:bee
+```
+
 ## File Manager
 
 The File Manager module provides intuitive decentralized file storage and management.
