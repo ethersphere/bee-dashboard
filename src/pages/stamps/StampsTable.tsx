@@ -11,7 +11,7 @@ import StampExtensionModal, { StampExtensionType } from '../../components/StampE
 import { Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { EnrichedPostageBatch } from '../../providers/Stamps'
-import { secondsToTimeString } from '../../utils'
+import { preciseTimeString } from '../../utils'
 import { getHumanReadableFileSize } from '../../utils/file'
 
 import { PostageStamp } from './PostageStamp'
@@ -44,7 +44,7 @@ function StampsTable({ postageStamps }: Props): ReactElement | null {
                 )}`}
               />
               <ExpandableListItem label="Amount" value={parseInt(stamp.amount, 10).toLocaleString()} />
-              <ExpandableListItem label="Expires in" value={secondsToTimeString(stamp.duration.toSeconds())} />
+              <ExpandableListItem label="Expires in" value={preciseTimeString(stamp.duration.toSeconds())} />
               <ExpandableListItem label="Label" value={stamp.label} />
               <ExpandableListItem label="Usable" value={stamp.usable ? 'yes' : 'no'} />
               <ExpandableListItem label="Immutable" value={stamp.immutableFlag ? 'yes' : 'no'} />
