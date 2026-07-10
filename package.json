@@ -75,7 +75,7 @@
     "react-qr-code": "^2.0.18",
     "react-syntax-highlighter": "16.1.0",
     "remixicon-react": "^1.0.0",
-    "serve-handler": "6.1.6"
+    "serve-handler": "6.1.7"
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",
