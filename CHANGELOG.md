@@ -5,17 +5,47 @@
 
 ### Features
 
-* make ENS resolver URL editable from UI ([#283](https://github.com/ethersphere/bee-dashboard/issues/283)) ([145f8b4](https://github.com/ethersphere/bee-dashboard/commit/145f8b47f559aae5ad87e682efe579e03febdca7))
+* make ENS resolver URL editable from UI ([#283](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/283)) ([145f8b4](https://github.com/ethersphere/bee-dashboard/commit/145f8b47f559aae5ad87e682efe579e03febdca7))
+* map dots explanation added ([#269](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/269)) ([71bea0d](https://github.com/ethersphere/bee-dashboard/commit/71bea0dbc5af6c5d3a1853b3477d2ebe02d48943))
+* public-upload warn ([#268](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/268)) ([982580d](https://github.com/ethersphere/bee-dashboard/commit/982580d27c6c040a46c197a215a817abc2b18419))
+* spdv-1041 ([#257](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/257)) ([417005b](https://github.com/ethersphere/bee-dashboard/commit/417005be0e128901e0c25865e3e84774ceb9fd7f))
+* spdv-1314 ([#270](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/270)) ([7b2d883](https://github.com/ethersphere/bee-dashboard/commit/7b2d8834d77e7939ce1adad3769cde2a154bb78e))
 
 
 ### Bug Fixes
 
-* handle unreachable RPC endpoints ([#291](https://github.com/ethersphere/bee-dashboard/issues/291)) ([893fd8f](https://github.com/ethersphere/bee-dashboard/commit/893fd8f5f394f1eb06e847e2251a171961aca78b))
+* accept gif wallet fees props and remove hardcoded fallbacks ([#249](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/249)) ([6c36e8a](https://github.com/ethersphere/bee-dashboard/commit/6c36e8a8ef0609ca3ff49882619c99c25e03550a))
+* add component=div to Typography in ExpandableListItemNote ([#278](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/278)) ([37520f7](https://github.com/ethersphere/bee-dashboard/commit/37520f7629621ba4e39d3239a5203a0206995dca))
+* apply secondary color to status check button ([#273](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/273)) ([ef3b799](https://github.com/ethersphere/bee-dashboard/commit/ef3b7990501027644ff65cbab667bb773247c749))
+* broken Bee docs link in Upload postage stamp panel ([#256](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/256)) ([4ec246d](https://github.com/ethersphere/bee-dashboard/commit/4ec246de29e68a29d41dad52450448036356e3d9))
+* clarify postage stamp Capacity label (used / total) ([#260](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/260)) ([116cfff](https://github.com/ethersphere/bee-dashboard/commit/116cfff1385276b3913ea3c64b77a5fe9804066e))
+* consume gift wallet fees as decimal strings ([#251](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/251)) ([22249a8](https://github.com/ethersphere/bee-dashboard/commit/22249a8f2b4e1fd225bd32cd5572cb9435624259))
+* format-raw-error-objects-in-snackbars-spdv-1323 ([#274](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/274)) ([0ea387d](https://github.com/ethersphere/bee-dashboard/commit/0ea387d4469a7135370898e1d2068f80390dd7fd))
+* gift wallet creation ([#250](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/250)) ([3d2f8d4](https://github.com/ethersphere/bee-dashboard/commit/3d2f8d4d8d3e2b3a78290425c4565c94b9a038ea))
+* guard chequebook fields against partial fetch crash ([#279](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/279)) ([c618a61](https://github.com/ethersphere/bee-dashboard/commit/c618a613774bd560d827fbc364203b6cb3043639))
+* handle unreachable RPC endpoints ([#291](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/291)) ([893fd8f](https://github.com/ethersphere/bee-dashboard/commit/893fd8f5f394f1eb06e847e2251a171961aca78b))
+* more clear description for upload options ([#271](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/271)) ([98e5785](https://github.com/ethersphere/bee-dashboard/commit/98e578571123c778c3f310c21a90357e06bc9aa9))
 * new map pin react router ([f80f571](https://github.com/ethersphere/bee-dashboard/commit/f80f5715921c8c4a3d3c82d249fd70d9069f5a19))
-* spdv-1324 ([#284](https://github.com/ethersphere/bee-dashboard/issues/284)) ([f9374d0](https://github.com/ethersphere/bee-dashboard/commit/f9374d0601221d71f4ffc3c8cec4646cb8b78852))
-* spdv-1327 ([#287](https://github.com/ethersphere/bee-dashboard/issues/287)) ([e3da9df](https://github.com/ethersphere/bee-dashboard/commit/e3da9df2e52732e251c22593dd0861258ea70e3b))
-* spdv-1388 ([#289](https://github.com/ethersphere/bee-dashboard/issues/289)) ([08b0058](https://github.com/ethersphere/bee-dashboard/commit/08b00581d5fba160f8e9efc32f32a0bba1e44a26))
-* spdv-1410 ([#288](https://github.com/ethersphere/bee-dashboard/issues/288)) ([e3a40bd](https://github.com/ethersphere/bee-dashboard/commit/e3a40bde78c55c1f4a4b82ceffc72c6aaf4761fe))
+* postage stamp feedback ([#265](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/265)) ([9402aef](https://github.com/ethersphere/bee-dashboard/commit/9402aef112794606749328843bad7d13e92438bd))
+* raw bytes hash download ([#252](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/252)) ([5e28fdc](https://github.com/ethersphere/bee-dashboard/commit/5e28fdcbd448c79b2e610a96c12cddeb648d6950))
+* resolve desktop config key migration in swap flow ([#281](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/281)) ([f6c633b](https://github.com/ethersphere/bee-dashboard/commit/f6c633b7650149106a68c62da9d40ed80af45b1e))
+* resolve ENS names in file download/view ([#275](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/275)) ([8116508](https://github.com/ethersphere/bee-dashboard/commit/8116508a2b0f436c8b5fd3288f12f9b5886a6267))
+* spdv-1043 ([#255](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/255)) ([af6291a](https://github.com/ethersphere/bee-dashboard/commit/af6291a91296197fd38811c345addd08893d1cb2))
+* spdv-1048 ([#253](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/253)) ([c76c7ce](https://github.com/ethersphere/bee-dashboard/commit/c76c7ce62adede585029909a52967c162680f77b))
+* spdv-1271 ([#261](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/261)) ([a240a1a](https://github.com/ethersphere/bee-dashboard/commit/a240a1a9126bc35aa3f67268fb22bf8ad7ca133b))
+* spdv-1295 ([#276](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/276)) ([349fe2a](https://github.com/ethersphere/bee-dashboard/commit/349fe2a287ab41a4ce22f4ff7e5c2519004a2b0e))
+* spdv-1298 ([#263](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/263)) ([d7862de](https://github.com/ethersphere/bee-dashboard/commit/d7862dec1820b49ba2fe7a2c4184c5f8294e511f))
+* spdv-1300 single file upload content-type ([#262](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/262)) ([6099e48](https://github.com/ethersphere/bee-dashboard/commit/6099e48731be5766c0833b692a7a73c991284a65))
+* spdv-1313 ([#272](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/272)) ([4d53f7b](https://github.com/ethersphere/bee-dashboard/commit/4d53f7bfe463691436434b5af114c7968cb19310))
+* spdv-1324 ([#284](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/284)) ([f9374d0](https://github.com/ethersphere/bee-dashboard/commit/f9374d0601221d71f4ffc3c8cec4646cb8b78852))
+* spdv-1326 ([#277](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/277)) ([dbe01da](https://github.com/ethersphere/bee-dashboard/commit/dbe01da7da59686b8bdf2ae468f156fdf3b13000))
+* spdv-1327 ([#287](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/287)) ([e3da9df](https://github.com/ethersphere/bee-dashboard/commit/e3da9df2e52732e251c22593dd0861258ea70e3b))
+* spdv-1337 ([#280](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/280)) ([fb02e19](https://github.com/ethersphere/bee-dashboard/commit/fb02e19e4635139f7ee5f8a45053e2041a671c1b))
+* spdv-1388 ([#289](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/289)) ([08b0058](https://github.com/ethersphere/bee-dashboard/commit/08b00581d5fba160f8e9efc32f32a0bba1e44a26))
+* spdv-1410 ([#288](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/288)) ([e3a40bd](https://github.com/ethersphere/bee-dashboard/commit/e3a40bde78c55c1f4a4b82ceffc72c6aaf4761fe))
+* spdv-375 ([#254](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/254)) ([959b5dc](https://github.com/ethersphere/bee-dashboard/commit/959b5dc86134b170990c97c7505ceba53aa3df27))
+* stamp purchase errors ([#266](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/266)) ([3e78086](https://github.com/ethersphere/bee-dashboard/commit/3e78086098639a902c6529e33bc6816310ffae99))
+* warning icon changed to loading on startup ([#264](https://github.com/Solar-Punk-Ltd/bee-dashboard/pull/264)) ([ab418d8](https://github.com/ethersphere/bee-dashboard/commit/ab418d82a0dcd2535659ba5b9f3dcfb70d96b418))
 
 ## [0.35.2](https://github.com/ethersphere/bee-dashboard/compare/v0.35.1...v0.35.2) (2026-07-07)
 
