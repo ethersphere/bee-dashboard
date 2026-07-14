@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.36.0](https://github.com/ethersphere/bee-dashboard/compare/v0.35.2...v0.36.0) (2026-07-14)
+
+
+### Features
+
+* make ENS resolver URL editable from UI ([#283](https://github.com/ethersphere/bee-dashboard/issues/283)) ([145f8b4](https://github.com/ethersphere/bee-dashboard/commit/145f8b47f559aae5ad87e682efe579e03febdca7))
+
+
+### Bug Fixes
+
+* handle unreachable RPC endpoints ([#291](https://github.com/ethersphere/bee-dashboard/issues/291)) ([893fd8f](https://github.com/ethersphere/bee-dashboard/commit/893fd8f5f394f1eb06e847e2251a171961aca78b))
+* new map pin react router ([f80f571](https://github.com/ethersphere/bee-dashboard/commit/f80f5715921c8c4a3d3c82d249fd70d9069f5a19))
+* spdv-1324 ([#284](https://github.com/ethersphere/bee-dashboard/issues/284)) ([f9374d0](https://github.com/ethersphere/bee-dashboard/commit/f9374d0601221d71f4ffc3c8cec4646cb8b78852))
+* spdv-1327 ([#287](https://github.com/ethersphere/bee-dashboard/issues/287)) ([e3da9df](https://github.com/ethersphere/bee-dashboard/commit/e3da9df2e52732e251c22593dd0861258ea70e3b))
+* spdv-1388 ([#289](https://github.com/ethersphere/bee-dashboard/issues/289)) ([08b0058](https://github.com/ethersphere/bee-dashboard/commit/08b00581d5fba160f8e9efc32f32a0bba1e44a26))
+* spdv-1410 ([#288](https://github.com/ethersphere/bee-dashboard/issues/288)) ([e3a40bd](https://github.com/ethersphere/bee-dashboard/commit/e3a40bde78c55c1f4a4b82ceffc72c6aaf4761fe))
+
 ## [0.35.2](https://github.com/ethersphere/bee-dashboard/compare/v0.35.1...v0.35.2) (2026-07-07)
 
 
