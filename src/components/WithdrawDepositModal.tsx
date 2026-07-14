@@ -8,8 +8,10 @@ import DialogTitle from '@mui/material/DialogTitle'
 import FormHelperText from '@mui/material/FormHelperText'
 import Input from '@mui/material/Input'
 import { useSnackbar } from 'notistack'
-import React, { ReactElement, ReactNode, useState } from 'react'
+import React, { ReactElement, ReactNode, useRef, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
+
+import { extractBeeApiErrorMessage } from '../utils/bee-error'
 
 const useStyles = makeStyles()(theme => ({
   link: {
@@ -65,6 +67,8 @@ export default function WithdrawDepositModal({
   const { classes } = useStyles()
 
   const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const loadingRef = useRef(false)
   const [amount, setAmount] = useState('')
   const [amountToken, setAmountToken] = useState<BZZ | null>(null)
   const [amountError, setAmountError] = useState<Error | null>(null)
@@ -80,7 +84,10 @@ export default function WithdrawDepositModal({
   }
 
   const handleAction = async () => {
-    if (amountToken === null) return
+    if (amountToken === null || loadingRef.current) return
+
+    loadingRef.current = true
+    setLoading(true)
 
     try {
       const transactionHash = await action(amountToken)
@@ -89,7 +96,10 @@ export default function WithdrawDepositModal({
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e)
-      enqueueSnackbar(`${errorMessage} Error: ${(e as Error).message}`, { variant: 'error' })
+      enqueueSnackbar(`${errorMessage} ${extractBeeApiErrorMessage(e)}`, { variant: 'error' })
+    } finally {
+      loadingRef.current = false
+      setLoading(false)
     }
   }
 
@@ -138,7 +148,7 @@ export default function WithdrawDepositModal({
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleAction} color="primary">
+          <Button onClick={handleAction} color="primary" disabled={loading}>
             {label}
           </Button>
         </DialogActions>

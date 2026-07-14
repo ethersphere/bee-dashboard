@@ -22,7 +22,7 @@ export default function ExpandableListItemNote({ children }: Props): ReactElemen
 
   return (
     <ListItemButton className={classes.header}>
-      <Typography variant="body1" className={classes.typography}>
+      <Typography variant="body1" component="div" className={classes.typography}>
         {children}
       </Typography>
     </ListItemButton>

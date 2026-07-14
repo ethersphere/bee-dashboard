@@ -34,11 +34,12 @@ export function AccountStamps(): ReactElement {
 
   const navigate = useNavigate()
 
-  const { stamps, isLoading, error, start, stop } = useContext(StampsContext)
+  const { stamps, isLoading, error, start, stop, refresh } = useContext(StampsContext)
   const { status } = useContext(BeeContext)
 
   useEffect(() => {
     if (!status.all) return
+    refresh()
     start()
 
     return () => stop()

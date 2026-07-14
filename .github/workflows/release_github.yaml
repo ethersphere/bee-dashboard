@@ -10,6 +10,8 @@ on:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    # Only run releases in the upstream repo, not in forks (fork lacks the GHA_PAT_BASIC secret)
+    if: github.repository == 'ethersphere/bee-dashboard'
     steps:
       - uses: GoogleCloudPlatform/release-please-action@v3
         id: release

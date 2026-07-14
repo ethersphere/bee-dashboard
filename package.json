@@ -41,13 +41,16 @@
     "lint:fix": "pnpm run lint --fix",
     "check:types": "tsc --project tsconfig.lib.json",
     "update-map-data": "node ./utils/update-map-data.js",
+    "mock:bee": "node ./utils/mock-bee-proxy.js",
+    "mock:bee:nofunds": "STATUS=400 MESSAGE='out of funds' node ./utils/mock-bee-proxy.js",
+    "mock:bee:poor": "POOR_WALLET=1 node ./utils/mock-bee-proxy.js",
     "init:husky": "pnpm husky install"
   },
   "peerDependencies": {
     "react": ">=19",
     "react-dom": ">=19",
-    "react-router": ">=7",
-    "react-router-dom": ">=7",
+    "react-router": "^7.18.1",
+    "react-router-dom": "^7.18.1",
     "tss-react": ">=4"
   },
   "dependencies": {
@@ -58,7 +61,7 @@
     "@mui/icons-material": "^7.3.7",
     "@mui/material": "^7.3.7",
     "@solarpunkltd/file-manager-lib": "^1.0.9",
-    "axios": "^0.30.2",
+    "axios": "^1.16.1",
     "bignumber.js": "^9.3.1",
     "dotted-map": "^2.2.3",
     "ethers": "^6.16.0",
@@ -72,7 +75,7 @@
     "react-qr-code": "^2.0.18",
     "react-syntax-highlighter": "16.1.0",
     "remixicon-react": "^1.0.0",
-    "serve-handler": "6.1.6"
+    "serve-handler": "6.1.7"
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",
@@ -165,6 +168,6 @@
     "node": ">=24.0.0",
     "npm": ">=11.0.0",
     "pnpm": ">=10.0.0",
-    "bee": "2.7.0"
+    "bee": "2.8.1"
   }
 }

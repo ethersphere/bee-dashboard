@@ -16,7 +16,13 @@ export interface BeeConfig {
   'resolver-options': string
   'use-postage-snapshot': boolean
   'data-dir': string
+  'config-file-path'?: string
   'blockchain-rpc-endpoint'?: string
+  'swap-endpoint'?: string // deprecated: returned by pre-migration Swarm Desktop
+}
+
+export function resolveBlockchainRpcEndpoint(config: BeeConfig): string | undefined {
+  return config['blockchain-rpc-endpoint'] ?? config['swap-endpoint']
 }
 
 export async function getBzzPriceAsDai(desktopUrl: string): Promise<DAI> {
@@ -35,6 +41,12 @@ export function upgradeToLightNode(desktopUrl: string, rpcProvider: string): Pro
 export async function setJsonRpcInDesktop(desktopUrl: string, value: string): Promise<void> {
   await updateDesktopConfiguration(desktopUrl, {
     'blockchain-rpc-endpoint': value,
+  })
+}
+
+export async function setEnsResolverInDesktop(desktopUrl: string, value: string): Promise<void> {
+  await updateDesktopConfiguration(desktopUrl, {
+    'resolver-options': value,
   })
 }
 

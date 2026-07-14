@@ -19,6 +19,7 @@ import { CheckState, Context as BeeContext } from '../../providers/Bee'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as BalanceProvider } from '../../providers/WalletBalance'
 import { ROUTES } from '../../routes'
+import { extractBeeApiErrorMessage } from '../../utils/bee-error'
 import { restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
 
 const useStyles = makeStyles()(() => ({
@@ -61,7 +62,7 @@ export default function TopUp(): ReactElement {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error)
-      enqueueSnackbar(`Failed to upgrade: ${error}`, { variant: 'error' })
+      enqueueSnackbar(`Failed to upgrade: ${extractBeeApiErrorMessage(error)}`, { variant: 'error' })
     }
     setLoading(false)
   }

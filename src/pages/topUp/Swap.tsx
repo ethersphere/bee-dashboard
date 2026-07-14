@@ -19,10 +19,12 @@ import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as BalanceProvider } from '../../providers/WalletBalance'
 import { ROUTES } from '../../routes'
 import { sleepMs } from '../../utils'
+import { extractBeeApiErrorMessage } from '../../utils/bee-error'
 import {
   getBzzPriceAsDai,
   getDesktopConfiguration,
   performSwap,
+  resolveBlockchainRpcEndpoint,
   restartBeeNode,
   upgradeToLightNode,
 } from '../../utils/desktop'
@@ -131,7 +133,7 @@ export function Swap({ header }: Props): ReactElement {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error)
-      enqueueSnackbar(`Failed to upgrade: ${error}`, { variant: 'error' })
+      enqueueSnackbar(`Failed to upgrade: ${extractBeeApiErrorMessage(error)}`, { variant: 'error' })
     }
   }
 
@@ -162,12 +164,14 @@ export function Swap({ header }: Props): ReactElement {
       )
     }
 
-    if (!desktopConfiguration['blockchain-rpc-endpoint']) {
+    const blockchainRpcEndpoint = resolveBlockchainRpcEndpoint(desktopConfiguration)
+
+    if (!blockchainRpcEndpoint) {
       throw new SwapError('Blockchain RPC endpoint is not configured in Swarm Desktop')
     }
     await wrapWithSwapError(
-      RPC.getNetworkChainId(desktopConfiguration['blockchain-rpc-endpoint']),
-      `Blockchain RPC endpoint not reachable at ${desktopConfiguration['blockchain-rpc-endpoint']}`,
+      RPC.getNetworkChainId(blockchainRpcEndpoint),
+      `Blockchain RPC endpoint not reachable at ${blockchainRpcEndpoint}`,
     )
     await wrapWithSwapError(sendSwapRequest(daiToSwap), GENERIC_SWAP_FAILED_ERROR_MESSAGE)
   }
@@ -200,7 +204,9 @@ export function Swap({ header }: Props): ReactElement {
         }
       } else {
         // we have an unexpected error
-        enqueueSnackbar(`${GENERIC_SWAP_FAILED_ERROR_MESSAGE} ${error}`, { variant: 'error' })
+        enqueueSnackbar(`${GENERIC_SWAP_FAILED_ERROR_MESSAGE} ${extractBeeApiErrorMessage(error)}`, {
+          variant: 'error',
+        })
         // eslint-disable-next-line no-console
         console.error(error)
       }

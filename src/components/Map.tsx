@@ -1,4 +1,5 @@
 import type { Peer } from '@ethersphere/bee-js'
+import { CircularProgress } from '@mui/material'
 import DottedMap, { DottedMapWithoutCountriesLib } from 'dotted-map/without-countries'
 import { CSSProperties, ReactElement, useContext, useEffect, useState } from 'react'
 
@@ -42,15 +43,15 @@ function addPins(map: DottedMap, pins: MapRecord[], color: string) {
 }
 
 enum PeerColors {
-  Black = '#303030',
-  Green = '#09CA6C',
+  NetworkNodes = '#303030',
+  ConnectedPeers = '#09CA6C',
   LightGrey = '#dadada',
   White = '#eaeaea',
 }
 
 const mapPrecomputed = new DottedMap({ map: JSON.parse(mapData) })
 const mapNoPins = new DottedMap({ map: JSON.parse(mapData) })
-addPins(mapPrecomputed, deduplicatedRecords, PeerColors.Black)
+addPins(mapPrecomputed, deduplicatedRecords, PeerColors.NetworkNodes)
 
 const mapSvgOptions: DottedMapWithoutCountriesLib.SvgSettings = {
   shape: 'hexagon',
@@ -70,7 +71,7 @@ export default function Card({ style, error }: Props): ReactElement {
     } else if (peers) {
       const points = findIntersection(fullMapDb, peers)
       const mapNew = Object.create(mapPrecomputed)
-      addPins(mapNew, points, PeerColors.Green)
+      addPins(mapNew, points, PeerColors.ConnectedPeers)
       newSvg = mapNew.getSVG(mapSvgOptions)
     } else {
       return
@@ -100,22 +101,35 @@ export default function Card({ style, error }: Props): ReactElement {
         src={`data:image/svg+xml;utf8,${encodeURIComponent(map)}`}
         style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', flex: 1 }}
       />
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 8,
+          display: 'flex',
+          justifyContent: 'center',
+          gap: 16,
+        }}
+      >
+        {[
+          { color: PeerColors.NetworkNodes, label: 'Network nodes' },
+          { color: PeerColors.ConnectedPeers, label: 'Your connected peers' },
+        ].map(({ color, label }) => (
+          <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: color, flexShrink: 0 }} />
+            <span style={{ fontSize: '0.75rem', color: '#606060' }}>{label}</span>
+          </div>
+        ))}
+      </div>
       {error && (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="60"
-          height="60"
-          viewBox="0 0 24 24"
-          fill="#f44336"
-          strokeWidth="0"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', opacity: 0.25 }}
-        >
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-          <line stroke="#f3f3f3" strokeWidth="2" x1="12" y1="9" x2="12" y2="13"></line>
-          <line stroke="#f3f3f3" strokeWidth="2" x1="12" y1="17" x2="12.01" y2="17"></line>
-        </svg>
+        <CircularProgress
+          size={60}
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            m: 'auto',
+            opacity: 0.25,
+          }}
+        />
       )}
     </div>
   )

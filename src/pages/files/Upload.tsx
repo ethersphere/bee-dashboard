@@ -14,7 +14,7 @@ import { Context as FileContext } from '../../providers/File'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as StampsContext, EnrichedPostageBatch } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
-import { detectIndexHtml, getAssetNameFromFiles, packageFile } from '../../utils/file'
+import { detectIndexHtml, getAssetNameFromFiles, guessMime, packageFile } from '../../utils/file'
 import { persistIdentity, updateFeed } from '../../utils/identity'
 import { LocalStorageKeys, putHistory } from '../../utils/localStorage'
 import { waitUntilStampUsable } from '../../utils/stamp'
@@ -116,8 +116,11 @@ export function Upload(): ReactElement {
     await waitUntilStampUsable(stamp.batchID, beeApi)
 
     const uploadPromise = isSingleFile
-      ? beeApi.uploadFile(stamp.batchID, fls[0], fls[0].name, { deferred: true })
-      : beeApi.uploadFiles(stamp.batchID, fls, { indexDocument, deferred: true })
+      ? beeApi.uploadFile(stamp.batchID, fls[0], fls[0].name, {
+          deferred: false,
+          contentType: fls[0].type || guessMime(fls[0].name).mime,
+        })
+      : beeApi.uploadFiles(stamp.batchID, fls, { indexDocument, deferred: false })
 
     uploadPromise
       .then(hash => {
@@ -181,7 +184,7 @@ export function Upload(): ReactElement {
             <DocumentationText>
               Please refer to the{' '}
               <a
-                href="https://docs.ethswarm.org/debug-api/#tag/Postage-Stamps/paths/~1stamps~1{amount}~1{depth}/post"
+                href="https://docs.ethswarm.org/api/#tag/Postage-Stamps/paths/~1stamps~1{amount}~1{depth}/post"
                 target="_blank"
                 rel="noreferrer"
               >
@@ -197,7 +200,7 @@ export function Upload(): ReactElement {
           <StampPreview stamp={stamp} />
           <Box mb={4}>
             <DocumentationText>
-              Please do not close the application until your file is uploaded to your local node!
+              Please do not close the application until your file is uploaded to the Swarm network!
             </DocumentationText>
           </Box>
         </>

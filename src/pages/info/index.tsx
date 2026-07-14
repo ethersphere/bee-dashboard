@@ -1,6 +1,7 @@
 import { Button } from '@mui/material'
 import { ReactElement, useContext } from 'react'
 
+import { version as dashboardVersion } from '../../../package.json'
 import { ChainSync } from '../../components/ChainSync'
 import ExpandableListItem from '../../components/ExpandableListItem'
 import Map from '../../components/Map'
@@ -65,6 +66,7 @@ export default function Status(): ReactElement {
         />
       )}
       <ExpandableListItem label="Bee version" value={beeVersion} />
+      <ExpandableListItem label="Bee dashboard version" value={dashboardVersion} />
       <ExpandableListItem label="Mode" value={nodeInfo?.beeMode} />
       {walletBalance !== null && (
         <ExpandableListItem label="Blockchain network" value={chainIdToName(walletBalance.chainID)} />

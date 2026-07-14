@@ -18,6 +18,7 @@ import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as BalanceProvider } from '../../providers/WalletBalance'
 import { ROUTES } from '../../routes'
 import { sleepMs } from '../../utils'
+import { extractBeeApiErrorMessage } from '../../utils/bee-error'
 import { restartBeeNode, upgradeToLightNode } from '../../utils/desktop'
 import { ResolvedWallet } from '../../utils/wallet'
 
@@ -57,7 +58,7 @@ export function GiftCardFund(): ReactElement {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error)
-      enqueueSnackbar(`Failed to upgrade: ${error}`, { variant: 'error' })
+      enqueueSnackbar(`Failed to upgrade: ${extractBeeApiErrorMessage(error)}`, { variant: 'error' })
     }
   }
 
@@ -76,7 +77,7 @@ export function GiftCardFund(): ReactElement {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error)
-      enqueueSnackbar(`Failed to fund: ${error}`, { variant: 'error' })
+      enqueueSnackbar(`Failed to fund: ${extractBeeApiErrorMessage(error)}`, { variant: 'error' })
     } finally {
       setLoading(false)
     }

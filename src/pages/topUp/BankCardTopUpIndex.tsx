@@ -15,7 +15,7 @@ export function BankCardTopUpIndex(): ReactElement {
           It is recommended to buy an amount equivalent to 10 EUR maximum. If you&apos;re not familiar with
           cryptocurrencies, you may use{' '}
           <a
-            href="https://medium.com/ethereum-swarm/upgrading-swarm-deskotp-app-beta-from-an-ultra-light-to-a-light-node-65d52cab7f2c"
+            href="https://docs.ethswarm.org/docs/desktop/configuration/#upgrading-from-an-ultra-light-to-a-light-node"
             rel="noreferrer"
             target="_blank"
           >

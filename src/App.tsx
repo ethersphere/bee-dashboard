@@ -26,6 +26,7 @@ interface Props {
   isDesktop?: boolean
   desktopUrl?: string
   errorReporting?: (err: Error) => void
+  giftWalletFees?: { bzz: string; dai: string }
 }
 
 const App = ({
@@ -35,6 +36,7 @@ const App = ({
   isDesktop,
   desktopUrl,
   errorReporting,
+  giftWalletFees,
 }: Props): ReactElement => {
   const mainApp = (
     <div className="App">
@@ -45,6 +47,7 @@ const App = ({
           lockedApiSettings={lockedApiSettings}
           isDesktop={isDesktop}
           desktopUrl={desktopUrl}
+          giftWalletFees={giftWalletFees}
         >
           <TopUpProvider>
             <BeeProvider>

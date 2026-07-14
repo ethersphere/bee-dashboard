@@ -1,10 +1,11 @@
 import { Bee } from '@ethersphere/bee-js'
 import { JsonRpcProvider } from 'ethers'
-import { createContext, ReactElement, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { createContext, ReactElement, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { DEFAULT_BEE_API_HOST, DEFAULT_RPC_URL } from '../constants'
 import { useGetBeeConfig } from '../hooks/apiHooks'
-import { newGnosisProvider } from '../utils/chain'
+import { newGnosisProvider, newGnosisProviderForValidation } from '../utils/chain'
+import { resolveBlockchainRpcEndpoint } from '../utils/desktop'
 import { LocalStorageKeys } from '../utils/localStorage'
 
 interface ContextInterface {
@@ -14,13 +15,16 @@ interface ContextInterface {
   desktopApiKey: string
   isDesktop: boolean
   desktopUrl: string
+  giftWalletFees?: { bzz: string; dai: string }
   rpcProviderUrl: string
   rpcProvider: JsonRpcProvider | null
   cors: string | null
   dataDir: string | null
+  configFile: string | null
   ensResolver: string | null
   setApiUrl: (url: string) => void
   setAndPersistJsonRpcProvider: (url: string) => void
+  setEnsResolver: (url: string) => void
   isLoading: boolean
   error: Error | null
 }
@@ -38,7 +42,9 @@ const initialValues: ContextInterface = {
   rpcProvider: null,
   cors: null,
   dataDir: null,
+  configFile: null,
   ensResolver: null,
+  setEnsResolver: () => {},
   isLoading: true,
   error: null,
 }
@@ -52,6 +58,7 @@ interface InitialSettings {
   isDesktop?: boolean
   desktopUrl?: string
   defaultRpcUrl?: string
+  giftWalletFees?: { bzz: string; dai: string }
 }
 
 interface Props extends InitialSettings {
@@ -71,6 +78,12 @@ export function Provider({ children, ...propsSettings }: Props): ReactElement {
   const [desktopApiKey, setDesktopApiKey] = useState<string>(initialValues.desktopApiKey)
   const [rpcProviderUrl, setRpcProviderUrl] = useState(propsProviderUrl)
   const [rpcProvider, setRpcProvider] = useState(newGnosisProvider(propsProviderUrl))
+  const [ensResolver, setEnsResolverState] = useState<string | null>(initialValues.ensResolver)
+  const rpcProviderUrlRef = useRef(rpcProviderUrl)
+
+  useEffect(() => {
+    rpcProviderUrlRef.current = rpcProviderUrl
+  }, [rpcProviderUrl])
 
   const { config, isLoading, error } = useGetBeeConfig(desktopUrl)
 
@@ -99,6 +112,33 @@ export function Provider({ children, ...propsSettings }: Props): ReactElement {
     setBeeApiState()
   }, [config, apiUrl])
 
+  useEffect(() => {
+    const daemonRpcUrl = config ? resolveBlockchainRpcEndpoint(config) : undefined
+
+    if (!isDesktop || !daemonRpcUrl) return
+
+    localStorage.setItem(LocalStorageKeys.providerUrl, daemonRpcUrl)
+    setRpcProviderUrl(daemonRpcUrl)
+    setRpcProvider(newGnosisProvider(daemonRpcUrl))
+  }, [isDesktop, config])
+
+  useEffect(() => {
+    newGnosisProviderForValidation(propsProviderUrl)
+      .getNetwork()
+      .catch(() => {
+        if (propsProviderUrl !== DEFAULT_RPC_URL && rpcProviderUrlRef.current === propsProviderUrl) {
+          setRpcProviderUrl(DEFAULT_RPC_URL)
+          setRpcProvider(newGnosisProvider(DEFAULT_RPC_URL))
+        }
+      })
+  }, [])
+
+  useEffect(() => {
+    if (!isDesktop || !config?.['resolver-options']) return
+
+    setEnsResolverState(config['resolver-options'])
+  }, [isDesktop, config])
+
   const updateApiUrl = useCallback((url: string) => {
     const userProvidedUrl = makeHttpUrl(url)
 
@@ -117,6 +157,10 @@ export function Provider({ children, ...propsSettings }: Props): ReactElement {
     setRpcProvider(newGnosisProvider(providerUrl))
   }, [])
 
+  const setEnsResolver = useCallback((url: string) => {
+    setEnsResolverState(url)
+  }, [])
+
   const contextValue = useMemo(
     () => ({
       apiUrl,
@@ -126,12 +170,15 @@ export function Provider({ children, ...propsSettings }: Props): ReactElement {
       desktopApiKey,
       isDesktop,
       desktopUrl,
+      giftWalletFees: propsSettings.giftWalletFees,
       rpcProvider,
       rpcProviderUrl,
       cors: config?.['cors-allowed-origins'] ?? null,
       dataDir: config?.['data-dir'] ?? null,
-      ensResolver: config?.['resolver-options'] ?? null,
+      configFile: config?.['config-file-path'] ?? null,
+      ensResolver,
       setAndPersistJsonRpcProvider,
+      setEnsResolver,
       isLoading,
       error,
     }),
@@ -143,10 +190,13 @@ export function Provider({ children, ...propsSettings }: Props): ReactElement {
       desktopApiKey,
       isDesktop,
       desktopUrl,
+      propsSettings.giftWalletFees,
       rpcProvider,
       rpcProviderUrl,
       config,
+      ensResolver,
       setAndPersistJsonRpcProvider,
+      setEnsResolver,
       isLoading,
       error,
     ],

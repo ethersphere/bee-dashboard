@@ -108,7 +108,8 @@ export default function CreateNewFeed(): ReactElement {
       <HistoryHeader>Create new feed</HistoryHeader>
       <Box mb={4}>
         <DocumentationText>
-          To create a feed you will need to create an identity. Please refer to the{' '}
+          To create a feed you will need to create an identity. After creating, open the feed page and upload a file,
+          folder, or website to activate it. Please refer to the{' '}
           <a
             href="https://docs.ethswarm.org/api/#tag/Feed/paths/~1feeds~1{owner}~1{topic}/post"
             target="_blank"

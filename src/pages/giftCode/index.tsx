@@ -15,20 +15,19 @@ import { SwarmButton } from '../../components/SwarmButton'
 import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as TopUpContext } from '../../providers/TopUp'
 import { Context as BalanceProvider } from '../../providers/WalletBalance'
+import { extractBeeApiErrorMessage } from '../../utils/bee-error'
 import { createGiftWallet } from '../../utils/desktop'
 import { generateWallet } from '../../utils/identity'
 import { ResolvedWallet } from '../../utils/wallet'
 
-const GIFT_WALLET_FUND_DAI_AMOUNT = DAI.fromDecimalString('0.1')
-const GIFT_WALLET_FUND_BZZ_AMOUNT = BZZ.fromDecimalString('0.5')
-
-export default function Index(): ReactElement {
+export default function Index(): ReactElement | null {
   const { giftWallets, addGiftWallet } = useContext(TopUpContext)
-  const { rpcProvider, desktopUrl } = useContext(SettingsContext)
+  const { rpcProvider, desktopUrl, giftWalletFees } = useContext(SettingsContext)
   const { balance } = useContext(BalanceProvider)
-
   const [loading, setLoading] = useState(false)
   const [balances, setBalances] = useState<ResolvedWallet[]>([])
+  const { enqueueSnackbar } = useSnackbar()
+  const navigate = useNavigate()
 
   useEffect(() => {
     async function mapGiftWallets() {
@@ -45,21 +44,30 @@ export default function Index(): ReactElement {
     mapGiftWallets()
   }, [giftWallets, rpcProvider])
 
-  const { enqueueSnackbar } = useSnackbar()
-  const navigate = useNavigate()
+  if (!giftWalletFees) {
+    return (
+      <>
+        <HistoryHeader>Invite to Swarm...</HistoryHeader>
+        <Typography>Gift wallet fees are unavailable. Please check your Swarm Desktop configuration.</Typography>
+      </>
+    )
+  }
+
+  const GIFT_WALLET_FUND_DAI_AMOUNT = DAI.fromDecimalString(giftWalletFees.dai)
+  const GIFT_WALLET_FUND_BZZ_AMOUNT = BZZ.fromDecimalString(giftWalletFees.bzz)
 
   async function onCreate() {
     enqueueSnackbar('Sending funds to gift wallet...')
     setLoading(true)
     try {
       const wallet = generateWallet()
-      addGiftWallet(wallet)
       await createGiftWallet(desktopUrl, wallet.address)
+      addGiftWallet(wallet)
       enqueueSnackbar('Succesfully funded gift wallet', { variant: 'success' })
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error)
-      enqueueSnackbar(`Failed to fund gift wallet: ${error}`, { variant: 'error' })
+      enqueueSnackbar(`Failed to fund gift wallet: ${extractBeeApiErrorMessage(error)}`, { variant: 'error' })
     } finally {
       setLoading(false)
     }

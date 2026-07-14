@@ -13,6 +13,7 @@ import { Context as SettingsContext } from '../../providers/Settings'
 import { Context as StampsContext } from '../../providers/Stamps'
 import { ROUTES } from '../../routes'
 import { secondsToTimeString } from '../../utils'
+import { extractBeeApiErrorMessage, notifyStampFundsShortage } from '../../utils/bee-error'
 import { validateDepthInput } from '../../utils/stamp'
 
 interface Props {
@@ -50,7 +51,7 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
   const { classes } = useStyles()
   const { refresh } = useContext(StampsContext)
   const { beeApi } = useContext(SettingsContext)
-  const { chainState } = useContext(BeeContext)
+  const { chainState, walletBalance } = useContext(BeeContext)
   const [depthInput, setDepthInput] = useState<number>(Utils.getDepthForSize(Size.fromGigabytes(4)))
   const [amountInput, setAmountInput] = useState<bigint>(Utils.getAmountForDuration(Duration.fromDays(30), 26500, 5))
   const [labelInput, setLabelInput] = useState('')
@@ -102,13 +103,15 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
   }
 
   async function submit() {
-    try {
-      // This is really just a typeguard, the validation pretty much guarantees these will have the right values
-      if (!depthInput || !amountInput) {
-        return
-      }
+    // This is really just a typeguard, the validation pretty much guarantees these will have the right values
+    if (!depthInput || !amountInput || !beeApi) {
+      return
+    }
 
-      if (!beeApi) {
+    let success = false
+
+    try {
+      if (notifyStampFundsShortage(Utils.getStampCost(depthInput, amountInput), walletBalance, enqueueSnackbar)) {
         return
       }
 
@@ -117,19 +120,25 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
       await beeApi.buyStorage(
         Size.fromGigabytes(buttonValue),
         Duration.fromDays(sliderValue),
-        { label: labelInput, immutableFlag: true },
+        { label: labelInput, immutableFlag: true, waitForUsable: false },
         undefined,
         false,
         RedundancyLevel.OFF,
       )
       await refresh()
-      onFinished()
+      success = true
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error(e)
-      enqueueSnackbar(`Error: ${(e as Error).message}`, { variant: 'error' })
+      enqueueSnackbar(`Failed to buy postage stamp: ${extractBeeApiErrorMessage(e)}`, { variant: 'error' })
+    } finally {
+      setSubmitting(false)
     }
-    setSubmitting(false)
+
+    if (success) {
+      enqueueSnackbar('Purchase initiated. Wait a few seconds, stamp will appear soon.', { variant: 'success' })
+      onFinished()
+    }
   }
 
   function handleBatchSize(gigabytes: number) {
@@ -144,11 +153,7 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
         <Typography>
           A postage stamp batch containes postage stamps that will give you the right to upload data to the Swarm
           network. If you&apos;re not familiar with this, please read&nbsp;
-          <a
-            href="https://medium.com/ethereum-swarm/how-to-upload-data-to-the-swarm-network-c0766c3ae381"
-            target="_blank"
-            rel="noreferrer"
-          >
+          <a href="https://docs.ethswarm.org/docs/desktop/postage-stamps/" target="_blank" rel="noreferrer">
             this guide
           </a>
           .
