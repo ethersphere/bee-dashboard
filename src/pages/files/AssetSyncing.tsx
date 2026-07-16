@@ -16,6 +16,7 @@ export function AssetSyncing({ reference }: Props): ReactElement {
   const { beeApi } = useContext(SettingsContext)
 
   const syncTimer = useRef<ReturnType<typeof setInterval> | null>(null)
+  const retrieveCheckRef = useRef<boolean>(false)
   const [isRetrieveChecking, setIsRetrieveChecking] = useState<boolean>(false)
   const [syncProgress, setSyncProgress] = useState<number>(0)
 
@@ -38,6 +39,19 @@ export function AssetSyncing({ reference }: Props): ReactElement {
     if (tag && tag.split > 0) {
       const progress = ((tag.seen + tag.synced) / tag.split) * 100
       setSyncProgress(progress)
+    } else if (!tag && !retrieveCheckRef.current) {
+      // Direct (non-deferred) uploads do not create a tag on the Bee node,
+      // so verify network availability with the stewardship endpoint instead
+      retrieveCheckRef.current = true
+      try {
+        if (await beeApi.isReferenceRetrievable(reference)) {
+          setSyncProgress(100)
+        }
+      } catch {
+        // Transient error, the next interval tick will retry
+      } finally {
+        retrieveCheckRef.current = false
+      }
     }
   }, [beeApi, reference])
 
