@@ -23,7 +23,7 @@ import { ResolvedWallet } from '../../utils/wallet'
 export default function Index(): ReactElement | null {
   const { giftWallets, addGiftWallet } = useContext(TopUpContext)
   const { rpcProvider, desktopUrl, giftWalletFees } = useContext(SettingsContext)
-  const { balance } = useContext(BalanceProvider)
+  const { balance, refresh: refreshBalance } = useContext(BalanceProvider)
   const [loading, setLoading] = useState(false)
   const [balances, setBalances] = useState<ResolvedWallet[]>([])
   const { enqueueSnackbar } = useSnackbar()
@@ -69,6 +69,7 @@ export default function Index(): ReactElement | null {
       console.error(error)
       enqueueSnackbar(`Failed to fund gift wallet: ${extractBeeApiErrorMessage(error)}`, { variant: 'error' })
     } finally {
+      await refreshBalance()
       setLoading(false)
     }
   }
