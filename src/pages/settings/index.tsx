@@ -9,6 +9,7 @@ import { Context as SettingsContext } from '../../providers/Settings'
 import { extractBeeApiErrorMessage } from '../../utils/bee-error'
 import { newGnosisProviderForValidation } from '../../utils/chain'
 import {
+  extractEnsResolverUrl,
   getDesktopConfiguration,
   restartBeeNode,
   setEnsResolverInDesktop,
@@ -71,11 +72,31 @@ export default function SettingsPage(): ReactElement {
   }
 
   async function handleSetEnsResolverUrl(value: string) {
+    const resolverUrl = extractEnsResolverUrl(value)
+
+    if (!resolverUrl) {
+      enqueueSnackbar('Failed to change ENS resolver. Invalid URL format.', { variant: 'error' })
+
+      return
+    }
+
+    try {
+      await newGnosisProviderForValidation(resolverUrl).getNetwork()
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e)
+      enqueueSnackbar(`Failed to connect to ENS resolver endpoint. ${extractBeeApiErrorMessage(e)}`, {
+        variant: 'error',
+      })
+
+      return
+    }
+
     try {
       await setEnsResolverInDesktop(desktopUrl, value)
       setEnsResolver(value)
 
-      const snackKey = enqueueSnackbar('ENS resolver successfully changed, restarting Bee node...', {
+      const snackKey = enqueueSnackbar('ENS resolver saved, restarting Bee node...', {
         variant: 'success',
       })
       await restartBeeNode(desktopUrl)

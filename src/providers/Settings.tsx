@@ -2,7 +2,7 @@ import { Bee } from '@ethersphere/bee-js'
 import { JsonRpcProvider } from 'ethers'
 import { createContext, ReactElement, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { DEFAULT_BEE_API_HOST, DEFAULT_RPC_URL } from '../constants'
+import { DEFAULT_BEE_API_HOST, DEFAULT_GIFT_WALLET_FEES, DEFAULT_RPC_URL } from '../constants'
 import { useGetBeeConfig } from '../hooks/apiHooks'
 import { newGnosisProvider, newGnosisProviderForValidation } from '../utils/chain'
 import { resolveBlockchainRpcEndpoint } from '../utils/desktop'
@@ -170,7 +170,7 @@ export function Provider({ children, ...propsSettings }: Props): ReactElement {
       desktopApiKey,
       isDesktop,
       desktopUrl,
-      giftWalletFees: propsSettings.giftWalletFees,
+      giftWalletFees: propsSettings.giftWalletFees ?? DEFAULT_GIFT_WALLET_FEES,
       rpcProvider,
       rpcProviderUrl,
       cors: config?.['cors-allowed-origins'] ?? null,
