@@ -50,6 +50,18 @@ export async function setEnsResolverInDesktop(desktopUrl: string, value: string)
   })
 }
 
+const ENS_RESOLVER_URL = /^(?:[a-z0-9-]+:)?(?:0x[0-9a-fA-F]{40}@)?(https?:\/\/.+)$/i
+
+export function extractEnsResolverUrl(value: string): string | null {
+  const urlPart = ENS_RESOLVER_URL.exec(value.trim())?.[1]
+
+  try {
+    return urlPart && new URL(urlPart).hostname ? urlPart : null
+  } catch {
+    return null
+  }
+}
+
 export function getDesktopConfiguration(desktopUrl: string): Promise<BeeConfig> {
   return getJson(`${desktopUrl}/config`)
 }
