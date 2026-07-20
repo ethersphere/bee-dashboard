@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.36.1](https://github.com/ethersphere/bee-dashboard/compare/v0.36.0...v0.36.1) (2026-07-20)
+
+
+### Bug Fixes
+
+* fall back to stewardship check when direct uploads create no tag ([7f89b80](https://github.com/ethersphere/bee-dashboard/commit/7f89b8093b35dbeee47270ebbd24fe852d998fd9))
+* gift-wallet-generation ([96d4cb0](https://github.com/ethersphere/bee-dashboard/commit/96d4cb06ce0b7131bae0b4e2f92bd16ec1ae43ee))
+* validate ENS resolver URL before saving ([#295](https://github.com/ethersphere/bee-dashboard/issues/295)) ([355811d](https://github.com/ethersphere/bee-dashboard/commit/355811d338f2534b967ce5c5e59611ed89e1ebed))
+
 ## [0.36.0](https://github.com/ethersphere/bee-dashboard/compare/v0.35.2...v0.36.0) (2026-07-14)
 
 
