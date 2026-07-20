@@ -5,7 +5,7 @@
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fethersphere%2Fbee-dashboard.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fethersphere%2Fbee-dashboard?ref=badge_shield)
 ![](https://img.shields.io/badge/pnpm-%3E%3D10.0.0-orange.svg?style=flat-square)
-![](https://img.shields.io/badge/Node.js-%3E%3D14.0.0-orange.svg?style=flat-square)
+![](https://img.shields.io/badge/Node.js-%3E%3D24.0.0-orange.svg?style=flat-square)
 
 > An app which helps users to setup their Bee node and do actions like cash out cheques, upload and download files or
 > manage your postage stamps.
@@ -28,9 +28,9 @@ Stay up to date by joining the [official Discord](https://discord.gg/GU22h2utj6)
 - [Usage](#usage)
   - [Terminal](#terminal)
   - [Docker](#docker)
-- [Contribute](#contribute)
-- [Development](#development)
+  - [Development](#development)
 - [File Manager](#file-manager)
+- [Contribute](#contribute)
 - [Maintainers](#maintainers)
 - [License](#license)
 
@@ -101,11 +101,11 @@ pnpm run init:husky
 pnpm start
 ```
 
-The Bee Dashboard runs in development mode on [http://localhost:3031/](http://localhost:3031/)
+The Bee Dashboard runs in development mode on [http://localhost:3002/](http://localhost:3002/)
 
 #### Environmental variables
 
-The CRA supports to specify "environmental variables" during build time which are then hardcoded into the served static
+Vite supports specifying "environmental variables" during build time which are then hardcoded into the served static
 files. We support following variables:
 
 - `VITE_BEE_DESKTOP_ENABLED` (`boolean`) that toggles if the Dashboard is in Desktop mode or not.
