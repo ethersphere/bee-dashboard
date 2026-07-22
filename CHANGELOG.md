@@ -5,7 +5,7 @@
 
 ### Bug Fixes
 
-* replace stewardship sync check with local chunk probe ([#299](https://github.com/ethersphere/bee-dashboard/issues/299)) ([35c50d0](https://github.com/ethersphere/bee-dashboard/commit/35c50d02f7fc67564660564ee7768dcb649161d0))
+* replace stewardship sync check with local chunk probe ([#747](https://github.com/ethersphere/bee-dashboard/issues/747)) ([35c50d0](https://github.com/ethersphere/bee-dashboard/commit/35c50d02f7fc67564660564ee7768dcb649161d0))
 
 ## [0.36.1](https://github.com/ethersphere/bee-dashboard/compare/v0.36.0...v0.36.1) (2026-07-20)
 
