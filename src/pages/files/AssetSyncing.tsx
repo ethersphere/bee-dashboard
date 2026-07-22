@@ -1,6 +1,5 @@
-import { Tag } from '@ethersphere/bee-js'
 import { Box } from '@mui/material'
-import { ReactElement, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { ReactElement, useContext, useEffect, useState } from 'react'
 
 import { DocumentationText } from '../../components/DocumentationText'
 import { LinearProgressWithLabel } from '../../components/ProgressBar'
@@ -10,88 +9,66 @@ interface Props {
   reference?: string
 }
 
-const SYNC_CHECK_INTERVAL_MS = 2000
+const PROBE_RETRY_DELAY_MS = 500
+const PROBE_TIMEOUT_MS = 10 * 1000
 
 export function AssetSyncing({ reference }: Props): ReactElement {
   const { beeApi } = useContext(SettingsContext)
 
-  const syncTimer = useRef<ReturnType<typeof setInterval> | null>(null)
-  const retrieveCheckRef = useRef<boolean>(false)
-  const [isRetrieveChecking, setIsRetrieveChecking] = useState<boolean>(false)
   const [syncProgress, setSyncProgress] = useState<number>(0)
+  const [probeFailed, setProbeFailed] = useState<boolean>(false)
 
-  const syncCheck = useCallback(async () => {
+  useEffect(() => {
+    setSyncProgress(0)
+    setProbeFailed(false)
+
     if (!beeApi || !reference) return
 
-    let allTags: Tag[] = []
-    let offset = 0
-    const limit = 1000
-    let tagsBatch: Tag[]
+    let isMounted = true
+    let retryTimer: ReturnType<typeof setTimeout> | null = null
+    let currentAbortController: AbortController | null = null
 
-    do {
-      tagsBatch = await beeApi.getAllTags({ limit, offset })
-      allTags = allTags.concat(tagsBatch)
-      offset += limit
-    } while (tagsBatch.length === limit) // Continue if the batch is full, stop if fewer than the limit
+    // deferred: false already guarantees the upload was pushed to and acknowledged by the
+    // network before the upload call resolved. This is just a cheap local sanity check
+    // (HEAD on the root chunk, served from local storage) - not a network-wide verification.
+    const check = async (isRetry: boolean) => {
+      // fetch() ignores requestOptions.timeout, so bound the request explicitly - otherwise a
+      // hung request never resolves or rejects, and neither the retry nor the failure state
+      // would ever trigger.
+      const abortController = new AbortController()
+      currentAbortController = abortController
+      const abortTimer = setTimeout(() => abortController.abort(), PROBE_TIMEOUT_MS)
 
-    const tag = allTags.find(t => t.address === reference)
-
-    if (tag && tag.split > 0) {
-      const progress = ((tag.seen + tag.synced) / tag.split) * 100
-      setSyncProgress(progress)
-    } else if (!tag && !retrieveCheckRef.current) {
-      // Direct (non-deferred) uploads do not create a tag on the Bee node,
-      // so verify network availability with the stewardship endpoint instead
-      retrieveCheckRef.current = true
       try {
-        if (await beeApi.isReferenceRetrievable(reference)) {
-          setSyncProgress(100)
-        }
+        await beeApi.probeData(reference, { signal: abortController.signal })
+
+        if (isMounted) setSyncProgress(100)
       } catch {
-        // Transient error, the next interval tick will retry
+        // Bail out entirely once unmounted/reference changed, so a rejection from an
+        // in-flight first attempt can't schedule an unnecessary extra retry request.
+        if (!isMounted) return
+
+        if (!isRetry) {
+          retryTimer = setTimeout(() => check(true), PROBE_RETRY_DELAY_MS)
+        } else {
+          setProbeFailed(true)
+        }
       } finally {
-        retrieveCheckRef.current = false
+        clearTimeout(abortTimer)
+      }
+    }
+
+    check(false)
+
+    return () => {
+      isMounted = false
+      currentAbortController?.abort()
+
+      if (retryTimer) {
+        clearTimeout(retryTimer)
       }
     }
   }, [beeApi, reference])
-
-  useEffect(() => {
-    syncTimer.current = setInterval(syncCheck, SYNC_CHECK_INTERVAL_MS)
-
-    return () => {
-      if (syncTimer.current) {
-        clearInterval(syncTimer.current)
-        syncTimer.current = null
-      }
-    }
-  }, [reference, syncCheck])
-
-  useEffect(() => {
-    if (syncProgress === 100 && syncTimer.current) {
-      clearInterval(syncTimer.current)
-      syncTimer.current = null
-    }
-  }, [syncProgress])
-
-  useEffect(() => {
-    /*   
-          There are instances when it seems that the content isn't synchronized, despite being already available.
-          To ensure it's not due to invalid synchronization data,
-          verify availability from at least 70% using one of the stewardship endpoints.
-    */
-    if (beeApi && reference && !isRetrieveChecking && syncProgress > 10 && syncProgress < 100) {
-      // It's a long running task make sure only one run occurs at a time.
-      setIsRetrieveChecking(true)
-
-      beeApi.isReferenceRetrievable(reference).then(isRetriavable => {
-        if (isRetriavable) {
-          setSyncProgress(100)
-        }
-
-        setIsRetrieveChecking(false)
-      })
-    }
-  }, [syncProgress, isRetrieveChecking, beeApi, reference])
 
   return (
     <>
@@ -104,8 +81,20 @@ export function AssetSyncing({ reference }: Props): ReactElement {
         </DocumentationText>
       </Box>
       <Box mb={4}>
-        <LinearProgressWithLabel value={syncProgress}></LinearProgressWithLabel>
+        <LinearProgressWithLabel
+          value={syncProgress}
+          indeterminate={syncProgress < 100 && !probeFailed}
+          label={probeFailed ? 'Unknown' : undefined}
+        />
       </Box>
+      {probeFailed && (
+        <Box mb={2}>
+          <DocumentationText>
+            Upload succeeded, but we couldn&apos;t confirm it locally. Try refreshing this page — your file has very
+            likely still been uploaded successfully.
+          </DocumentationText>
+        </Box>
+      )}
     </>
   )
 }
