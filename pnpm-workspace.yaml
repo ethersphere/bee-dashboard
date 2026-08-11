@@ -5,3 +5,4 @@ allowBuilds:
   unrs-resolver: true
 minimumReleaseAgeExclude:
   - '@ethersphere/bee-js@12.3.1'
+  - '@vitest/eslint-plugin@1.6.27'

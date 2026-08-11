@@ -1,5 +1,5 @@
 import path from 'path'
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import dts from 'vite-plugin-dts'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
@@ -105,5 +105,15 @@ export default defineConfig(({ mode }) => {
     },
     publicDir: 'public',
     assetsInclude: ['**/*.svg'],
+    test: {
+      environment: 'jsdom',
+      globals: true,
+      setupFiles: ['./src/setupTests.ts'],
+      include: ['tests/**/*.spec.ts'],
+      coverage: {
+        provider: 'v8',
+        reporter: ['text', 'html'],
+      },
+    },
   }
 })
