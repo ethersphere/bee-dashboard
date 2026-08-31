@@ -57,11 +57,11 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
-    "@ethersphere/bee-js": "^12.3.1",
+    "@ethersphere/bee-js": "^13.0.0",
     "@formbricks/js": "^4.3.0",
     "@mui/icons-material": "^7.3.7",
     "@mui/material": "^7.3.7",
-    "@solarpunkltd/file-manager-lib": "^1.0.9",
+    "@solarpunkltd/file-manager-lib": "workspace:*",
     "axios": "^1.16.1",
     "bignumber.js": "^9.3.1",
     "dotted-map": "^2.2.3",

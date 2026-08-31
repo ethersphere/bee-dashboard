@@ -94,7 +94,7 @@ export const useAccounting = (
     setIsloadingUncashed(true)
     const promises = settlements.settlements
       .filter(({ received }) => received.gt(BZZ.fromPLUR('0')))
-      .map(({ peer }) => makeRetriablePromise(() => beeApi.getLastCashoutAction(peer)))
+      .map(({ peer }) => makeRetriablePromise(() => beeApi.cheque.getLastCashoutAction(peer)))
 
     Promise.allSettled(promises).then(settlements => {
       const results = unwrapPromiseSettlements(settlements)

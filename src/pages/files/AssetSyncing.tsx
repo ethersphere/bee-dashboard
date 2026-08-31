@@ -40,7 +40,7 @@ export function AssetSyncing({ reference }: Props): ReactElement {
       const abortTimer = setTimeout(() => abortController.abort(), PROBE_TIMEOUT_MS)
 
       try {
-        await beeApi.probeData(reference, { signal: abortController.signal })
+        await beeApi.data.probe(reference, { signal: abortController.signal })
 
         if (isMounted) setSyncProgress(100)
       } catch {

@@ -124,7 +124,7 @@ export default function StampExtensionModal({ type, icon, bee, stamp, status }: 
 
     let cancelled = false
 
-    bee
+    bee.storage
       .getDurationExtensionCost(stamp.batchID, Duration.fromDays(parsedDays))
       .then(cost => {
         if (!cancelled) setTopupCostBzz(cost)
@@ -152,7 +152,7 @@ export default function StampExtensionModal({ type, icon, bee, stamp, status }: 
 
     let cancelled = false
 
-    bee
+    bee.storage
       .getSizeExtensionCost(stamp.batchID, Size.fromBytes(selectedNewSizeBytes), undefined, false, RedundancyLevel.OFF)
       .then(cost => {
         if (!cancelled) setDiluteCostBzz(cost)
@@ -200,14 +200,14 @@ export default function StampExtensionModal({ type, icon, bee, stamp, status }: 
           return
         }
 
-        await bee.extendStorageDuration(stamp.batchID, Duration.fromDays(parsedDays))
+        await bee.storage.extendDuration(stamp.batchID, Duration.fromDays(parsedDays))
         enqueueSnackbar('Lifetime extended successfully. Your changes will appear soon.', { variant: 'success' })
       }
 
       if (type === StampExtensionType.Dilute) {
         if (selectedNewSizeBytes === null) return
 
-        await bee.extendStorageSize(
+        await bee.storage.extendSize(
           stamp.batchID,
           Size.fromBytes(selectedNewSizeBytes),
           undefined,

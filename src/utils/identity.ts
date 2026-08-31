@@ -104,10 +104,10 @@ export async function updateFeed(
   const wallet = await getWalletFromIdentity(identity, password)
 
   if (!identity.feedHash) {
-    identity.feedHash = (await beeApi.createFeedManifest(stamp, NULL_TOPIC, wallet.address)).toHex()
+    identity.feedHash = (await beeApi.feed.createManifest(stamp, NULL_TOPIC, wallet.address)).toHex()
   }
 
-  const writer = beeApi.makeFeedWriter(NULL_TOPIC, wallet.privateKey)
+  const writer = beeApi.feed.makeWriter(NULL_TOPIC, wallet.privateKey)
 
   await waitUntilStampUsable(stamp, beeApi)
   await writer.uploadReference(stamp, hash)

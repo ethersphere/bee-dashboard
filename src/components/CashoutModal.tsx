@@ -33,8 +33,8 @@ export default function CheckoutModal({ peerId, uncashedAmount }: Props): ReactE
   const handleCashout = () => {
     if (peerId && beeApi) {
       setLoadingCashout(true)
-      beeApi
-        .cashoutLastCheque(peerId)
+      beeApi.cheque
+        .cashoutLast(peerId)
         .then(res => {
           setOpen(false)
           enqueueSnackbar(<span>Successfully cashed out cheque. Transaction {res.toHex()}</span>, {

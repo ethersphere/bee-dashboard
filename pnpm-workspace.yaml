@@ -1,3 +1,6 @@
+packages:
+  - '.'
+  - '../file-manager-lib'
 allowBuilds:
   '@parcel/watcher': true
   esbuild: true
@@ -6,3 +9,4 @@ allowBuilds:
 minimumReleaseAgeExclude:
   - '@ethersphere/bee-js@12.3.1'
   - '@vitest/eslint-plugin@1.6.27'
+  - 'eslint-plugin-jest@29.16.6'

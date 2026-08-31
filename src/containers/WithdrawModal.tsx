@@ -23,7 +23,7 @@ export default function WithdrawModal(): ReactElement {
           throw new Error('Bee URL is not valid')
         }
 
-        const transactionHash = await beeApi.withdrawBZZFromChequebook(amount)
+        const transactionHash = await beeApi.chequebook.withdraw(amount)
         refresh()
 
         return transactionHash

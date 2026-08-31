@@ -22,7 +22,7 @@ export default function LightModeRestart(): ReactElement {
     }
 
     const interval = setInterval(() => {
-      beeApi
+      beeApi.status
         .getNodeInfo()
         .then(nodeInfo => {
           if (nodeInfo.beeMode === BeeModes.LIGHT) {
