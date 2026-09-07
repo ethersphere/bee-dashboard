@@ -1,17 +1,19 @@
 import { BZZ, DAI } from '@ethersphere/bee-js'
+import type { Mock } from 'vitest'
+import { vi } from 'vitest'
 
 import { sendBzzTransaction, sendNativeTransaction } from '../../src/utils/rpc'
 
 interface MockProvider {
-  getFeeData: jest.Mock
-  getNetwork: jest.Mock
+  getFeeData: Mock
+  getNetwork: Mock
 }
 
-const mockWait = jest.fn()
-const mockTransfer = jest.fn()
-const mockGetFeeData = jest.fn()
-const mockGetNetwork = jest.fn()
-const mockSendTransaction = jest.fn()
+const mockWait = vi.fn()
+const mockTransfer = vi.fn()
+const mockGetFeeData = vi.fn()
+const mockGetNetwork = vi.fn()
+const mockSendTransaction = vi.fn()
 const mockProvider: MockProvider = {
   getFeeData: mockGetFeeData,
   getNetwork: mockGetNetwork,
@@ -22,21 +24,21 @@ const daiValue = DAI.fromDecimalString('1')
 const privateKey = 'FFFF000000000000000000000000000000000000000000000000000000000000'
 const jsonRpcProvider = 'http://mock-json-rpc-provider'
 
-jest.mock('../../src/utils/chain', () => {
-  const actual = jest.requireActual('../../src/utils/chain')
+vi.mock('../../src/utils/chain', async () => {
+  const actual = await vi.importActual('../../src/utils/chain')
 
   return {
     ...actual,
-    newGnosisProvider: jest.fn(() => mockProvider),
+    newGnosisProvider: vi.fn(() => mockProvider),
   }
 })
 
-jest.mock('ethers', () => {
-  const actual = jest.requireActual('ethers')
+vi.mock('ethers', async () => {
+  const actual = await vi.importActual('ethers')
 
   class Contract {
     transfer = mockTransfer
-    balanceOf = { staticCall: jest.fn() }
+    balanceOf = { staticCall: vi.fn() }
   }
 
   class Wallet {
@@ -59,7 +61,7 @@ describe('sendBzzTransaction', () => {
   const addresses = ['52908400098527886e0f7030069857d2e4169ee7', '0x52908400098527886e0f7030069857d2e4169ee7']
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockWait.mockResolvedValue({ status: 1 })
     mockTransfer.mockResolvedValue({ wait: mockWait })
     mockGetFeeData.mockResolvedValue({ gasPrice: BigInt(1) })
@@ -89,7 +91,7 @@ describe('sendNativeTransaction', () => {
   const addresses = ['52908400098527886e0f7030069857d2e4169ee7', '0x52908400098527886e0f7030069857d2e4169ee7']
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     mockWait.mockResolvedValue({ status: 1 })
     mockSendTransaction.mockResolvedValue({ wait: mockWait })
     mockGetFeeData.mockResolvedValue({ gasPrice: BigInt(1) })

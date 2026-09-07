@@ -47,7 +47,7 @@ async function waitForStamp(batchId: BatchId | string, bee: Bee, options?: Optio
 
   for (let i = 0; i < timeout; i += pollingFrequency) {
     try {
-      const stamp = await bee.getPostageBatch(batchId)
+      const stamp = await bee.stamp.get(batchId)
 
       if (stamp.usable) {
         return stamp

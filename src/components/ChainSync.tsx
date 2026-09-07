@@ -18,7 +18,7 @@ export function ChainSync() {
       }
 
       // eslint-disable-next-line no-console
-      beeApi.getChainState().then(setChainState).catch(console.error)
+      beeApi.status.getChainState().then(setChainState).catch(console.error)
     }, CHAIN_STATE_INTERVAL_MS)
 
     return () => clearInterval(interval)

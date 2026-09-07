@@ -4,4 +4,7 @@ allowBuilds:
   puppeteer: true
   unrs-resolver: true
 minimumReleaseAgeExclude:
-  - '@ethersphere/bee-js@12.3.1'
+  - '@ethersphere/bee-js@13.0.0'
+  - '@vitest/eslint-plugin@1.6.27'
+  - 'eslint-plugin-jest@29.16.6'
+  - '@solarpunkltd/file-manager-lib@1.1.0'

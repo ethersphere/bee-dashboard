@@ -88,7 +88,7 @@ export function Share(): ReactElement {
 
       setIndexDocument(indexDocument)
 
-      const [remoteMetadata] = await tryCatch(() => beeApi.downloadFile(hash, META_FILE_NAME))
+      const [remoteMetadata] = await tryCatch(() => beeApi.file.download(hash, META_FILE_NAME))
 
       if (!isMountedRef.current) return
 
@@ -110,7 +110,7 @@ export function Share(): ReactElement {
       return
     }
 
-    const [data] = await tryCatch(() => beeApi.downloadData(hash))
+    const [data] = await tryCatch(() => beeApi.data.download(hash))
 
     if (!isMountedRef.current) return
 
@@ -218,7 +218,7 @@ export function Share(): ReactElement {
 
       let fileData: Bytes
       try {
-        fileData = await beeApi.downloadData(singleFileHash)
+        fileData = await beeApi.data.download(singleFileHash)
       } catch (err) {
         // eslint-disable-next-line no-console
         console.error('Failed to download file: ', err)
@@ -237,7 +237,7 @@ export function Share(): ReactElement {
       const zip = new JSZip()
       for (const [path, hash] of Object.entries(swarmEntries)) {
         try {
-          zip.file(path, (await beeApi.downloadData(hash)).toUint8Array())
+          zip.file(path, (await beeApi.data.download(hash)).toUint8Array())
         } catch (err) {
           // eslint-disable-next-line no-console
           console.error('Failed to download files: ', err)

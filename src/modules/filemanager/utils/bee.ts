@@ -13,9 +13,7 @@ import { ActionTag } from '../constants/transfers'
 
 export const getUsableStamps = async (bee: Bee): Promise<PostageBatch[]> => {
   try {
-    return (await bee.getPostageBatches())
-      .filter(s => s.usable)
-      .sort((a, b) => (a.label || '').localeCompare(b.label || ''))
+    return (await bee.stamp.getAll()).filter(s => s.usable).sort((a, b) => (a.label || '').localeCompare(b.label || ''))
   } catch {
     return []
   }
@@ -23,7 +21,7 @@ export const getUsableStamps = async (bee: Bee): Promise<PostageBatch[]> => {
 
 export const validateStampStillExists = async (bee: Bee, batchId: BatchId): Promise<boolean> => {
   try {
-    const stamp = await bee.getPostageBatch(batchId.toString())
+    const stamp = await bee.stamp.get(batchId.toString())
 
     return stamp.usable
   } catch (error) {
@@ -43,7 +41,7 @@ export const fmGetStorageCost = async (
 ): Promise<BZZ | undefined> => {
   try {
     if (Size.fromBytes(capacity).toGigabytes() >= 0 && validityEndDate.getTime() >= new Date().getTime()) {
-      const cost = await beeApi?.getStorageCost(
+      const cost = await beeApi?.storage.getCost(
         Size.fromBytes(capacity),
         Duration.fromEndDate(validityEndDate),
         undefined,
@@ -168,7 +166,7 @@ export const handleCreateDrive = async (options: CreateDriveOptions): Promise<vo
         })
       }
 
-      batchId = await beeApi.buyStorage(size, duration, { label }, undefined, encryption, redundancyLevel)
+      batchId = await beeApi.storage.buy(size, duration, { label }, undefined, encryption, redundancyLevel)
     } else {
       const isValid = await validateStampStillExists(beeApi, existingBatch.batchID)
 

@@ -2,13 +2,11 @@
   "ignores": [
     "@types/*",
     "@commitlint/*",
-    "@babel/*",
     "@eslint/*",
     "@eslint/*",
     "eslint*",
     "env-paths",
     "husky",
-    "jest-environment-jsdom",
     "open",
     "rimraf",
     "sass",

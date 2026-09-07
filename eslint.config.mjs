@@ -12,7 +12,7 @@ const ts = compat.default.ts
 const tsParser = compat.default.tsParser
 const prettier = compat.default.prettier
 const importPlugin = compat.default.importPlugin
-const pluginJest = compat.default.pluginJest
+const pluginVitest = compat.default.pluginVitest
 const prettierPlugin = compat.default.prettierPlugin
 const simpleImportSort = compat.default.simpleImportSort
 const react = compat.default.react
@@ -238,18 +238,18 @@ export default defineConfig([
       'import/no-commonjs': 'off',
       '@typescript-eslint/no-require-imports': 'off',
       'max-nested-callbacks': ['error', 10], // allow describe/it/test nesting
-      'jest/no-disabled-tests': 'warn',
-      'jest/no-focused-tests': 'error',
-      'jest/no-identical-title': 'error',
-      'jest/prefer-to-have-length': 'warn',
-      'jest/valid-expect': 'error',
+      'vitest/no-disabled-tests': 'warn',
+      'vitest/no-focused-tests': 'error',
+      'vitest/no-identical-title': 'error',
+      'vitest/prefer-to-have-length': 'warn',
+      'vitest/valid-expect': 'error',
     },
     plugins: {
-      jest: pluginJest,
+      vitest: pluginVitest,
     },
     languageOptions: {
       globals: {
-        ...pluginJest.environments.globals.globals,
+        ...pluginVitest.environments.env.globals,
         require: 'readonly',
         module: 'readonly',
         exports: 'readonly',

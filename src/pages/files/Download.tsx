@@ -62,7 +62,7 @@ export function Download(): ReactElement {
         return
       }
 
-      const [, rawBytesError] = await tryCatch(() => beeApi.downloadData(identifier))
+      const [, rawBytesError] = await tryCatch(() => beeApi.data.download(identifier))
 
       if (!rawBytesError) {
         putHistory(LocalStorageKeys.downloadHistory, identifier, identifier)

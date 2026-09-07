@@ -3,7 +3,7 @@ const ts = require('@typescript-eslint/eslint-plugin')
 const tsParser = require('@typescript-eslint/parser')
 const prettier = require('eslint-config-prettier')
 const importPlugin = require('eslint-plugin-import')
-const pluginJest = require('eslint-plugin-jest')
+const pluginVitest = require('@vitest/eslint-plugin')
 const prettierPlugin = require('eslint-plugin-prettier')
 const simpleImportSort = require('eslint-plugin-simple-import-sort')
 const react = require('eslint-plugin-react')
@@ -14,7 +14,7 @@ module.exports = {
   tsParser,
   prettier,
   importPlugin,
-  pluginJest,
+  pluginVitest,
   prettierPlugin,
   simpleImportSort,
   react,

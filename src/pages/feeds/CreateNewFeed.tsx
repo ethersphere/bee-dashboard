@@ -56,7 +56,7 @@ export default function CreateNewFeed(): ReactElement {
 
     try {
       wallet = generateWallet()
-      stamps = (await beeApi.getPostageBatches()).filter(s => s.usable)
+      stamps = (await beeApi.stamp.getAll()).filter(s => s.usable)
     } catch (err) {
       // eslint-disable-next-line no-console
       console.log(err)

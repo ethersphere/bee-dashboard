@@ -23,7 +23,7 @@ export default function DepositModal(): ReactElement {
           throw new Error('Bee URL is not valid')
         }
 
-        const transactionHash = await beeApi.depositBZZToChequebook(amount)
+        const transactionHash = await beeApi.chequebook.deposit(amount)
         refresh()
 
         return transactionHash

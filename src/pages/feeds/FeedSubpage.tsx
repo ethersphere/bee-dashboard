@@ -38,8 +38,8 @@ export function FeedSubpage(): ReactElement {
     }
 
     if (identity.feedHash) {
-      beeApi
-        ?.downloadData(identity.feedHash)
+      beeApi?.data
+        .download(identity.feedHash)
         .then(() => setAvailable(true))
         .catch(() => setAvailable(false))
     }
@@ -62,7 +62,7 @@ export function FeedSubpage(): ReactElement {
     setOpening(true)
 
     try {
-      const file = await beeApi.downloadFile(feedHash)
+      const file = await beeApi.file.download(feedHash)
 
       if (file.contentType?.includes('text/html')) {
         window.open(`${apiUrl}/bzz/${feedHash}/`, '_blank', 'noopener,noreferrer')
@@ -73,8 +73,8 @@ export function FeedSubpage(): ReactElement {
         saveAs(blob, file.name || feedHash)
       }
     } catch {
-      const result = await beeApi
-        .makeFeedReader(NULL_TOPIC, address)
+      const result = await beeApi.feed
+        .makeReader(NULL_TOPIC, address)
         .downloadReference()
         .catch(() => null)
 
