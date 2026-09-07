@@ -1,0 +1,1 @@
+import{s as i}from"./index-BufCo-Bs.js";import"./vendor-react-mui-tUcmOwCz.js";import"./vendor-ethers-Dh545u0a.js";async function p(r,a,e,n){const s=[];for(const o of a)s.push(r.data.download(o,e,n));const t=[];return await i(s,o=>{t.push(o)}),t}export{p as downloadNode};
