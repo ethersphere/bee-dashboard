@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.37.0](https://github.com/ethersphere/bee-dashboard/compare/v0.36.2...v0.37.0) (2026-09-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* bee-js v13 replaces the old flat Bee API with a namespaced one. Consumers on the bee-js v12 API surface must upgrade in lockstep.
+
+### Bug Fixes
+
+* update world map ([30b84a1](https://github.com/ethersphere/bee-dashboard/commit/30b84a15d3bbbe08217cdbc00215c19e2319fc40))
+
+
+### Code Refactoring
+
+* upgrade to file-manager-lib v1.1.0 ([006ba7d](https://github.com/ethersphere/bee-dashboard/commit/006ba7d8ee2c9f30d300c6eeda78e8a7523abcf5))
+
 ## [0.36.2](https://github.com/ethersphere/bee-dashboard/compare/v0.36.1...v0.36.2) (2026-07-22)
 
 
