@@ -61,7 +61,7 @@
     "@formbricks/js": "^4.3.0",
     "@mui/icons-material": "^7.3.7",
     "@mui/material": "^7.3.7",
-    "@solarpunkltd/file-manager-lib": "workspace:*",
+    "@solarpunkltd/file-manager-lib": "^1.1.0",
     "axios": "^1.16.1",
     "bignumber.js": "^9.3.1",
     "dotted-map": "^2.2.3",
