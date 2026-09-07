@@ -117,7 +117,7 @@ export function PostageStampStandardCreation({ onFinished }: Props): ReactElemen
 
       setSubmitting(true)
 
-      await beeApi.buyStorage(
+      await beeApi.storage.buy(
         Size.fromGigabytes(buttonValue),
         Duration.fromDays(sliderValue),
         { label: labelInput, immutableFlag: true, waitForUsable: false },

@@ -116,11 +116,11 @@ export function Upload(): ReactElement {
     await waitUntilStampUsable(stamp.batchID, beeApi)
 
     const uploadPromise = isSingleFile
-      ? beeApi.uploadFile(stamp.batchID, fls[0], fls[0].name, {
+      ? beeApi.file.upload(stamp.batchID, fls[0], fls[0].name, {
           deferred: false,
           contentType: fls[0].type || guessMime(fls[0].name).mime,
         })
-      : beeApi.uploadFiles(stamp.batchID, fls, { indexDocument, deferred: false })
+      : beeApi.collection.uploadFromFileList(stamp.batchID, fls, { indexDocument, deferred: false })
 
     uploadPromise
       .then(hash => {

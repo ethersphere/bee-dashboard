@@ -17,7 +17,7 @@ export async function loadManifest(
     // (this is where the node's configured ENS resolver is actually used) and unmarshal
     // the returned root-node bytes. Child chunks are addressed by real hashes, so
     // loadRecursively() works normally afterwards.
-    const data = (await beeApi.downloadData(hash, options, requestOptions)).toUint8Array()
+    const data = (await beeApi.data.download(hash, options, requestOptions)).toUint8Array()
     manifest = MantarayNode.unmarshalFromData(data, NULL_ADDRESS)
   } else {
     manifest = await MantarayNode.unmarshal(beeApi, hash, options, requestOptions)

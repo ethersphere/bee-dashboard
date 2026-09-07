@@ -120,7 +120,14 @@ export function UpgradeDriveModal({
       let cost: BZZ | undefined
 
       try {
-        cost = await beeApi?.getExtensionCost(batchId, capacity, duration, options, encryption, erasureCodeLevel)
+        cost = await beeApi?.storage.getExtensionCost(
+          batchId,
+          capacity,
+          duration,
+          options,
+          encryption,
+          erasureCodeLevel,
+        )
       } catch {
         setErrorMessage?.('Failed to calculate extension cost')
         setShowError(true)
@@ -339,7 +346,7 @@ export function UpgradeDriveModal({
 
                 onCancelClick()
 
-                await beeApi.extendStorage(
+                await beeApi.storage.extend(
                   stamp.batchID,
                   capacity,
                   lifetimeIndex >= 0

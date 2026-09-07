@@ -117,7 +117,7 @@ export function PostageStampAdvancedCreation({ onFinished }: Props): ReactElemen
         immutableFlag: immutable,
       }
 
-      await beeApi.createPostageBatch(amount.toString(), depth, options)
+      await beeApi.stamp.create(amount.toString(), depth, options)
       await refresh()
       success = true
     } catch (e) {

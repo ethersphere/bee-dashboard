@@ -31,7 +31,7 @@ export default function StakeModal({ onStarted, onFinished }: Props): ReactEleme
         onStarted()
 
         try {
-          const transactionHash = await beeApi.depositStake(amount)
+          const transactionHash = await beeApi.stake.deposit(amount)
 
           return transactionHash
         } finally {
