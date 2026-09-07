@@ -10,9 +10,6 @@
 > An app which helps users to setup their Bee node and do actions like cash out cheques, upload and download files or
 > manage your postage stamps.
 
-**Warning: This project is in alpha state. There might (and most probably will) be changes in the future to its API and
-working. Also, no guarantees can be made about its stability, efficiency, and security at this stage.**
-
 Stay up to date by joining the [official Discord](https://discord.gg/GU22h2utj6) and by keeping an eye on the
 [releases tab](https://github.com/ethersphere/bee-dashboard/releases).
 
