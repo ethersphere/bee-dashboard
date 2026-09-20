@@ -22,7 +22,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   check:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, bee]
 
     strategy:
       matrix:
