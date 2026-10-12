@@ -27,8 +27,8 @@ importers:
         specifier: ^7.3.7
         version: 7.3.11(@emotion/react@11.14.0(@types/react@19.2.17)(react@19.2.7))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react@19.2.7))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@solarpunkltd/file-manager-lib':
-        specifier: ^1.1.0
-        version: 1.1.0
+        specifier: ^1.1.1
+        version: 1.1.1
       axios:
         specifier: ^1.16.1
         version: 1.18.1
@@ -55,7 +55,7 @@ importers:
         version: 3.10.1
       notistack:
         specifier: ^3.0.2
-        version: 3.0.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        version: 3.0.2(csstype@3.2.3)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       opener:
         specifier: 1.5.2
         version: 1.5.2
@@ -1207,9 +1207,9 @@ packages:
     resolution: {integrity: sha512-KxXvfapcixpz6rVEB6HPjOUZT22yN6v0vI0urQSk1L8MlEWPDFCZkhw2xmkyoTGYeFw7tWTZd7e3lVzRZRN/EA==}
     engines: {node: '>=18'}
 
-  '@solarpunkltd/file-manager-lib@1.1.0':
-    resolution: {integrity: sha512-DFea+Bv4zSvjakE0flhQZPgLbr6atFiBUlM4oJAJIfQoXB4Zz/BQP+NXqkpCzorSZd1HnwrVPvRQovvKcgV7iQ==}
-    engines: {bee: 2.7.0, node: '>=24.0.0', npm: '>=11.0.0', pnpm: '>=10.0.0'}
+  '@solarpunkltd/file-manager-lib@1.1.1':
+    resolution: {integrity: sha512-qdZyeeuJmZN7lgXBrSdHXxJzDuIEkk5PR8I9PbZ0Nsb9Ym1QCQTnN5Z2z/x5I0bl2TZasLmwCVnOndmG5fiTNQ==}
+    engines: {bee: '>=2.8.1', node: '>=22.0.0', npm: '>=11.0.0', pnpm: '>=11.0.0'}
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -5680,7 +5680,7 @@ snapshots:
 
   '@simple-libs/stream-utils@1.2.0': {}
 
-  '@solarpunkltd/file-manager-lib@1.1.0':
+  '@solarpunkltd/file-manager-lib@1.1.1':
     dependencies:
       '@ethersphere/bee-js': 13.0.0
       cafe-utility: 33.11.0
@@ -8398,13 +8398,14 @@ snapshots:
       util: 0.12.5
       vm-browserify: 1.1.2
 
-  notistack@3.0.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
+  notistack@3.0.2(csstype@3.2.3)(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
     dependencies:
       clsx: 1.2.1
-      csstype: 3.2.3
       goober: 2.1.19(csstype@3.2.3)
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
+    transitivePeerDependencies:
+      - csstype
 
   object-assign@4.1.1: {}
 
