@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.37.1](https://github.com/ethersphere/bee-dashboard/compare/v0.37.0...v0.37.1) (2026-10-14)
+
+
+### Bug Fixes
+
+* count running uploads in file manager limit checks ([7c2e759](https://github.com/ethersphere/bee-dashboard/commit/7c2e759e26dfb10bf09cb19ee95c9977973a3da9))
+* no parallel uploads with file-manager-lib v1.1.1 ([48da511](https://github.com/ethersphere/bee-dashboard/commit/48da51160170e29507ce792a7b61cc8262b0e62b))
+* slim Dockerfile build, pin serve and run as non-root ([fbb4582](https://github.com/ethersphere/bee-dashboard/commit/fbb458241925cdb184a2e6133bfdcdb553c4eabc))
+* use toChecksum() for gnosisscan link in check transactions ([b97b061](https://github.com/ethersphere/bee-dashboard/commit/b97b061d312f2afc59723c5c05b2bd6f1876f7b2))
+
 ## [0.37.0](https://github.com/ethersphere/bee-dashboard/compare/v0.36.2...v0.37.0) (2026-09-07)
 
 
