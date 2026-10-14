@@ -22,7 +22,7 @@ import { ConflictAction, useUploadConflictDialog } from './useUploadConflictDial
 const SAMPLE_WINDOW_MS = 500
 const ETA_SMOOTHING = 0.3
 const MAX_UPLOAD_FILES = 10
-const MAX_PARALLEL_UPLOAD_FILES = 2
+const MAX_PARALLEL_UPLOAD_FILES = 1
 const ABORT_EVENT = 'abort'
 
 type ResolveResult = {
@@ -202,6 +202,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
   const isMountedRef = useRef<boolean>(true)
   const uploadAbortsRef = useRef<AbortManager>(new AbortManager())
   const uploadTaskQueueRef = useRef<UploadTask[]>([])
+  const activeUploadsRef = useRef<Map<string, UploadTask>>(new Map()) // running uploads, already removed from the queue
   const runningRef = useRef<boolean>(false)
   const cancelledQueuedRef = useRef<Set<string>>(new Set())
   const cancelledUploadingRef = useRef<Set<string>>(new Set())
@@ -406,6 +407,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
       const signal = uploadAbortsRef.current.getSignal(task.uuid)
 
       const { promise: checkCancellation, cleanup: cleanupCancelPromise } = getUploadCancelPromise(signal)
+      let uploadPromise: Promise<void> | undefined
 
       try {
         if (signal?.aborted) {
@@ -420,7 +422,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
           taskDrive.name,
         )
 
-        const uploadPromise = fm.upload(
+        uploadPromise = fm.upload(
           taskDrive,
           { ...info, onUploadProgress },
           { actHistoryAddress: task.isReplace ? task.replaceHistory : undefined },
@@ -447,6 +449,8 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
         )
       } finally {
         cleanupCancelPromise()
+        // On cancel the race settles first; wait for fm.upload too, so the next upload can't overlap it
+        await uploadPromise?.catch(() => undefined)
 
         const wasCancelled = cancelledUploadingRef.current.has(task.uuid) || signal?.aborted
 
@@ -641,8 +645,11 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
       }
 
       const tasks: UploadTask[] = []
-      const inFlightSize = uploadTaskQueueRef.current.reduce((sum, t) => sum + t.file.size, 0)
-      const inFlightCount = uploadTaskQueueRef.current.length
+      const inFlightTasks = [...uploadTaskQueueRef.current, ...activeUploadsRef.current.values()].filter(
+        task => task.driveId === currentDrive.id.toString(),
+      )
+      const inFlightSize = inFlightTasks.reduce((sum, t) => sum + t.file.size, 0)
+      const inFlightCount = inFlightTasks.length
       let currentFileSizeSum = inFlightSize
 
       for (let i = 0; i < filesArr.length; i++) {
@@ -700,7 +707,13 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
           )(prev => updateTransferItems(prev, task.uuid, { status: TransferStatus.Cancelled }))
           cancelledQueuedRef.current.delete(task.uuid)
         } else {
-          await executeUploadTask(task)
+          activeUploadsRef.current.set(task.uuid, task)
+
+          try {
+            await executeUploadTask(task)
+          } finally {
+            activeUploadsRef.current.delete(task.uuid)
+          }
         }
       }
     }
@@ -747,7 +760,7 @@ export function useTransfers({ setErrorMessage }: TransferProps) {
         return false
       }
 
-      const currentlyQueued = uploadTaskQueueRef.current.length
+      const currentlyQueued = uploadTaskQueueRef.current.length + activeUploadsRef.current.size
       const newFilesCount = filesArr.length
       const totalAfterAdd = currentlyQueued + newFilesCount
 

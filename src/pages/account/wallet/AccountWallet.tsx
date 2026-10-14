@@ -25,7 +25,7 @@ export function AccountWallet(): ReactElement {
   const navigate = useNavigate()
 
   function onCheckTransactions() {
-    window.open(`https://gnosisscan.io/address/${nodeAddresses?.ethereum}`, '_blank')
+    window.open(`https://gnosisscan.io/address/${nodeAddresses?.ethereum.toChecksum()}`, '_blank')
   }
 
   function onInvite() {
