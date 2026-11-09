@@ -11,6 +11,7 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment: publish
     env:
       VITE_FORMBRICKS_ENV_ID: ${{ secrets.VITE_FORMBRICKS_ENV_ID }}
       VITE_FORMBRICKS_APP_URL: ${{ secrets.VITE_FORMBRICKS_APP_URL }}
