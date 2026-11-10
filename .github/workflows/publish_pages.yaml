@@ -7,7 +7,30 @@ on:
     types: [published]
 
 jobs:
+  # Runs before the job that gets the secrets and deploys,
+  # so a commit that is not on a protected branch is rejected up front.
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Verify release commit is on a protected branch
+        if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+          BRANCHES: "master"
+        run: |
+          set -euo pipefail
+          for b in $BRANCHES; do
+            st=$(gh api "repos/$REPO/compare/$b...$SHA" --jq .status 2>/dev/null || echo error)
+            if [ "$st" = identical ] || [ "$st" = behind ]; then echo "OK: $SHA is on $b"; exit 0; fi
+          done
+          echo "::error::$SHA is not on any of: $BRANCHES. Refusing to publish."; exit 1
+
   publish:
+    needs: verify
     runs-on: ubuntu-latest
 
     env:
