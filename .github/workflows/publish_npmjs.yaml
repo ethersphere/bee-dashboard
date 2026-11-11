@@ -60,4 +60,4 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm publish --provenance --access public --no-git-checks
+      - run: pnpm pack --pack-destination ./pkg && npm install -g npm@latest && npm stage publish ./pkg/*.tgz --provenance --access public
