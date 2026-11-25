@@ -10,13 +10,26 @@ on:
 jobs:
   release-please:
     runs-on: ubuntu-latest
-    # Only run releases in the upstream repo, not in forks (fork lacks the GHA_PAT_BASIC secret)
+    # Only run releases in the upstream repo, not in forks (forks lack the release-ci environment)
     if: github.repository == 'ethersphere/bee-dashboard'
+    # Only this environment (default branch only) holds RELEASE_APP_KEY.
+    environment: release-ci
+    permissions: {}
     steps:
-      - uses: GoogleCloudPlatform/release-please-action@v3
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ vars.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_KEY }}
+          # Least privilege: release-please updates the release PR (and its labels) and creates the release + tag.
+          permission-contents: write
+          permission-pull-requests: write
+          permission-issues: write
+      - uses: googleapis/release-please-action@db8f2c60ee802b3748b512940dde88eabd7b7e01 # v3.7.13
         id: release
         with:
-          token: ${{ secrets.GHA_PAT_BASIC }}
+          token: ${{ steps.app-token.outputs.token }}
           release-type: node
           package-name: bee-dashboard
           bump-minor-pre-major: true
