@@ -1,1 +1,6 @@
-* @Cafe137
+* @Cafe137 @ferencsarai @darkobas2 @crtahlin
+
+# Workflows, release configuration and packaging
+/.github/   @ethersphere/release-reviewers
+/CODEOWNERS @ethersphere/release-reviewers
+/Dockerfile @ethersphere/release-reviewers
